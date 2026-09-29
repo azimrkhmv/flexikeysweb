@@ -1,0 +1,36 @@
+// AAC "My Voice" strings. Speaks in the child's UI language (PRD §9.11).
+export const aac = {
+  en: {
+    "aac.title": "My Voice",
+    "aac.speak": "Speak",
+    "aac.clear": "Clear",
+    "aac.backspace": "Remove last",
+    "aac.empty": "Tap pictures to make a sentence",
+    "aac.confirm": "Shall I say it like this?",
+    "aac.sayThis": "Yes, say it",
+    "aac.sayMine": "Say my words",
+    "aac.categories": "Picture groups",
+  },
+  uz: {
+    "aac.title": "Mening ovozim",
+    "aac.speak": "Gapir",
+    "aac.clear": "Tozalash",
+    "aac.backspace": "Oxirgisini olib tashlash",
+    "aac.empty": "Gap tuzish uchun rasmlarni bos",
+    "aac.confirm": "Shunday aytaymi?",
+    "aac.sayThis": "Ha, ayt",
+    "aac.sayMine": "Mening soʻzlarimni ayt",
+    "aac.categories": "Rasm guruhlari",
+  },
+  ru: {
+    "aac.title": "Мой голос",
+    "aac.speak": "Сказать",
+    "aac.clear": "Очистить",
+    "aac.backspace": "Убрать последнее",
+    "aac.empty": "Нажимай на картинки, чтобы составить фразу",
+    "aac.confirm": "Сказать так?",
+    "aac.sayThis": "Да, скажи",
+    "aac.sayMine": "Скажи мои слова",
+    "aac.categories": "Группы картинок",
+  },
+};

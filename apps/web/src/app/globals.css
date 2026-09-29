@@ -1,0 +1,150 @@
+@import "tailwindcss";
+
+/* FlexiKeys design tokens — calm, warm, friendly. No harsh colors, no red, no black. */
+:root {
+  --fk-bg: #f7f6f1;
+  --fk-surface: #ffffff;
+  --fk-surface-2: #f2f5fa;
+  --fk-line: #e3e8ef;
+  --fk-ink: #27406b;
+  --fk-ink-2: #4c5b7a;
+  --fk-muted: #7a869e;
+
+  --fk-primary: #4867c9;
+  --fk-primary-soft: #dfe8f8;
+  --fk-sky: #a9c8ec;
+  --fk-sky-soft: #e4effb;
+  --fk-leaf: #7fbf85;
+  --fk-leaf-soft: #e1f1de;
+  --fk-sun: #f5d272;
+  --fk-sun-soft: #fdf3d4;
+  --fk-lavender: #b3a8e8;
+  --fk-lavender-soft: #ece9fa;
+  --fk-teal: #3fa79c;
+  --fk-teal-soft: #d9f0ec;
+  --fk-peach: #f5c6b5;
+  --fk-peach-soft: #fdebe4;
+}
+
+@theme inline {
+  --color-bg: var(--fk-bg);
+  --color-surface: var(--fk-surface);
+  --color-surface-2: var(--fk-surface-2);
+  --color-line: var(--fk-line);
+  --color-ink: var(--fk-ink);
+  --color-ink-2: var(--fk-ink-2);
+  --color-muted: var(--fk-muted);
+  --color-primary: var(--fk-primary);
+  --color-primary-soft: var(--fk-primary-soft);
+  --color-sky: var(--fk-sky);
+  --color-sky-soft: var(--fk-sky-soft);
+  --color-leaf: var(--fk-leaf);
+  --color-leaf-soft: var(--fk-leaf-soft);
+  --color-sun: var(--fk-sun);
+  --color-sun-soft: var(--fk-sun-soft);
+  --color-lavender: var(--fk-lavender);
+  --color-lavender-soft: var(--fk-lavender-soft);
+  --color-teal: var(--fk-teal);
+  --color-teal-soft: var(--fk-teal-soft);
+  --color-peach: var(--fk-peach);
+  --color-peach-soft: var(--fk-peach-soft);
+  --font-sans: var(--font-nunito), ui-rounded, system-ui, sans-serif;
+  --radius-fk: 20px;
+  --radius-fk-lg: 28px;
+  --shadow-soft: 0 1px 2px rgb(39 64 107 / 0.05), 0 6px 20px rgb(39 64 107 / 0.07);
+  --shadow-lift: 0 2px 4px rgb(39 64 107 / 0.06), 0 14px 34px rgb(39 64 107 / 0.12);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+/* A bare `grid` gets one shrinkable column, so wide children (tables in overflow-x-auto) can't push the page wider.
+   Any grid-cols-* utility overrides this because utilities sit in a later layer. */
+@layer base {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  /* Keeps absolutely positioned children (e.g. sr-only labels in tables) clipped by the scroll box. */
+  .overflow-x-auto {
+    position: relative;
+  }
+}
+
+body {
+  background: var(--fk-bg);
+  color: var(--fk-ink);
+  font-family: var(--font-nunito), ui-rounded, system-ui, sans-serif;
+}
+
+:focus-visible {
+  outline: 3px solid var(--fk-teal);
+  outline-offset: 3px;
+}
+
+/* Child targets: never smaller than 64 CSS px (PRD §11.3); design asks 76+. */
+.fk-target {
+  min-width: 76px;
+  min-height: 76px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+/* Scanning mode highlight (switch access) */
+[data-scan-active="true"] {
+  outline: 5px solid var(--fk-teal);
+  outline-offset: 4px;
+  box-shadow: 0 0 0 10px rgb(63 167 156 / 0.18);
+}
+
+/* Dwell ("waiting") progress ring drawn with a conic gradient on ::after */
+.fk-dwell {
+  position: relative;
+}
+.fk-dwell[data-dwell]::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: conic-gradient(var(--fk-teal) calc(var(--dwell, 0) * 1turn), transparent 0);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: 5px;
+}
+
+@keyframes fk-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes fk-pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgb(63 167 156 / 0.35); }
+  50% { transform: scale(1.04); box-shadow: 0 0 0 12px rgb(63 167 156 / 0); }
+}
+@keyframes fk-pop {
+  0% { transform: scale(0.6); opacity: 0; }
+  60% { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); }
+}
+@keyframes fk-glow {
+  0%, 100% { filter: drop-shadow(0 0 4px rgb(245 210 114 / 0.6)); }
+  50% { filter: drop-shadow(0 0 18px rgb(245 210 114 / 1)); }
+}
+@keyframes fk-blink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  95% { transform: scaleY(0.1); }
+}
+.fk-float { animation: fk-float 4s ease-in-out infinite; }
+.fk-pulse { animation: fk-pulse 1.8s ease-in-out infinite; }
+.fk-pop { animation: fk-pop 420ms ease-out both; }
+.fk-glow { animation: fk-glow 1.2s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
