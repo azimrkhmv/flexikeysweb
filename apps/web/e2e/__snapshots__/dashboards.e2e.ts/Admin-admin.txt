@@ -15,17 +15,17 @@ System health
 All personal data is stored and processed in Tashkent, Uzbekistan.
 
 API
-Operational
+Not connected (demo)
 PostgreSQL
-Operational
+Not connected (demo)
 Redis
-Operational
+Not connected (demo)
 Background worker
-Operational
+Not connected (demo)
 Object storage
-Operational
+Not connected (demo)
 Email delivery
-Operational
+Not connected (demo)
  AI usage · 7 days
 0
 23

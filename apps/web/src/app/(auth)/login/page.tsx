@@ -7,7 +7,7 @@ import { homeFor } from "@/components/brand";
 import { Button, Field, Input, useAction } from "@/components/ui";
 import { AuthTitle, FormError, GoogleMark } from "@/features/auth/parts";
 import { api, DEMO_PASSWORD } from "@/lib/api";
-import { useT } from "@/lib/i18n";
+import { applyAccountLang, useT } from "@/lib/i18n";
 import type { Role, User } from "@/lib/types";
 
 const DEMOS: [Role, string][] = [
@@ -30,6 +30,7 @@ export default function LoginPage() {
 
   const go = (u: User | undefined) => {
     if (!u) return;
+    applyAccountLang(u.uiLang);
     router.replace(safeNext(new URLSearchParams(window.location.search).get("next")) ?? homeFor(u.role));
   };
   const busy = login.pending || google.pending;

@@ -25,8 +25,7 @@ export default function AdminContent() {
         <Card>
           <SectionTitle>{t("admin.content.version")}</SectionTitle>
           <div className="mb-3 flex items-center gap-2">
-            <span className="text-2xl font-extrabold text-ink">v12</span>
-            <Chip tone="leaf">{t("admin.content.published")}</Chip>
+            <Chip tone="gray">{t("admin.content.demo")}</Chip>
           </div>
           <p className="text-sm text-muted">{t("admin.content.publishNote")}</p>
         </Card>

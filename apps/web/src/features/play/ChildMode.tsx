@@ -341,7 +341,7 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
           <h1 className="text-3xl font-extrabold text-ink sm:text-4xl">{t(view.levelDone ? "play.levelDone" : "play.celebrate")}</h1>
           <div className="flex gap-3 text-2xl font-extrabold text-ink">
             {view.stars > 0 && <span className="fk-pop rounded-full bg-sun-soft px-5 py-2">⭐ +{view.stars}</span>}
-            {view.coins > 0 && <span className="fk-pop rounded-full bg-surface px-5 py-2">🪙 +{view.coins}</span>}
+            {view.coins > 0 && <span className="fk-pop rounded-full bg-surface px-5 py-2">🟡 +{view.coins}</span>}
           </div>
           <div className="flex flex-wrap justify-center gap-4">
             <Target label={t("play.nav.map")} onSelect={() => setView({ v: "map" })} className={`${bigBtn} bg-surface text-ink`}>

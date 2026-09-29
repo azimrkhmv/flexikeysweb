@@ -134,7 +134,7 @@ export function ChangesTab({ childId }: { childId: string }) {
 }
 
 // ---------------------------------------------------------------- AAC
-const CARD_EMOJI = ["🐈", "🐕", "🧸", "🍎", "🍪", "🚗", "🏠", "👵", "👴", "🎵", "⚽", "🛝", "📺", "🌙", "🧃", "🎨"];
+const CARD_EMOJI = ["🐈", "🐕", "🧸", "🍎", "🍪", "🚗", "🏠", "👵", "👴", "🎵", "⚽", "🎠", "📺", "🌙", "🧃", "🎨"];
 
 export function AacTab({ childId }: { childId: string }) {
   const t = useT();

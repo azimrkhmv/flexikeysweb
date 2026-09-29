@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { Bell, LogOut, type LucideIcon } from "lucide-react";
 import { api, sel, useDb } from "@/lib/api";
-import { useT } from "@/lib/i18n";
+import { useLang, useT } from "@/lib/i18n";
 import { useMounted } from "@/lib/store";
 import type { Role, User } from "@/lib/types";
 import { homeFor, LangSwitch, Logo } from "./brand";
@@ -58,6 +58,11 @@ export function AppShell({ role, nav, children }: { role: Role; nav: NavItem[]; 
 
 function Shell({ me, nav, children }: { me: User; nav: NavItem[]; children: ReactNode }) {
   const t = useT();
+  const [lang] = useLang();
+  // The language picked on this device is the user's preference: keep the account in sync (PATCH /users/me).
+  useEffect(() => {
+    if (me.uiLang !== lang) api.updateMe({ uiLang: lang }).catch(() => {});
+  }, [me.uiLang, lang]);
   const path = usePathname();
   const router = useRouter();
   const active = (href: string) => (href === `/${me.role}` ? path === href : path.startsWith(href));

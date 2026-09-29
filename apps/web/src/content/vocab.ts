@@ -22,7 +22,7 @@ const LIST: VocabItem[] = [
   v("potato", "🥔", "potato", "kartoshka", "картошка"),
   v("onion", "🧅", "onion", "piyoz", "лук"),
   v("corn", "🌽", "corn", "makkajoʻxori", "кукуруза"),
-  v("pepper", "🫑", "pepper", "qalampir", "перец"),
+  v("pepper", "🌶️", "pepper", "qalampir", "перец"),
   v("eggplant", "🍆", "eggplant", "baqlajon", "баклажан"),
   // animals
   v("cat", "🐱", "cat", "mushuk", "кошка"),
@@ -100,7 +100,7 @@ const LIST: VocabItem[] = [
   v("bed", "🛏️", "bed", "karavot", "кровать"),
   v("house", "🏠", "house", "uy", "дом"),
   v("umbrella", "☂️", "umbrella", "soyabon", "зонт"),
-  v("toothbrush", "🪥", "toothbrush", "tish choʻtkasi", "зубная щётка"),
+  { ...v("toothbrush", "🦷", "toothbrush", "tish choʻtkasi", "зубная щётка"), art: "toothbrush" },
   v("book", "📖", "book", "kitob", "книга"),
   v("soap", "🧼", "soap", "sovun", "мыло"),
 ];

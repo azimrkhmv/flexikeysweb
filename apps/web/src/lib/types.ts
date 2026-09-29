@@ -284,6 +284,8 @@ export interface VocabItem {
   color?: string;
   /** SVG shape name for shapes. */
   shape?: "circle" | "square" | "triangle" | "star" | "heart" | "rectangle";
+  /** Drawn picture for things with no widely supported emoji (Emoji ≥13 shows as a blank box on older devices). */
+  art?: "toothbrush";
   /** Big glyph for numbers/letters. */
   glyph?: string;
   word: L10n;

@@ -16,6 +16,14 @@ function detect(): Lang {
   return n === "ru" || n === "en" ? n : "uz";
 }
 
+/**
+ * UI language precedence: a choice made on this device (saved to the account by the dashboard shell) >
+ * the account's saved language (applied at login, see `applyAccountLang`) > the browser language.
+ */
+export function applyAccountLang(accountLang: Lang) {
+  if (langStore.get() === null) langStore.set(accountLang);
+}
+
 export function useLang(): [Lang, (l: Lang) => void] {
   const stored = useStore(langStore);
   const mounted = useMounted();

@@ -9,7 +9,7 @@ export const AAC_CATEGORIES: { id: string; emoji: string; label: L10n }[] = [
   { id: "people", emoji: "👪", label: { en: "People", uz: "Odamlar", ru: "Люди" } },
   { id: "places", emoji: "🏠", label: { en: "Places", uz: "Joylar", ru: "Места" } },
   { id: "play", emoji: "🧸", label: { en: "Play", uz: "Oʻyin", ru: "Игра" } },
-  { id: "daily", emoji: "🪥", label: { en: "Daily", uz: "Kundalik", ru: "Каждый день" } },
+  { id: "daily", emoji: "🌞", label: { en: "Daily", uz: "Kundalik", ru: "Каждый день" } },
 ];
 
 const c = (id: string, category: string, emoji: string, en: string, uz: string, ru: string, core = false): AacCard => ({
@@ -60,7 +60,7 @@ export const AAC_CARDS: AacCard[] = [
   c("blocks", "play", "🧱", "blocks", "kubiklar", "кубики"),
 
   c("wash", "daily", "🧼", "wash hands", "qoʻl yuvish", "мыть руки"),
-  c("brush", "daily", "🪥", "brush teeth", "tish yuvish", "чистить зубы"),
+  c("brush", "daily", "🦷", "brush teeth", "tish yuvish", "чистить зубы"),
   c("dress", "daily", "👕", "get dressed", "kiyinish", "одеваться"),
   c("bath", "daily", "🛁", "bath", "choʻmilish", "купаться"),
 ];

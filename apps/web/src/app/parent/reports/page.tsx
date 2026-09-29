@@ -56,7 +56,8 @@ function WeeklyReport({ db, child, onPrint }: { db: DB; child: Child; onPrint: (
   const mastery = sel.mastery(db, child.id).filter((m) => m.attempts > 0).sort((a, b) => b.pKnown - a.pKnown);
   const changes = sel.changes(db, child.id).filter((c) => c.at >= from);
   const aac = sel.aacStats(db, child.id);
-  const ai = sel.hasConsent(db, child.id, "ai_processing");
+  // AI summary only with the child's AI consent and while the admin flag is on.
+  const ai = sel.hasConsent(db, child.id, "ai_processing") && sel.flag(db, "ai_weekly_reports");
 
   return (
     <Card as="article" className="space-y-5 print:border-0 print:shadow-none">

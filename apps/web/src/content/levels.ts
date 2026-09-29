@@ -152,7 +152,7 @@ export const LEVELS: Level[] = [
       {
         id: "nature-scene", kind: "scene",
         rounds: [
-          { scene: "🌱🪴", prompt: { en: "What does the plant need?", uz: "Nihol nimaga muhtoj?", ru: "Что нужно растению?" }, options: ["sun", "snow"], answer: "sun" },
+          { scene: "🌱🌿", prompt: { en: "What does the plant need?", uz: "Nihol nimaga muhtoj?", ru: "Что нужно растению?" }, options: ["sun", "snow"], answer: "sun" },
           { scene: "🌱🏜️", prompt: { en: "The soil is dry. What does the sprout need?", uz: "Tuproq quruq. Niholga nima kerak?", ru: "Земля сухая. Что нужно ростку?" }, options: ["water", "ball"], answer: "water" },
           { scene: "🌙✨", prompt: { en: "It is night. What is in the sky?", uz: "Tun keldi. Osmonda nima bor?", ru: "Наступила ночь. Что на небе?" }, options: ["moon", "sun", "flower"], answer: "moon" },
         ],
@@ -204,10 +204,10 @@ export const LEVELS: Level[] = [
         id: "stories-morning", kind: "story",
         pages: [
           { scene: "🌅🛏️", text: { en: "The sun is up. Good morning!", uz: "Quyosh chiqdi. Xayrli tong!", ru: "Солнце встало. Доброе утро!" } },
-          { scene: "🪥🦷", text: { en: "We brush our teeth.", uz: "Tishlarimizni yuvamiz.", ru: "Мы чистим зубы." } },
+          { scene: "🦷✨", text: { en: "We brush our teeth.", uz: "Tishlarimizni yuvamiz.", ru: "Мы чистим зубы." } },
           { scene: "🍞🥛", text: { en: "We eat bread and drink milk.", uz: "Non yeymiz va sut ichamiz.", ru: "Мы едим хлеб и пьём молоко." } },
         ],
-        question: { scene: "🪥✨", prompt: { en: "What do we brush teeth with?", uz: "Tishni nima bilan yuvamiz?", ru: "Чем мы чистим зубы?" }, options: ["toothbrush", "book", "soap"], answer: "toothbrush" },
+        question: { scene: "🦷🌟", prompt: { en: "What do we brush teeth with?", uz: "Tishni nima bilan yuvamiz?", ru: "Чем мы чистим зубы?" }, options: ["toothbrush", "book", "soap"], answer: "toothbrush" },
       },
     ],
   },

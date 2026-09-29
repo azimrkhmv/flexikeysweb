@@ -3,12 +3,11 @@ Content
 Curriculum, audio and feature flags.
 
 Content version
-v12
-Published
+Built-in demo content — versioning starts with the content pipeline.
 
 New versions are published and rolled back with the content pipeline; this page is read-only.
 
-Audio manifest completeness
+Translation completeness
 Uzbek
 100% · 0 missing
 Russian
@@ -16,7 +15,7 @@ Russian
 English
 100% · 0 missing
 
-169 spoken items per language: words, level names and AAC cards.
+169 spoken items per language: words, level names and AAC cards. This checks the text; audio files are checked once the audio pipeline is connected.
 
 Levels
 #	LEVEL	ACTIVITIES

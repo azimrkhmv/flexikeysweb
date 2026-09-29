@@ -46,8 +46,8 @@ export default function AdminOverview() {
             {SERVICES.map((s) => (
               <li key={s} className="flex items-center justify-between py-2.5">
                 <span className="font-semibold text-ink">{t(`admin.health.${s}`)}</span>
-                <Chip tone="leaf">
-                  <span className="size-2 rounded-full bg-[#2f6a37]" aria-hidden /> {t("admin.health.ok")}
+                <Chip tone="gray">
+                  <span className="size-2 rounded-full bg-muted" aria-hidden /> {t("admin.health.ok")}
                 </Chip>
               </li>
             ))}

@@ -87,7 +87,9 @@ export const sel = {
   },
   assignmentsFor(db: DB, childId: string) {
     const classIds = db.enrollments.filter((e) => e.childId === childId).map((e) => e.classId);
-    return db.assignments.filter((a) => a.childId === childId || (a.classId && classIds.includes(a.classId)));
+    // A therapist's recommendations count only while their parent-approved link is active (FR-PAR-2).
+    const linked = (userId: string) => db.careLinks.some((l) => l.childId === childId && l.professionalId === userId && l.status === "active");
+    return db.assignments.filter((a) => (a.childId === childId && (a.kind !== "therapist" || linked(a.byUserId))) || (a.classId && classIds.includes(a.classId)));
   },
   classesOf: (db: DB, teacherId: string) => db.classes.filter((c) => c.teacherId === teacherId),
   classChildren: (db: DB, classId: string) =>

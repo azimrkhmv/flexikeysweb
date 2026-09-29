@@ -59,7 +59,7 @@ export function Shop({ child }: { child: Child }) {
     <div className="mx-auto grid w-full max-w-5xl gap-6 lg:grid-cols-[320px_1fr]">
       <section className="flex flex-col items-center gap-3 rounded-fk-lg border-4 border-white p-5 shadow-soft lg:sticky lg:top-4 lg:h-fit" style={{ background: SHOP_BY_ID[look.bg ?? ""]?.value ?? "var(--fk-surface)" }}>
         <div className="flex gap-3 text-lg font-extrabold text-ink">
-          <span className="rounded-full bg-surface/90 px-3 py-1">🪙 {t("play.shop.coins", { n: wallet.coins })}</span>
+          <span className="rounded-full bg-surface/90 px-3 py-1">🟡 {t("play.shop.coins", { n: wallet.coins })}</span>
           <span className="rounded-full bg-surface/90 px-3 py-1">⭐ {t("play.shop.stars", { n: wallet.stars })}</span>
         </div>
         <Mascot mood={item ? "happy" : "calm"} size={200} hat={SHOP_BY_ID[look.hat ?? ""]?.emoji} tint={SHOP_BY_ID[look.color ?? ""]?.value} />
@@ -94,7 +94,7 @@ export function Shop({ child }: { child: Child }) {
                   >
                     <span className="text-4xl">{s.emoji}</span>
                     <span className="text-sm">{s.name[child.uiLang]}</span>
-                    <span className="text-xs text-ink-2">{on ? "✅" : has ? "💛" : `🪙 ${s.price}`}</span>
+                    <span className="text-xs text-ink-2">{on ? "✅" : has ? "💛" : `🟡 ${s.price}`}</span>
                   </Target>
                 );
               })}

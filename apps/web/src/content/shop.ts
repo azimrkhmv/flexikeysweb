@@ -18,7 +18,7 @@ export const SHOP: ShopItem[] = [
   { id: "hat_party", slot: "hat", emoji: "🥳", price: 50, name: { en: "Party", uz: "Bayram", ru: "Праздник" } },
   { id: "hat_crown", slot: "hat", emoji: "👑", price: 60, name: { en: "Crown", uz: "Toj", ru: "Корона" } },
   { id: "hat_star", slot: "hat", emoji: "✨", price: 80, name: { en: "Sparkles", uz: "Uchqunlar", ru: "Искорки" } },
-  { id: "color_sky", slot: "color", emoji: "🩵", value: "#dcebfb", price: 30, name: { en: "Sky", uz: "Osmon", ru: "Небо" } },
+  { id: "color_sky", slot: "color", emoji: "💙", value: "#dcebfb", price: 30, name: { en: "Sky", uz: "Osmon", ru: "Небо" } },
   { id: "color_mint", slot: "color", emoji: "💚", value: "#dcf3e6", price: 30, name: { en: "Mint", uz: "Yalpiz", ru: "Мята" } },
   { id: "color_peach", slot: "color", emoji: "🧡", value: "#fde5da", price: 30, name: { en: "Peach", uz: "Shaftoli", ru: "Персик" } },
   { id: "color_lavender", slot: "color", emoji: "💜", value: "#ebe6fb", price: 35, name: { en: "Lavender", uz: "Lavanda", ru: "Лаванда" } },

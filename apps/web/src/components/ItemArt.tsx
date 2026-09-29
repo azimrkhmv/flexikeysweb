@@ -13,6 +13,7 @@ export function ItemArt({ id, size = 72 }: { id: string; size?: number }) {
       />
     );
   if (item.shape) return <Shape shape={item.shape} size={size} />;
+  if (item.art === "toothbrush") return <Toothbrush size={size} />;
   if (item.glyph)
     return (
       <span aria-hidden className="block text-center font-extrabold leading-none text-ink" style={{ fontSize: size * 0.9, width: size }}>
@@ -42,6 +43,20 @@ function Shape({ shape, size }: { shape: string; size: number }) {
       ) : (
         <path d={SHAPE_PATHS[shape]} fill="#b3a8e8" stroke="#7d6fcf" strokeWidth="4" strokeLinejoin="round" />
       )}
+    </svg>
+  );
+}
+
+function Toothbrush({ size }: { size: number }) {
+  return (
+    <svg viewBox="0 0 100 100" width={size} height={size} aria-hidden>
+      <g transform="rotate(-25 50 50)">
+        <rect x="6" y="54" width="64" height="12" rx="6" fill="#a9c8ec" stroke="#5b86c4" strokeWidth="3" />
+        <rect x="64" y="50" width="28" height="18" rx="6" fill="#dfe8f8" stroke="#5b86c4" strokeWidth="3" />
+        {[68, 75, 82, 89].map((x) => (
+          <rect key={x} x={x - 2} y="32" width="5" height="18" rx="2" fill="#ffffff" stroke="#7fbf85" strokeWidth="2.5" />
+        ))}
+      </g>
     </svg>
   );
 }
