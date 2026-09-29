@@ -1,7 +1,8 @@
 "use client";
 
 import { Card, Chip, Empty, PageHeader, type Tone } from "@/components/ui";
-import { fmtDate, SectionTitle, Table, td, th, useMe } from "@/features/pro/shared";
+import { SectionTitle, Table, td, th, useMe } from "@/features/pro/shared";
+import { fmtDate } from "@/lib/format";
 import { sel } from "@/lib/api";
 import { useLang, useT } from "@/lib/i18n";
 
@@ -45,7 +46,7 @@ export default function AdminBilling() {
                       <td className={td}>
                         <Chip tone={SUB_TONE[live.status]}>{t(`admin.subStatus.${live.status}`)}</Chip>
                       </td>
-                      <td className={td}>{fmtDate(s.until, lang)}</td>
+                      <td className={td}>{fmtDate(s.until, lang, "dayMonth")}</td>
                     </tr>
                   );
                 })}
@@ -73,7 +74,7 @@ export default function AdminBilling() {
               <tbody>
                 {orders.map((o) => (
                   <tr key={o.id}>
-                    <td className={td}>{fmtDate(o.createdAt, lang, true)}</td>
+                    <td className={td}>{fmtDate(o.createdAt, lang, "dateTime")}</td>
                     <td className={td}>{email(o.userId)}</td>
                     <td className={td}>{t(`admin.plan.${o.plan}`)}</td>
                     <td className={`${td} whitespace-nowrap`}>{money(o.amountTiyin)}</td>

@@ -105,7 +105,8 @@ export function Toggle({ checked, onChange, label }: { checked: boolean; onChang
   );
 }
 
-const TONES = {
+/** Soft background + readable text for each brand tone (chips, icons, feature tiles). */
+export const TONES = {
   sky: "bg-sky-soft text-[#2f5d93]",
   leaf: "bg-leaf-soft text-[#2f6a37]",
   sun: "bg-sun-soft text-[#7a5a0c]",

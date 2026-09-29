@@ -7,10 +7,9 @@ import { Check, Heart } from "lucide-react";
 import { Chip, LinkButton } from "@/components/ui";
 import { PRICES } from "@/lib/api/schema";
 import { useT } from "@/lib/i18n";
+import { fmtSum } from "@/lib/format";
 import { useSessionRole } from "@/lib/session";
 
-/** Tiyin → so'm with thin grouping ("49 000"). Deterministic on server and client. */
-const som = (tiyin: number) => String(Math.round(tiyin / 100)).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 
 export function PricingPage() {
   const t = useT();
@@ -74,7 +73,7 @@ export function PricingPage() {
           <Chip tone="lavender" className="absolute -top-3 left-6">{t("mkt.pricing.popular")}</Chip>
           <h2 id="plan-family" className="text-xl font-extrabold text-ink">{t("mkt.pricing.family.name")}</h2>
           <p className="mt-1 text-sm text-muted">{t("mkt.pricing.family.d")}</p>
-          {price(som(yearly ? PRICES.yearly : PRICES.monthly), t(yearly ? "mkt.pricing.perYear" : "mkt.pricing.perMonth"))}
+          {price(fmtSum(yearly ? PRICES.yearly : PRICES.monthly), t(yearly ? "mkt.pricing.perYear" : "mkt.pricing.perMonth"))}
           {features("mkt.pricing.family", 5)}
           <LinkButton href={familyHref} className="mt-8">{t("mkt.pricing.family.cta")}</LinkButton>
         </section>

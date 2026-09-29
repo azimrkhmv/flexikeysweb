@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { Lock } from "lucide-react";
 import QRCode from "qrcode";
 import { LEVEL_BY_ID, LEVELS } from "@/content/levels";
-import { Bars, Card, Empty, Meter } from "@/components/ui";
+import { Bars, Card, Chip, Empty, Meter } from "@/components/ui";
 import { sel, useDb, type DB } from "@/lib/api";
+import { fmtDate } from "@/lib/format";
 import { useLang, useT } from "@/lib/i18n";
 
 // Shared read-only building blocks for teacher / therapist / admin views.
@@ -28,12 +30,6 @@ export function avgMastery(db: DB, childId: string) {
 }
 
 export const pct = (x: number) => `${Math.round(x * 100)}%`;
-
-export function fmtDate(iso: string | undefined, lang: string, time = false) {
-  if (!iso) return "—";
-  const d = new Date(iso);
-  return time ? d.toLocaleString(lang, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : d.toLocaleDateString(lang, { day: "numeric", month: "short" });
-}
 
 /** Pastel mastery scale — no red anywhere. */
 export const HEAT: { min: number; bg: string; key: string }[] = [
@@ -129,7 +125,7 @@ export function AdaptationLog({ childId, limit = 8 }: { childId: string; limit?:
               <div className="flex flex-wrap items-baseline justify-between gap-2">
                 <span className="text-sm font-bold text-ink">{t(`adapt.param.${c.param}`)}</span>
                 <span className="text-xs text-muted">
-                  {c.from} → {c.to} · {fmtDate(c.at, lang)}
+                  {c.from} → {c.to} · {fmtDate(c.at, lang, "dayMonth")}
                 </span>
               </div>
               <p className="text-sm text-ink-2">{t(c.reasonKey)}</p>
@@ -155,7 +151,7 @@ export function SessionsList({ childId, limit = 8 }: { childId: string; limit?: 
         <ul className="divide-y divide-line text-sm">
           {list.map((s) => (
             <li key={s.id} className="flex justify-between gap-2 py-2.5">
-              <span className="text-ink">{fmtDate(s.startedAt, lang, true)}</span>
+              <span className="text-ink">{fmtDate(s.startedAt, lang, "dateTime")}</span>
               <span className="text-muted">
                 {s.minutes ? t("common.minutes", { n: s.minutes }) : "…"} · {t("pro.activitiesN", { n: s.activities })}
               </span>
@@ -175,6 +171,20 @@ export function LevelLabel({ levelId }: { levelId: string }) {
       {l.emoji} {l.n}. {l.title[lang]}
     </span>
   ) : null;
+}
+
+/** Why an assigned level isn't open for this child yet — assignments never unlock levels (FR-CUR-4). */
+export function LockNote({ childId, levelId }: { childId: string; levelId: string }) {
+  const t = useT();
+  const [lang] = useLang();
+  const db = useDb();
+  const r = sel.lockReason(db, childId, levelId);
+  if (!r) return null;
+  return (
+    <Chip tone="gray" className="mt-1">
+      <Lock className="size-3.5" aria-hidden /> {r.kind === "plan" ? t("lock.plan") : t("lock.mastery", { level: LEVEL_BY_ID[r.after].title[lang] })}
+    </Chip>
+  );
 }
 
 export function LevelOptions() {

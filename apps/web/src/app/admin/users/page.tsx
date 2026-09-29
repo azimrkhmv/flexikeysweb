@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { Search } from "lucide-react";
 import { Button, Card, Chip, Empty, Input, PageHeader, Select, useAction, type Tone } from "@/components/ui";
-import { fmtDate, Table, td, th, useMe } from "@/features/pro/shared";
+import { Table, td, th, useMe } from "@/features/pro/shared";
+import { fmtDate } from "@/lib/format";
 import { api, sel } from "@/lib/api";
 import { useLang, useT } from "@/lib/i18n";
 import type { Role, UserStatus } from "@/lib/types";
@@ -69,7 +70,7 @@ export default function AdminUsers() {
                   <td className={td}>
                     <Chip tone={STATUS_TONE[u.status]}>{t(`status.${u.status}`)}</Chip>
                   </td>
-                  <td className={td}>{fmtDate(u.createdAt, lang)}</td>
+                  <td className={td}>{fmtDate(u.createdAt, lang, "dayMonth")}</td>
                   <td className={td}>
                     {u.id !== me.id && (
                       <div className="flex flex-wrap gap-2">

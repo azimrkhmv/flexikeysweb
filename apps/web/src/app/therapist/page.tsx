@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useState } from "react";
 import { ChevronRight, Mail } from "lucide-react";
 import { Avatar, Button, Card, Chip, Empty, Field, Input, Meter, PageHeader, useAction } from "@/components/ui";
-import { avgMastery, fmtDate, pct, SectionTitle, useMe, useNow } from "@/features/pro/shared";
+import { avgMastery, pct, SectionTitle, useMe, useNow } from "@/features/pro/shared";
+import { fmtDate } from "@/lib/format";
 import { api, sel } from "@/lib/api";
 import { useLang, useT } from "@/lib/i18n";
 
@@ -52,7 +53,7 @@ export default function TherapistHome() {
                       <Meter value={avg} label={`${c.name}: ${t("teacher.roster.mastery")}`} />
                       <div className="mt-3 flex flex-wrap gap-2">
                         <Chip tone="sky">
-                          {t("teacher.roster.last")}: {fmtDate(sel.sessions(db, c.id)[0]?.startedAt, lang)}
+                          {t("teacher.roster.last")}: {fmtDate(sel.sessions(db, c.id)[0]?.startedAt, lang, "dayMonth")}
                         </Chip>
                         <Chip tone="leaf">{t("therapist.home.openGoals", { n: goals })}</Chip>
                       </div>
@@ -75,7 +76,7 @@ export default function TherapistHome() {
                   <Mail className="size-5 shrink-0 text-teal" aria-hidden />
                   <div className="min-w-0 flex-1 text-sm">
                     <div className="font-bold text-ink">{sel.child(db, l.childId)?.name}</div>
-                    <div className="text-muted">{fmtDate(l.createdAt, lang)}</div>
+                    <div className="text-muted">{fmtDate(l.createdAt, lang, "dayMonth")}</div>
                   </div>
                   <Button size="sm" pending={accept.pending} onClick={() => accept.run(l.code)}>
                     {t("therapist.invites.accept")}

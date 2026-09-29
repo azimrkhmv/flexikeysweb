@@ -28,7 +28,7 @@ export const KIND_EMOJI: Record<ActivityKind, string> = {
 };
 
 /** World map: 16 levels on a winding path. Locked levels are sleeping clouds, never padlocks. */
-export function WorldMap({ child, onOpen }: { child: Child; onOpen: (levelId: string, force?: boolean) => void }) {
+export function WorldMap({ child, onOpen }: { child: Child; onOpen: (levelId: string) => void }) {
   const db = useDb();
   const t = useT(child.uiLang);
   const { profile } = usePlay();
@@ -61,17 +61,23 @@ export function WorldMap({ child, onOpen }: { child: Child; onOpen: (levelId: st
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
-            {taskLevels.map((id) => (
-              <Target
-                key={id}
-                label={LEVEL_BY_ID[id].title[child.uiLang]}
-                onSelect={() => onOpen(id, true)}
-                className="flex flex-col items-center justify-center gap-1 rounded-3xl bg-sun-soft px-4 font-bold text-ink shadow-soft"
-              >
-                <span className="text-3xl">{LEVEL_BY_ID[id].emoji}</span>
-                <span className="text-sm">{LEVEL_BY_ID[id].title[child.uiLang]}</span>
-              </Target>
-            ))}
+            {taskLevels.map((id) => {
+              // A task points the way but never opens a sleeping level (FR-CUR-4): tapping it gets the same
+              // gentle "still sleeping" answer as the map.
+              const state = states[LEVEL_BY_ID[id].n - 1];
+              const asleep = state === "sleeping" || state === "plan";
+              return (
+                <Target
+                  key={id}
+                  label={LEVEL_BY_ID[id].title[child.uiLang]}
+                  onSelect={() => onOpen(id)}
+                  className={`flex flex-col items-center justify-center gap-1 rounded-3xl px-4 font-bold text-ink shadow-soft ${asleep ? "bg-[#eef2f8]" : "bg-sun-soft"}`}
+                >
+                  {asleep ? <Mascot mood="sleepy" size={44} float={false} label="" /> : <span className="text-3xl">{LEVEL_BY_ID[id].emoji}</span>}
+                  <span className="text-sm">{LEVEL_BY_ID[id].title[child.uiLang]}</span>
+                </Target>
+              );
+            })}
           </div>
         </section>
       )}

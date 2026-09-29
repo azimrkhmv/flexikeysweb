@@ -2,7 +2,7 @@
 
 // Pure read functions over the DB. `sel.access` is the single authorization rule (PRD §15.4).
 
-import { FREE_LEVELS, LEVELS } from "@/content/levels";
+import { FREE_LEVELS, LEVEL_BY_ID, LEVELS } from "@/content/levels";
 import { DEFAULT_PROFILE } from "../adaptive";
 import { DAY, iso, type DB } from "./schema";
 import type { AdaptiveProfile, Child, ClassRoom, ConsentScope, InputProfile, LevelProgress, Subscription, Wallet } from "../types";
@@ -65,6 +65,18 @@ export const sel = {
     if (index === 0) return "open";
     const prev = LEVELS[index - 1];
     return sel.levelProgress(db, childId, prev.id).completed.length >= prev.activities.length ? "open" : "sleeping";
+  },
+  /**
+   * Why a level can't be opened yet — null when it is playable. Teacher/therapist assignments never change
+   * this: levels open only through mastery, and paid levels only with access (FR-CUR-4, product rule 5).
+   */
+  lockReason(db: DB, childId: string, levelId: string): null | { kind: "mastery"; after: string } | { kind: "plan" } {
+    const level = LEVEL_BY_ID[levelId];
+    if (!level) return null;
+    const state = sel.levelState(db, childId, level.n - 1);
+    if (state === "plan") return { kind: "plan" };
+    if (state === "sleeping") return { kind: "mastery", after: LEVELS[level.n - 2].id };
+    return null;
   },
   dailyMinutes(db: DB, childId: string, days = 14) {
     const out: { date: string; minutes: number }[] = [];

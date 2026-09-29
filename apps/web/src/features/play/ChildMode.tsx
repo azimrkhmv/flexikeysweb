@@ -232,9 +232,9 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
     }, 1600);
   };
 
-  const openLevel = (id: string, force = false) => {
-    const state = sel.levelState(db, child.id, LEVEL_BY_ID[id].n - 1);
-    if (!force && (state === "sleeping" || state === "plan")) {
+  // Every way into a level (map, tasks) goes through the same gate — assignments never skip it (FR-CUR-4).
+  const openLevel = (id: string) => {
+    if (sel.lockReason(db, child.id, id)) {
       setMoodFor("sleepy");
       speak(t("play.map.sleeping"), lang);
       return;
@@ -289,7 +289,14 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
   const showBreak = overlay === "break" || (breakDue && !overlay && !["activity", "start", "bye"].includes(view.v));
   // Switch scanning covers the whole shell (nav included), or only the open overlay.
   useScanning(child.access === "scan" && overlay !== "gate", overlay === "menu" || showBreak ? overlayRef : shellRef);
-  useFocusTrap(overlayRef, overlay === "menu" ? "menu" : showBreak ? "break" : null);
+  // Escape = "Continue" on the pause menu and the break screen (never exits child mode).
+  useFocusTrap(overlayRef, overlay === "menu" ? "menu" : showBreak ? "break" : null, () => {
+    if (showBreak) {
+      breakStart.current = Date.now();
+      setBreakDue(false);
+    }
+    setOverlay(null);
+  });
   useEffect(() => {
     if (showBreak) speak(`${t("play.break.title")}. ${t("play.break.body")}`, lang);
   }, [showBreak, t, lang]);

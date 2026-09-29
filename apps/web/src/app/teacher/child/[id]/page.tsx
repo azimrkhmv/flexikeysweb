@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { Avatar, Card, Chip, Empty, PageHeader } from "@/components/ui";
-import { AdaptationLog, fmtDate, LevelLabel, MasteryList, MinutesChart, NotFound, SectionTitle, SessionsList, useMe } from "@/features/pro/shared";
+import { AdaptationLog, LevelLabel, LockNote, MasteryList, MinutesChart, NotFound, SectionTitle, SessionsList, useMe } from "@/features/pro/shared";
+import { fmtDate } from "@/lib/format";
 import { sel } from "@/lib/api";
 import { useLang, useT } from "@/lib/i18n";
 
@@ -45,8 +46,9 @@ export default function TeacherChild() {
                     </div>
                     <div className="text-muted">
                       {t(a.kind === "therapist" ? "pro.fromTherapist" : "pro.fromTeacher")}
-                      {a.due ? ` · ${t("teacher.tasks.dueOn", { date: fmtDate(a.due, lang) })}` : ""}
+                      {a.due ? ` · ${t("teacher.tasks.dueOn", { date: fmtDate(a.due, lang, "dayMonth") })}` : ""}
                     </div>
+                    <LockNote childId={id} levelId={a.levelId} />
                   </li>
                 ))}
               </ul>

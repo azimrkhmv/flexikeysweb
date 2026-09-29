@@ -3,13 +3,12 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useRef, useState } from "react";
-import { ArrowLeft, Check, Copy, ExternalLink, Presentation, Printer, Sparkles, Trash, UserPlus, X } from "lucide-react";
+import { ArrowLeft, Check, Copy, ExternalLink, Lock, Presentation, Printer, Sparkles, Trash, UserPlus, X } from "lucide-react";
 import { Mascot } from "@/components/Mascot";
 import { Avatar, Bars, Button, Card, Checkbox, Chip, Empty, Field, Input, Meter, Modal, PageHeader, Select, useAction } from "@/components/ui";
 import { LEVELS } from "@/content/levels";
-import {
-  avgMastery, fmtDate, HeatLegend, heatBg, LevelLabel, LevelOptions, NotFound, pct, QrCode, SectionTitle, Table, td, th, useMe,
-} from "@/features/pro/shared";
+import { avgMastery, HeatLegend, heatBg, LevelLabel, LevelOptions, NotFound, pct, QrCode, SectionTitle, Table, td, th, useMe,  } from "@/features/pro/shared";
+import { fmtDate } from "@/lib/format";
 import { api, sel } from "@/lib/api";
 import { useLang, useT } from "@/lib/i18n";
 import { useFocusTrap } from "@/lib/useFocusTrap";
@@ -162,7 +161,7 @@ function Roster({ k, kids }: { k: ClassRoom; kids: Child[] }) {
                     <Meter value={avg} label={`${c.name}: ${t("teacher.roster.mastery")}`} />
                   </td>
                   <td className={td}>{t("common.minutes", { n: week })}</td>
-                  <td className={td}>{fmtDate(sel.sessions(db, c.id)[0]?.startedAt, lang)}</td>
+                  <td className={td}>{fmtDate(sel.sessions(db, c.id)[0]?.startedAt, lang, "dayMonth")}</td>
                   <td className={`${td} text-right`}>
                     <Button size="sm" variant="ghost" onClick={() => setRemoving(c)} aria-label={t("teacher.roster.removeX", { name: c.name })}>
                       <X className="size-4" aria-hidden />
@@ -342,6 +341,7 @@ function Assignments({ k }: { k: ClassRoom }) {
   const [lang] = useLang();
   const { db, me } = useMe();
   const list = sel.classAssignments(db, k.id);
+  const kids = sel.classChildren(db, k.id);
   const [levelId, setLevelId] = useState(LEVELS[0].id);
   const [note, setNote] = useState("");
   const [due, setDue] = useState("");
@@ -351,6 +351,7 @@ function Assignments({ k }: { k: ClassRoom }) {
   return (
     <Card>
       <SectionTitle>{t("teacher.tasks.title")}</SectionTitle>
+      <p className="mb-3 text-sm text-muted">{t("pro.gateNote")}</p>
       <form
         className="mb-5 grid gap-3 sm:grid-cols-[1fr_1fr_auto_auto] sm:items-end"
         onSubmit={async (e) => {
@@ -388,8 +389,9 @@ function Assignments({ k }: { k: ClassRoom }) {
                   <LevelLabel levelId={a.levelId} />
                 </div>
                 <div className="text-sm text-muted">
-                  {[a.note, a.due && t("teacher.tasks.dueOn", { date: fmtDate(a.due, lang) })].filter(Boolean).join(" · ")}
+                  {[a.note, a.due && t("teacher.tasks.dueOn", { date: fmtDate(a.due, lang, "dayMonth") })].filter(Boolean).join(" · ")}
                 </div>
+                <LockedFor levelId={a.levelId} kids={kids} />
               </div>
               {a.byUserId === me.id && (
                 <Button size="sm" variant="ghost" onClick={() => del.run(a.id)} aria-label={t("common.delete")}>
@@ -401,6 +403,19 @@ function Assignments({ k }: { k: ClassRoom }) {
         </ul>
       )}
     </Card>
+  );
+}
+
+/** How many children in the class can't open an assigned level yet (it is never unlocked for them). */
+function LockedFor({ levelId, kids }: { levelId: string; kids: Child[] }) {
+  const t = useT();
+  const { db } = useMe();
+  const n = kids.filter((c) => sel.lockReason(db, c.id, levelId)).length;
+  if (!n) return null;
+  return (
+    <Chip tone="gray" className="mt-1">
+      <Lock className="size-3.5" aria-hidden /> {t("teacher.tasks.lockedFor", { n, total: kids.length })}
+    </Chip>
   );
 }
 
@@ -459,7 +474,7 @@ function Poster({ k, url }: { k: ClassRoom; url: string }) {
 function Classroom({ k, kids, url, onClose }: { k: ClassRoom; kids: Child[]; url: string; onClose: () => void }) {
   const t = useT();
   const box = useRef<HTMLDivElement>(null);
-  useFocusTrap(box, "classroom");
+  useFocusTrap(box, "classroom", onClose);
   return (
     <div ref={box} role="dialog" aria-modal="true" aria-label={t("teacher.classroom.open")} className="fixed inset-0 z-50 overflow-y-auto bg-white p-6 text-[#15294d] sm:p-10">
       <button

@@ -6,9 +6,9 @@ import { Baby, Bot, CreditCard, RotateCcw, Timer, Users } from "lucide-react";
 import { Bars, Button, Card, Chip, Modal, PageHeader, Stat } from "@/components/ui";
 import { SectionTitle, useMe, useNow } from "@/features/pro/shared";
 import { api, sel } from "@/lib/api";
+import { DAY } from "@/lib/api/schema";
 import { useT } from "@/lib/i18n";
 
-const DAY = 86_400_000;
 const SERVICES = ["api", "db", "redis", "worker", "storage", "email"] as const;
 
 export default function AdminOverview() {

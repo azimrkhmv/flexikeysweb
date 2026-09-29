@@ -9,10 +9,6 @@ export const BIRTH_YEARS = Array.from({ length: 11 }, (_, i) => 2024 - i);
 
 export const age = (birthYear: number) => new Date().getFullYear() - birthYear;
 export const sinceIso = (days: number) => new Date(Date.now() - days * 86_400_000).toISOString();
-export const fmtDate = (iso: string, lang: Lang) => new Date(iso).toLocaleDateString(lang, { day: "numeric", month: "short", year: "numeric" });
-
-/** 49_000_00 tiyin → "49 000". */
-export const fmtSum = (tiyin: number) => Math.round(tiyin / 100).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 
 export function aacLabel(custom: readonly AacCustomCard[], cardId: string, lang: Lang) {
   return aacCard(cardId, lang, custom)?.label ?? cardId;

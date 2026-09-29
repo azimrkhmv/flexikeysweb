@@ -3,12 +3,13 @@
 // Client-side registration of the marketing strings (a server-side import never reaches the browser).
 import "@/messages/public";
 import Link from "next/link";
-import type { MouseEvent } from "react";
+import { useRef, useState, type MouseEvent } from "react";
 import { Menu } from "lucide-react";
 import { homeFor, LangSwitch, Logo } from "@/components/brand";
 import { buttonClass } from "@/components/ui";
 import { useRouteLang, useT } from "@/lib/i18n";
 import { useSessionRole } from "@/lib/session";
+import { useDismiss } from "@/lib/useDismiss";
 
 const LINKS = [
   { href: "/pricing", key: "nav.pricing" },
@@ -29,6 +30,10 @@ export function Header() {
   const t = useT();
   const lp = useLocalePath();
   const role = useSessionRole();
+  const menu = useRef<HTMLDetailsElement>(null);
+  const summary = useRef<HTMLElement>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  useDismiss(menu, summary, menuOpen, () => menu.current?.removeAttribute("open"));
   const account = role ? (
     <Link href={homeFor(role)} className={buttonClass("primary", "sm")}>
       {t("nav.dashboard")}
@@ -67,8 +72,8 @@ export function Header() {
         </div>
         <div className="ml-auto flex items-center gap-2 lg:hidden">
           <LangSwitch compact />
-          <details className="relative">
-            <summary className="grid size-10 cursor-pointer list-none place-items-center rounded-full border border-line bg-surface text-ink [&::-webkit-details-marker]:hidden" aria-label={t("nav.menu")}>
+          <details ref={menu} onToggle={(e) => setMenuOpen(e.currentTarget.open)} className="relative">
+            <summary ref={summary} className="grid size-10 cursor-pointer list-none place-items-center rounded-full border border-line bg-surface text-ink [&::-webkit-details-marker]:hidden" aria-label={t("nav.menu")}>
               <Menu className="size-5" aria-hidden />
             </summary>
             <div onClick={closeMenu} className="absolute right-0 top-12 flex w-64 flex-col gap-1 rounded-fk border border-line bg-surface p-3 shadow-lift">

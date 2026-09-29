@@ -150,6 +150,9 @@ Sevara
 Bekzod
 65%
 Assignments
+
+Assignments point the way: a level still opens only when the child has finished the one before it (and has access to it).
+
 Level
 1. Letters
 2. Numbers
@@ -172,6 +175,7 @@ Due date
 Assign
 🐾 6. Animals
 Hayvonlar haftasi · due Oct 2
+Not open yet for 4 of 5 children
 Class code
 
 Children open the class login page, enter this code and tap their picture — no email or password needed.

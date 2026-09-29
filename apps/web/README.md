@@ -72,6 +72,29 @@ src/messages          i18n catalogs per area (en/uz/ru). Routes register only wh
 - The server grants coins and stars. The client never sends amounts. Coins cannot be bought. A subscription opens more levels but never changes rewards.
 - Parents see every adaptation change as a plain-language sentence. They cannot change the adaptation settings.
 - Levels unlock by mastery. Locked levels appear as "sleeping clouds", not padlocks.
+- Teacher and therapist assignments point the way but never unlock a level (FR-CUR-4). `sel.lockReason` is the
+  single gate: the child's map, the API (`completeActivity` rejects locked levels) and the parent, teacher and
+  therapist views all use it. Adults see why an assigned level is still closed ("Opens after … is finished",
+  "Needs the Family plan"); the child sees a sleeping cloud and hears a gentle line.
+
+## Security headers
+
+Defined in `security-headers.ts` and applied to every response by `next.config.ts`:
+
+| Header | Value / purpose |
+|---|---|
+| `Content-Security-Policy` | `default-src 'self'`; scripts, styles, fonts, images, media and `connect-src` only from this origin — no third-party scripts, analytics or ads. `object-src 'none'` (no plugins), `base-uri 'self'`, `form-action 'self'`, `frame-ancestors 'none'` (no framing). |
+| `X-Frame-Options: DENY` | Framing protection for browsers that ignore `frame-ancestors`. |
+| `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin` | Standard hardening. |
+| `Permissions-Policy` | Camera, microphone, geolocation and payment off everywhere; microphone allowed only under `/parent` (AAC card recording). |
+
+**Decision (2026-09-29):** the policy is static and allows `'unsafe-inline'` scripts (needed by Next's inline bootstrap).
+Per-request nonces were rejected because in Next 16 they force dynamic rendering of every page, and the public
+`/uz /ru /en` pages must stay statically generated. Experimental hash-based SRI is not used yet. `'unsafe-eval'` is
+added only in development. HSTS and TLS belong to the reverse proxy (PRD SEC-2).
+
+Checked by `security-headers.test.ts` (policy contents) and `e2e/security.e2e.ts` (headers on static, app and child
+pages; framing blocked; an injected third-party script and an outside `fetch` are refused).
 
 ## Deploy
 

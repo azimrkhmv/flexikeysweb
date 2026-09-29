@@ -70,6 +70,8 @@ export const playApi = {
     const c = requireChildToken();
     const level = LEVEL_BY_ID[levelId];
     if (!level || !level.activities.some((a) => a.id === activityId)) throw new ApiError("not_found");
+    // Server-side gate: a locked level can't be played, whatever the client (or an assignment) says (FR-CUR-4).
+    if (sel.lockReason(read(), c.childId, levelId)) throw new ApiError("level_locked");
     let result = { coins: 0, stars: 0, levelDone: false, first: false };
     write((db) => {
       const s = db.sessions.find((x) => x.id === sessionId && x.childId === c.childId);

@@ -7,7 +7,8 @@ import { ArrowLeft, Trash } from "lucide-react";
 import { aacCard } from "@/content/aac";
 import { LEVELS } from "@/content/levels";
 import { Avatar, Button, Card, Chip, Empty, Field, Input, PageHeader, Select, Textarea, Toggle, useAction } from "@/components/ui";
-import { AdaptationLog, fmtDate, LevelLabel, LevelOptions, MasteryList, MinutesChart, NotFound, SectionTitle, SessionsList, useMe, useNow } from "@/features/pro/shared";
+import { AdaptationLog, LevelLabel, LevelOptions, LockNote, MasteryList, MinutesChart, NotFound, SectionTitle, SessionsList, useMe, useNow } from "@/features/pro/shared";
+import { fmtDate } from "@/lib/format";
 import { api, sel } from "@/lib/api";
 import { useLang, useT } from "@/lib/i18n";
 
@@ -97,7 +98,7 @@ function Notes({ childId }: { childId: string }) {
             <li key={n.id} className="rounded-2xl bg-surface-2 p-3">
               <p className="whitespace-pre-line text-sm text-ink">{n.text}</p>
               <div className="mt-2 flex items-center gap-2 text-xs text-muted">
-                <span>{fmtDate(n.createdAt, lang)}</span>
+                <span>{fmtDate(n.createdAt, lang, "dayMonth")}</span>
                 <Chip tone={n.visibleToParent ? "teal" : "gray"}>{t(n.visibleToParent ? "therapist.notes.shared" : "therapist.notes.private")}</Chip>
               </div>
             </li>
@@ -162,7 +163,9 @@ function Recommend({ childId }: { childId: string }) {
   return (
     <Card>
       <SectionTitle>{t("therapist.rec.title")}</SectionTitle>
-      <p className="mb-3 text-sm text-muted">{t("therapist.rec.hint")}</p>
+      <p className="mb-3 text-sm text-muted">
+        {t("therapist.rec.hint")} {t("pro.gateNote")}
+      </p>
       <form
         className="mb-4 space-y-3"
         onSubmit={async (e) => {
@@ -194,6 +197,7 @@ function Recommend({ childId }: { childId: string }) {
                   <LevelLabel levelId={a.levelId} />
                 </div>
                 {a.note && <div className="text-muted">{a.note}</div>}
+                <LockNote childId={childId} levelId={a.levelId} />
               </div>
               {a.byUserId === me.id && (
                 <Button size="sm" variant="ghost" onClick={() => del.run(a.id)} aria-label={t("common.delete")}>
@@ -249,7 +253,7 @@ function AacUsage({ childId }: { childId: string }) {
             {s.recent.map((e) => (
               <li key={e.id} className="flex justify-between gap-2">
                 <span className="text-ink">{e.cardIds.map(label).join(" ")}</span>
-                <span className="shrink-0 text-muted">{fmtDate(e.at, lang)}</span>
+                <span className="shrink-0 text-muted">{fmtDate(e.at, lang, "dayMonth")}</span>
               </li>
             ))}
           </ul>

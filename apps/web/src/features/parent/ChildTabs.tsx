@@ -9,7 +9,8 @@ import { LEVELS } from "@/content/levels";
 import { api, sel, useDb } from "@/lib/api";
 import { LANGS, useLang, useT, type Lang } from "@/lib/i18n";
 import type { AccessMode, Child, ConsentScope } from "@/lib/types";
-import { aacLabel, BIRTH_YEARS, download, fmtDate, profileLines } from "./lib";
+import { fmtDate } from "@/lib/format";
+import { aacLabel, BIRTH_YEARS, download, profileLines } from "./lib";
 import { AccessPicker, AvatarGrid } from "./pickers";
 
 export const TABS = ["progress", "changes", "aac", "sharing", "settings", "privacy"] as const;

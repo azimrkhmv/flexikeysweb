@@ -33,7 +33,7 @@ export function Mascot({
   const arcs = mood === "happy" || mood === "celebrate" || mood === "wave";
   return (
     <div className={`relative inline-block ${float ? "fk-float" : ""} ${className}`} style={{ width: size, height: size * 0.82 }}>
-      <svg viewBox="0 0 200 164" width={size} height={size * 0.82} role="img" aria-label={label ?? "FlexiKeys cloud"}>
+      <svg viewBox="0 0 200 164" width={size} height={size * 0.82} {...(label === "" ? { "aria-hidden": true } : { role: "img", "aria-label": label ?? "FlexiKeys cloud" })}>
         <defs>
           <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="#ffffff" />

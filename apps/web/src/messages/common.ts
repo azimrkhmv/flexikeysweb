@@ -85,6 +85,9 @@ export const common = {
     "err.page.error.title": "Something didn't load",
     "err.page.error.body": "Please try again. If it keeps happening, come back a little later.",
     "err.page.home": "Go to the home page",
+    "err.level_locked": "This level isn't open yet.",
+    "lock.mastery": "Opens after “{level}” is finished",
+    "lock.plan": "Needs the Family plan",
 
     "adapt.keyScale.more": "Keys got a little bigger so taps land more easily.",
     "adapt.keyScale.less": "Keys got a little smaller — taps are landing precisely now.",
@@ -218,6 +221,9 @@ export const common = {
     "err.page.error.title": "Nimadir yuklanmadi",
     "err.page.error.body": "Qayta urinib koʻring. Takrorlansa, birozdan keyin qayting.",
     "err.page.home": "Bosh sahifaga oʻtish",
+    "err.level_locked": "Bu daraja hali ochilmagan.",
+    "lock.mastery": "“{level}” tugagach ochiladi",
+    "lock.plan": "Oilaviy tarif kerak",
 
     "adapt.keyScale.more": "Tugmalar biroz kattalashdi — bosish osonroq boʻladi.",
     "adapt.keyScale.less": "Tugmalar biroz kichraydi — bosishlar endi aniq.",
@@ -351,6 +357,9 @@ export const common = {
     "err.page.error.title": "Что-то не загрузилось",
     "err.page.error.body": "Попробуйте ещё раз. Если повторится — загляните чуть позже.",
     "err.page.home": "На главную",
+    "err.level_locked": "Этот уровень пока закрыт.",
+    "lock.mastery": "Откроется после уровня «{level}»",
+    "lock.plan": "Нужен семейный тариф",
 
     "adapt.keyScale.more": "Клавиши стали чуть больше — попадать легче.",
     "adapt.keyScale.less": "Клавиши стали чуть меньше — нажатия теперь точные.",

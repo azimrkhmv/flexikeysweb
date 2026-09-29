@@ -7,21 +7,11 @@ import {
   ShieldCheck, Sparkles, Sprout, Stethoscope, Target, Timer, type LucideIcon,
 } from "lucide-react";
 import { Mascot } from "@/components/Mascot";
-import { Chip, LinkButton, type Tone } from "@/components/ui";
+import { Chip, LinkButton, TONES, type Tone } from "@/components/ui";
 import { Archetypes } from "@/features/marketing/archetypes";
 import { SectionTitle } from "@/features/marketing/chrome";
 import { useT } from "@/lib/i18n";
 import type { MascotMood } from "@/lib/types";
-
-const TONE_BG: Record<Tone, string> = {
-  sky: "bg-sky-soft text-[#2f5d93]",
-  leaf: "bg-leaf-soft text-[#2f6a37]",
-  sun: "bg-sun-soft text-[#7a5a0c]",
-  lavender: "bg-lavender-soft text-[#4f43a0]",
-  teal: "bg-teal-soft text-[#1f6b63]",
-  peach: "bg-peach-soft text-[#8f3a2c]",
-  gray: "bg-surface-2 text-ink-2",
-};
 
 const section = "mx-auto max-w-6xl px-4 py-16 sm:py-20";
 
@@ -148,7 +138,7 @@ function Principles() {
       <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         {PRINCIPLES.map(([key, Icon, tone]) => (
           <li key={key} className="rounded-fk border border-line bg-surface p-5 shadow-soft">
-            <span className={`grid size-12 place-items-center rounded-full ${TONE_BG[tone]}`}>
+            <span className={`grid size-12 place-items-center rounded-full ${TONES[tone]}`}>
               <Icon className="size-6" aria-hidden />
             </span>
             <h3 className="mt-4 font-extrabold text-ink">{t(`mkt.p.${key}.t`)}</h3>
@@ -176,7 +166,7 @@ function HowItWorks() {
         <ol className="grid grid-cols-2 gap-8 sm:grid-cols-4">
           {STEPS.map(([Icon, tone], i) => (
             <li key={i} className="relative flex flex-col items-center text-center">
-              <span className={`grid size-20 place-items-center rounded-full ring-8 ring-surface ${TONE_BG[tone]}`}>
+              <span className={`grid size-20 place-items-center rounded-full ring-8 ring-surface ${TONES[tone]}`}>
                 <Icon className="size-8" aria-hidden />
               </span>
               {i < 3 && <ChevronRight aria-hidden className="absolute -right-5 top-7 hidden size-6 text-muted sm:block" />}
@@ -269,7 +259,7 @@ function Games() {
             </h3>
             <div
               aria-hidden
-              className={`mt-3 grid h-24 place-items-center rounded-2xl text-4xl tracking-widest ${g.night ? "" : TONE_BG[g.tone]}`}
+              className={`mt-3 grid h-24 place-items-center rounded-2xl text-4xl tracking-widest ${g.night ? "" : TONES[g.tone]}`}
               style={g.night ? { background: "linear-gradient(135deg,#3b4a7c,#6070a8)" } : undefined}
             >
               <span className={g.night ? "fk-glow" : ""}>{g.art}</span>
@@ -300,7 +290,7 @@ function Audiences() {
       <div className="grid gap-6 lg:grid-cols-3">
         {AUDIENCES.map(({ id, icon: Icon, tone }) => (
           <article key={id} id={id} className="flex scroll-mt-24 flex-col rounded-fk-lg border border-line bg-surface p-6 shadow-soft sm:p-8">
-            <span className={`grid size-14 place-items-center rounded-2xl ${TONE_BG[tone]}`}>
+            <span className={`grid size-14 place-items-center rounded-2xl ${TONES[tone]}`}>
               <Icon className="size-7" aria-hidden />
             </span>
             <h3 className="mt-5 text-2xl font-extrabold text-ink">{t(`mkt.${id}.title`)}</h3>

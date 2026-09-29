@@ -5,7 +5,9 @@ import { ChevronRight, Clock, Flame, Play, Plus, School, Stethoscope } from "luc
 import { Mascot } from "@/components/Mascot";
 import { Avatar, Card, Chip, Empty, LinkButton, PageHeader } from "@/components/ui";
 import { LEVEL_BY_ID } from "@/content/levels";
-import { age, fmtDate } from "@/features/parent/lib";
+import { age } from "@/features/parent/lib";
+import { fmtDate } from "@/lib/format";
+import { LockNote } from "@/features/pro/shared";
 import { sel, useDb } from "@/lib/api";
 import { useLang, useT } from "@/lib/i18n";
 
@@ -123,6 +125,7 @@ export default function ParentHome() {
                         <Chip tone="gray">{child.name}</Chip>
                       </div>
                       {a.note && <p className="text-sm text-ink-2">{a.note}</p>}
+                      <LockNote childId={child.id} levelId={a.levelId} />
                       <p className="text-xs text-muted">
                         {by?.name}
                         {a.due && ` · ${t("parent.home.due", { date: fmtDate(a.due, lang) })}`}

@@ -3,11 +3,12 @@
 import "@/messages/adult";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Bell, LogOut, type LucideIcon } from "lucide-react";
 import { api, sel, useDb } from "@/lib/api";
 import { useLang, useT } from "@/lib/i18n";
 import { useMounted } from "@/lib/store";
+import { useDismiss } from "@/lib/useDismiss";
 import type { Role, User } from "@/lib/types";
 import { homeFor, LangSwitch, Logo } from "./brand";
 import { Spinner } from "./ui";
@@ -145,11 +146,15 @@ function Notifications({ userId }: { userId: string }) {
   const t = useT();
   const db = useDb();
   const [open, setOpen] = useState(false);
+  const root = useRef<HTMLDivElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
+  useDismiss(root, trigger, open, () => setOpen(false));
   const list = sel.notifications(db, userId);
   const unread = list.filter((n) => !n.read).length;
   return (
-    <div className="relative">
+    <div ref={root} className="relative">
       <button
+        ref={trigger}
         type="button"
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}

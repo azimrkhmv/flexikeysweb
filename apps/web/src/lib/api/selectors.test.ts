@@ -23,3 +23,16 @@ describe("sel.access", () => {
     expect(sel.access(db, "u_therapist", "ch_madina")).toBeNull(); // invited, not accepted
   });
 });
+
+describe("assignments never bypass the gates (FR-CUR-4)", () => {
+  it("explains mastery and plan locks, and an assignment changes neither", () => {
+    const db = seed();
+    expect(sel.lockReason(db, "ch_ali", "animals")).toBeNull(); // open
+    expect(sel.lockReason(db, "ch_ali", "body")).toEqual({ kind: "mastery", after: "transport" }); // seeded therapist task
+    expect(sel.assignmentsFor(db, "ch_ali").some((a) => a.levelId === "body")).toBe(true);
+    // Jasur: free plan, no school or therapist link → level 5 needs the plan, even when assigned.
+    expect(sel.lockReason(db, "ch_other", "family")).toEqual({ kind: "plan" });
+    db.assignments.push({ id: "x", kind: "therapist", byUserId: "u_therapist", childId: "ch_other", levelId: "family", note: "", createdAt: "" });
+    expect(sel.lockReason(db, "ch_other", "family")).toEqual({ kind: "plan" });
+  });
+});

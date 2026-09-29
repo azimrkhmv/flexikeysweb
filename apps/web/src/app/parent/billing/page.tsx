@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Check, CreditCard } from "lucide-react";
 import { Button, Card, Chip, PageHeader, useAction } from "@/components/ui";
-import { fmtDate, fmtSum } from "@/features/parent/lib";
+import { fmtDate, fmtSum } from "@/lib/format";
 import { api, PRICES, sel, useDb } from "@/lib/api";
 import { useLang, useT } from "@/lib/i18n";
 

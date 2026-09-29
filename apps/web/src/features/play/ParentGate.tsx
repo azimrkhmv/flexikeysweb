@@ -27,7 +27,7 @@ export function ParentGate({ lang, onPass, onCancel }: { lang: Lang; onPass: () 
   const [holding, setHolding] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const box = useRef<HTMLDivElement>(null);
-  useFocusTrap(box, q ? "question" : "hold");
+  useFocusTrap(box, q ? "question" : "hold", onCancel); // Escape = back to playing
 
   const start = () => {
     setHolding(true);

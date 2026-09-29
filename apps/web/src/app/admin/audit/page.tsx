@@ -1,7 +1,8 @@
 "use client";
 
 import { Card, Empty, PageHeader } from "@/components/ui";
-import { fmtDate, Table, td, th, useMe } from "@/features/pro/shared";
+import { Table, td, th, useMe } from "@/features/pro/shared";
+import { fmtDate } from "@/lib/format";
 import { sel } from "@/lib/api";
 import { useLang, useT } from "@/lib/i18n";
 
@@ -32,7 +33,7 @@ export default function AdminAudit() {
             <tbody>
               {audit.map((a) => (
                 <tr key={a.id}>
-                  <td className={`${td} whitespace-nowrap`}>{fmtDate(a.at, lang, true)}</td>
+                  <td className={`${td} whitespace-nowrap`}>{fmtDate(a.at, lang, "dateTime")}</td>
                   <td className={td}>{email(a.actorId)}</td>
                   <td className={`${td} font-mono text-xs`}>{a.action}</td>
                   <td className={`${td} font-mono text-xs`}>{a.target}</td>
