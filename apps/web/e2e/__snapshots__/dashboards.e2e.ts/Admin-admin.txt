@@ -1,0 +1,54 @@
+Admin overview
+
+Every admin action is recorded in the audit log.
+
+6
+Accounts
+7
+Child profiles
+0
+Paying families
+31
+Sessions · 7 days
+System health
+
+All personal data is stored and processed in Tashkent, Uzbekistan.
+
+API
+Operational
+PostgreSQL
+Operational
+Redis
+Operational
+Background worker
+Operational
+Object storage
+Operational
+Email delivery
+Operational
+ AI usage · 7 days
+0
+23
+0
+24
+0
+25
+0
+26
+0
+27
+0
+28
+0
+29
+Parent: 0
+Teacher: 0
+Therapist: 0
+
+Parents can ask up to 30 questions a day. A monthly cost cap switches AI to a friendly fallback message.
+
+Support tools
+
+Restores every demo account, child and history to the original sample data. You will be signed out.
+
+Reset demo data

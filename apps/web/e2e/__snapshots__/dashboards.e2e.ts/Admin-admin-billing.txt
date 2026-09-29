@@ -1,0 +1,12 @@
+Subscriptions & payments
+
+Payme and Click orders. Payments open content, never rewards or progress speed.
+
+Subscriptions
+USER	PLAN	STATUS	PAID UNTIL
+parent@demo.uz	Free	Active	—
+Orders
+
+Nothing here yet
+
+Card data is never stored — only provider transaction IDs.

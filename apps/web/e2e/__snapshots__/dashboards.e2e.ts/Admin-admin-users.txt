@@ -1,0 +1,46 @@
+Users
+
+Every admin action is recorded in the audit log.
+
+Search by name or email
+All roles
+Parent
+Teacher
+Therapist
+Admin
+USER	ROLE	STATUS	JOINED	ACTIONS
+
+Sardor Aliev
+new.therapist@demo.uz
+	Therapist	Waiting for verification	Aug 20
+Verify
+
+
+FlexiKeys Admin
+admin@demo.uz
+	Admin	Active	Aug 20
+
+Aziza
+family@demo.uz
+	Parent	Active	Aug 20
+Disable
+Give 30 days free
+
+
+Dilnoza
+parent@demo.uz
+	Parent	Active	Aug 20
+Disable
+Give 30 days free
+
+
+Gulnora Karimova
+teacher@demo.uz
+	Teacher	Active	Aug 20
+Disable
+
+
+Kamola Rashidova
+therapist@demo.uz
+	Therapist	Active	Aug 20
+Disable

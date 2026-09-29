@@ -1,0 +1,81 @@
+Overview
+🦊
+Ali
+
+7 years · learns Uzbek
+
+Play now
+Progress
+What changed and why
+My Voice
+Sharing
+Settings
+Privacy
+How the app looks for your child now
+
+FlexiKeys adjusts itself quietly from how your child plays. You can watch every change here — the settings are chosen by the learning engine, not by hand.
+
+Touch
+Keys are 20% larger than standard
+Space between keys: 12 px
+Hold to confirm: 0.15 s
+Hints: gentle highlight
+Choices on screen: 3
+Pictures are 10% larger
+Break reminder after 15 min
+What changed and why
+Sep 27, 2026
+Break reminder
+Touch
+
+Break reminders come a bit sooner — tiredness appeared late in sessions.
+
+15 → 12
+
+Sep 26, 2026
+Tracing help
+Touch
+
+Tracing paths became more forgiving.
+
+40 → 48
+
+Sep 25, 2026
+Hints
+Touch
+
+Fewer hints — your child is finding answers on their own.
+
+2 → 1
+
+Sep 22, 2026
+Key size
+Touch
+
+Keys got a little bigger so taps land more easily.
+
+1.1 → 1.2
+
+Sep 20, 2026
+Key spacing
+Touch
+
+More space between keys to avoid touching neighbours.
+
+8 → 12
+
+Sep 18, 2026
+Hold to confirm
+Touch
+
+A short press-and-hold now confirms a choice, so accidental touches don't count.
+
+0 → 150
+
+Sep 17, 2026
+Key size
+Touch
+
+Keys got a little bigger so taps land more easily.
+
+1 → 1.1

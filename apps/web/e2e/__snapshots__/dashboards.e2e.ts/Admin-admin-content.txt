@@ -1,0 +1,120 @@
+Content
+
+Curriculum, audio and feature flags.
+
+Content version
+v12
+Published
+
+New versions are published and rolled back with the content pipeline; this page is read-only.
+
+Audio manifest completeness
+Uzbek
+100% · 0 missing
+Russian
+100% · 0 missing
+English
+100% · 0 missing
+
+169 spoken items per language: words, level names and AAC cards.
+
+Levels
+#	LEVEL	ACTIVITIES
+1	🔤 Letters
+type
+path
+light_path
+
+2	🔢 Numbers
+count
+listen_pick
+sequence
+
+3	🔷 Shapes
+find_same
+listen_pick
+path
+
+4	🎨 Colors
+sequence
+listen_pick
+find_same
+
+5	👨‍👩‍👧 Family
+listen_pick
+missing
+type
+
+6	🐾 Animals
+listen_pick
+find_same
+puzzle
+type
+
+7	🍎 Fruits
+find_same
+sort
+type
+
+8	🥕 Vegetables
+listen_pick
+sort
+missing
+
+9	🧸 Toys
+missing
+find_same
+puzzle
+
+10	🚌 Transport
+listen_pick
+sort
+type
+
+11	✋ Body parts
+listen_pick
+scene
+type
+
+12	👕 Clothes
+listen_pick
+scene
+find_same
+
+13	🌳 Nature
+scene
+light_path
+path
+listen_pick
+
+14	📝 Simple words
+type
+type
+path
+
+15	💬 Sentences
+sentence
+sequence
+
+16	📖 Stories
+story
+story
+
+My Voice (AAC) vocabulary: 40 cards.
+
+Feature flags
+
+Every admin action is recorded in the audit log.
+
+ai_assistant
+Parent AI assistant
+teacher_ai
+Teacher AI helper
+ai_weekly_reports
+AI-written weekly reports
+recurring_payments
+Card tokenization + auto-renew
+auto_approve_professionals
+Skip admin verification for teachers/therapists (pilot)
+connect_dots
+Connect-the-dots activity (cut line)

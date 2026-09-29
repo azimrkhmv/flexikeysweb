@@ -1,0 +1,47 @@
+Overview
+🦊
+Ali
+
+7 years · learns Uzbek
+
+Play now
+Progress
+What changed and why
+My Voice
+Sharing
+Settings
+Privacy
+Consents
+
+Core: store my child's nickname, birth year and learning progress on servers in Uzbekistan
+
+On
+
+Core consent is needed for the profile to exist. To withdraw it, delete the profile below.
+
+AI help: send anonymous, name-free progress summaries to an AI service abroad for tips and reports
+
+Given Aug 30, 2026 · version 2026-09-v1
+
+Voice: allow me to record my voice for custom picture cards
+
+School: share progress with my child's teacher when I join a class
+
+Given Aug 30, 2026 · version 2026-09-v1
+
+Specialists: allow sharing with a therapist that I invite
+
+Given Aug 30, 2026 · version 2026-09-v1
+
+When you turn something off, the related processing stops within 24 hours.
+
+Download data
+
+Get everything we store about your child in one file (JSON).
+
+Download (JSON)
+Delete profile
+
+Deletes the profile and all personal data. Anonymous statistics are removed within 30 days.
+
+Delete Ali's profile
