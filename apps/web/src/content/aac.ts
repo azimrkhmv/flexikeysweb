@@ -1,4 +1,5 @@
-import type { AacCard, L10n } from "@/lib/types";
+import type { Lang } from "@/lib/i18n";
+import type { AacCard, AacCustomCard, L10n } from "@/lib/types";
 
 // AAC "My Voice" vocabulary (PRD §9.11). Speaks in the UI language.
 export const AAC_CATEGORIES: { id: string; emoji: string; label: L10n }[] = [
@@ -65,3 +66,15 @@ export const AAC_CARDS: AacCard[] = [
 ];
 
 export const AAC_BY_ID: Record<string, AacCard> = Object.fromEntries(AAC_CARDS.map((x) => [x.id, x]));
+
+/** Custom (parent-made) cards are referenced as `custom:<id>` in the sentence strip and in AAC events. */
+export const CUSTOM_PREFIX = "custom:";
+
+/** Emoji + label for any card id the child can use — built-in or custom (with or without the prefix). */
+export function aacCard(cardId: string, lang: Lang, custom: readonly Pick<AacCustomCard, "id" | "emoji" | "label">[]): { emoji: string; label: string } | null {
+  const builtIn = AAC_BY_ID[cardId];
+  if (builtIn) return { emoji: builtIn.emoji, label: builtIn.label[lang] };
+  const bare = cardId.startsWith(CUSTOM_PREFIX) ? cardId.slice(CUSTOM_PREFIX.length) : cardId;
+  const c = custom.find((x) => x.id === bare);
+  return c ? { emoji: c.emoji, label: c.label } : null;
+}

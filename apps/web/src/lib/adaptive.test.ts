@@ -47,6 +47,14 @@ describe("applyPolicy", () => {
     expect(applyPolicy(rec(), taps(3, false, 0.9)).changes).toHaveLength(0);
   });
 
+  it("successful answers without touch geometry (e.g. path tracing) never add size help", () => {
+    const ev = taps(12, true, 0).map((e) => ({ ...e, offsetRatio: undefined }));
+    const { record } = applyPolicy(rec(), ev);
+    expect(record.params.keyScale).toBe(DEFAULT_PROFILE.keyScale);
+    expect(record.params.spacing).toBe(DEFAULT_PROFILE.spacing);
+    expect(record.params.traceTolerance).toBeLessThanOrEqual(DEFAULT_PROFILE.traceTolerance);
+  });
+
   it("ignores mouse geometry for spacing", () => {
     const ev = taps(12, true, 0.9).map((e) => ({ ...e, pointerType: "mouse" as const }));
     expect(applyPolicy(rec(), ev).changes.find((c) => c.param === "spacing")).toBeUndefined();

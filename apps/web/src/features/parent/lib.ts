@@ -1,4 +1,4 @@
-import { AAC_BY_ID } from "@/content/aac";
+import { aacCard } from "@/content/aac";
 import type { DB } from "@/lib/api";
 import type { Lang } from "@/lib/i18n";
 import type { AdaptiveProfile } from "@/lib/types";
@@ -16,7 +16,7 @@ export const fmtDate = (iso: string, lang: Lang) => new Date(iso).toLocaleDateSt
 export const fmtSum = (tiyin: number) => Math.round(tiyin / 100).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 
 export function aacLabel(db: DB, cardId: string, lang: Lang) {
-  return AAC_BY_ID[cardId]?.label[lang] ?? db.aacCards.find((c) => c.id === cardId)?.label ?? cardId;
+  return aacCard(cardId, lang, db.aacCards)?.label ?? cardId;
 }
 
 /** Plain-language lines describing the current adaptive profile (observe only). */

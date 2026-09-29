@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, Trash } from "lucide-react";
-import { AAC_BY_ID } from "@/content/aac";
+import { aacCard } from "@/content/aac";
 import { LEVELS } from "@/content/levels";
 import { Avatar, Button, Card, Chip, Empty, Field, Input, PageHeader, Select, Textarea, Toggle, useAction } from "@/components/ui";
 import { AdaptationLog, fmtDate, LevelLabel, LevelOptions, MasteryList, MinutesChart, NotFound, SectionTitle, SessionsList, useMe, useNow } from "@/features/pro/shared";
@@ -213,12 +213,10 @@ function AacUsage({ childId }: { childId: string }) {
   const [lang] = useLang();
   const { db } = useMe();
   const s = sel.aacStats(db, childId);
-  const custom = new Map(db.aacCards.filter((c) => c.childId === childId).map((c) => [c.id, c]));
+  const custom = db.aacCards.filter((c) => c.childId === childId);
   const label = (cardId: string) => {
-    const c = AAC_BY_ID[cardId];
-    if (c) return `${c.emoji} ${c.label[lang]}`;
-    const k = custom.get(cardId);
-    return k ? `${k.emoji} ${k.label}` : cardId;
+    const c = aacCard(cardId, lang, custom);
+    return c ? `${c.emoji} ${c.label}` : cardId;
   };
 
   return (

@@ -95,7 +95,7 @@ export function seed(): DB {
   });
 
   const db: DB = {
-    v: 1,
+    v: DB_VERSION,
     auth: { userId: null, child: null },
     users: [
       user("u_parent", "parent@demo.uz", "Dilnoza", "parent"),
@@ -231,7 +231,9 @@ export function seed(): DB {
   return db;
 }
 
-export const dbStore = persisted<DB>("fk_db_v1", seed());
+/** Bump when the DB shape changes: browsers holding an older shape are reseeded instead of crashing. */
+export const DB_VERSION = 1;
+export const dbStore = persisted<DB>("fk_db_v1", seed(), { accept: (d) => d?.v === DB_VERSION });
 export const useDb = () => useStore(dbStore);
 
 const read = () => dbStore.get();

@@ -1,7 +1,10 @@
+"use client";
+
+import { useId } from "react";
 import type { MascotMood } from "@/lib/types";
 
 // The cloud hero: no name, doesn't talk down, doesn't teach — just supports (design board).
-// Pure SVG + CSS so it works on the server and respects prefers-reduced-motion.
+// Pure SVG + CSS (server-rendered HTML, respects prefers-reduced-motion).
 
 const PUFFS: [number, number, number][] = [
   [58, 100, 40], [100, 72, 50], [146, 96, 40], [100, 110, 44], [72, 120, 30], [130, 120, 32],
@@ -24,6 +27,7 @@ export function Mascot({
   className?: string;
   label?: string;
 }) {
+  const gradId = `fk-cloud-${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`; // unique per mascot: same-mood mascots with different tints must not share a fill
   const ink = "#2b3f66";
   const closed = mood === "sleepy";
   const arcs = mood === "happy" || mood === "celebrate" || mood === "wave";
@@ -31,7 +35,7 @@ export function Mascot({
     <div className={`relative inline-block ${float ? "fk-float" : ""} ${className}`} style={{ width: size, height: size * 0.82 }}>
       <svg viewBox="0 0 200 164" width={size} height={size * 0.82} role="img" aria-label={label ?? "FlexiKeys cloud"}>
         <defs>
-          <linearGradient id={`fk-cloud-${mood}`} x1="0" y1="0" x2="0" y2="1">
+          <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="#ffffff" />
             <stop offset="100%" stopColor={tint ?? "#dbe8f8"} />
           </linearGradient>
@@ -49,7 +53,7 @@ export function Mascot({
             <circle key={`o${i}`} cx={cx} cy={cy} r={r + 3} fill="#c9d9ef" />
           ))}
           {PUFFS.map(([cx, cy, r], i) => (
-            <circle key={`f${i}`} cx={cx} cy={cy} r={r} fill={`url(#fk-cloud-${mood})`} />
+            <circle key={`f${i}`} cx={cx} cy={cy} r={r} fill={`url(#${gradId})`} />
           ))}
           {/* cheeks */}
           <ellipse cx="66" cy="112" rx="11" ry="7" fill="#f6b9c6" opacity="0.75" />

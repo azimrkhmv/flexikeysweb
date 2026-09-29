@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import type { Lang } from "@/lib/i18n";
 import { markAccept, usePlay } from "@/features/play/context";
 import { Target, type SelectInfo } from "@/features/play/Target";
-import { ActionButton, answer, Frame, pick, shuffle, useActT, useClock, useHint } from "./kit";
+import { ActionButton, answer, Frame, pick, shuffle, useActT, useClock, useHint, useLater } from "./kit";
 import type { EngineProps } from "./registry";
 
 // Adaptive keyboard (PRD §9.4) + the `type` activity (letter find, ghost-word build, listen & type).
@@ -176,6 +176,7 @@ function TypeRound({ word, mode, needed, index, total, last, next }: { word: str
   const [pos, setPos] = useState(0);
   const expected = tokens[pos];
   const hint = useHint(() => ctx.say(expected ?? word, ctx.learnLang));
+  const later = useLater();
   const solved = pos >= tokens.length;
   const prompt = t(mode === "letter" ? "act.type.letter" : mode === "word" ? "act.type.word" : "act.type.listen");
 
@@ -187,7 +188,7 @@ function TypeRound({ word, mode, needed, index, total, last, next }: { word: str
     if (!correct) return hint.miss();
     clock.reset();
     setPos(pos + 1);
-    if (finished && mode !== "letter") setTimeout(() => ctx.say(word, ctx.learnLang), 600);
+    if (finished && mode !== "letter") later(() => ctx.say(word, ctx.learnLang), 600);
   };
 
   const ghost = mode === "word" || (mode === "listen" && hint.show);

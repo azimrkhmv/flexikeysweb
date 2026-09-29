@@ -90,6 +90,10 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
   const overlayRef = useRef<HTMLDivElement>(null);
 
   const session = useRef<{ id: string; start: number } | null>(null);
+  /** True between Start and "finish for today" — a session should exist while this is set. */
+  const playing = useRef(false);
+  const inputRef = useRef<InputProfile>("touch");
+  const startTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const buffer = useRef<Omit<InteractionEvent, "sessionId">[]>([]);
   const lastAccept = useRef<number | null>(null);
   const moodTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -101,6 +105,9 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
   useEffect(() => {
     here.current = { levelId, activityId };
   }, [levelId, activityId]);
+  useEffect(() => {
+    inputRef.current = input;
+  }, [input]);
 
   // Profile re-parsed only when its values change, so engines don't re-run effects on every DB write.
   const profileKey = JSON.stringify(sel.profile(db, child.id, input));
@@ -120,6 +127,15 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
     session.current = null;
     if (s) api.endSession(s.id).catch(() => {});
   }, [flush]);
+
+  /** `pagehide` ends the session, but a page restored from the back/forward cache keeps playing — start a new one. */
+  const ensureSession = useCallback(async () => {
+    if (!session.current && playing.current) {
+      const id = await api.startSession(inputRef.current).catch(() => null);
+      if (id && !session.current) session.current = { id, start: performance.now() };
+    }
+    return session.current;
+  }, []);
 
   const emit = useCallback(
     (e: PlayEvent) => {
@@ -144,20 +160,25 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
 
   useEffect(() => {
     const onVis = () => document.visibilityState === "hidden" && flush(true);
+    const onShow = (e: PageTransitionEvent) => e.persisted && void ensureSession();
     const onPtr = (e: PointerEvent) => setInput(inputOf(e.pointerType as SelectInfo["pointerType"]));
     const onKey = (e: KeyboardEvent) => (e.key.length === 1 || e.key === "Enter") && setInput("keyboard");
     document.addEventListener("visibilitychange", onVis);
     window.addEventListener("pagehide", endSession);
+    window.addEventListener("pageshow", onShow);
     window.addEventListener("pointerdown", onPtr, true);
     window.addEventListener("keydown", onKey, true);
     return () => {
       document.removeEventListener("visibilitychange", onVis);
       window.removeEventListener("pagehide", endSession);
+      window.removeEventListener("pageshow", onShow);
       window.removeEventListener("pointerdown", onPtr, true);
       window.removeEventListener("keydown", onKey, true);
+      clearTimeout(startTimer.current);
+      clearTimeout(moodTimer.current);
       endSession();
     };
-  }, [flush, endSession]);
+  }, [flush, endSession, ensureSession]);
 
   // ---------- mascot + voice
   const setMoodFor = useCallback((m: MascotMood, ms = 2200) => {
@@ -194,15 +215,16 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
     unlockAudio(); // first gesture unlocks audio on every browser (FR-PLAY-4)
     const inp = inputOf(info.pointerType);
     setInput(inp);
+    inputRef.current = inp;
     setMood("happy");
     speak(t("play.hello", { name: child.name }), lang);
-    const id = await api.startSession(inp).catch(() => null);
-    if (id) session.current = { id, start: performance.now() };
+    playing.current = true;
+    await ensureSession();
     breakStart.current = Date.now();
     setBreakDue(false);
     const next = nextUp(db, child.id);
     // Let the greeting finish, then go straight into the next game.
-    setTimeout(() => {
+    startTimer.current = setTimeout(() => {
       setStarting(false);
       setMood("calm");
       setView(next ? { v: "activity", ...next } : { v: "map" });
@@ -224,7 +246,7 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
     flush(true);
     sfx("chime");
     setMood("celebrate");
-    const s = session.current;
+    const s = await ensureSession();
     const r = s ? await api.completeActivity(s.id, lvl, act).catch(() => null) : null;
     const reward = r ?? { coins: 0, stars: 0, levelDone: false };
     setView({ v: "celebrate", levelId: lvl, activityId: act, coins: reward.coins, stars: reward.stars, levelDone: reward.levelDone });
@@ -247,6 +269,7 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
   };
 
   const finishForToday = () => {
+    playing.current = false;
     endSession();
     setOverlay(null);
     setBreakDue(false);
@@ -256,6 +279,7 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
   };
 
   const exit = async () => {
+    playing.current = false;
     endSession();
     await api.exitChildMode();
     router.replace(auth.grantedBy === "class" ? "/class" : "/parent");

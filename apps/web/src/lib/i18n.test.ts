@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { areaMessages } from "@/messages";
 import { LEVELS } from "@/content/levels";
@@ -19,6 +20,14 @@ describe("i18n catalogs", () => {
     for (const area of ["play", "activities", "aac"] as const)
       for (const lang of ["en", "uz", "ru"] as const)
         for (const [k, v] of Object.entries(areaMessages[area][lang] as Record<string, string>)) expect(banned.test(v), `${area}.${lang}.${k}: ${v}`).toBe(false);
+  });
+
+  it("every ApiError code thrown by the API has an err.* message in all languages", () => {
+    const src = readFileSync(new URL("./api.ts", import.meta.url), "utf8");
+    const codes = [...new Set([...src.matchAll(/new ApiError\("([a-z_]+)"\)/g)].map((m) => m[1]))];
+    expect(codes.length).toBeGreaterThan(10);
+    for (const lang of ["en", "uz", "ru"] as const)
+      for (const code of codes) expect(areaMessages.common[lang] as Record<string, string>, `${lang}: err.${code}`).toHaveProperty([`err.${code}`]);
   });
 
   it("content is localized in all learning languages (FR-CUR-1)", () => {

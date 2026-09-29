@@ -75,7 +75,9 @@ function PathRound({ shape, mirror, stones, index, last, next }: { shape: Shape;
       lastTrace.current = e.timeStamp;
       ctx.emit({ type: "trace_point", levelId: ctx.levelId, activityId: ctx.activityId, offsetRatio: Math.round((dist / r.width) * 100) / 100, pointerType: e.pointerType as "touch" | "pen" | "mouse" });
     }
-    if (dist <= ctx.profile.traceTolerance) advance({ pointerType: e.pointerType as "touch" | "pen" | "mouse", offsetRatio: Math.round((dist / size) * 100) / 100 });
+    // No offsetRatio: a trace is accepted anywhere inside the tolerance, so its distance says nothing about tap
+    // precision. Reporting it made the engine read success as imprecision and widen help in a loop.
+    if (dist <= ctx.profile.traceTolerance) advance({ pointerType: e.pointerType as "touch" | "pen" | "mouse" });
   };
 
   const [cx, cy] = pts[reached];

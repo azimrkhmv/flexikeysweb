@@ -20,11 +20,14 @@ export interface NavItem {
 /**
  * Client-side role gate for dashboard areas. UX only — the API enforces real authorization.
  * Renders children with the signed-in user once hydrated.
+ * While a child session is active, adult areas send you back to child mode: the only way out is the
+ * parent gate, which ends the child session (FR-PLAY-3 — Back button / typed URL can't skip it).
  */
 export function RequireRole({ role, children }: { role: Role | Role[]; children: (me: User) => ReactNode }) {
   const mounted = useMounted();
   const db = useDb();
   const me = sel.me(db);
+  const childMode = !!sel.childAuth(db);
   const router = useRouter();
   const path = usePathname();
   const roles = Array.isArray(role) ? role : [role];
@@ -32,11 +35,12 @@ export function RequireRole({ role, children }: { role: Role | Role[]; children:
 
   useEffect(() => {
     if (!mounted) return;
-    if (!me) router.replace(`/login?next=${encodeURIComponent(path)}`);
+    if (childMode) router.replace("/play");
+    else if (!me) router.replace(`/login?next=${encodeURIComponent(path)}`);
     else if (!roles.includes(me.role)) router.replace(homeFor(me.role));
   });
 
-  if (!mounted || !ok) return <Spinner />;
+  if (!mounted || !ok || childMode) return <Spinner />;
   return <>{children(me)}</>;
 }
 

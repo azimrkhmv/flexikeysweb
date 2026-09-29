@@ -6,7 +6,7 @@ import { VOCAB } from "@/content/vocab";
 import { usePlay } from "@/features/play/context";
 import { Target, type SelectInfo } from "@/features/play/Target";
 import { ChoiceEngine, ScenePanel, sceneSpec } from "./choice";
-import { ActionButton, answer, Frame, shuffle, sizeFor, useActT, useClock, useHint } from "./kit";
+import { ActionButton, answer, Frame, shuffle, sizeFor, useActT, useClock, useHint, useLater } from "./kit";
 import type { EngineProps } from "./registry";
 
 // Archetype E (Board & Pieces) + word/story builders. Everything is tap-then-tap: no dragging.
@@ -205,6 +205,7 @@ function SentenceRound({ text, index, total, last, next }: { text: string; index
   });
   const [used, setUsed] = useState<number[]>([]);
   const hint = useHint(() => ctx.say(text, ctx.learnLang));
+  const later = useLater();
   const pos = used.length;
   const solved = pos >= words.length;
 
@@ -216,7 +217,7 @@ function SentenceRound({ text, index, total, last, next }: { text: string; index
     if (!correct) return hint.miss();
     clock.reset();
     setUsed([...used, k]);
-    if (pos + 1 === words.length) setTimeout(() => ctx.say(text, ctx.learnLang), 700);
+    if (pos + 1 === words.length) later(() => ctx.say(text, ctx.learnLang), 700);
   };
 
   return (

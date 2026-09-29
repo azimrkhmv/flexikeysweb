@@ -78,6 +78,8 @@ export const common = {
     "err.pending_verification": "Your account is waiting for verification by our team.",
     "err.invite_invalid": "This invite code is not valid or was already used.",
     "err.core_consent_required_use_delete": "Core consent can't be withdrawn — delete the profile instead.",
+    "err.child_session_expired": "Play time has ended. Please start again from the parent dashboard or class login.",
+    "err.not_owned": "This item isn't in the collection yet.",
 
     "adapt.keyScale.more": "Keys got a little bigger so taps land more easily.",
     "adapt.keyScale.less": "Keys got a little smaller — taps are landing precisely now.",
@@ -204,6 +206,8 @@ export const common = {
     "err.pending_verification": "Hisobingiz jamoamiz tomonidan tasdiqlanishini kutmoqda.",
     "err.invite_invalid": "Taklif kodi notoʻgʻri yoki allaqachon ishlatilgan.",
     "err.core_consent_required_use_delete": "Asosiy rozilikni qaytarib boʻlmaydi — oʻrniga profilni oʻchiring.",
+    "err.child_session_expired": "Oʻyin vaqti tugadi. Ota-ona paneli yoki sinfga kirish orqali qaytadan boshlang.",
+    "err.not_owned": "Bu buyum hali toʻplamda yoʻq.",
 
     "adapt.keyScale.more": "Tugmalar biroz kattalashdi — bosish osonroq boʻladi.",
     "adapt.keyScale.less": "Tugmalar biroz kichraydi — bosishlar endi aniq.",
@@ -330,6 +334,8 @@ export const common = {
     "err.pending_verification": "Ваш аккаунт ожидает проверки нашей командой.",
     "err.invite_invalid": "Код приглашения неверный или уже использован.",
     "err.core_consent_required_use_delete": "Основное согласие нельзя отозвать — вместо этого удалите профиль.",
+    "err.child_session_expired": "Время игры закончилось. Начните снова из кабинета родителя или через вход класса.",
+    "err.not_owned": "Этого предмета пока нет в коллекции.",
 
     "adapt.keyScale.more": "Клавиши стали чуть больше — попадать легче.",
     "adapt.keyScale.less": "Клавиши стали чуть меньше — нажатия теперь точные.",

@@ -33,6 +33,22 @@ export function useActT() {
   return useT(usePlay().uiLang);
 }
 
+/** `setTimeout` that is cancelled when the component unmounts (no speech after the child has left a round). */
+export function useLater() {
+  const timers = useRef(new Set<ReturnType<typeof setTimeout>>());
+  useEffect(() => {
+    const set = timers.current;
+    return () => set.forEach(clearTimeout);
+  }, []);
+  return (fn: () => void, ms: number) => {
+    const id = setTimeout(() => {
+      timers.current.delete(id);
+      fn();
+    }, ms);
+    timers.current.add(id);
+  };
+}
+
 /** Latency clock for the current round: call `reset()` when a round is shown, `ms()` on an answer. */
 export function useClock() {
   const t0 = useRef(0);
@@ -130,13 +146,14 @@ export function Frame({
 }) {
   const ctx = usePlay();
   const t = useActT();
+  const later = useLater();
   const lines = speak ?? [[prompt, "ui"] as [string, "ui"]];
   const sayAll = () => {
     // ponytail: one utterance per language; learn-language words follow the instruction after a short pause.
     const ui = lines.filter(([, l]) => l === "ui").map(([s]) => s).join(". ");
     const learn = lines.filter(([, l]) => l === "learn").map(([s]) => s).join(". ");
     if (ui) ctx.say(ui, ctx.uiLang);
-    if (learn) setTimeout(() => ctx.say(learn, ctx.learnLang), ui ? 1600 : 0);
+    if (learn) later(() => ctx.say(learn, ctx.learnLang), ui ? 1600 : 0);
   };
   const key = `${speakKey ?? ""}|${lines.map((l) => l[0]).join("|")}`;
   const said = useRef("");

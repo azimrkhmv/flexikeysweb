@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Delete, Volume2, X } from "lucide-react";
-import { AAC_BY_ID, AAC_CARDS, AAC_CATEGORIES } from "@/content/aac";
+import { AAC_CARDS, AAC_CATEGORIES, aacCard, CUSTOM_PREFIX } from "@/content/aac";
 import { api, useDb } from "@/lib/api";
 import { speak, stopSpeech } from "@/lib/audio";
 import { useT } from "@/lib/i18n";
@@ -26,17 +26,10 @@ export function Aac({ child }: { child: Child }) {
   // FR-AAC-1: a language change re-renders labels and cancels speech already playing.
   useEffect(() => stopSpeech, [lang]);
 
-  const card = (id: string) => {
-    if (id.startsWith("custom:")) {
-      const c = custom.find((x) => `custom:${x.id}` === id);
-      return c ? { emoji: c.emoji, label: c.label } : null;
-    }
-    const c = AAC_BY_ID[id];
-    return c ? { emoji: c.emoji, label: c.label[lang] } : null;
-  };
+  const card = (id: string) => aacCard(id, lang, custom);
   const cards = [
     ...AAC_CARDS.filter((c) => c.category === cat).map((c) => c.id),
-    ...custom.filter((c) => c.category === cat).map((c) => `custom:${c.id}`),
+    ...custom.filter((c) => c.category === cat).map((c) => `${CUSTOM_PREFIX}${c.id}`),
   ];
   const labels = strip.map((id) => card(id)?.label ?? "").filter(Boolean);
 
