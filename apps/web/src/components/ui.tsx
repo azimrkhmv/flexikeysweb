@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes } from "react";
-import { ApiError } from "@/lib/api";
+import { ApiError } from "@/lib/api/schema";
 import { useT } from "@/lib/i18n";
 
 // Adult-UI atoms (WCAG 2.2 AA). Child UI uses features/play/Target instead.

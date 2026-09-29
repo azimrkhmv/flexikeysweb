@@ -1,5 +1,6 @@
 "use client";
 
+import "@/messages/adult";
 import type { ReactNode } from "react";
 import { LangSwitch, Logo } from "@/components/brand";
 import { Mascot } from "@/components/Mascot";

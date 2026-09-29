@@ -1,13 +1,14 @@
 "use client";
 
+// Client-side registration of the marketing strings (a server-side import never reaches the browser).
+import "@/messages/public";
 import Link from "next/link";
 import type { MouseEvent } from "react";
 import { Menu } from "lucide-react";
 import { homeFor, LangSwitch, Logo } from "@/components/brand";
 import { buttonClass } from "@/components/ui";
-import { sel, useDb } from "@/lib/api";
-import { useT } from "@/lib/i18n";
-import { useMounted } from "@/lib/store";
+import { useRouteLang, useT } from "@/lib/i18n";
+import { useSessionRole } from "@/lib/session";
 
 const LINKS = [
   { href: "/pricing", key: "nav.pricing" },
@@ -15,11 +16,10 @@ const LINKS = [
   { href: "/#therapists", key: "nav.therapists" },
 ];
 
-/** Signed-in user, only after hydration (localStorage-backed). */
-function useMe() {
-  const mounted = useMounted();
-  const db = useDb();
-  return mounted ? sel.me(db) : null;
+/** Public-page link in the current URL language: "/pricing" → "/ru/pricing", "/#schools" → "/ru#schools". */
+export function useLocalePath() {
+  const lang = useRouteLang();
+  return (path: string) => (!lang ? path : path === "/" ? `/${lang}` : path.startsWith("/#") ? `/${lang}${path.slice(1)}` : `/${lang}${path}`);
 }
 
 // Close the mobile <details> menu after picking a link (client navigation keeps it open otherwise).
@@ -27,9 +27,10 @@ const closeMenu = (e: MouseEvent<HTMLElement>) => e.currentTarget.closest("detai
 
 export function Header() {
   const t = useT();
-  const me = useMe();
-  const account = me ? (
-    <Link href={homeFor(me.role)} className={buttonClass("primary", "sm")}>
+  const lp = useLocalePath();
+  const role = useSessionRole();
+  const account = role ? (
+    <Link href={homeFor(role)} className={buttonClass("primary", "sm")}>
       {t("nav.dashboard")}
     </Link>
   ) : (
@@ -49,10 +50,10 @@ export function Header() {
         {t("mkt.skip")}
       </a>
       <div className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-4">
-        <Logo />
+        <Logo href={lp("/")} />
         <nav aria-label={t("nav.menu")} className="ml-4 hidden items-center gap-1 lg:flex">
           {LINKS.map((l) => (
-            <Link key={l.href} href={l.href} className="rounded-full px-3 py-2 text-sm font-bold text-ink-2 hover:bg-surface">
+            <Link key={l.href} href={lp(l.href)} className="rounded-full px-3 py-2 text-sm font-bold text-ink-2 hover:bg-surface">
               {t(l.key)}
             </Link>
           ))}
@@ -72,7 +73,7 @@ export function Header() {
             </summary>
             <div onClick={closeMenu} className="absolute right-0 top-12 flex w-64 flex-col gap-1 rounded-fk border border-line bg-surface p-3 shadow-lift">
               {LINKS.map((l) => (
-                <Link key={l.href} href={l.href} className="rounded-xl px-3 py-2.5 font-bold text-ink-2 hover:bg-surface-2">
+                <Link key={l.href} href={lp(l.href)} className="rounded-xl px-3 py-2.5 font-bold text-ink-2 hover:bg-surface-2">
                   {t(l.key)}
                 </Link>
               ))}
@@ -90,21 +91,22 @@ export function Header() {
 
 export function Footer() {
   const t = useT();
+  const lp = useLocalePath();
   const col = "space-y-2 text-sm [&_a]:font-semibold [&_a]:text-ink-2 [&_a:hover]:text-primary";
   return (
     <footer className="mt-24 border-t border-line bg-surface">
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr]">
         <div className="space-y-3">
-          <Logo />
+          <Logo href={lp("/")} />
           <p className="max-w-sm text-sm text-ink-2">{t("mkt.footer.about")}</p>
           <p className="text-sm font-semibold text-muted">{t("brand.tagline")}</p>
         </div>
         <div className={col}>
           <h2 className="font-extrabold text-ink">{t("mkt.footer.product")}</h2>
           <ul className="space-y-2">
-            <li><Link href="/pricing">{t("nav.pricing")}</Link></li>
-            <li><Link href="/#schools">{t("nav.schools")}</Link></li>
-            <li><Link href="/#therapists">{t("nav.therapists")}</Link></li>
+            <li><Link href={lp("/pricing")}>{t("nav.pricing")}</Link></li>
+            <li><Link href={lp("/#schools")}>{t("nav.schools")}</Link></li>
+            <li><Link href={lp("/#therapists")}>{t("nav.therapists")}</Link></li>
             <li><Link href="/demo">{t("mkt.hero.demo")}</Link></li>
             <li><Link href="/class">{t("nav.class")}</Link></li>
           </ul>
@@ -112,8 +114,8 @@ export function Footer() {
         <div className={col}>
           <h2 className="font-extrabold text-ink">{t("mkt.footer.legal")}</h2>
           <ul className="space-y-2">
-            <li><Link href="/privacy">{t("nav.privacy")}</Link></li>
-            <li><Link href="/terms">{t("nav.terms")}</Link></li>
+            <li><Link href={lp("/privacy")}>{t("nav.privacy")}</Link></li>
+            <li><Link href={lp("/terms")}>{t("nav.terms")}</Link></li>
           </ul>
         </div>
         <div className={col}>

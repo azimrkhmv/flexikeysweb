@@ -1,5 +1,7 @@
 "use client";
 
+// Client-side registration of the marketing strings (a server-side import never reaches the browser).
+import "@/messages/public";
 import {
   Check, ChevronRight, CirclePlay, CircleX, Cloud, Download, EyeOff, Gamepad2, Hand, House, MapPin, Pointer, Power, School,
   ShieldCheck, Sparkles, Sprout, Stethoscope, Target, Timer, type LucideIcon,
@@ -23,7 +25,7 @@ const TONE_BG: Record<Tone, string> = {
 
 const section = "mx-auto max-w-6xl px-4 py-16 sm:py-20";
 
-export default function Home() {
+export function HomePage() {
   return (
     <>
       <Hero />

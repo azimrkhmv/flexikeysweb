@@ -1,5 +1,7 @@
 "use client";
 
+// Client-side registration of the marketing strings (a server-side import never reaches the browser).
+import "@/messages/public";
 import type { ReactNode } from "react";
 import { Pause } from "lucide-react";
 import { ItemArt } from "@/components/ItemArt";

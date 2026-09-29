@@ -2,7 +2,7 @@
 
 // /admin/* — every mutation is audit-logged (FR-ADM-1).
 
-import { dbStore, write, net } from "./db";
+import { dbStore, net, syncSession, write } from "./db";
 import { requireUser, audit, notify } from "./guards";
 import { DAY, iso } from "./schema";
 import { seed } from "./seed";
@@ -43,5 +43,6 @@ export const adminApi = {
   /** Resets the whole demo database to the seed (keeps you logged out). */
   resetDemo() {
     dbStore.set(seed());
+    syncSession();
   },
 };

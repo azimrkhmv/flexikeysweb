@@ -1,5 +1,7 @@
 "use client";
 
+import "@/messages/adult";
+import "@/messages/child";
 import { useState, type ComponentType, type ReactNode } from "react";
 import { Heart } from "lucide-react";
 import { LangSwitch, Logo } from "@/components/brand";

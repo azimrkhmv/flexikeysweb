@@ -1,5 +1,6 @@
 "use client";
 
+import "@/messages/child";
 import { useEffect } from "react";
 import { Mascot } from "@/components/Mascot";
 import { Target } from "@/features/play/Target";

@@ -1,10 +1,12 @@
 import type { Metadata, Viewport } from "next";
 import { Nunito } from "next/font/google";
+import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 const nunito = Nunito({ variable: "--font-nunito", subsets: ["latin", "cyrillic"], display: "swap" });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: { default: "FlexiKeys — adaptive learning games for every child", template: "%s · FlexiKeys" },
   description:
     "FlexiKeys teaches children 3–10 letters, words, numbers and communication through calm games that quietly adapt to each child's hands, pace and needs.",

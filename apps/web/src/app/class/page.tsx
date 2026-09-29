@@ -1,5 +1,6 @@
 "use client";
 
+import "@/messages/child";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { LangSwitch, Logo } from "@/components/brand";

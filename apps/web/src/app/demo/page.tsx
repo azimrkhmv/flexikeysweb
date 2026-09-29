@@ -1,5 +1,6 @@
 "use client";
 
+import "@/messages/child";
 import { useEffect, useMemo, useState, type ComponentType } from "react";
 import { LangSwitch, Logo } from "@/components/brand";
 import { Mascot } from "@/components/Mascot";

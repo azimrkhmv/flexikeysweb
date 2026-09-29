@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { Globe } from "lucide-react";
-import { LANG_NAMES, LANGS, useLang, useT } from "@/lib/i18n";
+import { LANG_NAMES, LANGS, useLang, useRouteLang, useT, type Lang } from "@/lib/i18n";
 import type { Role } from "@/lib/types";
 
 export function Logo({ href = "/", small }: { href?: string; small?: boolean }) {
@@ -27,12 +28,20 @@ export function Logo({ href = "/", small }: { href?: string; small?: boolean }) 
 
 export function LangSwitch({ compact }: { compact?: boolean }) {
   const [lang, setLang] = useLang();
+  const routeLang = useRouteLang();
+  const path = usePathname();
+  const router = useRouter();
   const t = useT();
+  // On public pages the language is part of the URL (/uz/pricing → /ru/pricing); elsewhere it's a preference.
+  const choose = (l: Lang) => {
+    setLang(l);
+    if (routeLang) router.push(path.replace(/^\/(uz|ru|en)(?=\/|$)/, `/${l}`) + window.location.hash);
+  };
   return (
     <label className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-3 h-10 text-sm font-bold text-ink-2">
       <Globe className="size-4" aria-hidden />
       <span className="sr-only">{t("nav.language")}</span>
-      <select value={lang} onChange={(e) => setLang(e.target.value as typeof lang)} className="bg-transparent font-bold text-ink outline-none">
+      <select value={lang} onChange={(e) => choose(e.target.value as Lang)} className="bg-transparent font-bold text-ink outline-none">
         {LANGS.map((l) => (
           <option key={l} value={l}>
             {compact ? l.toUpperCase() : LANG_NAMES[l]}

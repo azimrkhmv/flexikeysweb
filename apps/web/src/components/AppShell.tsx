@@ -1,5 +1,6 @@
 "use client";
 
+import "@/messages/adult";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";

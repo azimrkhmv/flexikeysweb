@@ -7,10 +7,5 @@ import { parent } from "./parent";
 import { play } from "./play";
 import { pro } from "./pro";
 
-const areas = [common, marketing, auth, play, activities, aac, parent, pro];
-
-type Dict = Record<string, string>;
-const merge = (lang: "en" | "uz" | "ru"): Dict => Object.assign({}, ...areas.map((a) => a[lang] as Dict));
-
-export const messages = { en: merge("en"), uz: merge("uz"), ru: merge("ru") };
+// All catalogs by area — for tests. Routes register catalogs through ./public, ./child and ./adult (lib/translate.ts).
 export const areaMessages = { common, marketing, auth, play, activities, aac, parent, pro };

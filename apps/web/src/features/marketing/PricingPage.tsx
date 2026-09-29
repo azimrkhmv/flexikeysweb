@@ -1,23 +1,23 @@
 "use client";
 
+// Client-side registration of the marketing strings (a server-side import never reaches the browser).
+import "@/messages/public";
 import { useState } from "react";
 import { Check, Heart } from "lucide-react";
 import { Chip, LinkButton } from "@/components/ui";
-import { PRICES, sel, useDb } from "@/lib/api";
+import { PRICES } from "@/lib/api/schema";
 import { useT } from "@/lib/i18n";
-import { useMounted } from "@/lib/store";
+import { useSessionRole } from "@/lib/session";
 
 /** Tiyin → so'm with thin grouping ("49 000"). Deterministic on server and client. */
 const som = (tiyin: number) => String(Math.round(tiyin / 100)).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 
-export default function PricingPage() {
+export function PricingPage() {
   const t = useT();
-  const mounted = useMounted();
-  const db = useDb();
-  const me = mounted ? sel.me(db) : null;
+  const role = useSessionRole();
   const [yearly, setYearly] = useState(false);
   const save = Math.round((1 - PRICES.yearly / (PRICES.monthly * 12)) * 100);
-  const familyHref = me?.role === "parent" ? "/parent/billing" : "/signup";
+  const familyHref = role === "parent" ? "/parent/billing" : "/signup";
 
   const features = (prefix: string, n: number) => (
     <ul className="mt-6 flex-1 space-y-3">

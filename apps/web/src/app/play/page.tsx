@@ -1,5 +1,6 @@
 "use client";
 
+import "@/messages/child";
 import Link from "next/link";
 import { LangSwitch, Logo } from "@/components/brand";
 import { Mascot } from "@/components/Mascot";
