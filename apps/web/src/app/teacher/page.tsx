@@ -33,7 +33,7 @@ export default function TeacherClasses() {
         <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {classes.map((k) => {
             const kids = sel.classChildren(db, k.id);
-            const tasks = db.assignments.filter((a) => a.classId === k.id).length;
+            const tasks = sel.classAssignments(db, k.id).length;
             return (
               <li key={k.id}>
                 <Link href={`/teacher/class/${k.id}`} className="block h-full rounded-fk border border-line bg-surface p-5 shadow-soft transition hover:shadow-lift">

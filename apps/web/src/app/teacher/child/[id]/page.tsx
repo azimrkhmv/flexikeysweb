@@ -16,7 +16,7 @@ export default function TeacherChild() {
   const { db, me } = useMe();
   const child = sel.child(db, id);
   if (!child || sel.access(db, me.id, id) !== "teacher") return <NotFound back="/teacher" />;
-  const classes = sel.classesOf(db, me.id).filter((k) => db.enrollments.some((e) => e.classId === k.id && e.childId === id));
+  const classes = sel.classesOfChild(db, id).filter((k) => k.teacherId === me.id);
   const tasks = sel.assignmentsFor(db, id);
 
   return (

@@ -2,19 +2,21 @@
 
 import { Card, Empty, PageHeader } from "@/components/ui";
 import { fmtDate, Table, td, th, useMe } from "@/features/pro/shared";
+import { sel } from "@/lib/api";
 import { useLang, useT } from "@/lib/i18n";
 
 export default function AdminAudit() {
   const t = useT();
   const [lang] = useLang();
   const { db } = useMe();
-  const email = (id: string) => db.users.find((u) => u.id === id)?.email ?? id;
+  const email = (id: string) => sel.user(db, id)?.email ?? id;
+  const audit = sel.admin.audit(db);
 
   return (
     <>
       <PageHeader title={t("admin.audit.title")} subtitle={t("admin.audit.subtitle")} />
       <Card>
-        {db.audit.length === 0 ? (
+        {audit.length === 0 ? (
           <Empty />
         ) : (
           <Table>
@@ -28,7 +30,7 @@ export default function AdminAudit() {
               </tr>
             </thead>
             <tbody>
-              {db.audit.map((a) => (
+              {audit.map((a) => (
                 <tr key={a.id}>
                   <td className={`${td} whitespace-nowrap`}>{fmtDate(a.at, lang, true)}</td>
                   <td className={td}>{email(a.actorId)}</td>

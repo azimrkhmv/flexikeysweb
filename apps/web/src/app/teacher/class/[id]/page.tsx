@@ -20,7 +20,7 @@ export default function ClassPage() {
   const { id } = useParams<{ id: string }>();
   const t = useT();
   const { db, me } = useMe();
-  const k = db.classes.find((c) => c.id === id && c.teacherId === me.id);
+  const k = sel.teacherClass(db, me.id, id);
   const [classroom, setClassroom] = useState(false);
   if (!k) return <NotFound back="/teacher" />;
   const kids = sel.classChildren(db, k.id);
@@ -340,7 +340,7 @@ function Assignments({ k }: { k: ClassRoom }) {
   const t = useT();
   const [lang] = useLang();
   const { db, me } = useMe();
-  const list = db.assignments.filter((a) => a.classId === k.id).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  const list = sel.classAssignments(db, k.id);
   const [levelId, setLevelId] = useState(LEVELS[0].id);
   const [note, setNote] = useState("");
   const [due, setDue] = useState("");
@@ -409,7 +409,7 @@ function AiHelper({ classId }: { classId: string }) {
   const { db } = useMe();
   const [text, setText] = useState("");
   const { run, pending, error } = useAction(api.teacherAiSummary);
-  if (!db.flags.find((f) => f.key === "teacher_ai")?.enabled) return null;
+  if (!sel.flag(db, "teacher_ai")) return null;
   return (
     <Card className="bg-lavender-soft/40">
       <SectionTitle>

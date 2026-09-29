@@ -60,7 +60,7 @@ function Notes({ childId }: { childId: string }) {
   const t = useT();
   const [lang] = useLang();
   const { db, me } = useMe();
-  const notes = db.notes.filter((n) => n.childId === childId && n.authorId === me.id);
+  const notes = sel.notes(db, childId, { authorId: me.id });
   const [text, setText] = useState("");
   const [visible, setVisible] = useState(true);
   const { run, pending, error } = useAction(api.addNote);
@@ -111,7 +111,7 @@ function Notes({ childId }: { childId: string }) {
 function Goals({ childId }: { childId: string }) {
   const t = useT();
   const { db } = useMe();
-  const goals = db.goals.filter((g) => g.childId === childId);
+  const goals = sel.goals(db, childId);
   const [text, setText] = useState("");
   const add = useAction(api.addGoal);
   const toggle = useAction(api.toggleGoal);
@@ -153,7 +153,7 @@ function Goals({ childId }: { childId: string }) {
 function Recommend({ childId }: { childId: string }) {
   const t = useT();
   const { db, me } = useMe();
-  const list = db.assignments.filter((a) => a.kind === "therapist" && a.childId === childId);
+  const list = sel.recommendations(db, childId);
   const [levelId, setLevelId] = useState(LEVELS[0].id);
   const [note, setNote] = useState("");
   const add = useAction(api.recommend);
@@ -213,7 +213,7 @@ function AacUsage({ childId }: { childId: string }) {
   const [lang] = useLang();
   const { db } = useMe();
   const s = sel.aacStats(db, childId);
-  const custom = db.aacCards.filter((c) => c.childId === childId);
+  const custom = sel.aacCustomCards(db, childId);
   const label = (cardId: string) => {
     const c = aacCard(cardId, lang, custom);
     return c ? `${c.emoji} ${c.label}` : cardId;

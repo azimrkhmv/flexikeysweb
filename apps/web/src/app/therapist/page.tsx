@@ -33,7 +33,7 @@ export default function TherapistHome() {
             <ul className="grid gap-4 sm:grid-cols-2">
               {kids.map((c) => {
                 const avg = avgMastery(db, c.id);
-                const goals = db.goals.filter((g) => g.childId === c.id && !g.done).length;
+                const goals = sel.openGoals(db, c.id);
                 return (
                   <li key={c.id}>
                     <Link href={`/therapist/child/${c.id}`} className="block rounded-fk border border-line bg-surface p-5 shadow-soft transition hover:shadow-lift">

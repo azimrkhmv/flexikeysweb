@@ -84,7 +84,7 @@ export function ChangesTab({ childId }: { childId: string }) {
   const [lang] = useLang();
   const db = useDb();
   const changes = sel.changes(db, childId);
-  const profiles = db.profiles.filter((p) => p.childId === childId);
+  const profiles = sel.profiles(db, childId);
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_1.4fr]">
@@ -141,7 +141,7 @@ export function AacTab({ childId }: { childId: string }) {
   const [lang] = useLang();
   const db = useDb();
   const stats = sel.aacStats(db, childId);
-  const cards = db.aacCards.filter((c) => c.childId === childId);
+  const cards = sel.aacCustomCards(db, childId);
   const [label, setLabel] = useState("");
   const [emoji, setEmoji] = useState(CARD_EMOJI[0]);
   const [category, setCategory] = useState("people");
@@ -164,7 +164,7 @@ export function AacTab({ childId }: { childId: string }) {
             <ul className="space-y-2">
               {stats.top.map(([id, n]) => (
                 <li key={id} className="flex items-center justify-between rounded-xl bg-surface-2 px-3 py-2">
-                  <span className="font-semibold">{aacLabel(db, id, lang)}</span>
+                  <span className="font-semibold">{aacLabel(cards, id, lang)}</span>
                   <Chip tone="teal">×{n}</Chip>
                 </li>
               ))}
@@ -179,7 +179,7 @@ export function AacTab({ childId }: { childId: string }) {
             <ul className="space-y-2 text-sm">
               {stats.recent.map((e) => (
                 <li key={e.id} className="flex justify-between gap-3">
-                  <span className="font-semibold">“{e.cardIds.map((c) => aacLabel(db, c, lang)).join(" ")}”</span>
+                  <span className="font-semibold">“{e.cardIds.map((c) => aacLabel(cards, c, lang)).join(" ")}”</span>
                   <span className="shrink-0 text-muted">{fmtDate(e.at, lang)}</span>
                 </li>
               ))}
@@ -264,9 +264,9 @@ export function SharingTab({ childId, goTab }: { childId: string; goTab: (t: Tab
   const [lang] = useLang();
   const db = useDb();
   const links = sel.careLinks(db, childId);
-  const classes = db.enrollments.filter((e) => e.childId === childId).map((e) => db.classes.find((k) => k.id === e.classId)).filter((k) => !!k);
-  const notes = db.notes.filter((n) => n.childId === childId && n.visibleToParent);
-  const goals = db.goals.filter((g) => g.childId === childId);
+  const classes = sel.classesOfChild(db, childId);
+  const notes = sel.notes(db, childId, { visibleToParent: true });
+  const goals = sel.goals(db, childId);
   const canTherapist = sel.hasConsent(db, childId, "therapist_sharing");
   const canSchool = sel.hasConsent(db, childId, "school_sharing");
   const [email, setEmail] = useState("");
@@ -278,7 +278,7 @@ export function SharingTab({ childId, goTab }: { childId: string; goTab: (t: Tab
   const revoke = useAction(api.revokeCare);
   const join = useAction(api.joinClass);
   const leave = useAction(api.leaveClass);
-  const user = (id: string) => db.users.find((u) => u.id === id)?.name ?? "";
+  const user = (id: string) => sel.user(db, id)?.name ?? "";
 
   const consentHint = (
     <p className="rounded-2xl bg-sun-soft p-3 text-sm text-[#7a5a0c]">

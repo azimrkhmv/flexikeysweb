@@ -12,7 +12,9 @@ export default function AdminBilling() {
   const t = useT();
   const [lang] = useLang();
   const { db } = useMe();
-  const email = (userId: string) => db.users.find((u) => u.id === userId)?.email ?? userId;
+  const email = (userId: string) => sel.user(db, userId)?.email ?? userId;
+  const subscriptions = sel.admin.subscriptions(db);
+  const orders = sel.admin.orders(db);
   const money = (tiyin: number) => `${new Intl.NumberFormat(lang).format(tiyin / 100)} ${t("pro.sum")}`;
 
   return (
@@ -21,7 +23,7 @@ export default function AdminBilling() {
       <div className="space-y-6">
         <Card>
           <SectionTitle>{t("admin.billing.subs")}</SectionTitle>
-          {db.subscriptions.length === 0 ? (
+          {subscriptions.length === 0 ? (
             <Empty />
           ) : (
             <Table>
@@ -34,7 +36,7 @@ export default function AdminBilling() {
                 </tr>
               </thead>
               <tbody>
-                {db.subscriptions.map((s) => {
+                {subscriptions.map((s) => {
                   const live = sel.subscription(db, s.userId);
                   return (
                     <tr key={s.userId}>
@@ -54,7 +56,7 @@ export default function AdminBilling() {
 
         <Card>
           <SectionTitle>{t("admin.billing.orders")}</SectionTitle>
-          {db.orders.length === 0 ? (
+          {orders.length === 0 ? (
             <Empty />
           ) : (
             <Table>
@@ -69,7 +71,7 @@ export default function AdminBilling() {
                 </tr>
               </thead>
               <tbody>
-                {db.orders.map((o) => (
+                {orders.map((o) => (
                   <tr key={o.id}>
                     <td className={td}>{fmtDate(o.createdAt, lang, true)}</td>
                     <td className={td}>{email(o.userId)}</td>

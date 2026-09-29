@@ -5,7 +5,7 @@ import { LEVELS } from "@/content/levels";
 import { VOCAB } from "@/content/vocab";
 import { Card, Chip, Meter, PageHeader, Toggle, useAction } from "@/components/ui";
 import { SectionTitle, Table, td, th, useMe } from "@/features/pro/shared";
-import { api } from "@/lib/api";
+import { api, sel } from "@/lib/api";
 import { LANGS, useLang, useT } from "@/lib/i18n";
 import type { L10n } from "@/lib/types";
 
@@ -91,7 +91,7 @@ export default function AdminContent() {
           <p className="mb-3 text-sm text-muted">{t("admin.audited")}</p>
           {flag.error && <p className="mb-3 text-sm font-semibold text-[#8f3a2c]">{flag.error}</p>}
           <ul className="divide-y divide-line">
-            {db.flags.map((f) => (
+            {sel.admin.flags(db).map((f) => (
               <li key={f.key} className="flex items-center justify-between gap-4 py-3">
                 <div className="min-w-0">
                   <div className="font-mono text-sm font-bold text-ink">{f.key}</div>

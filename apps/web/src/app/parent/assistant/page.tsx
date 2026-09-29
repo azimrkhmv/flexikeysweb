@@ -22,14 +22,14 @@ export default function Assistant() {
   const clear = useAction(api.clearAssistant);
   const enable = useAction(api.setConsent);
   const end = useRef<HTMLDivElement>(null);
-  const messages = db.aiMessages.filter((m) => m.userId === me?.id && m.childId === childId);
+  const messages = me ? sel.aiMessages(db, me.id, childId) : [];
 
   useEffect(() => {
     end.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, [messages.length, ask.pending]);
 
   if (!me) return null;
-  const enabled = db.flags.find((f) => f.key === "ai_assistant")?.enabled !== false;
+  const enabled = sel.flag(db, "ai_assistant", true);
   const consent = childId ? sel.hasConsent(db, childId, "ai_processing") : false;
 
   const send = async (q: string) => {

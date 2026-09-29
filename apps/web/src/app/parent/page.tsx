@@ -107,7 +107,7 @@ export default function ParentHome() {
             <ul className="grid gap-3 md:grid-cols-2">
               {suggestions.map(({ a, child }) => {
                 const level = LEVEL_BY_ID[a.levelId];
-                const by = db.users.find((u) => u.id === a.byUserId);
+                const by = sel.user(db, a.byUserId);
                 return (
                   <Card as="li" key={a.id} className="flex gap-4 p-4">
                     <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-teal-soft text-2xl" aria-hidden>

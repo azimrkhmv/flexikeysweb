@@ -5,7 +5,7 @@
 import { FREE_LEVELS, LEVELS } from "@/content/levels";
 import { DEFAULT_PROFILE } from "../adaptive";
 import { DAY, iso, type DB } from "./schema";
-import type { AdaptiveProfile, Child, ConsentScope, InputProfile, LevelProgress, Subscription, Wallet } from "../types";
+import type { AdaptiveProfile, Child, ClassRoom, ConsentScope, InputProfile, LevelProgress, Subscription, Wallet } from "../types";
 
 // ---------------------------------------------------------------- selectors (pure)
 export const sel = {
@@ -104,5 +104,43 @@ export const sel = {
     const top = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 6);
     const avgLen = ev.length ? ev.reduce((a, e) => a + e.cardIds.length, 0) / ev.length : 0;
     return { sentences: ev.length, avgLen: Math.round(avgLen * 10) / 10, top, recent: ev.sort((a, b) => b.at.localeCompare(a.at)).slice(0, 8) };
+  },
+
+  // ---- reads used by the dashboards (one place to swap for API calls; components never touch db.* directly)
+  user: (db: DB, userId: string) => db.users.find((u) => u.id === userId) ?? null,
+  flag: (db: DB, key: string, fallback = false) => db.flags.find((f) => f.key === key)?.enabled ?? fallback,
+  profiles: (db: DB, childId: string) => db.profiles.filter((p) => p.childId === childId),
+  aacCustomCards: (db: DB, childId: string) => db.aacCards.filter((c) => c.childId === childId),
+  aiMessages: (db: DB, userId: string, childId: string | null) => db.aiMessages.filter((m) => m.userId === userId && m.childId === childId),
+  ordersOf: (db: DB, userId: string) => db.orders.filter((o) => o.userId === userId),
+  /** Notes about a child: a therapist sees their own; a parent sees the ones shared with them. */
+  notes: (db: DB, childId: string, by: { authorId: string } | { visibleToParent: true }) =>
+    db.notes.filter((n) => n.childId === childId && ("authorId" in by ? n.authorId === by.authorId : n.visibleToParent)),
+  goals: (db: DB, childId: string) => db.goals.filter((g) => g.childId === childId),
+  openGoals: (db: DB, childId: string) => db.goals.filter((g) => g.childId === childId && !g.done).length,
+  recommendations: (db: DB, childId: string) => db.assignments.filter((a) => a.kind === "therapist" && a.childId === childId),
+  classAssignments: (db: DB, classId: string) => db.assignments.filter((a) => a.classId === classId).sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
+  /** The class only if it belongs to this teacher (→ 404 otherwise). */
+  teacherClass: (db: DB, teacherId: string, classId: string) => db.classes.find((c) => c.id === classId && c.teacherId === teacherId) ?? null,
+  classesOfChild: (db: DB, childId: string) =>
+    db.enrollments.filter((e) => e.childId === childId).map((e) => db.classes.find((k) => k.id === e.classId)).filter((k): k is ClassRoom => !!k),
+
+  // ---- admin-only reads (/admin/*)
+  admin: {
+    users: (db: DB) => db.users,
+    subscriptions: (db: DB) => db.subscriptions,
+    orders: (db: DB) => db.orders,
+    audit: (db: DB) => db.audit,
+    flags: (db: DB) => db.flags,
+    /** AI questions asked (user turns only), with the asker's role for the usage chart. */
+    aiQuestions: (db: DB) => db.aiMessages.filter((m) => m.role === "user").map((m) => ({ ...m, askerRole: sel.user(db, m.userId)?.role ?? "parent" })),
+    stats(db: DB, since: string) {
+      return {
+        users: db.users.length,
+        children: db.children.length,
+        paying: db.subscriptions.filter((s) => s.plan !== "free" && sel.subscription(db, s.userId).status !== "expired").length,
+        sessions: db.sessions.filter((s) => s.startedAt > since).length,
+      };
+    },
   },
 };

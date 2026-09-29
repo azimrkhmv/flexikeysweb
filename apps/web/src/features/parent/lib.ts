@@ -1,7 +1,6 @@
 import { aacCard } from "@/content/aac";
-import type { DB } from "@/lib/api";
 import type { Lang } from "@/lib/i18n";
-import type { AdaptiveProfile } from "@/lib/types";
+import type { AacCustomCard, AdaptiveProfile } from "@/lib/types";
 
 // Small, impure-free-in-render helpers for the parent area (dates live here, not in components).
 
@@ -15,8 +14,8 @@ export const fmtDate = (iso: string, lang: Lang) => new Date(iso).toLocaleDateSt
 /** 49_000_00 tiyin → "49 000". */
 export const fmtSum = (tiyin: number) => Math.round(tiyin / 100).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 
-export function aacLabel(db: DB, cardId: string, lang: Lang) {
-  return aacCard(cardId, lang, db.aacCards)?.label ?? cardId;
+export function aacLabel(custom: readonly AacCustomCard[], cardId: string, lang: Lang) {
+  return aacCard(cardId, lang, custom)?.label ?? cardId;
 }
 
 /** Plain-language lines describing the current adaptive profile (observe only). */

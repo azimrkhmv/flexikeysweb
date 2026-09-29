@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Delete, Volume2, X } from "lucide-react";
 import { AAC_CARDS, AAC_CATEGORIES, aacCard, CUSTOM_PREFIX } from "@/content/aac";
-import { api, useDb } from "@/lib/api";
+import { api, sel, useDb } from "@/lib/api";
 import { speak, stopSpeech } from "@/lib/audio";
 import { useT } from "@/lib/i18n";
 import type { Child } from "@/lib/types";
@@ -21,7 +21,7 @@ export function Aac({ child }: { child: Child }) {
   const [cat, setCat] = useState("core");
   const [strip, setStrip] = useState<string[]>([]); // card ids; labels derive from the current language
   const [confirm, setConfirm] = useState<{ sentence: string; plain: string; lang: string } | null>(null);
-  const custom = db.aacCards.filter((c) => c.childId === child.id);
+  const custom = sel.aacCustomCards(db, child.id);
 
   // FR-AAC-1: a language change re-renders labels and cancels speech already playing.
   useEffect(() => stopSpeech, [lang]);

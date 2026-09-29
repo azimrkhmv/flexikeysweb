@@ -23,7 +23,7 @@ export default function Billing() {
   const cancel = useAction(api.cancelSubscription);
   if (!me) return null;
   const sub = sel.subscription(db, me.id);
-  const orders = db.orders.filter((o) => o.userId === me.id);
+  const orders = sel.ordersOf(db, me.id);
   const kids = sel.childrenOf(db, me.id);
   const paidPlan = sub.plan !== "free" && sub.status !== "expired";
   const price = (tiyin: number) => t("parent.billing.sum", { amount: fmtSum(tiyin) });

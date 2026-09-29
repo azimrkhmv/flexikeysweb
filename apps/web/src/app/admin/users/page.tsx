@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Search } from "lucide-react";
 import { Button, Card, Chip, Empty, Input, PageHeader, Select, useAction, type Tone } from "@/components/ui";
 import { fmtDate, Table, td, th, useMe } from "@/features/pro/shared";
-import { api } from "@/lib/api";
+import { api, sel } from "@/lib/api";
 import { useLang, useT } from "@/lib/i18n";
 import type { Role, UserStatus } from "@/lib/types";
 
@@ -21,7 +21,7 @@ export default function AdminUsers() {
   const comp = useAction(api.grantComp);
 
   const needle = q.trim().toLowerCase();
-  const users = db.users
+  const users = sel.admin.users(db)
     .filter((u) => (!role || u.role === role) && (!needle || u.email.includes(needle) || u.name.toLowerCase().includes(needle)))
     .sort((a, b) => Number(b.status === "pending_verification") - Number(a.status === "pending_verification") || a.email.localeCompare(b.email));
 

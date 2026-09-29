@@ -19,13 +19,11 @@ export default function AdminOverview() {
   const [confirm, setConfirm] = useState(false);
 
   const weekAgo = new Date(now - 7 * DAY).toISOString();
-  const paying = db.subscriptions.filter((s) => s.plan !== "free" && sel.subscription(db, s.userId).status !== "expired").length;
-  const roleOf = new Map(db.users.map((u) => [u.id, u.role]));
-  const asked = db.aiMessages.filter((m) => m.role === "user");
+  const stats = sel.admin.stats(db, weekAgo);
+  const asked = sel.admin.aiQuestions(db);
   const days = Array.from({ length: 7 }, (_, i) => new Date(now - (6 - i) * DAY).toISOString().slice(0, 10));
   const byRole = asked.reduce<Record<string, number>>((acc, m) => {
-    const r = roleOf.get(m.userId) ?? "parent";
-    acc[r] = (acc[r] ?? 0) + 1;
+    acc[m.askerRole] = (acc[m.askerRole] ?? 0) + 1;
     return acc;
   }, {});
 
@@ -34,10 +32,10 @@ export default function AdminOverview() {
       <PageHeader title={t("admin.overview.title")} subtitle={t("admin.audited")} />
 
       <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Stat label={t("admin.stat.users")} value={db.users.length} icon={<Users className="size-6" />} tone="sky" />
-        <Stat label={t("admin.stat.children")} value={db.children.length} icon={<Baby className="size-6" />} tone="leaf" />
-        <Stat label={t("admin.stat.paying")} value={paying} icon={<CreditCard className="size-6" />} tone="sun" />
-        <Stat label={t("admin.stat.sessions")} value={db.sessions.filter((s) => s.startedAt > weekAgo).length} icon={<Timer className="size-6" />} tone="lavender" />
+        <Stat label={t("admin.stat.users")} value={stats.users} icon={<Users className="size-6" />} tone="sky" />
+        <Stat label={t("admin.stat.children")} value={stats.children} icon={<Baby className="size-6" />} tone="leaf" />
+        <Stat label={t("admin.stat.paying")} value={stats.paying} icon={<CreditCard className="size-6" />} tone="sun" />
+        <Stat label={t("admin.stat.sessions")} value={stats.sessions} icon={<Timer className="size-6" />} tone="lavender" />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
