@@ -81,7 +81,7 @@ export function Select(props: SelectHTMLAttributes<HTMLSelectElement>) {
 export function Checkbox({ checked, onChange, label, description, disabled }: { checked: boolean; onChange: (v: boolean) => void; label: ReactNode; description?: ReactNode; disabled?: boolean }) {
   return (
     <label className={`flex cursor-pointer gap-3 rounded-2xl border p-4 transition ${checked ? "border-teal bg-teal-soft/50" : "border-line bg-surface hover:bg-surface-2"} ${disabled ? "opacity-60" : ""}`}>
-      <input type="checkbox" className="mt-0.5 size-5 shrink-0 accent-[#3fa79c]" checked={checked} disabled={disabled} onChange={(e) => onChange(e.target.checked)} />
+      <input type="checkbox" className="mt-0.5 size-5 shrink-0 accent-teal" checked={checked} disabled={disabled} onChange={(e) => onChange(e.target.checked)} />
       <span className="space-y-0.5">
         <span className="block text-[15px] font-semibold text-ink">{label}</span>
         {description && <span className="block text-sm text-muted">{description}</span>}
@@ -234,9 +234,10 @@ export function Bars({ data, max, unit, tone = "#a9c8ec", height = 140 }: { data
   );
 }
 
-export function Meter({ value, tone = "var(--fk-leaf)" }: { value: number; tone?: string }) {
+/** `label` names the meter for screen readers (e.g. the skill or child it measures). */
+export function Meter({ value, label, tone = "var(--fk-leaf)" }: { value: number; label: string; tone?: string }) {
   return (
-    <div className="h-2.5 w-full overflow-hidden rounded-full bg-surface-2" role="meter" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(value * 100)}>
+    <div className="h-2.5 w-full overflow-hidden rounded-full bg-surface-2" role="meter" aria-label={label} aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(value * 100)}>
       <div className="h-full rounded-full transition-all" style={{ width: `${Math.round(value * 100)}%`, background: tone }} />
     </div>
   );

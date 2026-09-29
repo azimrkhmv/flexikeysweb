@@ -63,13 +63,30 @@ export default function ChildPage() {
         </Button>
       </div>
 
-      <div role="tablist" aria-label={child.name} className="mb-6 flex gap-1 overflow-x-auto rounded-full bg-surface-2 p-1">
+      <div
+        role="tablist"
+        aria-label={child.name}
+        className="mb-6 flex gap-1 overflow-x-auto rounded-full bg-surface-2 p-1"
+        onKeyDown={(e) => {
+          // WAI-ARIA tabs: arrows / Home / End move between tabs (roving tabindex).
+          const i = TABS.indexOf(tab);
+          const next = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: TABS.length - 1 }[e.key];
+          if (next === undefined) return;
+          e.preventDefault();
+          const k = TABS[(next + TABS.length) % TABS.length];
+          go(k);
+          document.getElementById(`tab-${k}`)?.focus();
+        }}
+      >
         {TABS.map((k) => (
           <button
             key={k}
+            id={`tab-${k}`}
             role="tab"
             type="button"
             aria-selected={tab === k}
+            aria-controls="child-tabpanel"
+            tabIndex={tab === k ? 0 : -1}
             onClick={() => go(k)}
             className={`h-10 shrink-0 rounded-full px-4 text-sm font-bold transition ${tab === k ? "bg-surface text-primary shadow-soft" : "text-ink-2 hover:text-ink"}`}
           >
@@ -78,7 +95,7 @@ export default function ChildPage() {
         ))}
       </div>
 
-      <div role="tabpanel">
+      <div role="tabpanel" id="child-tabpanel" aria-labelledby={`tab-${tab}`} tabIndex={0}>
         {tab === "progress" && <ProgressTab childId={child.id} />}
         {tab === "changes" && <ChangesTab childId={child.id} />}
         {tab === "aac" && <AacTab childId={child.id} />}

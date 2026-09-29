@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { Lock } from "lucide-react";
 import { Button } from "@/components/ui";
 import { useT, type Lang } from "@/lib/i18n";
+import { useFocusTrap } from "@/lib/useFocusTrap";
 
 const HOLD_MS = 2000;
 
@@ -25,6 +26,8 @@ export function ParentGate({ lang, onPass, onCancel }: { lang: Lang; onPass: () 
   const [q, setQ] = useState<ReturnType<typeof makeQuestion> | null>(null);
   const [holding, setHolding] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const box = useRef<HTMLDivElement>(null);
+  useFocusTrap(box, q ? "question" : "hold");
 
   const start = () => {
     setHolding(true);
@@ -41,7 +44,7 @@ export function ParentGate({ lang, onPass, onCancel }: { lang: Lang; onPass: () 
 
   return (
     <div className="fixed inset-0 z-50 grid place-items-center bg-[#27406b]/40 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="fk-gate-title">
-      <div className="w-full max-w-md rounded-fk-lg bg-surface p-6 text-center shadow-lift">
+      <div ref={box} className="w-full max-w-md rounded-fk-lg bg-surface p-6 text-center shadow-lift">
         <h2 id="fk-gate-title" className="mb-4 flex items-center justify-center gap-2 text-xl font-extrabold text-ink">
           <Lock className="size-5" aria-hidden /> {t("play.gate.title")}
         </h2>

@@ -7,7 +7,7 @@ import { sfx } from "@/lib/audio";
 import { usePlay } from "@/features/play/context";
 import { Target, type SelectInfo } from "@/features/play/Target";
 import { ChoiceEngine, type ChoiceSpec } from "./choice";
-import { ActionButton, answer, Frame, OptionCard, pick, shuffle, sizeFor, useActT, useClock, useHint } from "./kit";
+import { ActionButton, answer, Frame, OptionCard, pick, shuffle, sizeFor, useActT, useClock, useHint, WatchAgain } from "./kit";
 import type { EngineProps } from "./registry";
 
 // Archetype B (Stage & Replay): watch something, then repeat or recall it.
@@ -120,9 +120,7 @@ function SequenceRound({ seq, options, index, next, last }: { seq: string[]; opt
           );
         })}
       </div>
-      <button type="button" onClick={s.replay} disabled={watching || solved} className="text-base font-bold text-primary underline-offset-4 hover:underline disabled:opacity-40">
-        {t("act.watch_again")}
-      </button>
+      <WatchAgain onSelect={s.replay} disabled={watching || solved} />
       <div className="flex flex-wrap justify-center rounded-fk-lg bg-surface-2 p-4" style={{ gap: 12 + ctx.profile.spacing }}>
         {options.map((id) => (
           <OptionCard key={id} label={VOCAB[id]?.word[ctx.learnLang] ?? id} size={size} disabled={watching || solved} onSelect={(info) => s.tap(id, info)} pulse={s.hintId === id}>
@@ -193,9 +191,7 @@ function LightRound({ seq, index, next, last }: { seq: string[]; index: number; 
           );
         })}
       </div>
-      <button type="button" onClick={s.replay} disabled={watching || solved} className="text-base font-bold text-primary underline-offset-4 hover:underline disabled:opacity-40">
-        {t("act.watch_again")}
-      </button>
+      <WatchAgain onSelect={s.replay} disabled={watching || solved} />
     </Frame>
   );
 }

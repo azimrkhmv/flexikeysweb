@@ -126,7 +126,7 @@ function Goals({ childId }: { childId: string }) {
           {goals.map((g) => (
             <li key={g.id}>
               <label className="flex cursor-pointer items-center gap-3 rounded-2xl p-2 hover:bg-surface-2">
-                <input type="checkbox" className="size-5 accent-[#3fa79c]" checked={g.done} onChange={() => toggle.run(g.id)} />
+                <input type="checkbox" className="size-5 accent-teal" checked={g.done} onChange={() => toggle.run(g.id)} />
                 <span className={`text-sm ${g.done ? "text-muted line-through" : "font-semibold text-ink"}`}>{g.text}</span>
               </label>
             </li>

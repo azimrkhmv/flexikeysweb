@@ -111,8 +111,8 @@ export default function DesignPage() {
                 <Bars data={["M", "T", "W", "T", "F", "S", "S"].map((label, i) => ({ label, value: [8, 12, 0, 15, 9, 18, 6][i] }))} unit=" min" />
               </Card>
               <Card className="space-y-2">
-                <Meter value={0.72} />
-                <Meter value={0.35} tone="var(--fk-sky)" />
+                <Meter value={0.72} label="Example 72%" />
+                <Meter value={0.35} label="Example 35%" tone="var(--fk-sky)" />
               </Card>
             </div>
           </div>

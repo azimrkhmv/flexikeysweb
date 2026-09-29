@@ -90,7 +90,7 @@ export default function PricingPage() {
 
       <div className="mt-8 flex flex-wrap items-center justify-center gap-3 text-sm font-bold text-ink-2">
         {t("mkt.pricing.pay")}
-        <span className="rounded-xl border border-line bg-surface px-4 py-2 text-[#1a9fb5]">Payme</span>
+        <span className="rounded-xl border border-line bg-surface px-4 py-2 text-[#0b7285]">Payme</span>
         <span className="rounded-xl border border-line bg-surface px-4 py-2 text-[#2c63d6]">Click</span>
       </div>
 

@@ -8,9 +8,9 @@
   --fk-line: #e3e8ef;
   --fk-ink: #27406b;
   --fk-ink-2: #4c5b7a;
-  --fk-muted: #7a869e;
+  --fk-muted: #5f6b84; /* ≥4.5:1 on bg, surface, surface-2 */
 
-  --fk-primary: #4867c9;
+  --fk-primary: #3d5bbf; /* ≥4.5:1 with white and on primary-soft */
   --fk-primary-soft: #dfe8f8;
   --fk-sky: #a9c8ec;
   --fk-sky-soft: #e4effb;
@@ -20,7 +20,7 @@
   --fk-sun-soft: #fdf3d4;
   --fk-lavender: #b3a8e8;
   --fk-lavender-soft: #ece9fa;
-  --fk-teal: #3fa79c;
+  --fk-teal: #267870; /* ≥4.5:1 with white; focus ring ≥3:1 on bg — checked by lib/contrast.test.ts */
   --fk-teal-soft: #d9f0ec;
   --fk-peach: #f5c6b5;
   --fk-peach-soft: #fdebe4;
@@ -95,7 +95,7 @@ body {
 [data-scan-active="true"] {
   outline: 5px solid var(--fk-teal);
   outline-offset: 4px;
-  box-shadow: 0 0 0 10px rgb(63 167 156 / 0.18);
+  box-shadow: 0 0 0 10px rgb(38 120 112 / 0.18);
 }
 
 /* Dwell ("waiting") progress ring drawn with a conic gradient on ::after */
@@ -120,8 +120,8 @@ body {
   50% { transform: translateY(-6px); }
 }
 @keyframes fk-pulse {
-  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgb(63 167 156 / 0.35); }
-  50% { transform: scale(1.04); box-shadow: 0 0 0 12px rgb(63 167 156 / 0); }
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgb(38 120 112 / 0.35); }
+  50% { transform: scale(1.04); box-shadow: 0 0 0 12px rgb(38 120 112 / 0); }
 }
 @keyframes fk-pop {
   0% { transform: scale(0.6); opacity: 0; }

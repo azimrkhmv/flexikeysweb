@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ArrowLeft, Check, Copy, ExternalLink, Presentation, Printer, Sparkles, Trash, UserPlus, X } from "lucide-react";
 import { Mascot } from "@/components/Mascot";
 import { Avatar, Bars, Button, Card, Checkbox, Chip, Empty, Field, Input, Meter, Modal, PageHeader, Select, useAction } from "@/components/ui";
@@ -12,6 +12,7 @@ import {
 } from "@/features/pro/shared";
 import { api, sel } from "@/lib/api";
 import { useLang, useT } from "@/lib/i18n";
+import { useFocusTrap } from "@/lib/useFocusTrap";
 import type { Child, ClassRoom } from "@/lib/types";
 
 const AVATARS = ["🐻", "🐱", "🐯", "🦋", "🐼", "🦊", "🐰", "🐸", "🦁", "🐨", "🐧", "🐢"];
@@ -158,7 +159,7 @@ function Roster({ k, kids }: { k: ClassRoom; kids: Child[] }) {
                   </td>
                   <td className={`${td} w-40`}>
                     <div className="mb-1 text-xs text-muted">{avg ? pct(avg) : "—"}</div>
-                    <Meter value={avg} />
+                    <Meter value={avg} label={`${c.name}: ${t("teacher.roster.mastery")}`} />
                   </td>
                   <td className={td}>{t("common.minutes", { n: week })}</td>
                   <td className={td}>{fmtDate(sel.sessions(db, c.id)[0]?.startedAt, lang)}</td>
@@ -457,8 +458,10 @@ function Poster({ k, url }: { k: ClassRoom; url: string }) {
 
 function Classroom({ k, kids, url, onClose }: { k: ClassRoom; kids: Child[]; url: string; onClose: () => void }) {
   const t = useT();
+  const box = useRef<HTMLDivElement>(null);
+  useFocusTrap(box, "classroom");
   return (
-    <div role="dialog" aria-modal="true" aria-label={t("teacher.classroom.open")} className="fixed inset-0 z-50 overflow-y-auto bg-white p-6 text-[#15294d] sm:p-10">
+    <div ref={box} role="dialog" aria-modal="true" aria-label={t("teacher.classroom.open")} className="fixed inset-0 z-50 overflow-y-auto bg-white p-6 text-[#15294d] sm:p-10">
       <button
         type="button"
         onClick={() => {

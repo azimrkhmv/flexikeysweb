@@ -88,7 +88,7 @@ export function MasteryList({ childId }: { childId: string }) {
                   </span>
                   <span className="text-muted">{pct(m.pKnown)}</span>
                 </div>
-                <Meter value={m.pKnown} />
+                <Meter value={m.pKnown} label={level.title[lang]} />
               </li>
             );
           })}

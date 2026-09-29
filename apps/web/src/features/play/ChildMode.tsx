@@ -10,6 +10,7 @@ import { ENGINES, type EngineProps } from "@/features/activities/registry";
 import { api, sel, useDb, type ChildAuth, type DB } from "@/lib/api";
 import { sfx, speak, unlockAudio } from "@/lib/audio";
 import { useT, type Lang } from "@/lib/i18n";
+import { useFocusTrap } from "@/lib/useFocusTrap";
 import type { AdaptiveProfile, Child, InputProfile, InteractionEvent, MascotMood } from "@/lib/types";
 import { Aac } from "./Aac";
 import { ParentGate } from "./ParentGate";
@@ -288,6 +289,7 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
   const showBreak = overlay === "break" || (breakDue && !overlay && !["activity", "start", "bye"].includes(view.v));
   // Switch scanning covers the whole shell (nav included), or only the open overlay.
   useScanning(child.access === "scan" && overlay !== "gate", overlay === "menu" || showBreak ? overlayRef : shellRef);
+  useFocusTrap(overlayRef, overlay === "menu" ? "menu" : showBreak ? "break" : null);
   useEffect(() => {
     if (showBreak) speak(`${t("play.break.title")}. ${t("play.break.body")}`, lang);
   }, [showBreak, t, lang]);
@@ -388,15 +390,13 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
             <span aria-hidden>{child.avatar}</span> {child.name}
           </span>
           <div className="ml-auto flex items-center gap-2">
-            <button
-              type="button"
-              aria-label={t("play.fullscreen")}
-              title={t("play.fullscreen")}
-              onClick={() => (document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.())?.catch?.(() => {})}
-              className="grid size-12 place-items-center rounded-full bg-surface/70 text-ink-2"
+            <Target
+              label={t("play.fullscreen")}
+              onSelect={() => void (document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.())?.catch?.(() => {})}
+              className="grid place-items-center rounded-full bg-surface/70 text-ink-2"
             >
-              <Maximize className="size-5" aria-hidden />
-            </button>
+              <Maximize className="size-7" aria-hidden />
+            </Target>
             <Target label={t("play.pause")} onSelect={() => setOverlay("menu")} className="grid place-items-center rounded-full bg-surface/90 text-ink shadow-soft">
               <Pause className="size-8" aria-hidden />
             </Target>

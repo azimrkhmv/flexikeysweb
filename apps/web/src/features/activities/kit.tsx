@@ -114,6 +114,16 @@ export function Dots({ total, done }: { total: number; done: number }) {
   );
 }
 
+/** "Watch again" for Stage & Replay games — a full-size child target, reachable by switch scanning. */
+export function WatchAgain({ onSelect, disabled }: { onSelect: () => void; disabled?: boolean }) {
+  const t = useActT();
+  return (
+    <Target label={t("act.watch_again")} onSelect={onSelect} disabled={disabled} className="rounded-full bg-sky-soft px-8 text-lg font-extrabold text-ink shadow-soft disabled:opacity-40">
+      🔁 {t("act.watch_again")}
+    </Target>
+  );
+}
+
 export function ActionButton({ label, onSelect, pulse }: { label: string; onSelect: () => void; pulse?: boolean }) {
   return (
     <Target label={label} onSelect={onSelect} pulse={pulse} className="fk-pop rounded-full bg-sky-soft px-10 text-xl font-extrabold text-ink shadow-soft hover:bg-[#d6e6f8]">
@@ -166,17 +176,11 @@ export function Frame({
   return (
     <section className="flex h-full min-h-[480px] w-full flex-col rounded-fk-lg border border-line bg-surface p-4 shadow-soft sm:p-6">
       <div className="flex items-center justify-between gap-4">
-        <span className="w-12" />
+        <span className="w-[76px]" />
         <Dots total={total} done={done} />
-        <button
-          type="button"
-          onClick={sayAll}
-          aria-label={t("act.replay")}
-          title={t("act.replay")}
-          className="grid size-12 place-items-center rounded-full bg-sky-soft text-ink transition hover:bg-[#d6e6f8]"
-        >
-          <Volume2 className="size-6" aria-hidden />
-        </button>
+        <Target label={t("act.replay")} onSelect={sayAll} className="grid place-items-center rounded-full bg-sky-soft text-ink transition hover:bg-[#d6e6f8]">
+          <Volume2 className="size-8" aria-hidden />
+        </Target>
       </div>
       <h2 className="mt-3 text-center text-2xl font-extrabold text-ink sm:text-3xl">{prompt}</h2>
       <div className="flex flex-1 flex-col items-center justify-center gap-6 py-4">{children}</div>

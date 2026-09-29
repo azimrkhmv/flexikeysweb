@@ -45,7 +45,7 @@ export default function AdminContent() {
                       {Math.round(ratio * 100)}% · {t("admin.content.missing", { n: missing })}
                     </span>
                   </div>
-                  <Meter value={ratio} />
+                  <Meter value={ratio} label={t(`lang.${l}`)} />
                 </li>
               );
             })}

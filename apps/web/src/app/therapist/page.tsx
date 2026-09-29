@@ -49,7 +49,7 @@ export default function TherapistHome() {
                         <span>{t("teacher.roster.mastery")}</span>
                         <span>{avg ? pct(avg) : "—"}</span>
                       </div>
-                      <Meter value={avg} />
+                      <Meter value={avg} label={`${c.name}: ${t("teacher.roster.mastery")}`} />
                       <div className="mt-3 flex flex-wrap gap-2">
                         <Chip tone="sky">
                           {t("teacher.roster.last")}: {fmtDate(sel.sessions(db, c.id)[0]?.startedAt, lang)}

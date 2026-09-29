@@ -51,7 +51,7 @@ export function ProgressTab({ childId }: { childId: string }) {
             const state = sel.levelState(db, childId, i);
             const muted = m.attempts === 0 && state !== "open";
             return (
-              <li key={l.id} className={`flex items-center gap-3 rounded-2xl p-3 ${muted ? "opacity-55" : "bg-surface-2"}`}>
+              <li key={l.id} className={`flex items-center gap-3 rounded-2xl p-3 ${muted ? "border border-dashed border-line" : "bg-surface-2"}`}>
                 <span className="text-2xl" aria-hidden>
                   {l.emoji}
                 </span>
@@ -64,7 +64,7 @@ export function ProgressTab({ childId }: { childId: string }) {
                   </div>
                   {m.attempts > 0 && (
                     <div className="flex items-center gap-2">
-                      <Meter value={m.pKnown} />
+                      <Meter value={m.pKnown} label={l.title[lang]} />
                       <span className="w-10 text-right text-xs font-bold text-ink-2">{Math.round(m.pKnown * 100)}%</span>
                     </div>
                   )}

@@ -13,7 +13,7 @@ export function AccessPicker({ value, onChange }: { value: AccessMode; onChange:
       <legend className="mb-1 text-sm font-bold">{t("parent.field.access")}</legend>
       {ACCESS.map((a) => (
         <label key={a} className={`flex cursor-pointer gap-3 rounded-2xl border p-3 ${value === a ? "border-teal bg-teal-soft/50" : "border-line hover:bg-surface-2"}`}>
-          <input type="radio" name="access" className="mt-1 size-4 accent-[#3fa79c]" checked={value === a} onChange={() => onChange(a)} />
+          <input type="radio" name="access" className="mt-1 size-4 accent-teal" checked={value === a} onChange={() => onChange(a)} />
           <span>
             <span className="block font-bold">{t(`parent.access.${a}`)}</span>
             <span className="block text-sm text-muted">{t(`parent.access.${a}Hint`)}</span>

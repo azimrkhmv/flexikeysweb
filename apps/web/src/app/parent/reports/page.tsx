@@ -97,7 +97,7 @@ function WeeklyReport({ db, child, onPrint }: { db: DB; child: Child; onPrint: (
               {mastery.slice(0, 5).map((m) => (
                 <li key={m.skill} className="flex items-center gap-3 text-sm">
                   <span className="w-32 truncate font-semibold">{LEVEL_BY_ID[m.skill]?.title[lang]}</span>
-                  <Meter value={m.pKnown} />
+                  <Meter value={m.pKnown} label={LEVEL_BY_ID[m.skill]?.title[lang] ?? m.skill} />
                   <span className="w-10 text-right font-bold">{Math.round(m.pKnown * 100)}%</span>
                 </li>
               ))}
