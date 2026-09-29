@@ -18,6 +18,8 @@ const csp = [
 ].join("; ");
 
 const nextConfig: NextConfig = {
+  // Self-contained server in .next/standalone for the Docker image (PRD §29–30: Docker Compose on an Uzbek VM).
+  output: "standalone",
   poweredByHeader: false,
   async headers() {
     return [

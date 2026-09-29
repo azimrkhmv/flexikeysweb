@@ -1,6 +1,6 @@
 import { defineConfig, devices } from "@playwright/test";
 
-// E2E runs against a production build (`next start`), the same code users get.
+// E2E runs against the production build and standalone server (same as the Docker image).
 const PORT = 3100;
 
 export default defineConfig({
@@ -17,7 +17,7 @@ export default defineConfig({
     { name: "tablet", use: { ...devices["Desktop Chrome"], viewport: { width: 820, height: 1180 }, hasTouch: true } },
   ],
   webServer: {
-    command: `npm run build && npm run start -- -p ${PORT}`,
+    command: `npm run build && PORT=${PORT} npm start`, // the standalone server the Docker image runs
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI,
     timeout: 240_000,
