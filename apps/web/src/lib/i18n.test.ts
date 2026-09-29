@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { areaMessages } from "@/messages";
 import { LEVELS } from "@/content/levels";
@@ -23,7 +23,8 @@ describe("i18n catalogs", () => {
   });
 
   it("every ApiError code thrown by the API has an err.* message in all languages", () => {
-    const src = readFileSync(new URL("./api.ts", import.meta.url), "utf8");
+    const dir = new URL("./api/", import.meta.url);
+    const src = readdirSync(dir).map((f) => readFileSync(new URL(f, dir), "utf8")).join("\n");
     const codes = [...new Set([...src.matchAll(/new ApiError\("([a-z_]+)"\)/g)].map((m) => m[1]))];
     expect(codes.length).toBeGreaterThan(10);
     for (const lang of ["en", "uz", "ru"] as const)

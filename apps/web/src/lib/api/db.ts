@@ -1,0 +1,20 @@
+"use client";
+
+// The persisted mock database and its read/write primitives. `write` = one transaction.
+
+import { persisted, useStore } from "../store";
+import { DB_VERSION, type DB } from "./schema";
+import { seed } from "./seed";
+
+export const dbStore = persisted<DB>("fk_db_v1", seed(), { accept: (d) => d?.v === DB_VERSION });
+export const useDb = () => useStore(dbStore);
+
+export const read = () => dbStore.get();
+export const write = (fn: (db: DB) => void) =>
+  dbStore.set((prev) => {
+    const next = structuredClone(prev);
+    fn(next);
+    return next;
+  });
+/** Simulated network latency so loading states are exercised. */
+export const net = <T>(value: T, ms = 120) => new Promise<T>((res) => setTimeout(() => res(value), ms));
