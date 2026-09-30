@@ -10,6 +10,8 @@ import type { AdaptiveProfile, Child, ClassRoom, ConsentScope, InputProfile, Lev
 // ---------------------------------------------------------------- selectors (pure)
 export const sel = {
   me: (db: DB) => db.users.find((u) => u.id === db.auth.userId) ?? null,
+  /** Live mode: server data not loaded yet — show a spinner, don't conclude "signed out". */
+  loading: (db: DB) => !!db.loading,
   childAuth: (db: DB) => (db.auth.child && db.auth.child.exp > Date.now() ? db.auth.child : null),
   child: (db: DB, childId: string) => db.children.find((c) => c.id === childId) ?? null,
   childrenOf: (db: DB, parentId: string) => db.children.filter((c) => c.parentId === parentId),

@@ -77,6 +77,30 @@ src/messages          i18n catalogs per area (en/uz/ru). Routes register only wh
   therapist views all use it. Adults see why an assigned level is still closed ("Opens after … is finished",
   "Needs the Family plan"); the child sees a sleeping cloud and hears a gentle line.
 
+## Live mode (real backend)
+
+`NEXT_PUBLIC_API_MODE=live` (build time) switches the connected areas to the FastAPI backend
+(`Shoxjahon001/flexikeys`, branch `web-backend`). The browser calls `/api/v1` on its own origin;
+`next.config.ts` forwards it to `FK_API_ORIGIN` (default `http://localhost:8000`) — in production the
+reverse proxy does this. Auth is httpOnly cookies set by the API; writes carry the CSRF token.
+
+Connected in this phase: sign-up / login / logout (email + password), email verification link,
+add child with consent, child settings, consents (grant / withdraw), export, delete, child mode
+(session, events, activity completion with server-granted rewards and the mastery gate, adaptive
+profile), cloud shop (buy with earned coins, equip), and the parent's progress / "what changed" views.
+Everything else says "Coming soon" in live mode instead of showing demo data.
+
+```bash
+# backend: cd flexikeys/infra && docker compose up -d   (API on :8000)
+NEXT_PUBLIC_API_MODE=live npm run dev
+npm run e2e:live   # the full path against the running backend
+```
+
+Code: `src/lib/live/` — `http.ts` (client, refresh on 401, error codes), `map.ts` (backend ↔ web
+shapes, unit-tested), `db.ts` (TanStack Query reads shaped like the mock DB so pages and `sel.*` are
+unchanged), `api.ts` (writes). The level manifest the server gates on is `src/content/levels.manifest.json`
+(`UPDATE_MANIFEST=1 npm test` regenerates it; copy it to the backend's `flexikeys/content/`).
+
 ## Security headers
 
 Defined in `security-headers.ts` and applied to every response by `next.config.ts`:

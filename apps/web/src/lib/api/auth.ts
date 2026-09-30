@@ -68,7 +68,8 @@ export const authApi = {
     return net(true, 400);
   },
   /** POST /auth/verify-email */
-  async verifyEmail() {
+  async verifyEmail(token?: string) {
+    void token; // mock: the demo button verifies directly (live: token from the emailed link)
     const u = requireUser();
     write((db) => {
       db.users.find((x) => x.id === u.id)!.emailVerified = true;

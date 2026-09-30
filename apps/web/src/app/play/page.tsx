@@ -1,5 +1,6 @@
 "use client";
 
+import { LiveProvider } from "@/lib/live/client";
 import "@/messages/child";
 import Link from "next/link";
 import { LangSwitch, Logo } from "@/components/brand";
@@ -12,11 +13,11 @@ import { useT } from "@/lib/i18n";
 import { useMounted } from "@/lib/store";
 
 /** /play — child mode if a child token exists, otherwise "Who is playing?" for a signed-in parent. */
-export default function PlayPage() {
+function PlayPage() {
   const mounted = useMounted();
   const db = useDb();
   const t = useT();
-  if (!mounted) return <Spinner />;
+  if (!mounted || sel.loading(db)) return <Spinner />;
 
   const auth = sel.childAuth(db);
   const child = auth && sel.child(db, auth.childId);
@@ -74,5 +75,13 @@ export default function PlayPage() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <LiveProvider>
+      <PlayPage />
+    </LiveProvider>
   );
 }

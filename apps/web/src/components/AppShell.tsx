@@ -5,12 +5,14 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Bell, LogOut, type LucideIcon } from "lucide-react";
-import { api, sel, useDb } from "@/lib/api";
+import { api, LIVE, sel, useDb } from "@/lib/api";
+import { LiveProvider } from "@/lib/live/client";
 import { useLang, useT } from "@/lib/i18n";
 import { useMounted } from "@/lib/store";
 import { useDismiss } from "@/lib/useDismiss";
 import type { Role, User } from "@/lib/types";
 import { homeFor, LangSwitch, Logo } from "./brand";
+import { NotConnected } from "./NotConnected";
 import { Spinner } from "./ui";
 
 export interface NavItem {
@@ -36,25 +38,28 @@ export function RequireRole({ role, children }: { role: Role | Role[]; children:
   const ok = !!me && roles.includes(me.role) && me.status !== "disabled";
 
   useEffect(() => {
-    if (!mounted) return;
+    if (!mounted || sel.loading(db)) return; // live mode: wait for the server before deciding
     if (childMode) router.replace("/play");
     else if (!me) router.replace(`/login?next=${encodeURIComponent(path)}`);
     else if (!roles.includes(me.role)) router.replace(homeFor(me.role));
   });
 
-  if (!mounted || !ok || childMode) return <Spinner />;
+  if (!mounted || sel.loading(db) || !ok || childMode) return <Spinner />;
   return <>{children(me)}</>;
 }
 
 export function AppShell({ role, nav, children }: { role: Role; nav: NavItem[]; children: (me: User) => ReactNode }) {
   return (
-    <RequireRole role={role}>
-      {(me) => (
-        <Shell me={me} nav={nav}>
-          {children(me)}
-        </Shell>
-      )}
-    </RequireRole>
+    <LiveProvider>
+      <RequireRole role={role}>
+        {(me) => (
+          <Shell me={me} nav={nav}>
+            {/* Live mode connects the parent area first; other dashboards come in later phases. */}
+            {LIVE && role !== "parent" ? <NotConnected /> : children(me)}
+          </Shell>
+        )}
+      </RequireRole>
+    </LiveProvider>
   );
 }
 

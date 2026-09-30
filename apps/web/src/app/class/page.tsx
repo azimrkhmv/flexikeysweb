@@ -7,7 +7,8 @@ import { LangSwitch, Logo } from "@/components/brand";
 import { Mascot } from "@/components/Mascot";
 import { Avatar, Spinner, useErrorText } from "@/components/ui";
 import { Target } from "@/features/play/Target";
-import { api } from "@/lib/api";
+import { NotConnected } from "@/components/NotConnected";
+import { api, LIVE } from "@/lib/api";
 import { useT } from "@/lib/i18n";
 import { persisted, useMounted, useStore } from "@/lib/store";
 
@@ -17,6 +18,13 @@ type Roster = Awaited<ReturnType<typeof api.classLoginStart>>;
 const classCode = persisted("fk_class_code", "");
 
 export default function ClassPage() {
+  // Live mode: class-code login isn't on the server yet (PRD Phase 6).
+  if (LIVE)
+    return (
+      <main className="grid min-h-dvh place-items-center p-4">
+        <NotConnected />
+      </main>
+    );
   return (
     <Suspense fallback={<Spinner />}>
       <ClassLogin />

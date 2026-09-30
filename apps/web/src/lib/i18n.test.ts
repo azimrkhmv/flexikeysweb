@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { areaMessages } from "@/messages";
+import { LIVE_ERROR_CODES } from "@/lib/live/http";
 import { LEVELS } from "@/content/levels";
 import { AAC_CARDS } from "@/content/aac";
 
@@ -23,9 +24,12 @@ describe("i18n catalogs", () => {
   });
 
   it("every ApiError code thrown by the API has an err.* message in all languages", () => {
-    const dir = new URL("./api/", import.meta.url);
-    const src = readdirSync(dir).map((f) => readFileSync(new URL(f, dir), "utf8")).join("\n");
-    const codes = [...new Set([...src.matchAll(/new ApiError\("([a-z_]+)"\)/g)].map((m) => m[1]))];
+    const src = ["./api/", "./live/"]
+      .map((d) => new URL(d, import.meta.url))
+      .flatMap((dir) => readdirSync(dir).map((f) => readFileSync(new URL(f, dir), "utf8")))
+      .join("\n");
+    const thrown = [...src.matchAll(/new ApiError\("([a-z_]+)"\)/g)].map((m) => m[1]);
+    const codes = [...new Set([...thrown, ...LIVE_ERROR_CODES])]; // + codes server errors map to
     expect(codes.length).toBeGreaterThan(10);
     for (const lang of ["en", "uz", "ru"] as const)
       for (const code of codes) expect(areaMessages.common[lang] as Record<string, string>, `${lang}: err.${code}`).toHaveProperty([`err.${code}`]);

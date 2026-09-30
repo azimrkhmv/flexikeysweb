@@ -6,7 +6,7 @@ import { useState } from "react";
 import { homeFor } from "@/components/brand";
 import { Button, Field, Input, useAction } from "@/components/ui";
 import { AuthTitle, FormError, GoogleMark } from "@/features/auth/parts";
-import { api, DEMO_PASSWORD } from "@/lib/api";
+import { api, DEMO_PASSWORD, LIVE } from "@/lib/api";
 import { applyAccountLang, useT } from "@/lib/i18n";
 import type { Role, User } from "@/lib/types";
 
@@ -62,12 +62,16 @@ export default function LoginPage() {
         </Button>
       </form>
 
-      <div className="my-5 flex items-center gap-3 text-xs font-bold uppercase text-muted">
-        <span className="h-px flex-1 bg-line" /> {t("auth.or")} <span className="h-px flex-1 bg-line" />
-      </div>
-      <Button variant="outline" size="lg" className="w-full" pending={google.pending} disabled={busy} onClick={async () => go(await google.run())}>
-        <GoogleMark /> {t("auth.google")}
-      </Button>
+      {!LIVE && ( // Google sign-in isn't configured on the server yet
+        <>
+          <div className="my-5 flex items-center gap-3 text-xs font-bold uppercase text-muted">
+            <span className="h-px flex-1 bg-line" /> {t("auth.or")} <span className="h-px flex-1 bg-line" />
+          </div>
+          <Button variant="outline" size="lg" className="w-full" pending={google.pending} disabled={busy} onClick={async () => go(await google.run())}>
+            <GoogleMark /> {t("auth.google")}
+          </Button>
+        </>
+      )}
 
       <p className="mt-6 text-center text-sm text-ink-2">
         {t("auth.login.noAccount")}{" "}
@@ -76,6 +80,7 @@ export default function LoginPage() {
         </Link>
       </p>
 
+      {!LIVE && ( // demo accounts exist only in the in-browser mock
       <section aria-labelledby="demo-title" className="mt-8 rounded-fk bg-surface-2 p-4">
         <h2 id="demo-title" className="font-extrabold text-ink">{t("auth.demo.title")}</h2>
         <p className="mt-1 text-xs text-muted">{t("auth.demo.hint", { pw: DEMO_PASSWORD })}</p>
@@ -103,6 +108,7 @@ export default function LoginPage() {
           ))}
         </ul>
       </section>
+      )}
     </>
   );
 }

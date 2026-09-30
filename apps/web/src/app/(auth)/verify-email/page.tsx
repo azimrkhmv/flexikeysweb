@@ -1,12 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MailCheck } from "lucide-react";
 import { homeFor } from "@/components/brand";
 import { Button, LinkButton, Spinner, useAction } from "@/components/ui";
 import { AuthTitle, FormError, FormNote } from "@/features/auth/parts";
-import { api, sel, useDb } from "@/lib/api";
+import { api, LIVE, sel, useDb } from "@/lib/api";
 import { useT } from "@/lib/i18n";
 import { useMounted } from "@/lib/store";
 
@@ -18,6 +18,14 @@ export default function VerifyEmailPage() {
   const me = mounted ? sel.me(db) : null;
   const [resent, setResent] = useState(false);
   const verify = useAction(api.verifyEmail);
+  // Live: the emailed link lands here with ?token=… — confirm it once, automatically.
+  const tried = useRef(false);
+  useEffect(() => {
+    const token = new URLSearchParams(window.location.search).get("token");
+    if (!LIVE || !token || !me || me.emailVerified || tried.current) return;
+    tried.current = true;
+    void verify.run(token);
+  });
 
   if (!mounted) return <Spinner />;
   if (!me)
@@ -45,8 +53,9 @@ export default function VerifyEmailPage() {
       </span>
       <AuthTitle title={t("auth.verify.title")} lead={t("auth.verify.lead", { email: me.email })} />
       <div className="space-y-3">
-        <p className="rounded-2xl bg-sun-soft px-4 py-3 text-sm font-semibold text-[#7a5a0c]">{t("auth.verify.demo")}</p>
+        {!LIVE && <p className="rounded-2xl bg-sun-soft px-4 py-3 text-sm font-semibold text-[#7a5a0c]">{t("auth.verify.demo")}</p>}
         <FormError>{verify.error}</FormError>
+        {!LIVE && (
         <Button
           size="lg"
           className="w-full"
@@ -57,6 +66,7 @@ export default function VerifyEmailPage() {
         >
           {t("auth.verify.demoButton")}
         </Button>
+        )}
         <Button variant="ghost" className="w-full" onClick={() => setResent(true)}>
           {t("auth.verify.resend")}
         </Button>

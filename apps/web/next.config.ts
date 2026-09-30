@@ -11,6 +11,13 @@ const nextConfig: NextConfig = {
   async headers() {
     return securityHeaders(dev);
   },
+  // Live mode: the browser calls /api/v1 on its own origin (first-party httpOnly cookies, CSP 'self'); here it
+  // is forwarded to the FastAPI backend. In production the reverse proxy (Caddy) does this (PRD §38).
+  async rewrites() {
+    if (process.env.NEXT_PUBLIC_API_MODE !== "live") return [];
+    const origin = process.env.FK_API_ORIGIN ?? "http://localhost:8000";
+    return [{ source: "/api/v1/:path*", destination: `${origin}/api/v1/:path*` }];
+  },
 };
 
 export default nextConfig;

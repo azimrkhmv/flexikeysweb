@@ -1,17 +1,18 @@
 "use client";
 
+import { NotConnected } from "@/components/NotConnected";
 import { useState } from "react";
 import { Check, CreditCard } from "lucide-react";
 import { Button, Card, Chip, PageHeader, useAction } from "@/components/ui";
 import { fmtDate, fmtSum } from "@/lib/format";
-import { api, PRICES, sel, useDb } from "@/lib/api";
+import { LIVE, api, PRICES, sel, useDb } from "@/lib/api";
 import { useLang, useT } from "@/lib/i18n";
 
 type Period = "monthly" | "yearly";
 type Provider = "payme" | "click";
 const PROVIDERS: Record<Provider, string> = { payme: "Payme", click: "Click" };
 
-export default function Billing() {
+function Billing() {
   const t = useT();
   const [lang] = useLang();
   const db = useDb();
@@ -175,4 +176,9 @@ export default function Billing() {
       </Card>
     </>
   );
+}
+
+// Live mode: not connected to the server yet (PRD Phase 5/6).
+export default function Page() {
+  return LIVE ? <NotConnected /> : <Billing />;
 }

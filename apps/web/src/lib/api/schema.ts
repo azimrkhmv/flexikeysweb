@@ -12,6 +12,8 @@ export interface ChildAuth {
 
 export interface DB {
   v: number;
+  /** Live mode: server data still loading (pages show a spinner instead of "signed out"). */
+  loading?: boolean;
   auth: { userId: string | null; child: ChildAuth | null };
   users: User[];
   children: Child[];

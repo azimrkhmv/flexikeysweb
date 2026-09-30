@@ -1,0 +1,149 @@
+{
+  "version": 1,
+  "levels": [
+    {
+      "slug": "letters",
+      "n": 1,
+      "activities": [
+        "letters-type",
+        "letters-path",
+        "letters-light"
+      ]
+    },
+    {
+      "slug": "numbers",
+      "n": 2,
+      "activities": [
+        "numbers-count",
+        "numbers-listen",
+        "numbers-seq"
+      ]
+    },
+    {
+      "slug": "shapes",
+      "n": 3,
+      "activities": [
+        "shapes-same",
+        "shapes-listen",
+        "shapes-path"
+      ]
+    },
+    {
+      "slug": "colors",
+      "n": 4,
+      "activities": [
+        "colors-seq",
+        "colors-listen",
+        "colors-same"
+      ]
+    },
+    {
+      "slug": "family",
+      "n": 5,
+      "activities": [
+        "family-listen",
+        "family-missing",
+        "family-type"
+      ]
+    },
+    {
+      "slug": "animals",
+      "n": 6,
+      "activities": [
+        "animals-listen",
+        "animals-same",
+        "animals-puzzle",
+        "animals-type"
+      ]
+    },
+    {
+      "slug": "fruits",
+      "n": 7,
+      "activities": [
+        "fruits-same",
+        "fruits-sort",
+        "fruits-type"
+      ]
+    },
+    {
+      "slug": "vegetables",
+      "n": 8,
+      "activities": [
+        "veg-listen",
+        "veg-sort",
+        "veg-missing"
+      ]
+    },
+    {
+      "slug": "toys",
+      "n": 9,
+      "activities": [
+        "toys-missing",
+        "toys-same",
+        "toys-puzzle"
+      ]
+    },
+    {
+      "slug": "transport",
+      "n": 10,
+      "activities": [
+        "transport-listen",
+        "transport-sort",
+        "transport-type"
+      ]
+    },
+    {
+      "slug": "body",
+      "n": 11,
+      "activities": [
+        "body-listen",
+        "body-scene",
+        "body-type"
+      ]
+    },
+    {
+      "slug": "clothes",
+      "n": 12,
+      "activities": [
+        "clothes-listen",
+        "clothes-scene",
+        "clothes-same"
+      ]
+    },
+    {
+      "slug": "nature",
+      "n": 13,
+      "activities": [
+        "nature-scene",
+        "nature-light",
+        "nature-path",
+        "nature-listen"
+      ]
+    },
+    {
+      "slug": "words",
+      "n": 14,
+      "activities": [
+        "words-type",
+        "words-listen",
+        "words-zigzag"
+      ]
+    },
+    {
+      "slug": "sentences",
+      "n": 15,
+      "activities": [
+        "sentences-build",
+        "sentences-seq"
+      ]
+    },
+    {
+      "slug": "stories",
+      "n": 16,
+      "activities": [
+        "stories-cloud",
+        "stories-morning"
+      ]
+    }
+  ]
+}

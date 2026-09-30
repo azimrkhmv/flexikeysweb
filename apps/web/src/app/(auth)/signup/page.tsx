@@ -6,7 +6,7 @@ import { useState } from "react";
 import { House, School, Stethoscope, type LucideIcon } from "lucide-react";
 import { Button, Checkbox, Field, Input, Select, useAction } from "@/components/ui";
 import { AuthTitle, FormError } from "@/features/auth/parts";
-import { api } from "@/lib/api";
+import { api, LIVE } from "@/lib/api";
 import { LANG_NAMES, LANGS, useLang, useT, type Lang } from "@/lib/i18n";
 
 type SignupRole = "parent" | "teacher" | "therapist";
@@ -41,7 +41,7 @@ export default function SignupPage() {
         <fieldset>
           <legend className="mb-2 text-sm font-bold text-ink">{t("auth.signup.role")}</legend>
           <div className="space-y-2">
-            {ROLES.map(([r, Icon]) => (
+            {ROLES.filter(([r]) => !LIVE || r !== "therapist").map(([r, Icon]) => (
               <label
                 key={r}
                 className="flex cursor-pointer items-center gap-3 rounded-2xl border border-line p-3 transition hover:bg-surface-2 has-checked:border-teal has-checked:bg-teal-soft/50 has-focus-visible:ring-4 has-focus-visible:ring-primary-soft"
