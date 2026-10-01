@@ -1,0 +1,50 @@
+# Throwaway stack for the live E2E: a fresh, empty Postgres + Redis + the pinned backend image.
+# Nothing is published except the API on localhost; the database lives in memory (tmpfs) and is
+# gone after `down`. Same file locally and in CI (.github/workflows/e2e-live.yml).
+#
+#   export BACKEND_IMAGE=$(cat e2e-live/backend.image)        # or a local build, e.g. flexikeys-backend:local
+#   export E2E_SECRET_KEY=$(openssl rand -hex 32)
+#   docker compose -f e2e-live/compose.yml up -d --wait
+#   FK_API_ORIGIN=http://localhost:58000 npm run e2e:live
+#   docker compose -f e2e-live/compose.yml down
+name: flexikeys-e2e
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: fk
+      POSTGRES_PASSWORD: fk # throwaway, never exposed outside the compose network
+      POSTGRES_DB: flexikeys_e2e
+    tmpfs: [/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fk -d flexikeys_e2e"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  backend:
+    image: ${BACKEND_IMAGE:?set BACKEND_IMAGE — see e2e-live/backend.image}
+    environment:
+      APP_ENV: development # http://localhost: cookies without the Secure flag
+      APP_SECRET_KEY: ${E2E_SECRET_KEY:?set E2E_SECRET_KEY, e.g. $(openssl rand -hex 32)}
+      DATABASE_URL: postgresql+asyncpg://fk:fk@postgres:5432/flexikeys_e2e
+      REDIS_URL: redis://redis:6379/0
+    ports: ["127.0.0.1:${E2E_API_PORT:-58000}:8000"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    healthcheck: # the image's entrypoint runs `alembic upgrade head` first
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=2)"]
+      interval: 3s
+      timeout: 3s
+      retries: 40

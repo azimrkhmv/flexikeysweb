@@ -82,7 +82,7 @@ function Shell({ me, nav, children }: { me: User; nav: NavItem[]; children: Reac
           <span className="hidden rounded-full bg-surface-2 px-3 py-1 text-xs font-bold text-ink-2 sm:inline">{t(`role.${me.role}`)}</span>
           <div className="ml-auto flex items-center gap-2">
             <LangSwitch compact />
-            <Notifications userId={me.id} />
+            {!LIVE && <Notifications userId={me.id} />}
             <span className="hidden text-sm font-bold text-ink md:inline">{me.name}</span>
             <button
               type="button"

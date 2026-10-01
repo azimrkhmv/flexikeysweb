@@ -5,18 +5,21 @@ import "@/messages/child";
 import Link from "next/link";
 import { LangSwitch, Logo } from "@/components/brand";
 import { Mascot } from "@/components/Mascot";
-import { Avatar, buttonClass, LinkButton, Spinner } from "@/components/ui";
+import { Avatar, buttonClass, LinkButton, Spinner, useAction } from "@/components/ui";
 import { ChildMode } from "@/features/play/ChildMode";
 import { Target } from "@/features/play/Target";
 import { api, sel, useDb } from "@/lib/api";
 import { useT } from "@/lib/i18n";
 import { useMounted } from "@/lib/store";
+import { useState } from "react";
 
 /** /play — child mode if a child token exists, otherwise "Who is playing?" for a signed-in parent. */
 function PlayPage() {
   const mounted = useMounted();
   const db = useDb();
   const t = useT();
+  const start = useAction(api.startChildMode);
+  const [blocked, setBlocked] = useState<string | null>(null);
   if (!mounted || sel.loading(db)) return <Spinner />;
 
   const auth = sel.childAuth(db);
@@ -50,7 +53,7 @@ function PlayPage() {
                 <Target
                   key={c.id}
                   label={c.name}
-                  onSelect={() => api.startChildMode(c.id)}
+                  onSelect={async () => setBlocked((await start.run(c.id)) === undefined ? c.id : null)}
                   className="flex min-w-40 flex-col items-center gap-2 rounded-fk-lg border-4 border-white bg-surface p-5 shadow-soft"
                 >
                   <Avatar emoji={c.avatar} size={96} />
@@ -58,6 +61,16 @@ function PlayPage() {
                 </Target>
               ))}
             </div>
+            {start.error && (
+              <div role="alert" className="max-w-xl space-y-3 rounded-2xl bg-sun-soft px-4 py-3 text-sm font-semibold text-[#7a5a0c]">
+                <p>{start.error}</p>
+                {blocked && (
+                  <LinkButton href={`/parent/child/${blocked}#privacy`} size="sm" variant="outline">
+                    {t("common.openPrivacy")}
+                  </LinkButton>
+                )}
+              </div>
+            )}
             {!kids.length && <LinkButton href="/parent/children/new">{t("play.who.add")}</LinkButton>}
           </>
         ) : (

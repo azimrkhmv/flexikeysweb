@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { DEFAULT_PROFILE } from "@/lib/adaptive";
+import { errorCode } from "./http";
 import { changeFrom, childFrom, consentsFrom, eventTo, profileFrom, scopeFrom, scopeTo, sessionsFrom } from "./map";
 
 describe("live ↔ web mappings", () => {
@@ -46,5 +47,12 @@ describe("live ↔ web mappings", () => {
 
   it("daily minutes → one pseudo-session per active day", () => {
     expect(sessionsFrom("c", [{ date: "2026-09-29", value: 0 }, { date: "2026-09-30", value: 6.4 }])).toMatchObject([{ minutes: 6, startedAt: "2026-09-30T12:00:00.000Z" }]);
+  });
+
+  it("server errors → explained codes (consent gate, AI consent, locked level)", () => {
+    expect(errorCode(403, "consent_required", "/sessions")).toBe("consent_missing");
+    expect(errorCode(403, "ai_consent_required", "/aac/compose-sentence")).toBe("ai_consent_required");
+    expect(errorCode(422, "Core consent is required", "/children")).toBe("consent_required");
+    expect(errorCode(403, "level_locked", "/activities/complete")).toBe("level_locked");
   });
 });

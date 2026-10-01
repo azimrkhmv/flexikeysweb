@@ -35,7 +35,9 @@ Class login for children: `/class`, then enter code `KQ7M4P`. You can reset all 
 
 ## What is real and what is mocked
 
-The FastAPI backend lives in another repository. This app does not call it yet:
+The FastAPI backend lives in another repository. By default (`NEXT_PUBLIC_API_MODE=mock`) the app runs on an
+in-browser mock of it; `NEXT_PUBLIC_API_MODE=live` connects the parent area and child mode to the real API
+(see **Live mode** below). In mock mode:
 
 - **`src/lib/api/` is an in-browser mock of the API**, split by domain (`auth`, `children`, `play`, `care`, `teacher`, `ai`, `billing`, `admin`, plus `schema`, `seed`, `db`, `selectors`, `guards`). Its data is stored in `localStorage` under the key `fk_db_v1`. Every mutation has a comment naming the endpoint it stands for (PRD §14). Pages read data only through the `sel.*` selectors (a test enforces it). Authorization rules (`sel.access`, the same logic as `can_access_child`, PRD §15.4), consent checks, server-side rewards, session ownership and billing idempotency all run inside `src/lib/api/`. Components never make these decisions.
 - The **adaptive engine** is mirrored client-side in `src/lib/adaptive.ts`. It uses per-session metrics, BKT and a bounded policy. The policy changes each value by at most one step per session, and each rule has a matching rule that reduces help again. Hysteresis expires, which fixes the B5 ratchet. Tests are in `adaptive.test.ts`.
@@ -43,7 +45,6 @@ The FastAPI backend lives in another repository. This app does not call it yet:
 - **The AI assistant and teacher helper are rule-based stubs.** They use only aggregated data with no names, need consent and have a daily quota.
 - **Payme and Click checkout is simulated.** An order is created, the provider callback is faked, and then the entitlement is granted.
 
-To connect the real backend, replace the body of each `api.*` function with a `fetch("/api/v1/...")` call (cookie auth + CSRF header). Then swap `useDb()` reads for TanStack Query hooks. Both changes stay inside `src/lib/api/`.
 
 ## Structure
 
@@ -88,13 +89,41 @@ Connected in this phase: sign-up / login / logout (email + password), email veri
 add child with consent, child settings, consents (grant / withdraw), export, delete, child mode
 (session, events, activity completion with server-granted rewards and the mastery gate, adaptive
 profile), cloud shop (buy with earned coins, equip), and the parent's progress / "what changed" views.
-Everything else says "Coming soon" in live mode instead of showing demo data.
+Everything else says "Coming soon" in live mode instead of showing demo data, or is hidden: teacher and
+therapist sign-up, the notification bell, password reset (the server can't send email yet) and account deletion.
+
+**Consent:** no consent record means no consent. For a profile without core consent, e.g. one mirrored from the
+mobile app, child mode doesn't start. The parent sees why, and the Privacy tab offers **Give consent**. The server
+stores nothing for such a child (backend `docs/consent-compatibility.md`).
 
 ```bash
 # backend: cd flexikeys/infra && docker compose up -d   (API on :8000)
 NEXT_PUBLIC_API_MODE=live npm run dev
-npm run e2e:live   # the full path against the running backend
 ```
+
+`FK_API_ORIGIN` and `NEXT_PUBLIC_API_MODE` are read at **build** time: Next bakes the `/api/v1` rewrite into
+`.next`. Changing them needs a rebuild.
+
+### Live E2E (web + API + database)
+
+`e2e-live/compose.yml` starts a throwaway stack: an empty in-memory Postgres, Redis, and a backend **image**,
+with only the API published on `127.0.0.1:58000`. CI uses the same file.
+
+```bash
+export BACKEND_IMAGE=$(cat e2e-live/backend.image)   # or a local build: docker build -t flexikeys-backend:local ../flexikeys/backend
+export E2E_SECRET_KEY=$(openssl rand -hex 32)
+docker compose -f e2e-live/compose.yml up -d --wait
+FK_API_ORIGIN=http://localhost:58000 npm run e2e:live
+docker compose -f e2e-live/compose.yml down
+```
+
+CI (`.github/workflows/e2e-live.yml`) pulls the **private** image pinned by digest in `e2e-live/backend.image`
+(never `latest`) with the job's own `GITHUB_TOKEN`. One-time setup:
+1. Put both repos in one GitHub organization.
+2. On the backend package (`ghcr.io/<org>/flexikeys/backend`), go to Package settings → Manage Actions access and add this repo with **Read**.
+3. Paste a digest from the backend's "Backend image" workflow summary into `e2e-live/backend.image`.
+
+Until step 3 the job is skipped with a warning.
 
 Code: `src/lib/live/` — `http.ts` (client, refresh on 401, error codes), `map.ts` (backend ↔ web
 shapes, unit-tested), `db.ts` (TanStack Query reads shaped like the mock DB so pages and `sel.*` are
@@ -125,8 +154,12 @@ pages; framing blocked; an injected third-party script and an outside `fetch` ar
 `next.config.ts` builds a standalone server. From `apps/web`:
 
 ```bash
-docker build -t flexikeys-web --build-arg NEXT_PUBLIC_SITE_URL=https://flexikeys.uz .
+docker build -t flexikeys-web --build-arg NEXT_PUBLIC_SITE_URL=https://flexikeys.uz \
+  --build-arg NEXT_PUBLIC_API_MODE=live .          # default: mock
 docker run -p 3000:3000 flexikeys-web
 ```
+
+In production the reverse proxy routes `/api/v1` to the API. If the web container should proxy it instead, pass
+`--build-arg FK_API_ORIGIN=http://backend:8000`. It's a build-time setting.
 
 Settings are listed in `.env.example`. `/dev/design` is only included in production builds with `FK_DEV_PAGES=1`.

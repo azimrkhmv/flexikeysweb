@@ -1,9 +1,10 @@
 {
-  "version": 1,
+  "version": 2,
   "levels": [
     {
       "slug": "letters",
       "n": 1,
+      "free": true,
       "activities": [
         "letters-type",
         "letters-path",
@@ -13,6 +14,7 @@
     {
       "slug": "numbers",
       "n": 2,
+      "free": true,
       "activities": [
         "numbers-count",
         "numbers-listen",
@@ -22,6 +24,7 @@
     {
       "slug": "shapes",
       "n": 3,
+      "free": true,
       "activities": [
         "shapes-same",
         "shapes-listen",
@@ -31,6 +34,7 @@
     {
       "slug": "colors",
       "n": 4,
+      "free": true,
       "activities": [
         "colors-seq",
         "colors-listen",
@@ -40,6 +44,7 @@
     {
       "slug": "family",
       "n": 5,
+      "free": false,
       "activities": [
         "family-listen",
         "family-missing",
@@ -49,6 +54,7 @@
     {
       "slug": "animals",
       "n": 6,
+      "free": false,
       "activities": [
         "animals-listen",
         "animals-same",
@@ -59,6 +65,7 @@
     {
       "slug": "fruits",
       "n": 7,
+      "free": false,
       "activities": [
         "fruits-same",
         "fruits-sort",
@@ -68,6 +75,7 @@
     {
       "slug": "vegetables",
       "n": 8,
+      "free": false,
       "activities": [
         "veg-listen",
         "veg-sort",
@@ -77,6 +85,7 @@
     {
       "slug": "toys",
       "n": 9,
+      "free": false,
       "activities": [
         "toys-missing",
         "toys-same",
@@ -86,6 +95,7 @@
     {
       "slug": "transport",
       "n": 10,
+      "free": false,
       "activities": [
         "transport-listen",
         "transport-sort",
@@ -95,6 +105,7 @@
     {
       "slug": "body",
       "n": 11,
+      "free": false,
       "activities": [
         "body-listen",
         "body-scene",
@@ -104,6 +115,7 @@
     {
       "slug": "clothes",
       "n": 12,
+      "free": false,
       "activities": [
         "clothes-listen",
         "clothes-scene",
@@ -113,6 +125,7 @@
     {
       "slug": "nature",
       "n": 13,
+      "free": false,
       "activities": [
         "nature-scene",
         "nature-light",
@@ -123,6 +136,7 @@
     {
       "slug": "words",
       "n": 14,
+      "free": false,
       "activities": [
         "words-type",
         "words-listen",
@@ -132,6 +146,7 @@
     {
       "slug": "sentences",
       "n": 15,
+      "free": false,
       "activities": [
         "sentences-build",
         "sentences-seq"
@@ -140,6 +155,7 @@
     {
       "slug": "stories",
       "n": 16,
+      "free": false,
       "activities": [
         "stories-cloud",
         "stories-morning"

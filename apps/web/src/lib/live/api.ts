@@ -8,7 +8,7 @@ import type { Lang } from "@/lib/translate";
 import type { Child, ConsentScope, InputProfile, InteractionEvent, Role, User } from "@/lib/types";
 import { queryClient } from "./client";
 import { http } from "./http";
-import { childFrom, childTo, eventTo, scopeTo, userFrom, type BChild, type BUser } from "./map";
+import { childFrom, childTo, eventTo, scopeTo, userFrom, type BChild, type BConsent, type BUser } from "./map";
 import { liveChild } from "./state";
 import type { childrenApi } from "@/lib/api/children";
 
@@ -22,8 +22,11 @@ const refetch = () => queryClient.invalidateQueries();
 const id = () => crypto.randomUUID();
 
 async function signedIn(): Promise<User> {
-  const me = userFrom(await http<BUser>("GET", "/me"));
-  queryClient.setQueryData(["me"], null); // drop any cached "signed out"
+  const raw = await http<BUser>("GET", "/me");
+  const me = userFrom(raw);
+  // Seed the cache with who is signed in: a cached `null` ("signed out") would otherwise survive
+  // until some page refetches it, and the next page would bounce back to /login.
+  queryClient.setQueryData(["me"], raw);
   await refetch();
   sessionStore.set({ role: me.role });
   return me;
@@ -109,6 +112,10 @@ export const liveApi = {
 
   // ------------------------------------------------------------ child mode
   async startChildMode(childId: string) {
+    // No core consent recorded (e.g. a profile mirrored from the mobile app) → the server would store
+    // nothing, so don't start a session the child can't keep; the page explains and links to Privacy.
+    const consents = await http<BConsent[]>("GET", `/children/${childId}/consents`);
+    if (!consents.some((c) => c.consent_type === scopeTo("core"))) throw new ApiError("consent_missing");
     await http("POST", `/children/${childId}/session`); // sets the httpOnly fk_child cookie
     liveChild.set({ childId, grantedBy: "parent", exp: Date.now() + CHILD_TOKEN_MS });
     await refetch();

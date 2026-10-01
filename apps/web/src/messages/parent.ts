@@ -138,6 +138,9 @@ export const parent = {
 
     "parent.privacy.consents": "Consents",
     "parent.privacy.on": "On",
+    "parent.privacy.coreMissing": "No consent is recorded for this profile. Until you give it, FlexiKeys stores nothing about your child's play.",
+    "parent.privacy.coreGive": "Give consent",
+    "parent.privacy.notGiven": "Not given",
     "parent.privacy.coreHint": "Core consent is needed for the profile to exist. To withdraw it, delete the profile below.",
     "parent.privacy.since": "Given {date} · version {v}",
     "parent.privacy.withdrawHint": "When you turn something off, the related processing stops within 24 hours.",
@@ -374,6 +377,9 @@ export const parent = {
 
     "parent.privacy.consents": "Roziliklar",
     "parent.privacy.on": "Yoqilgan",
+    "parent.privacy.coreMissing": "Bu profil uchun rozilik qayd etilmagan. Siz rozilik bermaguningizcha FlexiKeys farzandingizning oʻyini haqida hech narsa saqlamaydi.",
+    "parent.privacy.coreGive": "Rozilik berish",
+    "parent.privacy.notGiven": "Berilmagan",
     "parent.privacy.coreHint": "Profil mavjud boʻlishi uchun asosiy rozilik kerak. Uni qaytarish uchun quyida profilni oʻchiring.",
     "parent.privacy.since": "{date} da berilgan · versiya {v}",
     "parent.privacy.withdrawHint": "Biror narsani oʻchirsangiz, tegishli ishlov 24 soat ichida toʻxtaydi.",
@@ -610,6 +616,9 @@ export const parent = {
 
     "parent.privacy.consents": "Согласия",
     "parent.privacy.on": "Включено",
+    "parent.privacy.coreMissing": "Для этого профиля не записано согласие. Пока вы его не дадите, FlexiKeys ничего не сохраняет о занятиях ребёнка.",
+    "parent.privacy.coreGive": "Дать согласие",
+    "parent.privacy.notGiven": "Не дано",
     "parent.privacy.coreHint": "Основное согласие нужно, чтобы профиль существовал. Чтобы отозвать его, удалите профиль ниже.",
     "parent.privacy.since": "Дано {date} · версия {v}",
     "parent.privacy.withdrawHint": "Если вы что-то выключите, связанная обработка прекратится в течение 24 часов.",

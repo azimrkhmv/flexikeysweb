@@ -553,9 +553,19 @@ export function PrivacyTab({ child }: { child: Child }) {
         <div className="rounded-2xl bg-surface-2 p-4">
           <div className="flex items-start justify-between gap-3">
             <p className="text-sm font-semibold">{t("consent.core")}</p>
-            <Chip tone="leaf">{t("parent.privacy.on")}</Chip>
+            {granted("core") ? <Chip tone="leaf">{t("parent.privacy.on")}</Chip> : <Chip tone="sun">{t("parent.privacy.notGiven")}</Chip>}
           </div>
-          <p className="mt-2 text-xs text-muted">{t("parent.privacy.coreHint")}</p>
+          {granted("core") ? (
+            <p className="mt-2 text-xs text-muted">{t("parent.privacy.coreHint")}</p>
+          ) : (
+            // Never assumed: a profile without a consent record gets it only from this explicit step.
+            <div className="mt-2 space-y-3">
+              <p className="text-xs text-muted">{t("parent.privacy.coreMissing")}</p>
+              <Button size="sm" pending={set.pending} onClick={() => set.run(child.id, "core", true)}>
+                {t("parent.privacy.coreGive")}
+              </Button>
+            </div>
+          )}
         </div>
         {OPTIONAL.map((s) => {
           const c = granted(s);

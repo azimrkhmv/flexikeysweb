@@ -63,6 +63,22 @@ export default function ChildPage() {
           <Play className="size-5" aria-hidden /> {t("parent.child.playNow")}
         </Button>
       </div>
+      {start.error && (
+        <p role="alert" className="mb-4 text-sm font-semibold text-[#8f3a2c]">
+          {start.error}
+        </p>
+      )}
+      {!sel.hasConsent(db, child.id, "core") && (
+        // No consent recorded (e.g. a profile from the mobile app): nothing is saved until the parent gives it.
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-sun-soft px-4 py-3">
+          <p className="text-sm font-semibold text-[#7a5a0c]">{t("parent.privacy.coreMissing")}</p>
+          {tab !== "privacy" && (
+            <Button size="sm" variant="outline" onClick={() => go("privacy")}>
+              {t("common.openPrivacy")}
+            </Button>
+          )}
+        </div>
+      )}
 
       <div
         role="tablist"

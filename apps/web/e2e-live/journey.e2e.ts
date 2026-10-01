@@ -75,3 +75,72 @@ test("parent signs up, adds a child, the child plays, the parent sees it — all
   await page.getByRole("tab", { name: "Sharing" }).click();
   await expect(page.getByText("Coming soon")).toBeVisible(); // not connected yet — says so honestly
 });
+
+// Session handling on the server, and nothing unconnected is offered as if it worked.
+test("log out and back in; parts the server can't do yet aren't offered", async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("fk_lang", JSON.stringify("en")));
+  const email = `live.auth.${Date.now()}@example.com`;
+  const password = "long-enough-password";
+
+  await page.goto("/signup");
+  await expect(page.getByText("Teacher", { exact: true })).toHaveCount(0); // only the parent area is connected
+  await page.getByLabel("Your name").fill("Aziz");
+  await page.getByLabel("Email").fill(email);
+  await page.getByLabel("Password").fill(password);
+  await page.getByText("I agree to the Terms of use and the Privacy policy").click();
+  await page.getByRole("button", { name: "Create account" }).click();
+  await expect(page).toHaveURL(/\/verify-email$/);
+
+  await page.goto("/parent");
+  await expect(page.getByRole("button", { name: /^Notifications/ })).toHaveCount(0); // not connected
+  await page.goto("/parent/account");
+  await expect(page.getByText("Coming soon")).toBeVisible(); // account deletion isn't on the server yet
+  await page.getByRole("button", { name: "Log out" }).first().click();
+  await expect.poll(async () => (await page.context().cookies()).some((c) => c.name === "fk_access")).toBe(false);
+
+  await page.goto("/login");
+  await expect(page.getByRole("link", { name: "Forgot password?" })).toHaveCount(0); // no email transport yet
+  await page.getByLabel("Email").fill(email);
+  await page.getByLabel("Password").fill("wrong-password-123");
+  await page.getByRole("button", { name: "Log in" }).click();
+  await expect(page.getByText("Email or password is not correct.")).toBeVisible();
+  await page.getByLabel("Password").fill(password);
+  await page.getByRole("button", { name: "Log in" }).click();
+  await expect(page).toHaveURL(/\/parent/);
+  await page.goto("/forgot-password");
+  await expect(page.getByText("Coming soon")).toBeVisible();
+});
+
+// No consent recorded (a profile mirrored from the mobile app) = no consent: explained, then fixed by the parent.
+test("a profile without a consent record can't start child mode until the parent consents", async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("fk_lang", JSON.stringify("en")));
+  await page.goto("/signup");
+  await page.getByLabel("Your name").fill("Malika");
+  await page.getByLabel("Email").fill(`live.consent.${Date.now()}@example.com`);
+  await page.getByLabel("Password").fill("long-enough-password");
+  await page.getByText("I agree to the Terms of use and the Privacy policy").click();
+  await page.getByRole("button", { name: "Create account" }).click();
+  await expect(page).toHaveURL(/\/verify-email$/);
+
+  // The mobile app's mirror call: POST /children without consents (same cookie session + CSRF header).
+  const csrf = (await page.context().cookies()).find((c) => c.name === "fk_csrf")?.value ?? "";
+  const res = await page.request.post("/api/v1/children", {
+    headers: { "X-Auth-Transport": "cookie", "X-CSRF-Token": csrf },
+    data: { display_name: "Timur" },
+  });
+  expect(res.status()).toBe(201);
+  const { id } = (await res.json()) as { id: string };
+
+  await page.goto(`/parent/child/${id}`);
+  await expect(page.getByText(/No consent is recorded for this profile/)).toBeVisible();
+  await page.getByRole("button", { name: "Play now" }).click();
+  await expect(page.getByRole("alert").filter({ hasText: "No consent is recorded for this child yet" })).toBeVisible();
+  await expect(page).toHaveURL(new RegExp(`/parent/child/${id}`)); // stayed with the grown-up
+
+  await page.getByRole("button", { name: "Open Privacy" }).click();
+  await expect(page.getByText("Not given")).toBeVisible();
+  await page.getByRole("button", { name: "Give consent" }).click();
+  await expect(page.getByText("Not given")).toHaveCount(0);
+  await page.getByRole("button", { name: "Play now" }).click();
+  await expect(page).toHaveURL(/\/play$/);
+});

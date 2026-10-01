@@ -14,9 +14,12 @@ const BY_TITLE: Record<string, string> = {
     "School sharing consent required": "consent_required",
     "Core consent can't be withdrawn — delete the profile": "core_consent_required_use_delete",
     level_locked: "level_locked",
+    plan_required: "level_locked", // same gentle "not open yet" as the mastery gate (sel.lockReason)
     not_owned: "not_owned",
     already_owned: "already_owned",
     "CSRF check failed": "unauthorized",
+    consent_required: "consent_missing", // the server stores nothing for a child without core consent
+    ai_consent_required: "ai_consent_required",
 };
 
 /** Every code errorCode() can return — each has an err.* message (checked by lib/i18n.test.ts). */

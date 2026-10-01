@@ -4,10 +4,16 @@ import Link from "next/link";
 import { useState } from "react";
 import { Button, Field, Input } from "@/components/ui";
 import { AuthTitle, FormError, FormNote } from "@/features/auth/parts";
+import { NotConnected } from "@/components/NotConnected";
+import { LIVE } from "@/lib/api";
 import { useT } from "@/lib/i18n";
 
 // ponytail: mock form — the real page posts the single-use token from the email link to POST /auth/reset-password.
 export default function ResetPasswordPage() {
+  return LIVE ? <NotConnected /> : <ResetPassword />; // live: no reset emails yet (see forgot-password)
+}
+
+function ResetPassword() {
   const t = useT();
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");

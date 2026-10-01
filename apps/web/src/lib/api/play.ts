@@ -17,6 +17,8 @@ export const playApi = {
   /** POST /children/{id}/session — parent path. */
   async startChildMode(childId: string) {
     requireChildAccess(childId, ["owner"]);
+    // Same rule as the server: no core consent recorded = nothing may be stored for this child.
+    if (!sel.hasConsent(read(), childId, "core")) throw await net(new ApiError("consent_missing"), 403);
     write((db) => {
       db.auth.child = { childId, grantedBy: "parent", exp: Date.now() + CHILD_TOKEN_MS };
     });

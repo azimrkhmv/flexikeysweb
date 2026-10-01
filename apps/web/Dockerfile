@@ -1,6 +1,11 @@
 # FlexiKeys web — production image (Next.js standalone server). Build from apps/web:
-#   docker build -t flexikeys-web --build-arg NEXT_PUBLIC_SITE_URL=https://flexikeys.uz .
+#   docker build -t flexikeys-web --build-arg NEXT_PUBLIC_SITE_URL=https://flexikeys.uz \
+#     --build-arg NEXT_PUBLIC_API_MODE=live .
 #   docker run -p 3000:3000 flexikeys-web
+# Both NEXT_PUBLIC_API_MODE and FK_API_ORIGIN are fixed at BUILD time (Next bakes rewrites into the
+# build); setting them on `docker run` has no effect. In production the reverse proxy (Caddy) routes
+# /api/v1 to the API itself, so FK_API_ORIGIN only matters when the web server proxies (e.g. compose:
+# --build-arg FK_API_ORIGIN=http://backend:8000).
 
 FROM node:22-alpine AS deps
 WORKDIR /app
@@ -12,7 +17,9 @@ WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
 # Public build-time settings (inlined into the client bundle / static pages).
 ARG NEXT_PUBLIC_SITE_URL=https://flexikeys.uz
-ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
+ARG NEXT_PUBLIC_API_MODE=mock
+ARG FK_API_ORIGIN=http://localhost:8000
+ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL NEXT_PUBLIC_API_MODE=$NEXT_PUBLIC_API_MODE FK_API_ORIGIN=$FK_API_ORIGIN
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run build
