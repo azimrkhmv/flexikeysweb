@@ -25,6 +25,7 @@ const BY_TITLE: Record<string, string> = {
     account_pending: "account_pending",
     confirmation_mismatch: "confirmation_mismatch",
     email_not_verified_by_provider: "email_not_verified_by_provider",
+    quota_exceeded: "quota_exceeded",
     consent_required: "consent_missing", // the server stores nothing for a child without core consent
     ai_consent_required: "ai_consent_required",
 };

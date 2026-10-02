@@ -299,6 +299,24 @@ export const liveApi = {
     return true;
   },
 
+  // ------------------------------------------------------------ AI assistant & helper (PRD §16)
+  /** Needs the AI consent; daily quota on the server. Without an AI provider it answers with the
+   *  built-in summary of the child's own data. */
+  async askAssistant(childId: string, text: string, lang: Lang) {
+    const r = await http<{ message: { content: string } }>("POST", "/ai-assistant/chat", { child_id: childId, message: text, ui_language: lang });
+    await queryClient.invalidateQueries({ queryKey: ["aiMessages", childId] });
+    return r.message.content;
+  },
+  async clearAssistant(childId: string) {
+    await http("DELETE", `/ai-assistant/children/${childId}/messages`);
+    await queryClient.invalidateQueries({ queryKey: ["aiMessages", childId] });
+    return true;
+  },
+  async teacherAiSummary(classId: string, lang: Lang) {
+    const r = await http<{ text: string }>("POST", `/teacher/classes/${classId}/ai-summary`, { language: lang });
+    return r.text;
+  },
+
   // ------------------------------------------------------------ notifications (the bell)
   async markRead(notificationId?: string) {
     await http("POST", "/notifications/read", { id: notificationId ?? null });

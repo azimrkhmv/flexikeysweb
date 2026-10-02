@@ -1,11 +1,10 @@
 "use client";
 
-import { NotConnected } from "@/components/NotConnected";
 import { useEffect, useRef, useState } from "react";
 import { Send, Sparkles, Trash } from "lucide-react";
 import { Mascot } from "@/components/Mascot";
 import { Avatar, Button, Card, Empty, Input, PageHeader, useAction } from "@/components/ui";
-import { LIVE, api, sel, useDb } from "@/lib/api";
+import { api, sel, useDb } from "@/lib/api";
 import { useLang, useT } from "@/lib/i18n";
 
 const SUGGESTED = ["parent.ai.q1", "parent.ai.q2", "parent.ai.q3"];
@@ -135,5 +134,5 @@ function Assistant() {
 
 // Live mode: not connected to the server yet (PRD Phase 5/6).
 export default function Page() {
-  return LIVE ? <NotConnected /> : <Assistant />;
+  return <Assistant />;
 }

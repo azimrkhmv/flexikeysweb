@@ -26,7 +26,7 @@ const empty = (): DB => ({
   goals: [], aacEvents: [], aacCards: [], notifications: [], subscriptions: [], orders: [], audit: [], flags: [], aiMessages: [],
 });
 
-const PER_CHILD = ["levels", "summary", "changes", "consents", "minutes", "skills", "profile", "tasks", "careLinks", "classes", "notes", "goals", "aacCards", "aacSentences"] as const;
+const PER_CHILD = ["levels", "summary", "changes", "consents", "minutes", "skills", "profile", "tasks", "careLinks", "classes", "notes", "goals", "aacCards", "aacSentences", "aiMessages"] as const;
 type PerChild = (typeof PER_CHILD)[number];
 const path = (kind: PerChild, id: string) =>
   ({
@@ -44,6 +44,7 @@ const path = (kind: PerChild, id: string) =>
     goals: `/children/${id}/goals`,
     aacCards: `/children/${id}/aac/cards`,
     aacSentences: `/children/${id}/aac/sentences?days=7`,
+    aiMessages: `/ai-assistant/children/${id}/messages`,
   })[kind];
 
 /** Child mode reads only the child's own endpoints (child token = the httpOnly fk_child cookie). */
@@ -125,7 +126,8 @@ export function useLiveDb(): DB {
     })),
   });
 
-  // ---- every adult: the notification bell
+  // ---- every adult: feature flags and the notification bell
+  const flags = useQuery({ queryKey: ["flags"], enabled: !!user, queryFn: () => http<Record<string, boolean>>("GET", "/flags") });
   const notifications = useQuery({
     queryKey: ["notifications"],
     enabled: !!user,
@@ -138,7 +140,7 @@ export function useLiveDb(): DB {
     if (signedIn !== undefined && sessionStore.get().role !== signedIn) sessionStore.set({ role: signedIn });
   }, [signedIn]);
 
-  const all = [me, kids, classes, linked, invites, notifications, ...own, ...per, ...overviews, ...views];
+  const all = [me, kids, classes, linked, invites, notifications, flags, ...own, ...per, ...overviews, ...views];
   const stamp = all.map((q) => q.dataUpdatedAt).join();
   const loading =
     me.isPending ||
@@ -152,6 +154,7 @@ export function useLiveDb(): DB {
     if (user) {
       db.users = [user];
       db.notifications = (notifications.data ?? []).map((n) => notificationFrom(n, user.id));
+      db.flags = Object.entries(flags.data ?? {}).map(([key, enabled]) => ({ key, enabled, description: "" }));
       db.subscriptions = [{ userId: user.id, plan: "free", status: "active" }]; // billing isn't connected yet
     }
 
@@ -203,6 +206,8 @@ export function useLiveDb(): DB {
         db.goals.push(...((at("goals") as BGoal[] | undefined) ?? []).map(goalFrom));
         db.aacCards.push(...((at("aacCards") as BAacCard[] | undefined) ?? []).map(aacCardFrom));
         db.aacEvents.push(...((at("aacSentences") as BAacSentence[] | undefined) ?? []).map((s, k) => aacEventFrom(id, s, k)));
+        for (const m of (at("aiMessages") as { id: string; role: string; content: string; created_at: string }[] | undefined) ?? [])
+          db.aiMessages.push({ id: m.id, userId: user!.id, childId: id, role: m.role === "user" ? "user" : "assistant", text: m.content, at: m.created_at });
         for (const t of (at("tasks") as BTask[] | undefined) ?? []) {
           const a = taskFrom(t, id);
           if (a && !db.assignments.some((x) => x.id === a.id)) db.assignments.push(a);

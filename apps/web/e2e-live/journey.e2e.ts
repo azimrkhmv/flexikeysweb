@@ -224,8 +224,12 @@ test("teacher: class + school profile, class-code login on a shared device, prog
   await expect(tablet).toHaveURL(/\/class/);
   await expect(tablet.getByRole("button", { name: "Bek" })).toBeVisible(); // next child can pick (FR-TCH-2)
 
-  // The teacher removes Bek: access stops, and the device no longer offers him.
+  // The class summary (built on the server; names never go to an AI provider).
   await page.reload();
+  await page.getByRole("button", { name: "Summarize my class" }).click();
+  await expect(page.getByText("Class overview: 1 children.", { exact: false })).toBeVisible();
+
+  // The teacher removes Bek: access stops, and the device no longer offers him.
   await page.getByRole("button", { name: "Remove Bek from class" }).click();
   await page.getByRole("dialog").getByRole("button", { name: "Remove" }).click();
   await expect(page.getByRole("cell", { name: "Bek School profile" })).toHaveCount(0);
@@ -317,4 +321,28 @@ test("My Voice: parent's own card on the child's device, the spoken sentence on 
   await page.getByRole("link", { name: /Timur/ }).click();
   await page.getByRole("tab", { name: "My Voice" }).click();
   await expect(page.getByText("“Mosh”")).toBeVisible(); // recent sentences
+});
+
+// Assistant (PRD §16): only with the AI consent; with no AI provider configured it answers from the
+// child's own aggregated data, in the parent's language; the conversation is the child's own.
+test("assistant: answers from the child's own data, and the conversation can be deleted", async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("fk_lang", JSON.stringify("en")));
+  await signUp(page, "Kamola", `live.ai.${Date.now()}@example.com`);
+  await page.goto("/parent/children/new");
+  await page.getByText("Core: store my child's nickname").click();
+  await page.getByText("AI help: send anonymous").click();
+  await page.getByRole("button", { name: "I agree, continue" }).click();
+  await page.getByLabel("Nickname").fill("Aziz");
+  await page.getByRole("button", { name: "Next" }).click();
+  await page.getByRole("button", { name: "Create profile" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "Aziz" })).toBeVisible();
+
+  await page.goto("/parent/assistant");
+  await page.getByLabel("Type your question").fill("What should we practise at home?");
+  await page.getByRole("button", { name: "Send" }).click();
+  await expect(page.getByText(/This week your child played about \d+ minutes/)).toBeVisible();
+  await page.reload(); // the conversation is on the server
+  await expect(page.getByText("What should we practise at home?")).toBeVisible();
+  await page.getByRole("button", { name: "Delete conversation" }).click();
+  await expect(page.getByText("What should we practise at home?")).toHaveCount(0);
 });

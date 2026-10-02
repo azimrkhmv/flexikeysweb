@@ -1,9 +1,14 @@
 {
-  "version": 3,
+  "version": 4,
   "levels": [
     {
       "slug": "letters",
       "n": 1,
+      "title": {
+        "en": "Letters",
+        "uz": "Harflar",
+        "ru": "Буквы"
+      },
       "free": true,
       "activities": [
         "letters-type",
@@ -20,6 +25,11 @@
     {
       "slug": "numbers",
       "n": 2,
+      "title": {
+        "en": "Numbers",
+        "uz": "Raqamlar",
+        "ru": "Цифры"
+      },
       "free": true,
       "activities": [
         "numbers-count",
@@ -36,6 +46,11 @@
     {
       "slug": "shapes",
       "n": 3,
+      "title": {
+        "en": "Shapes",
+        "uz": "Shakllar",
+        "ru": "Фигуры"
+      },
       "free": true,
       "activities": [
         "shapes-same",
@@ -52,6 +67,11 @@
     {
       "slug": "colors",
       "n": 4,
+      "title": {
+        "en": "Colors",
+        "uz": "Ranglar",
+        "ru": "Цвета"
+      },
       "free": true,
       "activities": [
         "colors-seq",
@@ -68,6 +88,11 @@
     {
       "slug": "family",
       "n": 5,
+      "title": {
+        "en": "Family",
+        "uz": "Oila",
+        "ru": "Семья"
+      },
       "free": false,
       "activities": [
         "family-listen",
@@ -83,6 +108,11 @@
     {
       "slug": "animals",
       "n": 6,
+      "title": {
+        "en": "Animals",
+        "uz": "Hayvonlar",
+        "ru": "Животные"
+      },
       "free": false,
       "activities": [
         "animals-listen",
@@ -101,6 +131,11 @@
     {
       "slug": "fruits",
       "n": 7,
+      "title": {
+        "en": "Fruits",
+        "uz": "Mevalar",
+        "ru": "Фрукты"
+      },
       "free": false,
       "activities": [
         "fruits-same",
@@ -117,6 +152,11 @@
     {
       "slug": "vegetables",
       "n": 8,
+      "title": {
+        "en": "Vegetables",
+        "uz": "Sabzavotlar",
+        "ru": "Овощи"
+      },
       "free": false,
       "activities": [
         "veg-listen",
@@ -132,6 +172,11 @@
     {
       "slug": "toys",
       "n": 9,
+      "title": {
+        "en": "Toys",
+        "uz": "Oʻyinchoqlar",
+        "ru": "Игрушки"
+      },
       "free": false,
       "activities": [
         "toys-missing",
@@ -148,6 +193,11 @@
     {
       "slug": "transport",
       "n": 10,
+      "title": {
+        "en": "Transport",
+        "uz": "Transport",
+        "ru": "Транспорт"
+      },
       "free": false,
       "activities": [
         "transport-listen",
@@ -165,6 +215,11 @@
     {
       "slug": "body",
       "n": 11,
+      "title": {
+        "en": "Body parts",
+        "uz": "Tana aʼzolari",
+        "ru": "Части тела"
+      },
       "free": false,
       "activities": [
         "body-listen",
@@ -180,6 +235,11 @@
     {
       "slug": "clothes",
       "n": 12,
+      "title": {
+        "en": "Clothes",
+        "uz": "Kiyimlar",
+        "ru": "Одежда"
+      },
       "free": false,
       "activities": [
         "clothes-listen",
@@ -195,6 +255,11 @@
     {
       "slug": "nature",
       "n": 13,
+      "title": {
+        "en": "Nature",
+        "uz": "Tabiat",
+        "ru": "Природа"
+      },
       "free": false,
       "activities": [
         "nature-scene",
@@ -213,6 +278,11 @@
     {
       "slug": "words",
       "n": 14,
+      "title": {
+        "en": "Simple words",
+        "uz": "Oddiy soʻzlar",
+        "ru": "Простые слова"
+      },
       "free": false,
       "activities": [
         "words-type",
@@ -228,6 +298,11 @@
     {
       "slug": "sentences",
       "n": 15,
+      "title": {
+        "en": "Sentences",
+        "uz": "Gaplar",
+        "ru": "Предложения"
+      },
       "free": false,
       "activities": [
         "sentences-build",
@@ -241,6 +316,11 @@
     {
       "slug": "stories",
       "n": 16,
+      "title": {
+        "en": "Stories",
+        "uz": "Hikoyalar",
+        "ru": "Истории"
+      },
       "free": false,
       "activities": [
         "stories-cloud",
