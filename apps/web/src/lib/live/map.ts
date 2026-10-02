@@ -6,7 +6,7 @@ import { DEFAULT_PROFILE } from "@/lib/adaptive";
 import type { Lang } from "@/lib/translate";
 import type {
   AacCustomCard, AacEvent, AccessMode, AdaptationChange, AdaptiveProfile, Assignment, CareLink, Child, ClassRoom, Consent, ConsentScope, Goal,
-  InteractionEvent, LearningSession, LevelProgress, Note, Notification, ParamKey, Role, SkillMastery, User, UserStatus,
+  InteractionEvent, LearningSession, LevelProgress, Note, Notification, Order, ParamKey, Role, SkillMastery, Subscription, User, UserStatus,
 } from "@/lib/types";
 
 // ---------------------------------------------------------------- backend shapes (subset we read)
@@ -221,5 +221,16 @@ export const aacCardFrom = (c: BAacCard): AacCustomCard => ({ id: c.id, childId:
 /** A spoken sentence; custom card ids get the web's custom: prefix back. */
 export const aacEventFrom = (childId: string, s: BAacSentence, k: number): AacEvent => ({
   id: `${childId}-${s.at}-${k}`, childId, cardIds: s.card_ids.map((c) => (AAC_BY_ID[c] ? c : `${CUSTOM_PREFIX}${c}`)), sentence: s.sentence, lang: lang(s.language), at: s.at,
+});
+
+// ---------------------------------------------------------------- billing
+export interface BOrder { id: string; plan: string; amount_tiyin: number; provider: string; state: string; created_at: string }
+export const subscriptionFrom = (userId: string, s?: { plan: string; status: string; paid_until: string | null }): Subscription =>
+  !s || s.plan === "free"
+    ? { userId, plan: "free", status: "active" }
+    : { userId, plan: s.plan === "yearly" ? "yearly" : "monthly", status: (["active", "canceled", "expired"].includes(s.status) ? s.status : "active") as Subscription["status"], until: s.paid_until ?? undefined };
+export const orderFrom = (userId: string, o: BOrder): Order => ({
+  id: o.id, userId, plan: o.plan === "yearly" ? "yearly" : "monthly", amountTiyin: o.amount_tiyin, provider: o.provider === "click" ? "click" : "payme",
+  state: o.state === "paid" ? "paid" : o.state === "canceled" ? "canceled" : "created", createdAt: o.created_at,
 });
 

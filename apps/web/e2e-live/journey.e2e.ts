@@ -346,3 +346,44 @@ test("assistant: answers from the child's own data, and the conversation can be 
   await page.getByRole("button", { name: "Delete conversation" }).click();
   await expect(page.getByText("What should we practise at home?")).toHaveCount(0);
 });
+
+// Billing (PRD §9.18, FR-BILL-1/3): checkout goes to Payme; the provider confirms server-to-server
+// (played here by the test, with the stack's throwaway merchant key); back on the page the plan is on.
+test("billing: Payme checkout, server-to-server confirmation, the family plan opens all levels", async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("fk_lang", JSON.stringify("en")));
+  await signUp(page, "Rustam", `live.bill.${Date.now()}@example.com`);
+  await page.goto("/parent/children/new");
+  await page.getByText("Core: store my child's nickname").click();
+  await page.getByRole("button", { name: "I agree, continue" }).click();
+  await page.getByLabel("Nickname").fill("Lola");
+  await page.getByRole("button", { name: "Next" }).click();
+  await page.getByRole("button", { name: "Create profile" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "Lola" })).toBeVisible();
+
+  // The provider's page: we only need the URL Payme would be opened with.
+  let checkout = "";
+  await page.route("https://checkout.test.paycom.uz/**", (r) => {
+    checkout = r.request().url();
+    return r.fulfill({ contentType: "text/html", body: "<h1>Payme (test)</h1>" });
+  });
+  await page.goto("/parent/billing");
+  await page.getByRole("radio", { name: /month/i }).click();
+  await page.getByRole("button", { name: "Pay with Payme" }).click();
+  await expect(page.getByRole("heading", { name: "Payme (test)" })).toBeVisible();
+  const params = Buffer.from(checkout.split("/").pop()!, "base64").toString();
+  const order = params.match(/ac\.order_id=([0-9a-f-]+)/)![1];
+  const amount = Number(params.match(/;a=(\d+)/)![1]);
+  expect(amount).toBe(4_900_000); // the server's price, in tiyin
+
+  // Payme → our merchant endpoint (Basic auth with the merchant key).
+  const api = `${process.env.FK_API_ORIGIN ?? "http://localhost:58000"}/api/v1/billing/payme`;
+  const rpc = (method: string, params: object) =>
+    fetch(api, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Basic ${Buffer.from("Paycom:e2e-payme-key").toString("base64")}` }, body: JSON.stringify({ id: 1, method, params }) }).then((r) => r.json());
+  expect((await rpc("CreateTransaction", { id: `pm-${order}`, time: Date.now(), amount, account: { order_id: order } })).result.state).toBe(1);
+  expect((await rpc("PerformTransaction", { id: `pm-${order}` })).result.state).toBe(2);
+  expect((await rpc("PerformTransaction", { id: `pm-${order}` })).result.state).toBe(2); // repeated: same answer (FR-BILL-1)
+
+  await page.goto(`/parent/billing?order=${order}`); // the provider's return URL
+  await expect(page.getByText("Payment received — thank you! All levels are open.").first()).toBeVisible();
+  await expect(page.getByText(/Lola: full access/i)).toBeVisible();
+});

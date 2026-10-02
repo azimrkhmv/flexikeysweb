@@ -7,9 +7,9 @@ import { sessionStore } from "@/lib/session";
 import { useStore } from "@/lib/store";
 import { http } from "./http";
 import {
-  aacCardFrom, aacEventFrom, careLinkFrom, changeFrom, childFrom, notificationFrom, classFrom, consentsFrom, goalFrom, levelsFrom, masteryFrom, noteFrom, profileFrom, rosterChildFrom,
+  aacCardFrom, aacEventFrom, careLinkFrom, orderFrom, subscriptionFrom, changeFrom, childFrom, notificationFrom, classFrom, consentsFrom, goalFrom, levelsFrom, masteryFrom, noteFrom, profileFrom, rosterChildFrom,
   sessionsFrom, taskFrom, userFrom,
-  type BAacCard, type BAacSentence, type BCareLink, type BChange, type BNotification, type BChild, type BChildOverview, type BClass, type BConsent, type BGoal, type BLevel, type BNote,
+  type BAacCard, type BAacSentence, type BOrder, type BCareLink, type BChange, type BNotification, type BChild, type BChildOverview, type BClass, type BConsent, type BGoal, type BLevel, type BNote,
   type BPoint, type BProfile, type BSkill, type BSummary, type BTask, type BUser,
 } from "./map";
 import { liveChild } from "./state";
@@ -107,6 +107,17 @@ export function useLiveDb(): DB {
     queries: ids.flatMap((id) => PER_CHILD.map((kind) => ({ queryKey: [kind, id], queryFn: () => http<unknown>("GET", path(kind, id)) }))),
   });
 
+  const subscription = useQuery({
+    queryKey: ["subscription"],
+    enabled: role === "parent",
+    queryFn: () => http<{ plan: string; status: string; paid_until: string | null }>("GET", "/billing/subscription"),
+  });
+  const orders = useQuery({
+    queryKey: ["orders"],
+    enabled: role === "parent" && !child,
+    queryFn: () => http<BOrder[]>("GET", "/billing/orders"),
+  });
+
   // ---- teacher
   const classes = useQuery({ queryKey: ["teacher-classes"], enabled: role === "teacher", queryFn: () => http<BClass[]>("GET", "/teacher/classes") });
   const overviews = useQueries({
@@ -140,7 +151,7 @@ export function useLiveDb(): DB {
     if (signedIn !== undefined && sessionStore.get().role !== signedIn) sessionStore.set({ role: signedIn });
   }, [signedIn]);
 
-  const all = [me, kids, classes, linked, invites, notifications, flags, ...own, ...per, ...overviews, ...views];
+  const all = [me, kids, classes, linked, invites, notifications, flags, subscription, orders, ...own, ...per, ...overviews, ...views];
   const stamp = all.map((q) => q.dataUpdatedAt).join();
   const loading =
     me.isPending ||
@@ -155,7 +166,8 @@ export function useLiveDb(): DB {
       db.users = [user];
       db.notifications = (notifications.data ?? []).map((n) => notificationFrom(n, user.id));
       db.flags = Object.entries(flags.data ?? {}).map(([key, enabled]) => ({ key, enabled, description: "" }));
-      db.subscriptions = [{ userId: user.id, plan: "free", status: "active" }]; // billing isn't connected yet
+      db.subscriptions = [subscriptionFrom(user.id, subscription.data)];
+      db.orders = (orders.data ?? []).map((o) => orderFrom(user.id, o));
     }
 
     // Child mode: the playing child's own data (works with or without an adult signed in).

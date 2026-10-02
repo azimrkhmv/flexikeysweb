@@ -6,7 +6,7 @@ import { AAC_BY_ID, CUSTOM_PREFIX } from "@/content/aac";
 import { SHOP_BY_ID } from "@/content/shop";
 import { sessionStore } from "@/lib/session";
 import type { Lang } from "@/lib/translate";
-import type { AacCustomCard, Child, ClassRoom, ConsentScope, InputProfile, InteractionEvent, Role, User } from "@/lib/types";
+import type { AacCustomCard, Child, ClassRoom, ConsentScope, InputProfile, InteractionEvent, Order, Role, User } from "@/lib/types";
 import { queryClient } from "./client";
 import { http } from "./http";
 import {
@@ -24,6 +24,8 @@ type MockExport = Awaited<ReturnType<typeof childrenApi.exportChild>>;
 const CHILD_TOKEN_MS = 8 * 3600_000;
 /** The class code this device signed in with (class login asks for it again with the child). */
 let classCode = "";
+const refreshBilling = () =>
+  Promise.all([queryClient.invalidateQueries({ queryKey: ["subscription"] }), queryClient.invalidateQueries({ queryKey: ["orders"] })]);
 const liveUserId = () => queryClient.getQueryData<BUser | null>(["me"])?.id ?? "";
 const refetch = () => queryClient.invalidateQueries();
 const id = () => crypto.randomUUID();
@@ -315,6 +317,24 @@ export const liveApi = {
   async teacherAiSummary(classId: string, lang: Lang) {
     const r = await http<{ text: string }>("POST", `/teacher/classes/${classId}/ai-summary`, { language: lang });
     return r.text;
+  },
+
+  // ------------------------------------------------------------ billing (PRD §9.18)
+  /** Creates the order and opens the provider's payment page; the provider confirms server-to-server
+   *  and the page shows the result on return (/parent/billing?order=…). */
+  async checkout(plan: "monthly" | "yearly", provider: "payme" | "click") {
+    const r = await http<{ order_id: string; redirect_url: string }>("POST", "/billing/checkout", { plan, provider });
+    window.location.assign(r.redirect_url);
+    return new Promise<Order>(() => {}); // the page is leaving for the provider ("Opening Payme…" stays)
+  },
+  async cancelSubscription() {
+    await http("POST", "/billing/cancel", {});
+    await refreshBilling();
+    return true;
+  },
+  async refreshBilling() {
+    await refreshBilling();
+    return true;
   },
 
   // ------------------------------------------------------------ notifications (the bell)

@@ -1,7 +1,6 @@
 "use client";
 
-import { NotConnected } from "@/components/NotConnected";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Check, CreditCard } from "lucide-react";
 import { Button, Card, Chip, PageHeader, useAction } from "@/components/ui";
 import { fmtDate, fmtSum } from "@/lib/format";
@@ -27,6 +26,9 @@ function Billing() {
   const orders = sel.ordersOf(db, me.id);
   const kids = sel.childrenOf(db, me.id);
   const paidPlan = sub.plan !== "free" && sub.status !== "expired";
+  // Live: back from Payme/Click with ?order=… — the server's word on that order.
+  const returned = LIVE && typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("order") : null;
+  const back = returned ? orders.find((o) => o.id === returned) : undefined;
   const price = (tiyin: number) => t("parent.billing.sum", { amount: fmtSum(tiyin) });
 
   return (
@@ -99,6 +101,12 @@ function Billing() {
             </div>
           </fieldset>
 
+          {back && (
+            <p role="status" className={`rounded-2xl p-3 text-sm font-semibold ${back.state === "paid" ? "bg-leaf-soft text-[#2f6a37]" : "bg-sky-soft text-[#2f5d93]"}`}>
+              {t(back.state === "paid" ? "notif.payment_ok" : back.state === "canceled" ? "parent.billing.failed" : "parent.billing.waiting", { provider: PROVIDERS[back.provider] })}
+            </p>
+          )}
+          {back?.state === "created" && <Recheck />}
           {pay.pending && (
             <p role="status" className="rounded-2xl bg-sky-soft p-3 text-sm font-semibold text-[#2f5d93]">
               {t("parent.billing.redirecting", { provider: PROVIDERS[provider] })}
@@ -121,7 +129,7 @@ function Billing() {
           >
             {t(paidPlan ? "parent.billing.extend" : "parent.billing.pay", { provider: PROVIDERS[provider] })}
           </Button>
-          <p className="text-xs text-muted">{t("parent.billing.sandbox")}</p>
+          {!LIVE && <p className="text-xs text-muted">{t("parent.billing.sandbox")}</p>}
         </Card>
       </div>
 
@@ -180,5 +188,15 @@ function Billing() {
 
 // Live mode: not connected to the server yet (PRD Phase 5/6).
 export default function Page() {
-  return LIVE ? <NotConnected /> : <Billing />;
+  return <Billing />;
 }
+
+/** While the provider hasn't confirmed yet, look again every few seconds (FR-BILL-3: ≤ 10 s). */
+function Recheck() {
+  useEffect(() => {
+    const id = setInterval(() => void api.refreshBilling(), 3000);
+    return () => clearInterval(id);
+  }, []);
+  return null;
+}
+

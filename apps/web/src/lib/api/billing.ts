@@ -31,6 +31,10 @@ export const billingApi = {
     });
     return order;
   },
+  /** Live: re-read the subscription and orders (after returning from the provider). Mock: nothing to do. */
+  async refreshBilling() {
+    return true;
+  },
   /** POST /billing/cancel — keeps access until the paid period ends. */
   async cancelSubscription() {
     const u = requireUser(["parent"]);
