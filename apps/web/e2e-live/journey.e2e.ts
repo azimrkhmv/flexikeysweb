@@ -8,7 +8,6 @@ test("parent signs up, adds a child, the child plays, the parent sees it — all
   const email = `live.${Date.now()}@example.com`;
 
   await page.goto("/signup");
-  await expect(page.getByText("Therapist", { exact: true })).toHaveCount(0); // no therapist role on the server yet
   await page.getByLabel("Your name").fill("Nodira");
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill("long-enough-password");
@@ -72,8 +71,8 @@ test("parent signs up, adds a child, the child plays, the parent sees it — all
   await page.reload();
   await page.getByRole("tab", { name: "Privacy" }).click();
   await expect(page.getByRole("switch", { name: /^AI help/ })).toHaveAttribute("aria-checked", "false");
-  await page.getByRole("tab", { name: "Sharing" }).click();
-  await expect(page.getByText("Coming soon")).toBeVisible(); // not connected yet — says so honestly
+  await page.getByRole("tab", { name: "My Voice" }).click();
+  await expect(page.getByText("Coming soon")).toBeVisible(); // AAC not connected yet — says so honestly
 });
 
 // Account emails really arrive (Mailpit in e2e-live/compose.yml) and their links work once (FR-AUTH-1/3).
@@ -96,7 +95,6 @@ test("account: verify and reset by emailed single-use links, sign out everywhere
   const email = `live.acct.${Date.now()}@example.com`;
 
   await page.goto("/signup");
-  await expect(page.getByText("Teacher", { exact: true })).toHaveCount(0); // teacher area not connected yet
   await page.getByLabel("Your name").fill("Aziz");
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill("long-enough-password");
@@ -181,4 +179,104 @@ test("a profile without a consent record can't start child mode until the parent
   await expect(page.getByText("Not given")).toHaveCount(0);
   await page.getByRole("button", { name: "Play now" }).click();
   await expect(page).toHaveURL(/\/play$/);
+});
+
+async function signUp(page: import("@playwright/test").Page, name: string, email: string, role?: "Teacher" | "Therapist / specialist") {
+  await page.goto("/signup");
+  if (role) await page.getByText(role, { exact: true }).click();
+  await page.getByLabel("Your name").fill(name);
+  await page.getByLabel("Email").fill(email);
+  await page.getByLabel("Password").fill("long-enough-password");
+  await page.getByText("I agree to the Terms of use and the Privacy policy").click();
+  await page.getByRole("button", { name: "Create account" }).click();
+  await expect(page).toHaveURL(/\/verify-email$/);
+}
+
+// School (PRD §9.15, FR-PLAY-2, FR-TCH-2/3): a teacher's class, a school profile, a shared classroom
+// device that signs the child in with the class code only, progress seen by the teacher, removal.
+test("teacher: class + school profile, class-code login on a shared device, progress, removal", async ({ page, browser }) => {
+  await page.addInitScript(() => localStorage.setItem("fk_lang", JSON.stringify("en")));
+  await signUp(page, "Dilnoza", `live.teacher.${Date.now()}@example.com`, "Teacher");
+  await page.goto("/teacher");
+  await page.getByRole("button", { name: "New class" }).click();
+  await page.getByLabel("Class name").fill("Sunflowers");
+  await page.getByLabel("Group or grade").fill("Preparatory group");
+  await page.getByRole("button", { name: "Create class" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "Sunflowers" })).toBeVisible(); // opens the new class
+  const code = (await page.locator(".font-mono").first().innerText()).trim();
+  expect(code).toMatch(/^[A-HJ-NP-Z2-9]{6}$/);
+
+  await page.getByRole("button", { name: "Add child" }).click();
+  await page.getByLabel("Nickname").fill("Bek");
+  await page.getByText("Our school holds signed parental consent forms for this child").click();
+  await page.getByRole("dialog").getByRole("button", { name: "Add" }).click();
+  await expect(page.getByRole("cell", { name: "Bek School profile" })).toBeVisible();
+
+  // A classroom tablet: nobody signed in, only the class code.
+  const device = await browser.newContext();
+  const tablet = await device.newPage();
+  await tablet.addInitScript(() => localStorage.setItem("fk_lang", JSON.stringify("en")));
+  await tablet.goto(`/class?code=${code}`);
+  await tablet.getByRole("button", { name: "Bek" }).press("Enter");
+  await expect(tablet).toHaveURL(/\/play$/);
+  await tablet.getByRole("button", { name: /^(Start|Boshlash)$/ }).press("Enter");
+  await expect(tablet.getByRole("heading").first()).toBeVisible();
+  await exitThroughGate(tablet, "en"); // the class language (English, the form's default here) is Bek's UI language
+  await expect(tablet).toHaveURL(/\/class/);
+  await expect(tablet.getByRole("button", { name: "Bek" })).toBeVisible(); // next child can pick (FR-TCH-2)
+
+  // The teacher removes Bek: access stops, and the device no longer offers him.
+  await page.reload();
+  await page.getByRole("button", { name: "Remove Bek from class" }).click();
+  await page.getByRole("dialog").getByRole("button", { name: "Remove" }).click();
+  await expect(page.getByRole("cell", { name: "Bek School profile" })).toHaveCount(0);
+  await tablet.goto(`/class?code=${code}`);
+  await expect(tablet.getByRole("button", { name: "Bek" })).toHaveCount(0);
+  await device.close();
+});
+
+// Therapist (PRD §9.16, FR-THR-1, FR-PAR-2): parent invites → therapist accepts with the code → shared
+// note reaches the parent → parent stops access → the therapist no longer sees the child.
+test("therapist: invite, accept with the code, shared note, parent stops access", async ({ page, browser }) => {
+  await page.addInitScript(() => localStorage.setItem("fk_lang", JSON.stringify("en")));
+  await signUp(page, "Nodira", `live.par.${Date.now()}@example.com`);
+  await page.goto("/parent/children/new");
+  await page.getByText("Core: store my child's nickname").click();
+  await page.getByText("Specialists: allow sharing with a therapist that I invite").click();
+  await page.getByRole("button", { name: "I agree, continue" }).click();
+  await page.getByLabel("Nickname").fill("Madina");
+  await page.getByRole("button", { name: "Next" }).click();
+  await page.getByRole("button", { name: "Create profile" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "Madina" })).toBeVisible();
+  const therapistEmail = `live.thr.${Date.now()}@example.com`;
+  await page.getByRole("tab", { name: "Sharing" }).click();
+  await page.getByLabel("Specialist's email").fill(therapistEmail);
+  await page.getByRole("button", { name: "Invite" }).click();
+  const code = (await page.getByRole("status").locator(".font-mono").innerText()).trim();
+  expect(code).toMatch(/^[A-HJ-NP-Z2-9]{8}$/);
+
+  const other = await browser.newContext();
+  const t = await other.newPage();
+  await t.addInitScript(() => localStorage.setItem("fk_lang", JSON.stringify("en")));
+  await signUp(t, "Dr Karimova", therapistEmail, "Therapist / specialist");
+  await t.goto("/therapist");
+  await t.getByLabel("Invite code from a parent").fill(code);
+  await t.getByRole("button", { name: "Accept" }).last().click();
+  await t.getByRole("link", { name: /Madina/ }).click();
+  await expect(t.getByRole("heading", { level: 1, name: "Madina" })).toBeVisible();
+  await t.getByPlaceholder("Observations, what helped, what to try next…").fill("Big keys help a lot");
+  // "Visible to parent" is on by default.
+  await t.getByRole("button", { name: "Save" }).first().click();
+  await expect(t.getByText("Big keys help a lot")).toBeVisible();
+
+  await page.reload();
+  await page.getByRole("tab", { name: "Sharing" }).click();
+  await expect(page.getByText("Big keys help a lot")).toBeVisible(); // the shared note
+  await page.getByRole("listitem").filter({ hasText: "Has access" }).getByRole("button", { name: "Stop access" }).click();
+  await page.getByRole("dialog").getByRole("button", { name: "Stop access" }).click();
+  await expect(page.getByText("Has access")).toHaveCount(0);
+
+  await t.goto("/therapist");
+  await expect(t.getByRole("link", { name: /Madina/ })).toHaveCount(0); // FR-PAR-2
+  await other.close();
 });

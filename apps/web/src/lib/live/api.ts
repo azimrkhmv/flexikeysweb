@@ -5,10 +5,13 @@ import { ApiError } from "@/lib/api/schema";
 import { SHOP_BY_ID } from "@/content/shop";
 import { sessionStore } from "@/lib/session";
 import type { Lang } from "@/lib/translate";
-import type { Child, ConsentScope, InputProfile, InteractionEvent, Role, User } from "@/lib/types";
+import type { Child, ClassRoom, ConsentScope, InputProfile, InteractionEvent, Role, User } from "@/lib/types";
 import { queryClient } from "./client";
 import { http } from "./http";
-import { childFrom, childTo, eventTo, scopeTo, userFrom, type BChild, type BConsent, type BUser } from "./map";
+import {
+  careLinkFrom, childFrom, childTo, classFrom, eventTo, rosterChildFrom, scopeTo, userFrom,
+  type BCareLink, type BChild, type BClass, type BConsent, type BGoal, type BRosterChild, type BUser,
+} from "./map";
 import { liveChild } from "./state";
 import type { childrenApi } from "@/lib/api/children";
 
@@ -18,6 +21,9 @@ type MockExport = Awaited<ReturnType<typeof childrenApi.exportChild>>;
 // lib/api/, so pages don't change. After a write, cached reads are refetched.
 
 const CHILD_TOKEN_MS = 8 * 3600_000;
+/** The class code this device signed in with (class login asks for it again with the child). */
+let classCode = "";
+const liveUserId = () => queryClient.getQueryData<BUser | null>(["me"])?.id ?? "";
 const refetch = () => queryClient.invalidateQueries();
 const id = () => crypto.randomUUID();
 
@@ -38,7 +44,6 @@ const sessionStart = new Map<string, number>();
 export const liveApi = {
   // ------------------------------------------------------------ auth
   async register(input: { email: string; password: string; name: string; role: Exclude<Role, "admin">; uiLang: Lang }) {
-    if (input.role === "therapist") throw new ApiError("not_available"); // no therapist role on the server yet
     if (input.password.length < 10) throw new ApiError("weak_password"); // PRD SEC-4 (server minimum is lower)
     await http("POST", "/auth/register", {
       email: input.email.trim().toLowerCase(),
@@ -147,8 +152,30 @@ export const liveApi = {
     return true;
   },
   async exitChildMode() {
-    await http("DELETE", "/children/session").catch(() => {});
+    // A class device has no adult signed in: it only drops the child cookie and goes back to the roster.
+    const fromClass = liveChild.get()?.grantedBy === "class";
+    await http("DELETE", fromClass ? "/class-login/session" : "/children/session").catch(() => {});
     liveChild.set(null);
+    queryClient.removeQueries({ queryKey: ["own"] });
+    await refetch();
+    return true;
+  },
+
+  // ------------------------------------------------------------ class login (shared classroom device)
+  /** The class code (remembered on the device) → class + roster (nicknames and avatars only). */
+  async classLoginStart(code: string) {
+    const r = await http<{ class_id: string; class_name: string; roster: { id: string; display_name: string; avatar_id: string | null }[] }>(
+      "POST",
+      "/class-login/start",
+      { code: code.trim().toUpperCase() },
+    );
+    classCode = code.trim().toUpperCase();
+    return { classId: r.class_id, className: r.class_name, roster: r.roster.map((c) => ({ id: c.id, name: c.display_name, avatar: c.avatar_id ?? "🦊" })) };
+  },
+  async classLoginChild(classId: string, childId: string) {
+    void classId; // the server checks the code again together with the child
+    await http("POST", "/class-login/child", { code: classCode, child_id: childId });
+    liveChild.set({ childId, grantedBy: "class", exp: Date.now() + CHILD_TOKEN_MS });
     await refetch();
     return true;
   },
@@ -181,6 +208,94 @@ export const liveApi = {
     sessionStart.delete(sessionId);
     setTimeout(() => void refetch(), 1500);
     return [];
+  },
+
+  // ------------------------------------------------------------ teacher (/teacher/*)
+  async createClass(input: Pick<ClassRoom, "name" | "grade" | "learningLang">) {
+    const k = await http<BClass>("POST", "/teacher/classes", { name: input.name, grade: input.grade, learning_language: input.learningLang });
+    await refetch();
+    return classFrom(k, liveUserId());
+  },
+  /** A school-managed profile; the school attests it holds the parental consent form. */
+  async addSchoolChild(classId: string, input: { name: string; avatar: string; attested: boolean }) {
+    if (!input.attested) throw new ApiError("consent_required");
+    const c = await http<BRosterChild>("POST", `/teacher/classes/${classId}/children`, { display_name: input.name.trim(), avatar_id: input.avatar, attested: true });
+    await refetch();
+    return rosterChildFrom(c);
+  },
+  async removeFromClass(classId: string, childId: string) {
+    await http("DELETE", `/teacher/classes/${classId}/children/${childId}`);
+    await refetch();
+    return true;
+  },
+  async assign(input: { classId: string; levelId: string; note: string; due?: string }) {
+    await http("POST", `/teacher/classes/${input.classId}/assignments`, {
+      level_slug: input.levelId,
+      instructions: input.note.trim() || null,
+      due_at: input.due ? new Date(input.due).toISOString() : null,
+    });
+    await refetch();
+    return true;
+  },
+  async deleteAssignment(assignmentId: string) {
+    await http("DELETE", `/teacher/assignments/${assignmentId}`);
+    await refetch();
+    return true;
+  },
+
+  // ------------------------------------------------------------ sharing (parent side)
+  async inviteCare(childId: string, email: string) {
+    const l = await http<BCareLink>("POST", `/children/${childId}/care-links`, { email: email.trim().toLowerCase() });
+    await refetch();
+    return careLinkFrom(l);
+  },
+  async revokeCare(linkId: string) {
+    await http("DELETE", `/care-links/${linkId}`);
+    await refetch();
+    return true;
+  },
+  async joinClass(childId: string, code: string) {
+    const r = await http<{ class_id: string; class_name: string }>("POST", "/teacher/classes/join", { join_code: code.trim().toUpperCase(), child_id: childId });
+    await refetch();
+    return { id: r.class_id, teacherId: "", name: r.class_name, grade: "", learningLang: "uz" as const, code: "", createdAt: "" };
+  },
+  async leaveClass(childId: string, classId: string) {
+    await http("DELETE", `/children/${childId}/classes/${classId}`);
+    await refetch();
+    return true;
+  },
+
+  // ------------------------------------------------------------ therapist (/therapist/*)
+  async acceptInvite(code: string) {
+    await http("POST", "/therapist/invites/accept", { code: code.trim().toUpperCase() });
+    await refetch();
+    return true;
+  },
+  /** Every therapist read is audit-logged by the server itself (FR-THR-2). */
+  async logChildRead() {
+    return true;
+  },
+  async addNote(childId: string, text: string, visibleToParent: boolean) {
+    await http("POST", `/therapist/children/${childId}/notes`, { text: text.trim(), visible_to_parent: visibleToParent });
+    await refetch();
+    return true;
+  },
+  async addGoal(childId: string, text: string) {
+    await http("POST", `/therapist/children/${childId}/goals`, { text: text.trim() });
+    await refetch();
+    return true;
+  },
+  async toggleGoal(goalId: string) {
+    const goals = queryClient.getQueriesData<{ goals: BGoal[] }>({ queryKey: ["therapist-child"] }).flatMap(([, d]) => d?.goals ?? []);
+    const g = goals.find((x) => x.id === goalId);
+    await http("PATCH", `/therapist/goals/${goalId}`, { done: !g?.done });
+    await refetch();
+    return true;
+  },
+  async recommend(childId: string, levelId: string, note: string) {
+    await http("POST", `/therapist/children/${childId}/recommendations`, { level_slug: levelId, note: note.trim() });
+    await refetch();
+    return true;
   },
 
   // ------------------------------------------------------------ cloud shop (coins only from playing)

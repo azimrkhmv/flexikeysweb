@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { DEFAULT_PROFILE } from "@/lib/adaptive";
 import { errorCode } from "./http";
-import { changeFrom, childFrom, consentsFrom, eventTo, profileFrom, scopeFrom, scopeTo, sessionsFrom } from "./map";
+import { careLinkFrom, changeFrom, childFrom, consentsFrom, eventTo, profileFrom, rosterChildFrom, scopeFrom, scopeTo, sessionsFrom, taskFrom, userFrom } from "./map";
 
 describe("live ↔ web mappings", () => {
   it("consent scopes: web core = backend data_processing", () => {
@@ -54,5 +54,19 @@ describe("live ↔ web mappings", () => {
     expect(errorCode(403, "ai_consent_required", "/aac/compose-sentence")).toBe("ai_consent_required");
     expect(errorCode(422, "Core consent is required", "/children")).toBe("consent_required");
     expect(errorCode(403, "level_locked", "/activities/complete")).toBe("level_locked");
+  });
+
+  it("school and care shapes: roster children, tasks, links, account status", () => {
+    const roster = { id: "c", display_name: "Bek", avatar_id: null, learning_language: "uz", ui_language: "uz", access_mode: "touch", birth_year: null, school_managed: true, created_at: "2026-10-01T00:00:00Z" };
+    expect(rosterChildFrom(roster).parentId).toBeNull(); // school-managed
+    expect(rosterChildFrom({ ...roster, school_managed: false }).parentId).toBe("family"); // never the real parent id
+    const base = { id: "a", kind: "teacher", class_id: "k", child_id: null, created_by: "t", level_slug: "shapes", instructions: null, due_at: null, created_at: "" };
+    expect(taskFrom(base)).toMatchObject({ classId: "k", levelId: "shapes", note: "", byUserId: "t" });
+    expect(taskFrom({ ...base, kind: "therapist", class_id: null, child_id: "c" })).toMatchObject({ kind: "therapist", childId: "c" });
+    expect(taskFrom({ ...base, level_slug: null })).toBeNull(); // old curriculum-UUID assignments aren't shown
+    expect(careLinkFrom({ id: "l", child_id: "c", email: "t@x.uz", kind: "therapist", status: "active", code: "ABCD2345", professional_user_id: "p", created_at: "", revoked_at: null })).toMatchObject({ professionalId: "p", status: "active" });
+    const u = { id: "u", email: "t@x.uz", display_name: "T", role: "teacher", locale: "uz", email_verified: true, created_at: "" };
+    expect(userFrom({ ...u, status: "pending" }).status).toBe("pending_verification");
+    expect(userFrom(u).status).toBe("active");
   });
 });

@@ -55,7 +55,7 @@ export function AppShell({ role, nav, children }: { role: Role; nav: NavItem[]; 
         {(me) => (
           <Shell me={me} nav={nav}>
             {/* Live mode connects the parent area first; other dashboards come in later phases. */}
-            {LIVE && role !== "parent" ? <NotConnected /> : children(me)}
+            {LIVE && role === "admin" ? <NotConnected /> : children(me)}
           </Shell>
         )}
       </RequireRole>

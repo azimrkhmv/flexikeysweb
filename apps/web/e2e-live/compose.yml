@@ -49,6 +49,8 @@ services:
       SMTP_PORT: "1025"
       SMTP_STARTTLS: "false"
       APP_WEB_URL: http://localhost:3200 # the live E2E web server (playwright.live.config.ts)
+      # Every test signs up/logs in from this one machine within a minute; production keeps 20/minute.
+      RATE_LIMIT_AUTH: 300/minute
     ports: ["127.0.0.1:${E2E_API_PORT:-58000}:8000"]
     depends_on:
       postgres: { condition: service_healthy }

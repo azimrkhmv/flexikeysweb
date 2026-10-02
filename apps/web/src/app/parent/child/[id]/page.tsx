@@ -116,7 +116,7 @@ export default function ChildPage() {
         {tab === "progress" && <ProgressTab childId={child.id} />}
         {tab === "changes" && <ChangesTab childId={child.id} />}
         {tab === "aac" && (LIVE ? <NotConnected /> : <AacTab childId={child.id} />)}
-        {tab === "sharing" && (LIVE ? <NotConnected /> : <SharingTab childId={child.id} goTab={go} />)}
+        {tab === "sharing" && <SharingTab childId={child.id} goTab={go} />}
         {tab === "settings" && <SettingsTab child={child} />}
         {tab === "privacy" && <PrivacyTab child={child} />}
       </div>

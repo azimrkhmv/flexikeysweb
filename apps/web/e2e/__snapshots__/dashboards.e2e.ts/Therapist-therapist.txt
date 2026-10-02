@@ -15,5 +15,5 @@ Madina
 Sep 28
 Accept
 Invite code from a parent
-6 characters, for example TH4K9Q
+The code the parent gave you, for example TH4K9Q
 Accept

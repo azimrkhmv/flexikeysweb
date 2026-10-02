@@ -4,14 +4,14 @@
 import { DEFAULT_PROFILE } from "@/lib/adaptive";
 import type { Lang } from "@/lib/translate";
 import type {
-  AccessMode, AdaptationChange, AdaptiveProfile, Child, Consent, ConsentScope, InteractionEvent, LearningSession,
-  LevelProgress, ParamKey, Role, SkillMastery, User,
+  AccessMode, AdaptationChange, AdaptiveProfile, Assignment, CareLink, Child, ClassRoom, Consent, ConsentScope, Goal,
+  InteractionEvent, LearningSession, LevelProgress, Note, ParamKey, Role, SkillMastery, User, UserStatus,
 } from "@/lib/types";
 
 // ---------------------------------------------------------------- backend shapes (subset we read)
-export interface BUser { id: string; email: string | null; display_name: string | null; role: string; locale: string; email_verified: boolean; created_at: string }
+export interface BUser { id: string; email: string | null; display_name: string | null; role: string; status?: string; locale: string; email_verified: boolean; created_at: string }
 export interface BChild {
-  id: string; parent_id: string; display_name: string; learning_language: string; ui_language: string;
+  id: string; parent_id: string | null; display_name: string; learning_language: string; ui_language: string;
   birth_year: number | null; avatar_id: string | null; access_mode?: string; equipped?: Record<string, string>; created_at: string;
 }
 export interface BConsent { id: string; child_id: string; consent_type: string; granted_at: string; version: string | null }
@@ -21,6 +21,19 @@ export interface BSkill { skill_key: string; p_known: number; attempts: number }
 export interface BPoint { date: string; value: number | null }
 export interface BSummary { child_id: string; streak_days: number; coins: number; stars: number }
 export interface BProfile { profile: { params: Record<string, unknown>; version: number; updated_at: string } }
+export interface BClass { id: string; name: string; grade: string; learning_language: string; join_code: string; created_at: string }
+export interface BRosterChild {
+  id: string; display_name: string; avatar_id: string | null; learning_language: string; ui_language: string; access_mode: string;
+  birth_year: number | null; school_managed: boolean; created_at: string;
+}
+export interface BChildOverview { child: BRosterChild; levels: BLevel[]; skills: BSkill[]; minutes: BPoint[]; changes: BChange[] }
+export interface BTask {
+  id: string; kind: string; class_id: string | null; child_id: string | null; created_by: string | null; level_slug: string | null;
+  instructions: string | null; due_at: string | null; created_at: string;
+}
+export interface BCareLink { id: string; child_id: string; email: string; kind: string; status: string; code: string; professional_user_id: string | null; created_at: string; revoked_at: string | null }
+export interface BNote { id: string; child_id: string; author_id: string; text: string; visible_to_parent: boolean; created_at: string }
+export interface BGoal { id: string; child_id: string; author_id: string; text: string; done: boolean; created_at: string }
 
 const lang = (x: string | null | undefined, fallback: Lang = "uz"): Lang => (x === "uz" || x === "ru" || x === "en" ? x : fallback);
 
@@ -31,7 +44,7 @@ export function userFrom(u: BUser): User {
     email: u.email ?? "",
     name: u.display_name ?? u.email?.split("@")[0] ?? "",
     role: (["parent", "teacher", "therapist", "admin"].includes(u.role) ? u.role : "parent") as Role,
-    status: "active",
+    status: ({ pending: "pending_verification", disabled: "disabled" }[u.status ?? ""] ?? "active") as UserStatus,
     password: "",
     uiLang: lang(u.locale),
     emailVerified: u.email_verified,
@@ -161,3 +174,37 @@ export function eventTo(e: Omit<InteractionEvent, "sessionId">, sessionStartMs: 
     return { occurred_at, skill_key, payload: { event_type: "keystroke", ...key, correct: false, rejected_by_debounce: true, skill_key } };
   return null;
 }
+
+// ---------------------------------------------------------------- school & care
+/** A child seen from a class or a therapist link: a parent's child gets a placeholder parent id (the
+ *  professional never learns who the parent is); school-managed children have none. */
+export function rosterChildFrom(c: BRosterChild): Child {
+  return childFrom({
+    id: c.id, parent_id: c.school_managed ? null : "family", display_name: c.display_name, learning_language: c.learning_language,
+    ui_language: c.ui_language, birth_year: c.birth_year, avatar_id: c.avatar_id, access_mode: c.access_mode, created_at: c.created_at,
+  });
+}
+
+export const classFrom = (k: BClass, teacherId: string): ClassRoom => ({
+  id: k.id, teacherId, name: k.name, grade: k.grade, learningLang: lang(k.learning_language), code: k.join_code, createdAt: k.created_at,
+});
+
+/** Assignments (teacher, class) and recommendations (therapist, one child) → the web's Assignment. */
+export const taskFrom = (t: BTask, fallbackChild?: string): Assignment | null =>
+  t.level_slug
+    ? {
+        id: t.id, kind: t.kind === "therapist" ? "therapist" : "teacher", byUserId: t.created_by ?? "", classId: t.class_id ?? undefined,
+        childId: t.child_id ?? (t.class_id ? undefined : fallbackChild), levelId: t.level_slug, note: t.instructions ?? "",
+        due: t.due_at ?? undefined, createdAt: t.created_at,
+      }
+    : null;
+
+export const careLinkFrom = (l: BCareLink): CareLink => ({
+  id: l.id, childId: l.child_id, kind: l.kind === "teacher" ? "teacher" : "therapist", email: l.email,
+  professionalId: l.professional_user_id ?? undefined, status: (["invited", "active", "revoked"].includes(l.status) ? l.status : "invited") as CareLink["status"],
+  code: l.code, createdAt: l.created_at, revokedAt: l.revoked_at ?? undefined,
+});
+
+export const noteFrom = (n: BNote): Note => ({ id: n.id, childId: n.child_id, authorId: n.author_id, text: n.text, visibleToParent: n.visible_to_parent, createdAt: n.created_at });
+export const goalFrom = (g: BGoal): Goal => ({ id: g.id, childId: g.child_id, authorId: g.author_id, text: g.text, done: g.done, createdAt: g.created_at });
+
