@@ -1,6 +1,5 @@
 "use client";
 
-import { NotConnected } from "@/components/NotConnected";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -8,7 +7,7 @@ import { ArrowLeft, Play } from "lucide-react";
 import { Avatar, Button, Empty, useAction } from "@/components/ui";
 import { AacTab, ChangesTab, PrivacyTab, ProgressTab, SettingsTab, SharingTab, TABS, type Tab } from "@/features/parent/ChildTabs";
 import { age } from "@/features/parent/lib";
-import { LIVE, api, sel, useDb } from "@/lib/api";
+import { api, sel, useDb } from "@/lib/api";
 import { useT } from "@/lib/i18n";
 
 export default function ChildPage() {
@@ -115,7 +114,7 @@ export default function ChildPage() {
       <div role="tabpanel" id="child-tabpanel" aria-labelledby={`tab-${tab}`} tabIndex={0}>
         {tab === "progress" && <ProgressTab childId={child.id} />}
         {tab === "changes" && <ChangesTab childId={child.id} />}
-        {tab === "aac" && (LIVE ? <NotConnected /> : <AacTab childId={child.id} />)}
+        {tab === "aac" && <AacTab childId={child.id} />}
         {tab === "sharing" && <SharingTab childId={child.id} goTab={go} />}
         {tab === "settings" && <SettingsTab child={child} />}
         {tab === "privacy" && <PrivacyTab child={child} />}

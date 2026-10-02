@@ -72,7 +72,7 @@ test("parent signs up, adds a child, the child plays, the parent sees it — all
   await page.getByRole("tab", { name: "Privacy" }).click();
   await expect(page.getByRole("switch", { name: /^AI help/ })).toHaveAttribute("aria-checked", "false");
   await page.getByRole("tab", { name: "My Voice" }).click();
-  await expect(page.getByText("Coming soon")).toBeVisible(); // AAC not connected yet — says so honestly
+  await expect(page.getByRole("heading", { name: "Your own cards" })).toBeVisible(); // My Voice is connected
 });
 
 // Account emails really arrive (Mailpit in e2e-live/compose.yml) and their links work once (FR-AUTH-1/3).
@@ -282,4 +282,39 @@ test("therapist: invite, accept with the code, shared note, parent stops access"
   await t.goto("/therapist");
   await expect(t.getByRole("link", { name: /Madina/ })).toHaveCount(0); // FR-PAR-2
   await other.close();
+});
+
+// My Voice (PRD §9.11, FR-AAC-2): the parent's own card reaches the child's device through the server,
+// the child speaks a sentence, and the parent's dashboard shows it.
+test("My Voice: parent's own card on the child's device, the spoken sentence on the dashboard", async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("fk_lang", JSON.stringify("en")));
+  await signUp(page, "Sevara", `live.aac.${Date.now()}@example.com`);
+  await page.goto("/parent/children/new");
+  await page.getByText("Core: store my child's nickname").click();
+  await page.getByRole("button", { name: "I agree, continue" }).click();
+  await page.getByLabel("Nickname").fill("Timur");
+  await page.getByRole("button", { name: "Next" }).click();
+  await page.getByRole("button", { name: "Create profile" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "Timur" })).toBeVisible();
+
+  await page.getByRole("tab", { name: "My Voice" }).click();
+  await page.getByLabel("Word on the card").fill("Mosh");
+  await page.getByRole("button", { name: "Add card" }).click();
+  await expect(page.getByText("Mosh").first()).toBeVisible();
+
+  await page.getByRole("button", { name: "Play now" }).click();
+  await expect(page).toHaveURL(/\/play$/);
+  await page.getByRole("button", { name: "Start" }).press("Enter");
+  const voice = page.getByRole("button", { name: "My Voice" });
+  for (let i = 0; i < 4 && !(await voice.isVisible()); i++) await page.getByRole("button", { name: "Back" }).press("Enter");
+  await voice.press("Enter");
+  await page.getByRole("button", { name: "People" }).press("Enter"); // the card's category
+  await page.getByRole("button", { name: "Mosh" }).press("Enter"); // the parent's card, from the server
+  await page.getByRole("button", { name: "Speak" }).press("Enter");
+  await page.waitForTimeout(500);
+  await exitThroughGate(page, "en");
+
+  await page.getByRole("link", { name: /Timur/ }).click();
+  await page.getByRole("tab", { name: "My Voice" }).click();
+  await expect(page.getByText("“Mosh”")).toBeVisible(); // recent sentences
 });

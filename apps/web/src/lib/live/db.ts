@@ -7,9 +7,9 @@ import { sessionStore } from "@/lib/session";
 import { useStore } from "@/lib/store";
 import { http } from "./http";
 import {
-  careLinkFrom, changeFrom, childFrom, notificationFrom, classFrom, consentsFrom, goalFrom, levelsFrom, masteryFrom, noteFrom, profileFrom, rosterChildFrom,
+  aacCardFrom, aacEventFrom, careLinkFrom, changeFrom, childFrom, notificationFrom, classFrom, consentsFrom, goalFrom, levelsFrom, masteryFrom, noteFrom, profileFrom, rosterChildFrom,
   sessionsFrom, taskFrom, userFrom,
-  type BCareLink, type BChange, type BNotification, type BChild, type BChildOverview, type BClass, type BConsent, type BGoal, type BLevel, type BNote,
+  type BAacCard, type BAacSentence, type BCareLink, type BChange, type BNotification, type BChild, type BChildOverview, type BClass, type BConsent, type BGoal, type BLevel, type BNote,
   type BPoint, type BProfile, type BSkill, type BSummary, type BTask, type BUser,
 } from "./map";
 import { liveChild } from "./state";
@@ -26,7 +26,7 @@ const empty = (): DB => ({
   goals: [], aacEvents: [], aacCards: [], notifications: [], subscriptions: [], orders: [], audit: [], flags: [], aiMessages: [],
 });
 
-const PER_CHILD = ["levels", "summary", "changes", "consents", "minutes", "skills", "profile", "tasks", "careLinks", "classes", "notes", "goals"] as const;
+const PER_CHILD = ["levels", "summary", "changes", "consents", "minutes", "skills", "profile", "tasks", "careLinks", "classes", "notes", "goals", "aacCards", "aacSentences"] as const;
 type PerChild = (typeof PER_CHILD)[number];
 const path = (kind: PerChild, id: string) =>
   ({
@@ -42,10 +42,12 @@ const path = (kind: PerChild, id: string) =>
     classes: `/children/${id}/classes`,
     notes: `/children/${id}/notes`,
     goals: `/children/${id}/goals`,
+    aacCards: `/children/${id}/aac/cards`,
+    aacSentences: `/children/${id}/aac/sentences?days=7`,
   })[kind];
 
 /** Child mode reads only the child's own endpoints (child token = the httpOnly fk_child cookie). */
-const OWN = ["me", "levels", "wallet", "profile", "tasks", "catalog"] as const;
+const OWN = ["me", "levels", "wallet", "profile", "tasks", "catalog", "aacCards"] as const;
 const OWN_PATH: Record<(typeof OWN)[number], string> = {
   me: "/children/session",
   levels: "/activities/progress",
@@ -53,6 +55,7 @@ const OWN_PATH: Record<(typeof OWN)[number], string> = {
   profile: "/adaptive/profile",
   tasks: "/activities/tasks",
   catalog: "/rewards/catalog",
+  aacCards: "/aac/cards",
 };
 
 interface BTherapistChild { overview: BChildOverview; notes: BNote[]; goals: BGoal[]; recommendations: BTask[] }
@@ -164,6 +167,7 @@ export function useLiveDb(): DB {
       const wallet = at("wallet") as { coins: number; stars: number } | undefined;
       const owned = ((at("catalog") as { slug: string; owned: boolean }[] | undefined) ?? []).filter((x) => x.owned).map((x) => x.slug);
       db.wallets.push({ childId: c.id, coins: wallet?.coins ?? 0, stars: wallet?.stars ?? 0, owned });
+      db.aacCards.push(...((at("aacCards") as BAacCard[] | undefined) ?? []).map(aacCardFrom));
       // The server already filtered these for this child; seen as the child's own tasks.
       for (const t of (at("tasks") as BTask[] | undefined) ?? []) {
         const a = taskFrom({ ...t, class_id: null, kind: "teacher" }, c.id);
@@ -197,6 +201,8 @@ export function useLiveDb(): DB {
         db.careLinks.push(...((at("careLinks") as BCareLink[] | undefined) ?? []).map(careLinkFrom));
         db.notes.push(...((at("notes") as BNote[] | undefined) ?? []).map(noteFrom));
         db.goals.push(...((at("goals") as BGoal[] | undefined) ?? []).map(goalFrom));
+        db.aacCards.push(...((at("aacCards") as BAacCard[] | undefined) ?? []).map(aacCardFrom));
+        db.aacEvents.push(...((at("aacSentences") as BAacSentence[] | undefined) ?? []).map((s, k) => aacEventFrom(id, s, k)));
         for (const t of (at("tasks") as BTask[] | undefined) ?? []) {
           const a = taskFrom(t, id);
           if (a && !db.assignments.some((x) => x.id === a.id)) db.assignments.push(a);

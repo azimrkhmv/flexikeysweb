@@ -2,10 +2,11 @@
 
 import { CONSENT_VERSION } from "@/lib/api/schema";
 import { ApiError } from "@/lib/api/schema";
+import { AAC_BY_ID, CUSTOM_PREFIX } from "@/content/aac";
 import { SHOP_BY_ID } from "@/content/shop";
 import { sessionStore } from "@/lib/session";
 import type { Lang } from "@/lib/translate";
-import type { Child, ClassRoom, ConsentScope, InputProfile, InteractionEvent, Role, User } from "@/lib/types";
+import type { AacCustomCard, Child, ClassRoom, ConsentScope, InputProfile, InteractionEvent, Role, User } from "@/lib/types";
 import { queryClient } from "./client";
 import { http } from "./http";
 import {
@@ -321,12 +322,36 @@ export const liveApi = {
     return true;
   },
 
-  // ------------------------------------------------------------ AAC in child mode: speaks locally; the
-  // server's AAC event/compose APIs aren't connected in this phase, so nothing is sent.
-  async aacLog() {
+  // ------------------------------------------------------------ AAC "My Voice"
+  /** One spoken sentence = one event batch (the dashboard groups them back into sentences). */
+  async aacLog(cardIds: string[], sentence: string, lang: Lang) {
+    const at = new Date().toISOString();
+    const events = cardIds.map((cardId) => {
+      const bare = cardId.startsWith(CUSTOM_PREFIX) ? cardId.slice(CUSTOM_PREFIX.length) : cardId;
+      return { card_id: bare.slice(0, 64), category: (AAC_BY_ID[cardId]?.category ?? "custom").slice(0, 32), sentence_spoken: sentence.slice(0, 500), language: lang, tapped_at: at };
+    });
+    if (events.length) await http("POST", "/aac/events", { batch_id: id(), events });
     return true;
   },
-  async aacCompose(labels: string[]) {
-    return { sentence: labels.join(" "), ai: false };
+  /** AI sentence help only with the parent's AI consent (FR-AAC-3); otherwise the plain words. */
+  async aacCompose(labels: string[], lang: Lang) {
+    const plain = labels.join(" ");
+    try {
+      const r = await http<{ sentence: string; source: string }>("POST", "/aac/compose-sentence", { words: labels, language: lang });
+      return { sentence: r.sentence || plain, ai: r.source === "ai" };
+    } catch {
+      return { sentence: plain, ai: false };
+    }
+  },
+  /** Parent only; the card then shows on every device the child uses (FR-AAC-2). */
+  async aacAddCard(childId: string, card: Pick<AacCustomCard, "category" | "emoji" | "label">) {
+    await http("POST", `/children/${childId}/aac/cards`, { category: card.category, label: card.label.trim(), emoji: card.emoji });
+    await refetch();
+    return true;
+  },
+  async aacDeleteCard(cardId: string) {
+    await http("DELETE", `/aac/cards/${cardId}`);
+    await refetch();
+    return true;
   },
 };

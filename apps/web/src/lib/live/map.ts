@@ -1,10 +1,11 @@
 // Pure mappings between the FastAPI backend's shapes and the web's types (lib/types.ts). All the places
 // where the two differ live here, so the rest of the app never sees backend field names.
 
+import { AAC_BY_ID, CUSTOM_PREFIX } from "@/content/aac";
 import { DEFAULT_PROFILE } from "@/lib/adaptive";
 import type { Lang } from "@/lib/translate";
 import type {
-  AccessMode, AdaptationChange, AdaptiveProfile, Assignment, CareLink, Child, ClassRoom, Consent, ConsentScope, Goal,
+  AacCustomCard, AacEvent, AccessMode, AdaptationChange, AdaptiveProfile, Assignment, CareLink, Child, ClassRoom, Consent, ConsentScope, Goal,
   InteractionEvent, LearningSession, LevelProgress, Note, Notification, ParamKey, Role, SkillMastery, User, UserStatus,
 } from "@/lib/types";
 
@@ -212,5 +213,13 @@ export interface BNotification { id: string; kind: string; payload: Record<strin
 /** Server notice → the bell's entry (localized via notif.<kind>, with the payload as variables). */
 export const notificationFrom = (n: BNotification, userId: string): Notification => ({
   id: n.id, userId, titleKey: `notif.${n.kind}`, vars: n.payload ?? {}, read: !!n.read_at, at: n.created_at,
+});
+
+export interface BAacCard { id: string; child_id: string; category: string; label: string; emoji: string; created_at: string }
+export interface BAacSentence { card_ids: string[]; sentence: string; language: string; at: string }
+export const aacCardFrom = (c: BAacCard): AacCustomCard => ({ id: c.id, childId: c.child_id, category: c.category, emoji: c.emoji || "⭐", label: c.label, createdAt: c.created_at });
+/** A spoken sentence; custom card ids get the web's custom: prefix back. */
+export const aacEventFrom = (childId: string, s: BAacSentence, k: number): AacEvent => ({
+  id: `${childId}-${s.at}-${k}`, childId, cardIds: s.card_ids.map((c) => (AAC_BY_ID[c] ? c : `${CUSTOM_PREFIX}${c}`)), sentence: s.sentence, lang: lang(s.language), at: s.at,
 });
 
