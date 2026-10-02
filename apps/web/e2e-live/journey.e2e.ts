@@ -132,7 +132,6 @@ test("account: verify and reset by emailed single-use links, sign out everywhere
   await page.getByLabel("Password").fill("a-brand-new-password");
   await page.getByRole("button", { name: "Log in" }).click();
   await expect(page).toHaveURL(/\/parent/);
-  await expect(page.getByRole("button", { name: /^Notifications/ })).toHaveCount(0); // not connected yet
 
   // Delete the account (typed confirmation), then the old login no longer works.
   await page.goto("/parent/account");
@@ -270,6 +269,10 @@ test("therapist: invite, accept with the code, shared note, parent stops access"
   await expect(t.getByText("Big keys help a lot")).toBeVisible();
 
   await page.reload();
+  await page.getByRole("button", { name: /^Notifications \(2\)/ }).click(); // the bell (PRD §9.14)
+  await expect(page.getByText("A specialist accepted the invite for Madina")).toBeVisible();
+  await expect(page.getByText("New specialist note about Madina")).toBeVisible();
+  await page.keyboard.press("Escape");
   await page.getByRole("tab", { name: "Sharing" }).click();
   await expect(page.getByText("Big keys help a lot")).toBeVisible(); // the shared note
   await page.getByRole("listitem").filter({ hasText: "Has access" }).getByRole("button", { name: "Stop access" }).click();

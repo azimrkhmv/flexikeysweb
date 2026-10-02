@@ -298,6 +298,13 @@ export const liveApi = {
     return true;
   },
 
+  // ------------------------------------------------------------ notifications (the bell)
+  async markRead(notificationId?: string) {
+    await http("POST", "/notifications/read", { id: notificationId ?? null });
+    await queryClient.invalidateQueries({ queryKey: ["notifications"] });
+    return true;
+  },
+
   // ------------------------------------------------------------ cloud shop (coins only from playing)
   async redeem(itemId: string) {
     if (!SHOP_BY_ID[itemId]) throw new ApiError("not_found");

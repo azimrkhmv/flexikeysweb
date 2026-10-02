@@ -5,7 +5,7 @@ import { DEFAULT_PROFILE } from "@/lib/adaptive";
 import type { Lang } from "@/lib/translate";
 import type {
   AccessMode, AdaptationChange, AdaptiveProfile, Assignment, CareLink, Child, ClassRoom, Consent, ConsentScope, Goal,
-  InteractionEvent, LearningSession, LevelProgress, Note, ParamKey, Role, SkillMastery, User, UserStatus,
+  InteractionEvent, LearningSession, LevelProgress, Note, Notification, ParamKey, Role, SkillMastery, User, UserStatus,
 } from "@/lib/types";
 
 // ---------------------------------------------------------------- backend shapes (subset we read)
@@ -207,4 +207,10 @@ export const careLinkFrom = (l: BCareLink): CareLink => ({
 
 export const noteFrom = (n: BNote): Note => ({ id: n.id, childId: n.child_id, authorId: n.author_id, text: n.text, visibleToParent: n.visible_to_parent, createdAt: n.created_at });
 export const goalFrom = (g: BGoal): Goal => ({ id: g.id, childId: g.child_id, authorId: g.author_id, text: g.text, done: g.done, createdAt: g.created_at });
+
+export interface BNotification { id: string; kind: string; payload: Record<string, string | number> | null; read_at: string | null; created_at: string }
+/** Server notice → the bell's entry (localized via notif.<kind>, with the payload as variables). */
+export const notificationFrom = (n: BNotification, userId: string): Notification => ({
+  id: n.id, userId, titleKey: `notif.${n.kind}`, vars: n.payload ?? {}, read: !!n.read_at, at: n.created_at,
+});
 

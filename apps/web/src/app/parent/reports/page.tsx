@@ -1,6 +1,5 @@
 "use client";
 
-import { NotConnected } from "@/components/NotConnected";
 import { useState } from "react";
 import { flushSync } from "react-dom";
 import { Printer, Sparkles } from "lucide-react";
@@ -8,7 +7,7 @@ import { Avatar, Button, Card, Chip, Empty, Meter, PageHeader } from "@/componen
 import { LEVEL_BY_ID } from "@/content/levels";
 import { sinceIso } from "@/features/parent/lib";
 import { fmtDate } from "@/lib/format";
-import { LIVE, sel, useDb, type DB } from "@/lib/api";
+import { sel, useDb, type DB } from "@/lib/api";
 import { useLang, useT, type Lang } from "@/lib/i18n";
 import type { Child } from "@/lib/types";
 
@@ -148,5 +147,5 @@ function summary(t: (k: string, v?: Record<string, string | number>) => string, 
 
 // Live mode: not connected to the server yet (PRD Phase 5/6).
 export default function Page() {
-  return LIVE ? <NotConnected /> : <Reports />;
+  return <Reports />;
 }

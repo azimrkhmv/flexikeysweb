@@ -139,6 +139,8 @@ export const common = {
     "notif.care_accepted": "A specialist accepted the invite for {name}",
     "notif.class_joined": "{name} joined your class",
     "notif.therapist_note": "New specialist note about {name}",
+    "notif.therapist_recommendation": "A specialist suggested a level for {name}",
+    "notif.care_revoked": "A family stopped sharing a child with you",
     "notif.payment_ok": "Payment received — thank you! All levels are open.",
     "notif.account_approved": "Your account was verified. Welcome!",
 
@@ -290,6 +292,8 @@ export const common = {
     "notif.care_accepted": "Mutaxassis {name} uchun taklifni qabul qildi",
     "notif.class_joined": "{name} sinfingizga qoʻshildi",
     "notif.therapist_note": "{name} haqida mutaxassisning yangi izohi",
+    "notif.therapist_recommendation": "Mutaxassis {name} uchun daraja tavsiya qildi",
+    "notif.care_revoked": "Oila bola maʼlumotlarini siz bilan boʻlishishni toʻxtatdi",
     "notif.payment_ok": "Toʻlov qabul qilindi — rahmat! Barcha darajalar ochiq.",
     "notif.account_approved": "Hisobingiz tasdiqlandi. Xush kelibsiz!",
 
@@ -441,6 +445,8 @@ export const common = {
     "notif.care_accepted": "Специалист принял приглашение для {name}",
     "notif.class_joined": "{name} присоединился к вашему классу",
     "notif.therapist_note": "Новая заметка специалиста о {name}",
+    "notif.therapist_recommendation": "Специалист предложил уровень для {name}",
+    "notif.care_revoked": "Семья прекратила делиться с вами данными ребёнка",
     "notif.payment_ok": "Оплата получена — спасибо! Все уровни открыты.",
     "notif.account_approved": "Ваш аккаунт подтверждён. Добро пожаловать!",
 

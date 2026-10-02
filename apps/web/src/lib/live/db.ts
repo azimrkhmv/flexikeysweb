@@ -7,9 +7,9 @@ import { sessionStore } from "@/lib/session";
 import { useStore } from "@/lib/store";
 import { http } from "./http";
 import {
-  careLinkFrom, changeFrom, childFrom, classFrom, consentsFrom, goalFrom, levelsFrom, masteryFrom, noteFrom, profileFrom, rosterChildFrom,
+  careLinkFrom, changeFrom, childFrom, notificationFrom, classFrom, consentsFrom, goalFrom, levelsFrom, masteryFrom, noteFrom, profileFrom, rosterChildFrom,
   sessionsFrom, taskFrom, userFrom,
-  type BCareLink, type BChange, type BChild, type BChildOverview, type BClass, type BConsent, type BGoal, type BLevel, type BNote,
+  type BCareLink, type BChange, type BNotification, type BChild, type BChildOverview, type BClass, type BConsent, type BGoal, type BLevel, type BNote,
   type BPoint, type BProfile, type BSkill, type BSummary, type BTask, type BUser,
 } from "./map";
 import { liveChild } from "./state";
@@ -122,13 +122,20 @@ export function useLiveDb(): DB {
     })),
   });
 
+  // ---- every adult: the notification bell
+  const notifications = useQuery({
+    queryKey: ["notifications"],
+    enabled: !!user,
+    queryFn: () => http<BNotification[]>("GET", "/notifications?all=true&limit=30"),
+  });
+
   // Public pages read who is signed in from the small session store.
   const signedIn = me.isPending ? undefined : (role ?? null);
   useEffect(() => {
     if (signedIn !== undefined && sessionStore.get().role !== signedIn) sessionStore.set({ role: signedIn });
   }, [signedIn]);
 
-  const all = [me, kids, classes, linked, invites, ...own, ...per, ...overviews, ...views];
+  const all = [me, kids, classes, linked, invites, notifications, ...own, ...per, ...overviews, ...views];
   const stamp = all.map((q) => q.dataUpdatedAt).join();
   const loading =
     me.isPending ||
@@ -141,6 +148,7 @@ export function useLiveDb(): DB {
     const db: DB = { ...empty(), loading, auth: { userId: user?.id ?? null, child } };
     if (user) {
       db.users = [user];
+      db.notifications = (notifications.data ?? []).map((n) => notificationFrom(n, user.id));
       db.subscriptions = [{ userId: user.id, plan: "free", status: "active" }]; // billing isn't connected yet
     }
 
