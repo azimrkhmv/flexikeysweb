@@ -62,10 +62,25 @@ export const authApi = {
     });
     return net(true);
   },
+  /** POST /me/logout-all — every device signs out (mock: this one). */
+  async logoutAll() {
+    return authApi.logout();
+  },
   /** POST /auth/forgot-password — always succeeds (never reveals whether the email exists). */
   async forgotPassword(email: string) {
     void email;
     return net(true, 400);
+  },
+  /** POST /auth/password/reset — the single-use token from the emailed link (mock: any token works). */
+  async resetPassword(token: string, password: string) {
+    void token;
+    if (password.length < 10) throw new ApiError("weak_password");
+    return net(true);
+  },
+  /** POST /me/resend-verification */
+  async resendVerification() {
+    requireUser();
+    return net(true, 300);
   },
   /** POST /auth/verify-email */
   async verifyEmail(token?: string) {
@@ -83,8 +98,10 @@ export const authApi = {
     return net(true);
   },
   /** DELETE /users/me — deletes the account and every owned child (PRD §20). */
-  async deleteMe() {
+  /** DELETE /me — `confirmEmail` is the address the parent typed (checked by the server too). */
+  async deleteMe(confirmEmail?: string) {
     const u = requireUser();
+    if (confirmEmail !== undefined && confirmEmail.trim().toLowerCase() !== u.email.toLowerCase()) throw new ApiError("confirmation_mismatch");
     write((db) => {
       const kids = db.children.filter((c) => c.parentId === u.id).map((c) => c.id);
       kids.forEach((k) => purgeChild(db, k));

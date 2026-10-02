@@ -3,9 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { LogOut, Trash } from "lucide-react";
-import { NotConnected } from "@/components/NotConnected";
 import { Button, Card, Field, Input, Modal, PageHeader, Select, useAction } from "@/components/ui";
-import { api, sel, useDb, LIVE } from "@/lib/api";
+import { api, sel, useDb } from "@/lib/api";
 import { LANGS, useLang, useT, type Lang } from "@/lib/i18n";
 
 export default function Account() {
@@ -75,7 +74,7 @@ export default function Account() {
         <Button
           variant="outline"
           onClick={async () => {
-            await api.logout();
+            await api.logoutAll(); // every device (POST /me/logout-all)
             router.replace("/login");
           }}
         >
@@ -83,9 +82,6 @@ export default function Account() {
         </Button>
       </Card>
 
-      {LIVE ? (
-        <NotConnected /> // the server has no self-service account deletion yet
-      ) : (
       <Card className="space-y-3">
         <h2 className="text-lg font-extrabold">{t("parent.account.delete")}</h2>
         <p className="text-sm text-muted">{t("parent.account.deleteHint")}</p>
@@ -93,7 +89,6 @@ export default function Account() {
           <Trash className="size-4" aria-hidden /> {t("parent.account.delete")}
         </Button>
       </Card>
-      )}
 
       <Modal
         open={confirm}
@@ -117,7 +112,7 @@ export default function Account() {
             disabled={typed.trim().toLowerCase() !== me.email}
             pending={del.pending}
             onClick={async () => {
-              if ((await del.run()) !== undefined) router.replace("/");
+              if ((await del.run(typed)) !== undefined) router.replace("/");
             }}
           >
             {t("common.delete")}

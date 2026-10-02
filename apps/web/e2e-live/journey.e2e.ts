@@ -76,39 +76,77 @@ test("parent signs up, adds a child, the child plays, the parent sees it — all
   await expect(page.getByText("Coming soon")).toBeVisible(); // not connected yet — says so honestly
 });
 
-// Session handling on the server, and nothing unconnected is offered as if it worked.
-test("log out and back in; parts the server can't do yet aren't offered", async ({ page }) => {
+// Account emails really arrive (Mailpit in e2e-live/compose.yml) and their links work once (FR-AUTH-1/3).
+const MAIL = `http://localhost:${process.env.E2E_MAIL_PORT ?? 58025}`;
+async function linkFor(to: string, path: "/verify-email" | "/reset-password") {
+  for (let i = 0; i < 30; i++) {
+    const list = (await (await fetch(`${MAIL}/api/v1/search?query=${encodeURIComponent(`to:${to}`)}`)).json()) as { messages: { ID: string }[] };
+    for (const m of list.messages ?? []) {
+      const text = ((await (await fetch(`${MAIL}/api/v1/message/${m.ID}`)).json()) as { Text: string }).Text;
+      const link = text.match(new RegExp(`http\\S+${path}\\?token=\\S+`))?.[0];
+      if (link) return new URL(link).pathname + new URL(link).search; // same origin as the test server
+    }
+    await new Promise((r) => setTimeout(r, 300));
+  }
+  throw new Error(`no ${path} email for ${to}`);
+}
+
+test("account: verify and reset by emailed single-use links, sign out everywhere, delete the account", async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem("fk_lang", JSON.stringify("en")));
-  const email = `live.auth.${Date.now()}@example.com`;
-  const password = "long-enough-password";
+  const email = `live.acct.${Date.now()}@example.com`;
 
   await page.goto("/signup");
-  await expect(page.getByText("Teacher", { exact: true })).toHaveCount(0); // only the parent area is connected
+  await expect(page.getByText("Teacher", { exact: true })).toHaveCount(0); // teacher area not connected yet
   await page.getByLabel("Your name").fill("Aziz");
   await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password").fill(password);
+  await page.getByLabel("Password").fill("long-enough-password");
   await page.getByText("I agree to the Terms of use and the Privacy policy").click();
   await page.getByRole("button", { name: "Create account" }).click();
   await expect(page).toHaveURL(/\/verify-email$/);
 
-  await page.goto("/parent");
-  await expect(page.getByRole("button", { name: /^Notifications/ })).toHaveCount(0); // not connected
+  await page.goto(await linkFor(email, "/verify-email")); // the emailed link
+  await expect(page.getByRole("heading", { name: "Your email is verified." })).toBeVisible();
+
+  // Sign out everywhere, then forget the password.
   await page.goto("/parent/account");
-  await expect(page.getByText("Coming soon")).toBeVisible(); // account deletion isn't on the server yet
-  await page.getByRole("button", { name: "Log out" }).first().click();
-  await expect.poll(async () => (await page.context().cookies()).some((c) => c.name === "fk_access")).toBe(false);
+  await page.getByRole("button", { name: "Sign out everywhere" }).click();
+  await expect(page).toHaveURL(/\/login/);
+  await page.getByRole("link", { name: "Forgot password?" }).click();
+  await expect(page.getByRole("heading", { name: "Forgot your password?" })).toBeVisible();
+  await page.getByLabel("Email").fill(email);
+  await page.getByRole("button", { name: "Send reset link" }).click();
+  await expect(page.getByText(/a reset link is on its way/)).toBeVisible();
+
+  const reset = await linkFor(email, "/reset-password");
+  await page.goto(reset);
+  await page.getByLabel("New password", { exact: true }).fill("a-brand-new-password");
+  await page.getByLabel("Repeat new password").fill("a-brand-new-password");
+  await page.getByRole("button", { name: "Save new password" }).click();
+  await expect(page.getByText("Your password was updated. You can log in now.")).toBeVisible();
+  await page.goto(reset); // FR-AUTH-3: a second use fails with a friendly message
+  await page.getByLabel("New password", { exact: true }).fill("yet-another-password");
+  await page.getByLabel("Repeat new password").fill("yet-another-password");
+  await page.getByRole("button", { name: "Save new password" }).click();
+  await expect(page.getByText("This link was already used.", { exact: false })).toBeVisible();
 
   await page.goto("/login");
-  await expect(page.getByRole("link", { name: "Forgot password?" })).toHaveCount(0); // no email transport yet
   await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password").fill("wrong-password-123");
-  await page.getByRole("button", { name: "Log in" }).click();
-  await expect(page.getByText("Email or password is not correct.")).toBeVisible();
-  await page.getByLabel("Password").fill(password);
+  await page.getByLabel("Password").fill("a-brand-new-password");
   await page.getByRole("button", { name: "Log in" }).click();
   await expect(page).toHaveURL(/\/parent/);
-  await page.goto("/forgot-password");
-  await expect(page.getByText("Coming soon")).toBeVisible();
+  await expect(page.getByRole("button", { name: /^Notifications/ })).toHaveCount(0); // not connected yet
+
+  // Delete the account (typed confirmation), then the old login no longer works.
+  await page.goto("/parent/account");
+  await page.getByRole("button", { name: "Delete account" }).click();
+  await page.getByLabel("Type your email to confirm").fill(email);
+  await page.getByRole("dialog").getByRole("button", { name: "Delete" }).click();
+  await expect(page).toHaveURL(/\/(uz|ru|en)?$/);
+  await page.goto("/login");
+  await page.getByLabel("Email").fill(email);
+  await page.getByLabel("Password").fill("a-brand-new-password");
+  await page.getByRole("button", { name: "Log in" }).click();
+  await expect(page.getByText("Email or password is not correct.")).toBeVisible();
 });
 
 // No consent recorded (a profile mirrored from the mobile app) = no consent: explained, then fixed by the parent.

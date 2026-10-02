@@ -18,6 +18,13 @@ const BY_TITLE: Record<string, string> = {
     not_owned: "not_owned",
     already_owned: "already_owned",
     "CSRF check failed": "unauthorized",
+    invalid_token: "invalid_token",
+    token_used: "token_used",
+    token_expired: "token_expired",
+    account_disabled: "account_disabled",
+    account_pending: "account_pending",
+    confirmation_mismatch: "confirmation_mismatch",
+    email_not_verified_by_provider: "email_not_verified_by_provider",
     consent_required: "consent_missing", // the server stores nothing for a child without core consent
     ai_consent_required: "ai_consent_required",
 };

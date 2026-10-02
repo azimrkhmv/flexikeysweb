@@ -32,6 +32,11 @@ services:
       timeout: 3s
       retries: 30
 
+  # Catches the account emails (verify / reset links); the tests read them via its API on :58025.
+  mailpit:
+    image: axllent/mailpit:v1.21
+    ports: ["127.0.0.1:${E2E_MAIL_PORT:-58025}:8025"]
+
   backend:
     image: ${BACKEND_IMAGE:?set BACKEND_IMAGE — see e2e-live/backend.image}
     environment:
@@ -39,10 +44,16 @@ services:
       APP_SECRET_KEY: ${E2E_SECRET_KEY:?set E2E_SECRET_KEY, e.g. $(openssl rand -hex 32)}
       DATABASE_URL: postgresql+asyncpg://fk:fk@postgres:5432/flexikeys_e2e
       REDIS_URL: redis://redis:6379/0
+      EMAIL_BACKEND: smtp
+      SMTP_HOST: mailpit
+      SMTP_PORT: "1025"
+      SMTP_STARTTLS: "false"
+      APP_WEB_URL: http://localhost:3200 # the live E2E web server (playwright.live.config.ts)
     ports: ["127.0.0.1:${E2E_API_PORT:-58000}:8000"]
     depends_on:
       postgres: { condition: service_healthy }
       redis: { condition: service_healthy }
+      mailpit: { condition: service_started }
     healthcheck: # the image's entrypoint runs `alembic upgrade head` first
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=2)"]
       interval: 3s

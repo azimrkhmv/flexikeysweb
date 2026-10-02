@@ -52,11 +52,9 @@ export default function LoginPage() {
           <Input type="password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
         </Field>
         <div className="-mt-1 text-right">
-          {!LIVE && ( // password reset needs email, which the server can't send yet
           <Link href="/forgot-password" className="text-sm font-bold text-primary hover:underline">
             {t("auth.login.forgot")}
           </Link>
-          )}
         </div>
         <FormError>{login.error ?? google.error}</FormError>
         <Button type="submit" size="lg" className="w-full" pending={login.pending} disabled={busy}>

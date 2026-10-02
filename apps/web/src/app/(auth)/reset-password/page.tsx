@@ -2,38 +2,39 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Button, Field, Input } from "@/components/ui";
+import { Button, Field, Input, LinkButton, useAction } from "@/components/ui";
 import { AuthTitle, FormError, FormNote } from "@/features/auth/parts";
-import { NotConnected } from "@/components/NotConnected";
-import { LIVE } from "@/lib/api";
+import { api } from "@/lib/api";
 import { useT } from "@/lib/i18n";
 
-// ponytail: mock form — the real page posts the single-use token from the email link to POST /auth/reset-password.
+// The emailed link lands here with ?token=… (single use, 15 minutes — FR-AUTH-3).
 export default function ResetPasswordPage() {
-  return LIVE ? <NotConnected /> : <ResetPassword />; // live: no reset emails yet (see forgot-password)
-}
-
-function ResetPassword() {
   const t = useT();
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [mismatch, setMismatch] = useState(false);
   const [done, setDone] = useState(false);
+  const reset = useAction(api.resetPassword);
 
   return (
     <>
       <AuthTitle title={t("auth.reset.title")} lead={t("auth.reset.lead")} />
       {done ? (
-        <FormNote>{t("auth.reset.done")}</FormNote>
+        <div className="space-y-4">
+          <FormNote>{t("auth.reset.done")}</FormNote>
+          <LinkButton href="/login" size="lg" className="w-full">
+            {t("nav.login")}
+          </LinkButton>
+        </div>
       ) : (
         <form
           className="space-y-4"
-          onSubmit={(e) => {
+          onSubmit={async (e) => {
             e.preventDefault();
-            if (password.length < 10) return setError(t("err.weak_password"));
-            if (password !== confirm) return setError(t("auth.reset.mismatch"));
-            setError(null);
-            setDone(true);
+            setMismatch(password !== confirm);
+            if (password !== confirm) return;
+            const token = new URLSearchParams(window.location.search).get("token") ?? "";
+            if (await reset.run(token, password)) setDone(true);
           }}
         >
           <Field label={t("auth.reset.password")}>
@@ -42,8 +43,13 @@ function ResetPassword() {
           <Field label={t("auth.reset.confirm")}>
             <Input type="password" autoComplete="new-password" required value={confirm} onChange={(e) => setConfirm(e.target.value)} />
           </Field>
-          <FormError>{error}</FormError>
-          <Button type="submit" size="lg" className="w-full">
+          <FormError>{mismatch ? t("auth.reset.mismatch") : reset.error}</FormError>
+          {(reset.error === t("err.token_used") || reset.error === t("err.token_expired") || reset.error === t("err.invalid_token")) && (
+            <Link href="/forgot-password" className="block text-sm font-bold text-primary hover:underline">
+              {t("auth.login.forgot")}
+            </Link>
+          )}
+          <Button type="submit" size="lg" className="w-full" pending={reset.pending}>
             {t("auth.reset.submit")}
           </Button>
         </form>

@@ -63,6 +63,31 @@ export const liveApi = {
     queryClient.clear();
     return true;
   },
+  async logoutAll() {
+    await http("POST", "/me/logout-all", {}).catch(() => {});
+    return liveApi.logout();
+  },
+  async forgotPassword(email: string) {
+    await http("POST", "/auth/password/forgot", { email: email.trim().toLowerCase() });
+    return true;
+  },
+  /** The single-use token from the emailed link (FR-AUTH-3); a second use fails with token_used. */
+  async resetPassword(token: string, password: string) {
+    if (password.length < 10) throw new ApiError("weak_password");
+    await http("POST", "/auth/password/reset", { token, new_password: password });
+    return true;
+  },
+  async resendVerification() {
+    await http("POST", "/me/resend-verification", {});
+    return true;
+  },
+  async deleteMe(confirmEmail?: string) {
+    await http("DELETE", "/me", { email: confirmEmail ?? "" });
+    liveChild.set(null);
+    sessionStore.set({ role: null });
+    queryClient.clear();
+    return true;
+  },
   /** With the token from the emailed link (/verify-email?token=…); without it, the email is the way. */
   async verifyEmail(token?: string): Promise<boolean> {
     if (!token) throw new ApiError("verify_by_email");

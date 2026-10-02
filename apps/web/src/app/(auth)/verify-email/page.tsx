@@ -18,6 +18,7 @@ export default function VerifyEmailPage() {
   const me = mounted ? sel.me(db) : null;
   const [resent, setResent] = useState(false);
   const verify = useAction(api.verifyEmail);
+  const resend = useAction(api.resendVerification);
   // Live: the emailed link lands here with ?token=… — confirm it once, automatically.
   const tried = useRef(false);
   useEffect(() => {
@@ -67,9 +68,10 @@ export default function VerifyEmailPage() {
           {t("auth.verify.demoButton")}
         </Button>
         )}
-        <Button variant="ghost" className="w-full" onClick={() => setResent(true)}>
+        <Button variant="ghost" className="w-full" pending={resend.pending} onClick={async () => setResent((await resend.run()) === true)}>
           {t("auth.verify.resend")}
         </Button>
+        <FormError>{resend.error}</FormError>
         {resent && <FormNote>{t("auth.verify.resent")}</FormNote>}
       </div>
     </>
