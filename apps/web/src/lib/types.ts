@@ -298,7 +298,15 @@ export interface SceneRound {
   answer: string;
 }
 
-export type Activity =
+/** Drawing sets imported from the Flutter app (src/content/drawing, scripts/import-flutter-drawing.py). */
+export type TraceSet = "letters" | "numbers" | "objects";
+export type ColoringSet = "fruits" | "animals" | "nature" | "transport";
+
+/**
+ * `optional`: rewarded, but not needed to finish the level (mastery gate) — the drawing activities, so a
+ * child who can't draw is never held back and levels already finished stay finished.
+ */
+export type Activity = (
   | { id: string; kind: "find_same"; items: string[] }
   | { id: string; kind: "listen_pick"; items: string[] }
   | { id: string; kind: "count"; items: string[]; max: number }
@@ -311,7 +319,14 @@ export type Activity =
   | { id: string; kind: "puzzle"; item: string; grid: 2 | 3 }
   | { id: string; kind: "type"; mode: "letter" | "word" | "listen"; words: L10n<string[]> }
   | { id: string; kind: "sentence"; sentences: L10n<string[]> }
-  | { id: string; kind: "story"; pages: { scene: string; text: L10n }[]; question?: SceneRound };
+  | { id: string; kind: "story"; pages: { scene: string; text: L10n }[]; question?: SceneRound }
+  // Drawing (PRD §9.7) — trace / connect-the-dots use the Flutter stroke data; items: glyph labels or object ids.
+  | { id: string; kind: "trace"; set: TraceSet; items: L10n<string[]> }
+  | { id: string; kind: "dots"; items: string[] }
+  | { id: string; kind: "color"; set: ColoringSet }
+  | { id: string; kind: "maze"; size: 3 | 4 | 5; rounds: number }
+  | { id: string; kind: "paint" }
+) & { optional?: boolean };
 
 export type ActivityKind = Activity["kind"];
 

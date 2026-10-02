@@ -4,6 +4,7 @@ import { Puzzle, Sentence, Sort, Story } from "./board";
 import { Count, FindSame, ListenPick, Scene } from "./choice";
 import { TypeActivity } from "./keyboard";
 import { LightPath, Missing, Sequence } from "./memory";
+import { Color, Dots, Maze, Paint, Trace } from "./draw";
 import { Path } from "./path";
 
 // Activity engine registry (PRD §9.6): one engine per activity kind, reused across all levels.
@@ -24,4 +25,9 @@ export const ENGINES: { [K in ActivityKind]: ComponentType<EngineProps<K>> } = {
   type: TypeActivity,
   sentence: Sentence,
   story: Story,
+  trace: Trace,
+  dots: Dots,
+  color: Color,
+  maze: Maze,
+  paint: Paint,
 };

@@ -2,7 +2,7 @@
 
 // Pure read functions over the DB. `sel.access` is the single authorization rule (PRD §15.4).
 
-import { FREE_LEVELS, LEVEL_BY_ID, LEVELS } from "@/content/levels";
+import { FREE_LEVELS, LEVEL_BY_ID, LEVELS, levelComplete } from "@/content/levels";
 import { DEFAULT_PROFILE } from "../adaptive";
 import { DAY, iso, type DB } from "./schema";
 import type { AdaptiveProfile, Child, ClassRoom, ConsentScope, InputProfile, LevelProgress, Subscription, Wallet } from "../types";
@@ -62,11 +62,11 @@ export const sel = {
   levelState(db: DB, childId: string, index: number): "done" | "open" | "sleeping" | "plan" {
     const level = LEVELS[index];
     const p = sel.levelProgress(db, childId, level.id);
-    if (p.completed.length >= level.activities.length) return "done";
+    if (levelComplete(level, p.completed)) return "done";
     if (index >= FREE_LEVELS && !sel.entitled(db, childId)) return "plan";
     if (index === 0) return "open";
     const prev = LEVELS[index - 1];
-    return sel.levelProgress(db, childId, prev.id).completed.length >= prev.activities.length ? "open" : "sleeping";
+    return levelComplete(prev, sel.levelProgress(db, childId, prev.id).completed) ? "open" : "sleeping";
   },
   /**
    * Why a level can't be opened yet — null when it is playable. Teacher/therapist assignments never change

@@ -25,6 +25,7 @@ const TONE: Record<Level["color"], string> = {
 export const KIND_EMOJI: Record<ActivityKind, string> = {
   find_same: "🔍", listen_pick: "👂", count: "🔢", sort: "🧺", sequence: "🔁", missing: "❓", light_path: "✨",
   path: "〰️", scene: "🌱", puzzle: "🧩", type: "⌨️", sentence: "💬", story: "📖",
+  trace: "✏️", dots: "🔵", color: "🖍️", maze: "🌀", paint: "🎨",
 };
 
 /** World map: 16 levels on a winding path. Locked levels are sleeping clouds, never padlocks. */

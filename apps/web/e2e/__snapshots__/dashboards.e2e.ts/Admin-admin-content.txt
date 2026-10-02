@@ -23,21 +23,25 @@ Levels
 type
 path
 light_path
+trace
 
 2	🔢 Numbers
 count
 listen_pick
 sequence
+trace
 
 3	🔷 Shapes
 find_same
 listen_pick
 path
+dots
 
 4	🎨 Colors
 sequence
 listen_pick
 find_same
+paint
 
 5	👨‍👩‍👧 Family
 listen_pick
@@ -49,11 +53,13 @@ listen_pick
 find_same
 puzzle
 type
+color
 
 7	🍎 Fruits
 find_same
 sort
 type
+color
 
 8	🥕 Vegetables
 listen_pick
@@ -64,11 +70,14 @@ missing
 missing
 find_same
 puzzle
+maze
 
 10	🚌 Transport
 listen_pick
 sort
 type
+color
+maze
 
 11	✋ Body parts
 listen_pick
@@ -85,6 +94,7 @@ scene
 light_path
 path
 listen_pick
+color
 
 14	📝 Simple words
 type

@@ -2,7 +2,7 @@
 
 // Child-token endpoints: child mode entry, sessions & events, rewards, AAC.
 
-import { LEVEL_BY_ID } from "@/content/levels";
+import { LEVEL_BY_ID, levelComplete } from "@/content/levels";
 import { SHOP_BY_ID } from "@/content/shop";
 import { applyPolicy, bkt, DEFAULT_PROFILE } from "../adaptive";
 import type { Lang } from "../i18n";
@@ -81,9 +81,9 @@ export const playApi = {
       let p = db.progress.find((x) => x.childId === c.childId && x.levelId === levelId);
       if (!p) db.progress.push((p = { childId: c.childId, levelId, completed: [], stars: 0 }));
       const first = !p.completed.includes(activityId);
-      const wasDone = p.completed.length >= level.activities.length;
+      const wasDone = levelComplete(level, p.completed);
       if (first) p.completed.push(activityId);
-      const levelDone = !wasDone && p.completed.length >= level.activities.length;
+      const levelDone = !wasDone && levelComplete(level, p.completed);
       const stars = first ? 3 : 1;
       const coins = (first ? 5 : 2) + (levelDone ? 10 : 0);
       p.stars += stars;

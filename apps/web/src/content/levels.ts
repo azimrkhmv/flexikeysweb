@@ -11,6 +11,7 @@ export const LEVELS: Level[] = [
       { id: "letters-type", kind: "type", mode: "letter", words: { en: ["a", "m", "s", "t", "o", "b"], uz: ["a", "o", "m", "s", "t", "b"], ru: ["а", "о", "м", "с", "т", "б"] } },
       { id: "letters-path", kind: "path", shape: "wave" },
       { id: "letters-light", kind: "light_path", length: 3 },
+      { id: "letters-trace", kind: "trace", set: "letters", items: { en: ["A", "M", "S"], uz: ["A", "O", "M"], ru: ["А", "О", "М"] }, optional: true },
     ],
   },
   {
@@ -20,6 +21,7 @@ export const LEVELS: Level[] = [
       { id: "numbers-count", kind: "count", items: ["apple", "star", "ball", "fish"], max: 5 },
       { id: "numbers-listen", kind: "listen_pick", items: ["n_1", "n_2", "n_3", "n_4", "n_5"] },
       { id: "numbers-seq", kind: "sequence", items: ["n_1", "n_2", "n_3", "n_4"], length: 3 },
+      { id: "numbers-trace", kind: "trace", set: "numbers", items: { en: ["1", "2", "3"], uz: ["1", "2", "3"], ru: ["1", "2", "3"] }, optional: true },
     ],
   },
   {
@@ -29,6 +31,7 @@ export const LEVELS: Level[] = [
       { id: "shapes-same", kind: "find_same", items: ["s_circle", "s_square", "s_triangle", "s_star", "s_heart"] },
       { id: "shapes-listen", kind: "listen_pick", items: ["s_circle", "s_square", "s_triangle", "s_star", "s_heart", "s_rectangle"] },
       { id: "shapes-path", kind: "path", shape: "loop" },
+      { id: "shapes-dots", kind: "dots", items: ["house", "heart", "star"], optional: true },
     ],
   },
   {
@@ -38,6 +41,7 @@ export const LEVELS: Level[] = [
       { id: "colors-seq", kind: "sequence", items: ["c_yellow", "c_blue", "c_green", "c_purple"], length: 4 },
       { id: "colors-listen", kind: "listen_pick", items: ["c_red", "c_blue", "c_green", "c_yellow", "c_purple", "c_pink"] },
       { id: "colors-same", kind: "find_same", items: ["c_orange", "c_blue", "c_green", "c_yellow", "c_pink"] },
+      { id: "colors-paint", kind: "paint", optional: true },
     ],
   },
   {
@@ -57,6 +61,7 @@ export const LEVELS: Level[] = [
       { id: "animals-same", kind: "find_same", items: ["cat", "dog", "lion", "frog", "chicken", "fish"] },
       { id: "animals-puzzle", kind: "puzzle", item: "dog", grid: 2 },
       { id: "animals-type", kind: "type", mode: "word", words: { en: ["cat", "dog"], uz: ["it", "ot"], ru: ["кот", "лев"] } },
+      { id: "animals-color", kind: "color", set: "animals", optional: true },
     ],
   },
   {
@@ -72,6 +77,7 @@ export const LEVELS: Level[] = [
         ],
       },
       { id: "fruits-type", kind: "type", mode: "listen", words: { en: ["pear", "lemon"], uz: ["nok", "olma"], ru: ["груша", "арбуз"] } },
+      { id: "fruits-color", kind: "color", set: "fruits", optional: true },
     ],
   },
   {
@@ -96,6 +102,7 @@ export const LEVELS: Level[] = [
       { id: "toys-missing", kind: "missing", items: ["ball", "teddy", "kite", "car", "balloon", "drum"] },
       { id: "toys-same", kind: "find_same", items: ["ball", "teddy", "kite", "blocks", "balloon", "yoyo"] },
       { id: "toys-puzzle", kind: "puzzle", item: "teddy", grid: 2 },
+      { id: "toys-maze", kind: "maze", size: 3, rounds: 2, optional: true },
     ],
   },
   {
@@ -111,6 +118,8 @@ export const LEVELS: Level[] = [
         ],
       },
       { id: "transport-type", kind: "type", mode: "word", words: { en: ["bus", "car"], uz: ["qayiq", "avtobus"], ru: ["автобус", "лодка"] } },
+      { id: "transport-color", kind: "color", set: "transport", optional: true },
+      { id: "transport-maze", kind: "maze", size: 4, rounds: 2, optional: true },
     ],
   },
   {
@@ -160,6 +169,7 @@ export const LEVELS: Level[] = [
       { id: "nature-light", kind: "light_path", length: 4 },
       { id: "nature-path", kind: "path", shape: "hill" },
       { id: "nature-listen", kind: "listen_pick", items: ["sun", "moon", "star", "tree", "flower", "rain", "cloud", "snow"] },
+      { id: "nature-color", kind: "color", set: "nature", optional: true },
     ],
   },
   {
@@ -214,6 +224,12 @@ export const LEVELS: Level[] = [
 ];
 
 export const LEVEL_BY_ID: Record<string, Level> = Object.fromEntries(LEVELS.map((l) => [l.id, l]));
+
+/** Activities that finish a level (mastery gate). Optional ones (drawing) are extra practice. */
+export const requiredActivities = (level: Level) => level.activities.filter((a) => !a.optional).map((a) => a.id);
+
+/** All required activities of `level` are in `completed`. */
+export const levelComplete = (level: Level, completed: readonly string[]) => requiredActivities(level).every((id) => completed.includes(id));
 
 /** Free tier: first 4 levels (PRD Q1 proposal). AAC is always free. */
 export const FREE_LEVELS = 4;

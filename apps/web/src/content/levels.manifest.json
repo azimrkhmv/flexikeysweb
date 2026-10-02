@@ -1,11 +1,17 @@
 {
-  "version": 2,
+  "version": 3,
   "levels": [
     {
       "slug": "letters",
       "n": 1,
       "free": true,
       "activities": [
+        "letters-type",
+        "letters-path",
+        "letters-light",
+        "letters-trace"
+      ],
+      "required": [
         "letters-type",
         "letters-path",
         "letters-light"
@@ -18,6 +24,12 @@
       "activities": [
         "numbers-count",
         "numbers-listen",
+        "numbers-seq",
+        "numbers-trace"
+      ],
+      "required": [
+        "numbers-count",
+        "numbers-listen",
         "numbers-seq"
       ]
     },
@@ -28,6 +40,12 @@
       "activities": [
         "shapes-same",
         "shapes-listen",
+        "shapes-path",
+        "shapes-dots"
+      ],
+      "required": [
+        "shapes-same",
+        "shapes-listen",
         "shapes-path"
       ]
     },
@@ -36,6 +54,12 @@
       "n": 4,
       "free": true,
       "activities": [
+        "colors-seq",
+        "colors-listen",
+        "colors-same",
+        "colors-paint"
+      ],
+      "required": [
         "colors-seq",
         "colors-listen",
         "colors-same"
@@ -49,6 +73,11 @@
         "family-listen",
         "family-missing",
         "family-type"
+      ],
+      "required": [
+        "family-listen",
+        "family-missing",
+        "family-type"
       ]
     },
     {
@@ -56,6 +85,13 @@
       "n": 6,
       "free": false,
       "activities": [
+        "animals-listen",
+        "animals-same",
+        "animals-puzzle",
+        "animals-type",
+        "animals-color"
+      ],
+      "required": [
         "animals-listen",
         "animals-same",
         "animals-puzzle",
@@ -69,6 +105,12 @@
       "activities": [
         "fruits-same",
         "fruits-sort",
+        "fruits-type",
+        "fruits-color"
+      ],
+      "required": [
+        "fruits-same",
+        "fruits-sort",
         "fruits-type"
       ]
     },
@@ -77,6 +119,11 @@
       "n": 8,
       "free": false,
       "activities": [
+        "veg-listen",
+        "veg-sort",
+        "veg-missing"
+      ],
+      "required": [
         "veg-listen",
         "veg-sort",
         "veg-missing"
@@ -89,6 +136,12 @@
       "activities": [
         "toys-missing",
         "toys-same",
+        "toys-puzzle",
+        "toys-maze"
+      ],
+      "required": [
+        "toys-missing",
+        "toys-same",
         "toys-puzzle"
       ]
     },
@@ -97,6 +150,13 @@
       "n": 10,
       "free": false,
       "activities": [
+        "transport-listen",
+        "transport-sort",
+        "transport-type",
+        "transport-color",
+        "transport-maze"
+      ],
+      "required": [
         "transport-listen",
         "transport-sort",
         "transport-type"
@@ -110,6 +170,11 @@
         "body-listen",
         "body-scene",
         "body-type"
+      ],
+      "required": [
+        "body-listen",
+        "body-scene",
+        "body-type"
       ]
     },
     {
@@ -120,6 +185,11 @@
         "clothes-listen",
         "clothes-scene",
         "clothes-same"
+      ],
+      "required": [
+        "clothes-listen",
+        "clothes-scene",
+        "clothes-same"
       ]
     },
     {
@@ -127,6 +197,13 @@
       "n": 13,
       "free": false,
       "activities": [
+        "nature-scene",
+        "nature-light",
+        "nature-path",
+        "nature-listen",
+        "nature-color"
+      ],
+      "required": [
         "nature-scene",
         "nature-light",
         "nature-path",
@@ -141,6 +218,11 @@
         "words-type",
         "words-listen",
         "words-zigzag"
+      ],
+      "required": [
+        "words-type",
+        "words-listen",
+        "words-zigzag"
       ]
     },
     {
@@ -150,6 +232,10 @@
       "activities": [
         "sentences-build",
         "sentences-seq"
+      ],
+      "required": [
+        "sentences-build",
+        "sentences-seq"
       ]
     },
     {
@@ -157,6 +243,10 @@
       "n": 16,
       "free": false,
       "activities": [
+        "stories-cloud",
+        "stories-morning"
+      ],
+      "required": [
         "stories-cloud",
         "stories-morning"
       ]
