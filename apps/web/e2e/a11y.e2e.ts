@@ -1,14 +1,12 @@
-import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
-import { loginAs, setup } from "./helpers";
+import { expectNoA11yIssues, loginAs, setup } from "./helpers";
 
 // PRD §36.7: axe reports no serious or critical issues on adult pages; child pages are scanned too.
 async function scan(page: Page, path: string) {
   await page.goto(path);
+  if (path.includes("#")) await page.reload(); // a hash-only change keeps the old tab mounted
   await expect(page.locator("h1").first()).toBeVisible();
-  const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]).analyze();
-  const bad = violations.filter((v) => v.impact === "serious" || v.impact === "critical");
-  expect(bad.map((v) => `${path} ${v.id}: ${v.help} (${v.nodes.length}) → ${v.nodes.slice(0, 3).map((n) => n.target.join(" ")).join(" | ")}`)).toEqual([]);
+  await expectNoA11yIssues(page, path);
 }
 
 test.describe("axe", () => {
@@ -22,7 +20,7 @@ test.describe("axe", () => {
 
   test("parent area", async ({ page }) => {
     await loginAs(page, "Parent");
-    for (const p of ["/parent", "/parent/child/ch_ali", "/parent/children/new", "/parent/reports", "/parent/billing", "/parent/assistant", "/parent/account"]) await scan(page, p);
+    for (const p of ["/parent", "/parent/child/ch_ali", "/parent/child/ch_ali#aac", "/parent/children/new", "/parent/reports", "/parent/billing", "/parent/assistant", "/parent/account"]) await scan(page, p);
   });
 
   test("teacher, therapist and admin areas", async ({ page }) => {
@@ -32,7 +30,7 @@ test.describe("axe", () => {
     await loginAs(page, "Therapist");
     for (const p of ["/therapist", "/therapist/child/ch_ali"]) await scan(page, p);
     await loginAs(page, "Admin");
-    for (const p of ["/admin", "/admin/users", "/admin/content", "/admin/audit"]) await scan(page, p);
+    for (const p of ["/admin", "/admin/users", "/admin/billing", "/admin/content", "/admin/audit"]) await scan(page, p);
   });
 
   test("child mode start screen", async ({ page }) => {
@@ -72,4 +70,34 @@ test("game replay and watch-again are full-size child targets", async ({ page },
     const box = (await b.boundingBox())!;
     expect(Math.min(box.width, box.height)).toBeGreaterThanOrEqual(64);
   }
+});
+
+// Phones (PRD §36.5): every role's pages fit a 375 px screen with no sideways scrolling.
+test.describe("phone width", () => {
+  test.use({ viewport: { width: 375, height: 740 }, hasTouch: true });
+  const AREAS = {
+    Parent: ["/parent", "/parent/child/ch_ali", "/parent/child/ch_ali#aac", "/parent/children/new", "/parent/reports", "/parent/billing", "/parent/assistant", "/parent/account"],
+    Teacher: ["/teacher", "/teacher/class/cl_sun", "/teacher/child/ch_ali"],
+    Therapist: ["/therapist", "/therapist/child/ch_ali"],
+    Admin: ["/admin", "/admin/users", "/admin/billing", "/admin/content", "/admin/audit"],
+  } as const;
+  async function fits(page: Page, path: string) {
+    await page.goto(path);
+    if (path.includes("#")) await page.reload();
+    await expect(page.locator("h1").first()).toBeVisible();
+    const over = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+    expect(over, `${path} scrolls sideways by ${over}px`).toBeLessThanOrEqual(0);
+  }
+  test.beforeEach(async ({ page }, info) => {
+    test.skip(info.project.name !== "desktop", "the viewport is set here");
+    await setup(page);
+  });
+  test("public pages", async ({ page }) => {
+    for (const p of ["/", "/pricing", "/privacy", "/login", "/signup", "/class", "/demo"]) await fits(page, p);
+  });
+  for (const [role, paths] of Object.entries(AREAS) as [keyof typeof AREAS, readonly string[]][])
+    test(`${role} area`, async ({ page }) => {
+      await loginAs(page, role);
+      for (const p of paths) await fits(page, p);
+    });
 });

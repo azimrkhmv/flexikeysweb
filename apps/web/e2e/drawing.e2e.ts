@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { loginAs, setup } from "./helpers";
+import { expectNoA11yIssues, loginAs, setup } from "./helpers";
 
 // Drawing activities (PRD §9.7, Flutter parity): each one can be finished by tapping alone, and finishing
 // one is rewarded by the (mock) server like any other activity.
@@ -74,6 +74,7 @@ test("drawing activities: trace, connect the dots, paint, coloring and maze can 
 
   await openActivity(page, "Letters", "Draw");
   await expect(page.getByRole("heading", { name: "Draw A along the dots" })).toBeVisible();
+  await expectNoA11yIssues(page, "trace");
   await tapAllDots(page);
   await celebrate(page);
 

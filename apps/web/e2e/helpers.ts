@@ -1,3 +1,4 @@
+import AxeBuilder from "@axe-core/playwright";
 import { expect, type Page } from "@playwright/test";
 
 /** Fixed clock + English UI so seeded demo data and copy are the same on every run. */
@@ -33,4 +34,11 @@ export async function exitThroughGate(page: Page, lang: "en" | "uz") {
   const question = page.getByRole("dialog").locator("p").first();
   const [, a, b] = (await question.innerText()).match(g.q)!;
   await page.getByRole("button", { name: String(g.nums[a] + g.nums[b]), exact: true }).click();
+}
+
+/** PRD §36.7: no serious or critical axe findings on the current screen. */
+export async function expectNoA11yIssues(page: Page, where: string) {
+  const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]).analyze();
+  const bad = violations.filter((v) => v.impact === "serious" || v.impact === "critical");
+  expect(bad.map((v) => `${where} ${v.id}: ${v.help} (${v.nodes.length}) → ${v.nodes.slice(0, 3).map((n) => n.target.join(" ")).join(" | ")}`)).toEqual([]);
 }

@@ -36,7 +36,7 @@ Class login for children: `/class`, then enter code `KQ7M4P`. You can reset all 
 ## What is real and what is mocked
 
 The FastAPI backend lives in another repository. By default (`NEXT_PUBLIC_API_MODE=mock`) the app runs on an
-in-browser mock of it; `NEXT_PUBLIC_API_MODE=live` connects the parent area and child mode to the real API
+in-browser mock of it; `NEXT_PUBLIC_API_MODE=live` connects every area to the real API
 (see **Live mode** below). In mock mode:
 
 - **`src/lib/api/` is an in-browser mock of the API**, split by domain (`auth`, `children`, `play`, `care`, `teacher`, `ai`, `billing`, `admin`, plus `schema`, `seed`, `db`, `selectors`, `guards`). Its data is stored in `localStorage` under the key `fk_db_v1`. Every mutation has a comment naming the endpoint it stands for (PRD §14). Pages read data only through the `sel.*` selectors (a test enforces it). Authorization rules (`sel.access`, the same logic as `can_access_child`, PRD §15.4), consent checks, server-side rewards, session ownership and billing idempotency all run inside `src/lib/api/`. Components never make these decisions.
@@ -85,12 +85,23 @@ src/messages          i18n catalogs per area (en/uz/ru). Routes register only wh
 `next.config.ts` forwards it to `FK_API_ORIGIN` (default `http://localhost:8000`) — in production the
 reverse proxy does this. Auth is httpOnly cookies set by the API; writes carry the CSRF token.
 
-Connected in this phase: sign-up / login / logout (email + password), email verification link,
-add child with consent, child settings, consents (grant / withdraw), export, delete, child mode
-(session, events, activity completion with server-granted rewards and the mastery gate, adaptive
-profile), cloud shop (buy with earned coins, equip), and the parent's progress / "what changed" views.
-Everything else says "Coming soon" in live mode instead of showing demo data, or is hidden: teacher and
-therapist sign-up, the notification bell, password reset (the server can't send email yet) and account deletion.
+Every area is connected; there is no demo data in live mode:
+
+- **Accounts:** email + password sign-up for parents, teachers and therapists (teachers/therapists wait for
+  admin approval), email verification, password reset, `/me` (change password, sign out everywhere, delete).
+- **Parent:** children with consent, settings, consents, export, delete; progress, "what changed",
+  reports (print to PDF), sharing with a class or a therapist, notification bell and preferences, billing.
+- **Child mode:** sessions, events, server-granted rewards, the mastery and plan gates, adaptive profile,
+  cloud shop, drawing activities, AAC (core + the parent's own cards with photo and recorded voice).
+- **Teacher:** classes, class codes + class login on a shared device, assignments, roster progress.
+- **Therapist:** invites, care links, notes and goals (reads are audited).
+- **Assistant:** the parent/teacher assistant (built-in rule-based summary when the server has no LLM key).
+- **Admin:** users and approvals, subscriptions and orders, complimentary access, support actions,
+  overview with service health; changes need a password re-check (15 min) and are audited.
+
+External setup still needed (server side, not in this repo): Google sign-in client ID, SMTP provider,
+Payme/Click merchant credentials, an LLM key, pre-generated Azure audio, and cron for the weekly reports
+and the deleted-account purge (see the backend README).
 
 **Consent:** no consent record means no consent. For a profile without core consent, e.g. one mirrored from the
 mobile app, child mode doesn't start. The parent sees why, and the Privacy tab offers **Give consent**. The server
@@ -106,8 +117,9 @@ NEXT_PUBLIC_API_MODE=live npm run dev
 
 ### Live E2E (web + API + database)
 
-`e2e-live/compose.yml` starts a throwaway stack: an empty in-memory Postgres, Redis, and a backend **image**,
-with only the API published on `127.0.0.1:58000`. CI uses the same file.
+`e2e-live/compose.yml` starts a throwaway stack: an empty in-memory Postgres, Redis, Mailpit (catches the
+verification / reset emails), MinIO (private media bucket) and a backend **image**, with only the API published
+on `127.0.0.1:58000`. Payme/Click use test credentials local to the stack. Chromium gets a fake microphone. CI uses the same file.
 
 ```bash
 export BACKEND_IMAGE=$(cat e2e-live/backend.image)   # or a local build: docker build -t flexikeys-backend:local ../flexikeys/backend

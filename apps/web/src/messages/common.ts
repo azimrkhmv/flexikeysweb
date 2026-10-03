@@ -101,8 +101,6 @@ export const common = {
     "err.verify_by_email": "Open the link in the email we sent you to confirm your address.",
     "err.rate_limited": "Too many tries. Please wait a minute and try again.",
     "err.already_owned": "You already have this.",
-    "live.notConnected.title": "Coming soon",
-    "live.notConnected.body": "This part of FlexiKeys isn't connected to the server yet. Your children's play, progress and privacy settings already are.",
     "lock.mastery": "Opens after “{level}” is finished",
     "lock.plan": "Needs the Family plan",
 
@@ -256,8 +254,6 @@ export const common = {
     "err.verify_by_email": "Manzilingizni tasdiqlash uchun biz yuborgan xatdagi havolani oching.",
     "err.rate_limited": "Juda koʻp urinish. Bir daqiqa kutib, qayta urinib koʻring.",
     "err.already_owned": "Bu sizda allaqachon bor.",
-    "live.notConnected.title": "Tez orada",
-    "live.notConnected.body": "FlexiKeysning bu qismi hali serverga ulanmagan. Farzandlaringizning oʻyini, natijalari va maxfiylik sozlamalari allaqachon ulangan.",
     "lock.mastery": "“{level}” tugagach ochiladi",
     "lock.plan": "Oilaviy tarif kerak",
 
@@ -411,8 +407,6 @@ export const common = {
     "err.verify_by_email": "Откройте ссылку в письме, которое мы отправили, чтобы подтвердить адрес.",
     "err.rate_limited": "Слишком много попыток. Подождите минуту и попробуйте снова.",
     "err.already_owned": "Это у вас уже есть.",
-    "live.notConnected.title": "Скоро",
-    "live.notConnected.body": "Эта часть FlexiKeys пока не подключена к серверу. Игры, прогресс и настройки приватности детей уже подключены.",
     "lock.mastery": "Откроется после уровня «{level}»",
     "lock.plan": "Нужен семейный тариф",
 
