@@ -6,7 +6,7 @@ import { AAC_BY_ID, CUSTOM_PREFIX } from "@/content/aac";
 import { SHOP_BY_ID } from "@/content/shop";
 import { sessionStore } from "@/lib/session";
 import type { Lang } from "@/lib/translate";
-import type { AacCustomCard, Child, ClassRoom, ConsentScope, InputProfile, InteractionEvent, Order, Role, User } from "@/lib/types";
+import type { AacCustomCard, Child, ClassRoom, ConsentScope, InputProfile, InteractionEvent, Order, Role, User, UserStatus } from "@/lib/types";
 import { queryClient } from "./client";
 import { http } from "./http";
 import {
@@ -334,6 +334,24 @@ export const liveApi = {
   },
   async refreshBilling() {
     await refreshBilling();
+    return true;
+  },
+
+  // ------------------------------------------------------------ admin console (re-auth prompt + audit on the server)
+  async setUserStatus(userId: string, status: UserStatus) {
+    await http("PATCH", `/admin/users/${userId}`, { status: status === "disabled" ? "disabled" : "active" });
+    await queryClient.invalidateQueries({ queryKey: ["admin"] });
+    return true;
+  },
+  async setFlag(key: string, enabled: boolean) {
+    await http("PUT", "/admin/feature-flags", { key, enabled });
+    await queryClient.invalidateQueries({ queryKey: ["admin"] });
+    await queryClient.invalidateQueries({ queryKey: ["flags"] });
+    return true;
+  },
+  async grantComp(userId: string, days: number) {
+    await http("POST", `/admin/users/${userId}/comp`, { days });
+    await queryClient.invalidateQueries({ queryKey: ["admin"] });
     return true;
   },
 

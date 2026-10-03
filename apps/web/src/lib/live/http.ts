@@ -60,9 +60,31 @@ function refresh() {
   return refreshing;
 }
 
+/** Admin changes need the password confirmed in the last 15 minutes: the console registers a prompt. */
+let reauthPrompt: (() => Promise<string | null>) | null = null;
+export const setReauthPrompt = (fn: typeof reauthPrompt) => {
+  reauthPrompt = fn;
+};
+
+async function reauthAndRetry(method: string, path: string, body: unknown, res: Response): Promise<Response> {
+  if (res.status !== 403 || !reauthPrompt || path === "/admin/reauth") return res;
+  const title = await res
+    .clone()
+    .json()
+    .then((j: { title?: string }) => j.title ?? "")
+    .catch(() => "");
+  if (title !== "reauth_required") return res;
+  const password = await reauthPrompt();
+  if (!password) return res;
+  const ok = await send("POST", "/admin/reauth", { password });
+  if (!ok.ok) throw new ApiError(ok.status === 401 ? "invalid_credentials" : "generic");
+  return send(method, path, body);
+}
+
 export async function http<T>(method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE", path: string, body?: unknown): Promise<T> {
   let res = await send(method, path, body);
   if (res.status === 401 && !path.startsWith("/auth/") && (await refresh())) res = await send(method, path, body);
+  res = await reauthAndRetry(method, path, body, res);
   if (!res.ok) {
     let title = "";
     try {

@@ -14,6 +14,8 @@ export interface DB {
   v: number;
   /** Live mode: server data still loading (pages show a spinner instead of "signed out"). */
   loading?: boolean;
+  /** Live mode, admin: platform numbers computed by the server (the arrays hold no other families). */
+  adminStats?: { users: number; children: number; paying: number; sessions: number; aiByRole: Record<string, number>; aiByDay: Record<string, number>; health: Record<string, boolean> };
   auth: { userId: string | null; child: ChildAuth | null };
   users: User[];
   children: Child[];

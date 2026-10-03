@@ -5,7 +5,7 @@ import { AAC_BY_ID, CUSTOM_PREFIX } from "@/content/aac";
 import { DEFAULT_PROFILE } from "@/lib/adaptive";
 import type { Lang } from "@/lib/translate";
 import type {
-  AacCustomCard, AacEvent, AccessMode, AdaptationChange, AdaptiveProfile, Assignment, CareLink, Child, ClassRoom, Consent, ConsentScope, Goal,
+  AacCustomCard, AacEvent, AccessMode, AuditLog, AdaptationChange, AdaptiveProfile, Assignment, CareLink, Child, ClassRoom, Consent, ConsentScope, Goal,
   InteractionEvent, LearningSession, LevelProgress, Note, Notification, Order, ParamKey, Role, SkillMastery, Subscription, User, UserStatus,
 } from "@/lib/types";
 
@@ -232,5 +232,19 @@ export const subscriptionFrom = (userId: string, s?: { plan: string; status: str
 export const orderFrom = (userId: string, o: BOrder): Order => ({
   id: o.id, userId, plan: o.plan === "yearly" ? "yearly" : "monthly", amountTiyin: o.amount_tiyin, provider: o.provider === "click" ? "click" : "payme",
   state: o.state === "paid" ? "paid" : o.state === "canceled" ? "canceled" : "created", createdAt: o.created_at,
+});
+
+// ---------------------------------------------------------------- admin console
+export interface BAudit { id: string; actor_id: string | null; action: string; resource_type: string; resource_id: string | null; payload: Record<string, unknown> | null; created_at: string }
+export interface BAdminSub { user_id: string; plan: string; status: string; paid_until: string | null }
+export interface BOverview {
+  users: number; children: number; paying: number; sessions_7d: number; ai_questions_by_role: Record<string, number>; ai_questions_by_day: Record<string, number>;
+  health: { database: boolean; redis: boolean };
+}
+/** Audit entry: the diff is the server's payload, shown compactly. */
+export const auditFrom = (a: BAudit): AuditLog => ({
+  id: a.id, actorId: a.actor_id ?? "", action: a.action, target: a.resource_id ?? a.resource_type,
+  diff: a.payload && Object.keys(a.payload).length ? Object.entries(a.payload).map(([k, v]) => `${k}: ${String(v)}`).join(", ") : undefined,
+  at: a.created_at,
 });
 

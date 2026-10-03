@@ -7,9 +7,9 @@ import { sessionStore } from "@/lib/session";
 import { useStore } from "@/lib/store";
 import { http } from "./http";
 import {
-  aacCardFrom, aacEventFrom, careLinkFrom, orderFrom, subscriptionFrom, changeFrom, childFrom, notificationFrom, classFrom, consentsFrom, goalFrom, levelsFrom, masteryFrom, noteFrom, profileFrom, rosterChildFrom,
+  aacCardFrom, aacEventFrom, auditFrom, careLinkFrom, orderFrom, subscriptionFrom, changeFrom, childFrom, notificationFrom, classFrom, consentsFrom, goalFrom, levelsFrom, masteryFrom, noteFrom, profileFrom, rosterChildFrom,
   sessionsFrom, taskFrom, userFrom,
-  type BAacCard, type BAacSentence, type BOrder, type BCareLink, type BChange, type BNotification, type BChild, type BChildOverview, type BClass, type BConsent, type BGoal, type BLevel, type BNote,
+  type BAacCard, type BAacSentence, type BAdminSub, type BAudit, type BOrder, type BOverview, type BCareLink, type BChange, type BNotification, type BChild, type BChildOverview, type BClass, type BConsent, type BGoal, type BLevel, type BNote,
   type BPoint, type BProfile, type BSkill, type BSummary, type BTask, type BUser,
 } from "./map";
 import { liveChild } from "./state";
@@ -118,6 +118,20 @@ export function useLiveDb(): DB {
     queryFn: () => http<BOrder[]>("GET", "/billing/orders"),
   });
 
+  // ---- admin console
+  const ADMIN = ["users", "audit", "flagList", "subscriptions", "orders", "overview"] as const;
+  const adminPath: Record<(typeof ADMIN)[number], string> = {
+    users: "/admin/users?limit=500",
+    audit: "/admin/audit-logs?limit=200",
+    flagList: "/admin/feature-flags",
+    subscriptions: "/admin/subscriptions",
+    orders: "/admin/orders",
+    overview: "/admin/overview",
+  };
+  const admin = useQueries({
+    queries: role === "admin" ? ADMIN.map((k) => ({ queryKey: ["admin", k], queryFn: () => http<unknown>("GET", adminPath[k]) })) : [],
+  });
+
   // ---- teacher
   const classes = useQuery({ queryKey: ["teacher-classes"], enabled: role === "teacher", queryFn: () => http<BClass[]>("GET", "/teacher/classes") });
   const overviews = useQueries({
@@ -151,7 +165,7 @@ export function useLiveDb(): DB {
     if (signedIn !== undefined && sessionStore.get().role !== signedIn) sessionStore.set({ role: signedIn });
   }, [signedIn]);
 
-  const all = [me, kids, classes, linked, invites, notifications, flags, subscription, orders, ...own, ...per, ...overviews, ...views];
+  const all = [me, kids, classes, linked, invites, notifications, flags, subscription, orders, ...own, ...per, ...overviews, ...views, ...admin];
   const stamp = all.map((q) => q.dataUpdatedAt).join();
   const loading =
     me.isPending ||
@@ -225,6 +239,22 @@ export function useLiveDb(): DB {
           if (a && !db.assignments.some((x) => x.id === a.id)) db.assignments.push(a);
         }
       });
+    }
+
+    if (role === "admin" && user && admin[0]?.data) {
+      const at = (k: (typeof ADMIN)[number]) => admin[ADMIN.indexOf(k)]?.data;
+      db.users = ((at("users") as BUser[] | undefined) ?? []).map(userFrom);
+      if (!db.users.some((u) => u.id === user.id)) db.users.push(user);
+      db.audit = ((at("audit") as BAudit[] | undefined) ?? []).map(auditFrom);
+      db.flags = ((at("flagList") as { key: string; enabled: boolean; description: string | null }[] | undefined) ?? []).map((f) => ({ key: f.key, enabled: f.enabled, description: f.description ?? "" }));
+      db.subscriptions = ((at("subscriptions") as BAdminSub[] | undefined) ?? []).map((s) => subscriptionFrom(s.user_id, s));
+      db.orders = ((at("orders") as (BOrder & { user_id: string })[] | undefined) ?? []).map((o) => orderFrom(o.user_id, o));
+      const ov = at("overview") as BOverview | undefined;
+      if (ov)
+        db.adminStats = {
+          users: ov.users, children: ov.children, paying: ov.paying, sessions: ov.sessions_7d, aiByRole: ov.ai_questions_by_role, aiByDay: ov.ai_questions_by_day,
+          health: { db: ov.health.database, redis: ov.health.redis },
+        };
     }
 
     if (role === "teacher" && user) {

@@ -387,3 +387,33 @@ test("billing: Payme checkout, server-to-server confirmation, the family plan op
   await expect(page.getByText("Payment received — thank you! All levels are open.").first()).toBeVisible();
   await expect(page.getByText(/Lola: full access/i)).toBeVisible();
 });
+
+// Admin console (PRD §9.17, FR-ADM-1): admins exist only through the operator command; changes ask
+// for the password again (15-minute window) and land in the audit log.
+test("admin: real numbers and health, a change asks for the password, then shows in the audit log", async ({ page, request }) => {
+  const { execSync } = await import("node:child_process");
+  const adminEmail = `live.admin.${Date.now()}@example.com`;
+  execSync(`docker compose -f e2e-live/compose.yml exec -T -e FK_ADMIN_PASSWORD=admin-password-1 backend python -m flexikeys.tools.create_admin ${adminEmail}`, { stdio: "pipe" });
+  const familyEmail = `live.fam.${Date.now()}@example.com`;
+  await request.post("/api/v1/auth/register", { data: { email: familyEmail, password: "long-enough-password", display_name: "Family" } });
+
+  await page.addInitScript(() => localStorage.setItem("fk_lang", JSON.stringify("en")));
+  await page.goto("/login");
+  await page.getByLabel("Email").fill(adminEmail);
+  await page.getByLabel("Password").fill("admin-password-1");
+  await page.getByRole("button", { name: "Log in" }).click();
+  await expect(page).toHaveURL(/\/admin/);
+  await expect(page.getByText("PostgreSQL").locator("..").getByText("Working")).toBeVisible(); // real health
+
+  await page.getByRole("link", { name: "Users" }).first().click();
+  await page.getByLabel("Search by name or email").fill(familyEmail);
+  const row = page.getByRole("row").filter({ hasText: familyEmail });
+  await row.getByRole("button", { name: "Give 30 days free" }).click();
+  await expect(page.getByRole("dialog", { name: "Confirm it's you" })).toBeVisible(); // re-auth
+  await page.getByLabel("Your password").fill("admin-password-1");
+  await page.getByRole("button", { name: "Confirm" }).click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+
+  await page.getByRole("link", { name: "Audit log" }).first().click();
+  await expect(page.getByText("subscription.comp").first()).toBeVisible(); // FR-ADM-1
+});

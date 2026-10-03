@@ -150,7 +150,18 @@ export const sel = {
     flags: (db: DB) => db.flags,
     /** AI questions asked (user turns only), with the asker's role for the usage chart. */
     aiQuestions: (db: DB) => db.aiMessages.filter((m) => m.role === "user").map((m) => ({ ...m, askerRole: sel.user(db, m.userId)?.role ?? "parent" })),
+    /** AI questions per day (the given ISO dates) and per asker role. */
+    aiUsage(db: DB, days: string[]) {
+      if (db.adminStats) return { byDay: days.map((d) => db.adminStats!.aiByDay[d] ?? 0), byRole: db.adminStats.aiByRole };
+      const asked = sel.admin.aiQuestions(db);
+      const byRole: Record<string, number> = {};
+      for (const m of asked) byRole[m.askerRole] = (byRole[m.askerRole] ?? 0) + 1;
+      return { byDay: days.map((d) => asked.filter((m) => m.at.startsWith(d)).length), byRole };
+    },
+    /** Live: which services answer (null = not checked; demo shows none). */
+    health: (db: DB): Record<string, boolean> | null => (db.adminStats ? { api: true, ...db.adminStats.health } : null),
     stats(db: DB, since: string) {
+      if (db.adminStats) return { users: db.adminStats.users, children: db.adminStats.children, paying: db.adminStats.paying, sessions: db.adminStats.sessions };
       return {
         users: db.users.length,
         children: db.children.length,

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes } from "react";
+import { useEffect, useId, useRef, useState, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes } from "react";
 import { ApiError } from "@/lib/api/schema";
 import { useT } from "@/lib/i18n";
 
@@ -161,6 +161,7 @@ export function Empty({ children }: { children?: ReactNode }) {
 /** Native <dialog> modal: focus trap, Esc to close and backdrop for free. */
 export function Modal({ open, onClose, title, children }: { open: boolean; onClose: () => void; title: string; children: ReactNode }) {
   const ref = useRef<HTMLDialogElement>(null);
+  const titleId = useId(); // the dialog is announced with its title (it had no accessible name)
   useEffect(() => {
     const d = ref.current;
     if (!d) return;
@@ -170,12 +171,15 @@ export function Modal({ open, onClose, title, children }: { open: boolean; onClo
   return (
     <dialog
       ref={ref}
+      aria-labelledby={titleId}
       onClose={onClose}
       onClick={(e) => e.target === ref.current && onClose()}
       className="m-auto w-[min(560px,calc(100vw-32px))] rounded-fk-lg border border-line bg-surface p-0 text-ink shadow-lift backdrop:bg-[#27406b]/30 backdrop:backdrop-blur-sm"
     >
       <div className="p-6">
-        <h2 className="mb-4 text-xl font-extrabold">{title}</h2>
+        <h2 id={titleId} className="mb-4 text-xl font-extrabold">
+          {title}
+        </h2>
         {children}
       </div>
     </dialog>

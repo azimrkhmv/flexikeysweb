@@ -5,11 +5,11 @@ import { useState } from "react";
 import { Baby, Bot, CreditCard, RotateCcw, Timer, Users } from "lucide-react";
 import { Bars, Button, Card, Chip, Modal, PageHeader, Stat } from "@/components/ui";
 import { SectionTitle, useMe, useNow } from "@/features/pro/shared";
-import { api, sel } from "@/lib/api";
+import { api, sel, LIVE } from "@/lib/api";
 import { DAY } from "@/lib/api/schema";
 import { useT } from "@/lib/i18n";
 
-const SERVICES = ["api", "db", "redis", "worker", "storage", "email"] as const;
+const SERVICES = ["api", "db", "redis", "worker", "storage", "email"] as const; // live: the ones the server checks
 
 export default function AdminOverview() {
   const t = useT();
@@ -20,12 +20,10 @@ export default function AdminOverview() {
 
   const weekAgo = new Date(now - 7 * DAY).toISOString();
   const stats = sel.admin.stats(db, weekAgo);
-  const asked = sel.admin.aiQuestions(db);
   const days = Array.from({ length: 7 }, (_, i) => new Date(now - (6 - i) * DAY).toISOString().slice(0, 10));
-  const byRole = asked.reduce<Record<string, number>>((acc, m) => {
-    acc[m.askerRole] = (acc[m.askerRole] ?? 0) + 1;
-    return acc;
-  }, {});
+  const ai = sel.admin.aiUsage(db, days);
+  const byRole = ai.byRole;
+  const health = sel.admin.health(db);
 
   return (
     <>
@@ -43,12 +41,18 @@ export default function AdminOverview() {
           <SectionTitle>{t("admin.health.title")}</SectionTitle>
           <p className="mb-3 text-sm text-muted">{t("admin.health.region")}</p>
           <ul className="divide-y divide-line">
-            {SERVICES.map((s) => (
+            {SERVICES.filter((s) => !health || s in health).map((s) => (
               <li key={s} className="flex items-center justify-between py-2.5">
                 <span className="font-semibold text-ink">{t(`admin.health.${s}`)}</span>
-                <Chip tone="gray">
-                  <span className="size-2 rounded-full bg-muted" aria-hidden /> {t("admin.health.ok")}
-                </Chip>
+                {health ? (
+                  <Chip tone={health[s] ? "leaf" : "peach"}>
+                    <span className={`size-2 rounded-full ${health[s] ? "bg-teal" : "bg-[#c0573f]"}`} aria-hidden /> {t(health[s] ? "admin.health.up" : "admin.health.down")}
+                  </Chip>
+                ) : (
+                  <Chip tone="gray">
+                    <span className="size-2 rounded-full bg-muted" aria-hidden /> {t("admin.health.ok")}
+                  </Chip>
+                )}
               </li>
             ))}
           </ul>
@@ -58,7 +62,7 @@ export default function AdminOverview() {
           <SectionTitle>
             <Bot className="mr-1 inline size-5" aria-hidden /> {t("admin.ai.title")}
           </SectionTitle>
-          <Bars data={days.map((d) => ({ label: d.slice(8), value: asked.filter((m) => m.at.startsWith(d)).length }))} height={110} tone="#b3a8e8" />
+          <Bars data={days.map((d, i) => ({ label: d.slice(8), value: ai.byDay[i] }))} height={110} tone="#b3a8e8" />
           <div className="mt-3 flex flex-wrap gap-2">
             {(["parent", "teacher", "therapist"] as const).map((r) => (
               <Chip key={r} tone="gray">
@@ -69,6 +73,7 @@ export default function AdminOverview() {
           <p className="mt-3 text-sm text-muted">{t("admin.ai.quota")}</p>
         </Card>
 
+        {!LIVE && ( // resetting the database is a demo-only tool
         <Card className="lg:col-span-2">
           <SectionTitle>{t("admin.support.title")}</SectionTitle>
           <div className="flex flex-wrap items-center justify-between gap-4">
@@ -78,6 +83,7 @@ export default function AdminOverview() {
             </Button>
           </div>
         </Card>
+        )}
       </div>
 
       <Modal open={confirm} onClose={() => setConfirm(false)} title={t("admin.support.reset")}>

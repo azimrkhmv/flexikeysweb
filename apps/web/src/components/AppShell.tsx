@@ -12,7 +12,7 @@ import { useMounted } from "@/lib/store";
 import { useDismiss } from "@/lib/useDismiss";
 import type { Role, User } from "@/lib/types";
 import { homeFor, LangSwitch, Logo } from "./brand";
-import { NotConnected } from "./NotConnected";
+import { ReauthDialog } from "./ReauthDialog";
 import { Spinner } from "./ui";
 
 export interface NavItem {
@@ -55,7 +55,8 @@ export function AppShell({ role, nav, children }: { role: Role; nav: NavItem[]; 
         {(me) => (
           <Shell me={me} nav={nav}>
             {/* Live mode connects the parent area first; other dashboards come in later phases. */}
-            {LIVE && role === "admin" ? <NotConnected /> : children(me)}
+            {children(me)}
+            {LIVE && role === "admin" && <ReauthDialog />}
           </Shell>
         )}
       </RequireRole>
