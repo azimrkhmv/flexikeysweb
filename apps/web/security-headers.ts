@@ -35,13 +35,12 @@ export function securityHeaders(dev: boolean): { source: string; headers: Header
         { key: "X-Frame-Options", value: "DENY" }, // framing protection for browsers without frame-ancestors
         { key: "X-Content-Type-Options", value: "nosniff" },
         { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-        { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=()" },
+        // Microphone: our own origin only (parents record their voice for My Voice cards). It can't be
+        // limited to /parent: the app is single-page, and a document keeps the policy of the page it
+        // was first loaded on, so a parent arriving from /signup could never record. No third-party
+        // scripts run here (CSP), and the browser still asks the parent for permission.
+        { key: "Permissions-Policy", value: "camera=(), microphone=(self), geolocation=(), payment=()" },
       ],
-    },
-    {
-      // Parents record custom AAC card audio (MediaRecorder) — the only place the microphone is allowed.
-      source: "/parent/:path*",
-      headers: [{ key: "Permissions-Policy", value: "camera=(), microphone=(self), geolocation=(), payment=()" }],
     },
   ];
 }

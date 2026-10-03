@@ -22,10 +22,10 @@ describe("security headers", () => {
     expect(all.find((h) => h.key === "X-Frame-Options")?.value).toBe("DENY");
   });
 
-  it("allows the microphone only in the parent area", () => {
-    const [everywhere, parent] = securityHeaders(false);
-    expect(everywhere.headers.find((h) => h.key === "Permissions-Policy")?.value).toContain("microphone=()");
-    expect(parent.source).toBe("/parent/:path*");
-    expect(parent.headers[0].value).toContain("microphone=(self)");
+  it("allows the microphone for our own origin only; camera, location and payment stay off", () => {
+    const rules = securityHeaders(false);
+    expect(rules).toHaveLength(1); // one policy for every page (per-path policies can't work in an SPA)
+    const policy = rules[0].headers.find((h) => h.key === "Permissions-Policy")?.value;
+    expect(policy).toBe("camera=(), microphone=(self), geolocation=(), payment=()");
   });
 });

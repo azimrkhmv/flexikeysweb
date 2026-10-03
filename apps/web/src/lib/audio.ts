@@ -74,3 +74,11 @@ export function sfx(kind: Sfx) {
     t += dur * 0.9;
   }
 }
+
+/** Plays a recorded clip (a parent's own voice on a My Voice card) instead of the synthetic voice. */
+export function playClip(url: string) {
+  if (typeof window === "undefined") return;
+  window.speechSynthesis?.cancel();
+  void new Audio(url).play().catch(() => {});
+}
+

@@ -215,9 +215,16 @@ export const notificationFrom = (n: BNotification, userId: string): Notification
   id: n.id, userId, titleKey: `notif.${n.kind}`, vars: n.payload ?? {}, read: !!n.read_at, at: n.created_at,
 });
 
-export interface BAacCard { id: string; child_id: string; category: string; label: string; emoji: string; created_at: string }
+export interface BAacCard { id: string; child_id: string; category: string; label: string; emoji: string; created_at: string; has_photo?: boolean; has_audio?: boolean }
 export interface BAacSentence { card_ids: string[]; sentence: string; language: string; at: string }
-export const aacCardFrom = (c: BAacCard): AacCustomCard => ({ id: c.id, childId: c.child_id, category: c.category, emoji: c.emoji || "⭐", label: c.label, createdAt: c.created_at });
+/** `asChild`: the playing child's own device reads media through the child endpoints. */
+export function aacCardFrom(c: BAacCard, asChild = false): AacCustomCard {
+  const base = asChild ? `/api/v1/aac/cards/${c.id}` : `/api/v1/children/${c.child_id}/aac/cards/${c.id}`;
+  return {
+    id: c.id, childId: c.child_id, category: c.category, emoji: c.emoji || "⭐", label: c.label, createdAt: c.created_at,
+    photo: c.has_photo ? `${base}/photo` : undefined, audio: c.has_audio ? `${base}/audio` : undefined,
+  };
+}
 /** A spoken sentence; custom card ids get the web's custom: prefix back. */
 export const aacEventFrom = (childId: string, s: BAacSentence, k: number): AacEvent => ({
   id: `${childId}-${s.at}-${k}`, childId, cardIds: s.card_ids.map((c) => (AAC_BY_ID[c] ? c : `${CUSTOM_PREFIX}${c}`)), sentence: s.sentence, lang: lang(s.language), at: s.at,

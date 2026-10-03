@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Check, Clock, Coins, Copy, Download, Flame, Mic, Star, Trash } from "lucide-react";
 import { Bars, Button, Card, Chip, Empty, Field, Input, Meter, Modal, Select, Stat, Toggle, useAction } from "@/components/ui";
 import { AAC_CATEGORIES } from "@/content/aac";
@@ -146,6 +146,9 @@ export function AacTab({ childId }: { childId: string }) {
   const [label, setLabel] = useState("");
   const [emoji, setEmoji] = useState(CARD_EMOJI[0]);
   const [category, setCategory] = useState("people");
+  const [photo, setPhoto] = useState<File | null>(null);
+  const [voice, setVoice] = useState<Blob | null>(null);
+  const [formKey, setFormKey] = useState(0); // resets the file input after a card is added
   const add = useAction(api.aacAddCard);
   const del = useAction(api.aacDeleteCard);
   const canRecord = sel.hasConsent(db, childId, "voice_recording");
@@ -195,9 +198,15 @@ export function AacTab({ childId }: { childId: string }) {
         <ul className="mb-5 grid grid-cols-2 gap-2 sm:grid-cols-3">
           {cards.map((c) => (
             <li key={c.id} className="flex items-center gap-2 rounded-2xl border border-line p-2">
-              <span className="text-2xl" aria-hidden>
-                {c.emoji}
-              </span>
+              {c.photo ? (
+                // eslint-disable-next-line @next/next/no-img-element -- private, same-origin card photo
+                <img src={c.photo} alt="" className="size-8 rounded-lg object-cover" />
+              ) : (
+                <span className="text-2xl" aria-hidden>
+                  {c.emoji}
+                </span>
+              )}
+              {c.audio && <Mic className="size-4 shrink-0 text-teal" aria-label={t("parent.aac.recorded")} />}
               <span className="min-w-0 flex-1 truncate text-sm font-bold">{c.label}</span>
               <button type="button" onClick={() => del.run(c.id)} className="grid size-8 place-items-center rounded-full text-muted hover:bg-peach-soft hover:text-[#8f3a2c]" aria-label={`${t("common.delete")} ${c.label}`}>
                 <Trash className="size-4" />
@@ -211,7 +220,12 @@ export function AacTab({ childId }: { childId: string }) {
           onSubmit={async (e) => {
             e.preventDefault();
             if (!label.trim()) return;
-            if ((await add.run(childId, { category, emoji, label: label.trim() })) !== undefined) setLabel("");
+            if ((await add.run(childId, { category, emoji, label: label.trim() }, { photo, voice })) !== undefined) {
+              setLabel("");
+              setPhoto(null);
+              setVoice(null);
+              setFormKey((k) => k + 1);
+            }
           }}
         >
           <div className="grid gap-4 sm:grid-cols-2">
@@ -238,6 +252,16 @@ export function AacTab({ childId }: { childId: string }) {
               ))}
             </div>
           </fieldset>
+          <Field label={t("parent.aac.photo")}>
+            <input
+              key={formKey}
+              type="file"
+              accept="image/jpeg,image/png"
+              onChange={(e) => setPhoto(e.target.files?.[0] ?? null)}
+              className="block w-full text-sm file:mr-3 file:rounded-full file:border-0 file:bg-sky-soft file:px-4 file:py-2 file:font-bold file:text-ink"
+            />
+          </Field>
+          {canRecord ? <VoiceRecorder key={formKey} onChange={setVoice} /> : <p className="text-xs text-muted">{t("parent.aac.needVoice")}</p>}
           {(add.error || del.error) && (
             <p role="alert" className="text-sm font-semibold text-[#8f3a2c]">
               {add.error ?? del.error}
@@ -247,14 +271,73 @@ export function AacTab({ childId }: { childId: string }) {
             <Button type="submit" pending={add.pending}>
               {t("parent.aac.addCard")}
             </Button>
-            {canRecord && (
-              <Button variant="outline" disabled>
-                <Mic className="size-4" aria-hidden /> {t("parent.aac.record")}
-              </Button>
-            )}
+
           </div>
         </form>
       </Card>
+    </div>
+  );
+}
+
+/** The parent records a few seconds of their own voice for a card (MediaRecorder; ≤ 15 s). */
+function VoiceRecorder({ onChange }: { onChange: (b: Blob | null) => void }) {
+  const t = useT();
+  const rec = useRef<MediaRecorder | null>(null);
+  const [recording, setRecording] = useState(false);
+  const [url, setUrl] = useState<string | null>(null); // preview of the recording
+  const [error, setError] = useState(false);
+
+  const start = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const r = new MediaRecorder(stream);
+      const parts: Blob[] = [];
+      r.ondataavailable = (e) => parts.push(e.data);
+      r.onstop = () => {
+        stream.getTracks().forEach((tr) => tr.stop());
+        setRecording(false);
+        const blob = new Blob(parts, { type: r.mimeType || "audio/webm" });
+        setUrl(URL.createObjectURL(blob));
+        onChange(blob);
+      };
+      rec.current = r;
+      r.start();
+      setRecording(true);
+      setError(false);
+      setTimeout(() => r.state === "recording" && r.stop(), 15_000);
+    } catch {
+      setError(true); // no microphone, or permission refused
+    }
+  };
+
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      {recording ? (
+        <Button variant="danger" onClick={() => rec.current?.stop()}>
+          <Mic className="size-4" aria-hidden /> {t("parent.aac.stop")}
+        </Button>
+      ) : (
+        <Button variant="outline" onClick={start}>
+          <Mic className="size-4" aria-hidden /> {t("parent.aac.record")}
+        </Button>
+      )}
+      {url && !recording && (
+        <>
+          <audio src={url} controls className="h-9" aria-label={t("parent.aac.recorded")} />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              URL.revokeObjectURL(url);
+              setUrl(null);
+              onChange(null);
+            }}
+          >
+            {t("parent.aac.removeVoice")}
+          </Button>
+        </>
+      )}
+      {error && <p role="alert" className="w-full text-sm font-semibold text-[#8f3a2c]">{t("err.generic")}</p>}
     </div>
   );
 }

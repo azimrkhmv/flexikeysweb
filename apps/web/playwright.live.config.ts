@@ -10,7 +10,14 @@ export default defineConfig({
   workers: 1, // one account flow at a time (the API rate-limits auth per IP)
   retries: 0,
   reporter: process.env.CI ? "github" : "list",
-  use: { ...devices["Desktop Chrome"], baseURL: `http://localhost:${PORT}`, trace: "retain-on-failure" },
+  use: {
+    ...devices["Desktop Chrome"],
+    baseURL: `http://localhost:${PORT}`,
+    trace: "retain-on-failure",
+    // My Voice: the parent records their own voice — a fake microphone, permission granted.
+    permissions: ["microphone"],
+    launchOptions: { args: ["--use-fake-ui-for-media-stream", "--use-fake-device-for-media-stream"] },
+  },
   webServer: {
     command: `npm run build && PORT=${PORT} npm start`,
     url: `http://localhost:${PORT}/uz`,

@@ -8,7 +8,7 @@ import { sessionStore } from "@/lib/session";
 import type { Lang } from "@/lib/translate";
 import type { AacCustomCard, Child, ClassRoom, ConsentScope, InputProfile, InteractionEvent, Order, Role, User, UserStatus } from "@/lib/types";
 import { queryClient } from "./client";
-import { http } from "./http";
+import { http, upload } from "./http";
 import {
   careLinkFrom, childFrom, childTo, classFrom, eventTo, rosterChildFrom, scopeTo, userFrom,
   type BCareLink, type BChild, type BClass, type BConsent, type BGoal, type BRosterChild, type BUser,
@@ -400,9 +400,15 @@ export const liveApi = {
     }
   },
   /** Parent only; the card then shows on every device the child uses (FR-AAC-2). */
-  async aacAddCard(childId: string, card: Pick<AacCustomCard, "category" | "emoji" | "label">) {
-    await http("POST", `/children/${childId}/aac/cards`, { category: card.category, label: card.label.trim(), emoji: card.emoji });
-    await refetch();
+  async aacAddCard(childId: string, card: Pick<AacCustomCard, "category" | "emoji" | "label">, media: { photo?: Blob | null; voice?: Blob | null } = {}) {
+    const c = await http<{ id: string }>("POST", `/children/${childId}/aac/cards`, { category: card.category, label: card.label.trim(), emoji: card.emoji });
+    try {
+      // The server strips photo metadata, checks the type, and needs the voice-recording consent.
+      if (media.photo) await upload("PUT", `/aac/cards/${c.id}/photo`, media.photo, "photo");
+      if (media.voice) await upload("PUT", `/aac/cards/${c.id}/audio`, media.voice, "voice");
+    } finally {
+      await refetch();
+    }
     return true;
   },
   async aacDeleteCard(cardId: string) {

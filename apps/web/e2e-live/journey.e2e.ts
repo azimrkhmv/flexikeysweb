@@ -301,10 +301,28 @@ test("My Voice: parent's own card on the child's device, the spoken sentence on 
   await page.getByRole("button", { name: "Create profile" }).click();
   await expect(page.getByRole("heading", { level: 1, name: "Timur" })).toBeVisible();
 
+  // Voice recording needs its own consent (Privacy tab).
+  await page.getByRole("tab", { name: "Privacy" }).click();
+  await page.getByRole("switch", { name: /^Voice/ }).click();
   await page.getByRole("tab", { name: "My Voice" }).click();
   await page.getByLabel("Word on the card").fill("Mosh");
+  // A tiny PNG with a text chunk the server must strip (metadata never stored).
+  const png = Buffer.from(
+    "89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000001074455874436f6d6d656e7400546173686b656e7491c6501d0000000b49444154789c6360000200000500017a5eab3f0000000049454e44ae426082",
+    "hex",
+  );
+  await page.getByLabel("Your own photo (optional)").setInputFiles({ name: "mosh.png", mimeType: "image/png", buffer: png });
+  await page.getByRole("button", { name: "Record your voice" }).click();
+  await page.waitForTimeout(1200);
+  await page.getByRole("button", { name: "Stop recording" }).click();
+  await expect(page.getByRole("button", { name: "Remove recording" })).toBeVisible();
   await page.getByRole("button", { name: "Add card" }).click();
   await expect(page.getByText("Mosh").first()).toBeVisible();
+  const photo = page.locator("li").filter({ hasText: "Mosh" }).locator("img");
+  await expect(photo).toBeVisible(); // served back through the API
+  const served = await page.request.get((await photo.getAttribute("src"))!);
+  expect(served.headers()["content-type"]).toBe("image/png");
+  expect((await served.body()).includes(Buffer.from("Tashkent"))).toBe(false); // metadata stripped
 
   await page.getByRole("button", { name: "Play now" }).click();
   await expect(page).toHaveURL(/\/play$/);

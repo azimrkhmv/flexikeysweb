@@ -32,6 +32,20 @@ services:
       timeout: 3s
       retries: 30
 
+  # Private object storage for parents' photos and voices on My Voice cards.
+  minio:
+    image: minio/minio@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
+    command: ["server", "/data"]
+    environment:
+      MINIO_ROOT_USER: e2e-storage
+      MINIO_ROOT_PASSWORD: e2e-storage-secret
+    tmpfs: [/data]
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
   # Catches the account emails (verify / reset links); the tests read them via its API on :58025.
   mailpit:
     image: axllent/mailpit:v1.21
@@ -52,6 +66,10 @@ services:
       # Every test signs up/logs in from this one machine within a minute; production keeps 20/minute.
       RATE_LIMIT_AUTH: 300/minute
       # Throwaway merchant credentials: the tests play the payment providers' server calls themselves.
+      STORAGE_ENDPOINT: http://minio:9000
+      STORAGE_ACCESS_KEY: e2e-storage
+      STORAGE_SECRET_KEY: e2e-storage-secret
+      STORAGE_BUCKET: flexikeys-e2e
       PAYME_MERCHANT_ID: e2e-merchant
       PAYME_KEY: e2e-payme-key
       CLICK_SERVICE_ID: "77"
@@ -61,6 +79,7 @@ services:
       postgres: { condition: service_healthy }
       redis: { condition: service_healthy }
       mailpit: { condition: service_started }
+      minio: { condition: service_healthy }
     healthcheck: # the image's entrypoint runs `alembic upgrade head` first
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=2)"]
       interval: 3s

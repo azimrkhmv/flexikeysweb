@@ -196,7 +196,7 @@ export function useLiveDb(): DB {
       const wallet = at("wallet") as { coins: number; stars: number } | undefined;
       const owned = ((at("catalog") as { slug: string; owned: boolean }[] | undefined) ?? []).filter((x) => x.owned).map((x) => x.slug);
       db.wallets.push({ childId: c.id, coins: wallet?.coins ?? 0, stars: wallet?.stars ?? 0, owned });
-      db.aacCards.push(...((at("aacCards") as BAacCard[] | undefined) ?? []).map(aacCardFrom));
+      db.aacCards.push(...((at("aacCards") as BAacCard[] | undefined) ?? []).map((x) => aacCardFrom(x, true)));
       // The server already filtered these for this child; seen as the child's own tasks.
       for (const t of (at("tasks") as BTask[] | undefined) ?? []) {
         const a = taskFrom({ ...t, class_id: null, kind: "teacher" }, c.id);
@@ -230,7 +230,7 @@ export function useLiveDb(): DB {
         db.careLinks.push(...((at("careLinks") as BCareLink[] | undefined) ?? []).map(careLinkFrom));
         db.notes.push(...((at("notes") as BNote[] | undefined) ?? []).map(noteFrom));
         db.goals.push(...((at("goals") as BGoal[] | undefined) ?? []).map(goalFrom));
-        db.aacCards.push(...((at("aacCards") as BAacCard[] | undefined) ?? []).map(aacCardFrom));
+        db.aacCards.push(...((at("aacCards") as BAacCard[] | undefined) ?? []).map((x) => aacCardFrom(x)));
         db.aacEvents.push(...((at("aacSentences") as BAacSentence[] | undefined) ?? []).map((s, k) => aacEventFrom(id, s, k)));
         for (const m of (at("aiMessages") as { id: string; role: string; content: string; created_at: string }[] | undefined) ?? [])
           db.aiMessages.push({ id: m.id, userId: user!.id, childId: id, role: m.role === "user" ? "user" : "assistant", text: m.content, at: m.created_at });

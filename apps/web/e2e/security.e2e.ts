@@ -16,8 +16,8 @@ test.describe("security headers", () => {
       expect(h["x-frame-options"], path).toBe("DENY");
       expect(h["x-powered-by"], path).toBeUndefined();
     }
-    expect((await request.get("/parent")).headers()["permissions-policy"]).toContain("microphone=(self)");
-    expect((await request.get("/play")).headers()["permissions-policy"]).toContain("microphone=()");
+    for (const path of ["/parent", "/signup", "/play"]) // one policy: the SPA keeps the first page's
+      expect((await request.get(path)).headers()["permissions-policy"], path).toBe("camera=(), microphone=(self), geolocation=(), payment=()");
   });
 
   test("the site cannot be framed (clickjacking)", async ({ page, baseURL }) => {

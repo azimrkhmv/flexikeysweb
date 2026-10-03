@@ -77,4 +77,8 @@ Picture
 🌙
 🧃
 🎨
+Your own photo (optional)
+
+To record your voice, allow voice recording in the Privacy tab.
+
 Add card

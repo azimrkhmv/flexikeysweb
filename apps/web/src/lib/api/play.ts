@@ -175,11 +175,16 @@ export const playApi = {
     const s = plain.charAt(0).toUpperCase() + plain.slice(1) + (lang === "en" ? "." : ".");
     return net({ sentence: s, ai: true }, 350);
   },
-  /** POST /aac/cards (parent only) */
-  async aacAddCard(childId: string, card: Pick<AacCustomCard, "category" | "emoji" | "label">) {
+  /** POST /aac/cards (parent only) — with the parent's own photo / voice (voice: voice-recording consent). */
+  async aacAddCard(childId: string, card: Pick<AacCustomCard, "category" | "emoji" | "label">, media: { photo?: Blob | null; voice?: Blob | null } = {}) {
     requireChildAccess(childId, ["owner"]);
+    if (media.voice && !sel.hasConsent(read(), childId, "voice_recording")) throw new ApiError("consent_required");
+    if (media.photo && media.photo.size > 1024 * 1024) throw new ApiError("file_too_large"); // demo: stored in this browser
+    const photo = media.photo ? await dataUrl(media.photo) : undefined;
+    // ponytail: the demo keeps a recorded voice for this browser session only (live: stored by the server).
+    const audio = media.voice ? URL.createObjectURL(media.voice) : undefined;
     write((db) => {
-      db.aacCards.push({ ...card, id: id(), childId, createdAt: iso() });
+      db.aacCards.push({ ...card, photo, audio, id: id(), childId, createdAt: iso() });
     });
     return net(true);
   },
@@ -194,3 +199,12 @@ export const playApi = {
     return net(true);
   },
 };
+
+const dataUrl = (b: Blob) =>
+  new Promise<string>((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(String(r.result));
+    r.onerror = () => reject(new ApiError("unsupported_file"));
+    r.readAsDataURL(b);
+  });
+

@@ -211,6 +211,9 @@ export interface AacCustomCard {
   category: string;
   emoji: string;
   label: string;
+  /** The parent's own photo / recorded voice (live: served by the API; demo: in this browser). */
+  photo?: string;
+  audio?: string;
   createdAt: string;
 }
 

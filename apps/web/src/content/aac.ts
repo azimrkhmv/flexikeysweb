@@ -71,10 +71,14 @@ export const AAC_BY_ID: Record<string, AacCard> = Object.fromEntries(AAC_CARDS.m
 export const CUSTOM_PREFIX = "custom:";
 
 /** Emoji + label for any card id the child can use — built-in or custom (with or without the prefix). */
-export function aacCard(cardId: string, lang: Lang, custom: readonly Pick<AacCustomCard, "id" | "emoji" | "label">[]): { emoji: string; label: string } | null {
+export function aacCard(
+  cardId: string,
+  lang: Lang,
+  custom: readonly Pick<AacCustomCard, "id" | "emoji" | "label" | "photo" | "audio">[],
+): { emoji: string; label: string; photo?: string; audio?: string } | null {
   const builtIn = AAC_BY_ID[cardId];
   if (builtIn) return { emoji: builtIn.emoji, label: builtIn.label[lang] };
   const bare = cardId.startsWith(CUSTOM_PREFIX) ? cardId.slice(CUSTOM_PREFIX.length) : cardId;
   const c = custom.find((x) => x.id === bare);
-  return c ? { emoji: c.emoji, label: c.label } : null;
+  return c ? { emoji: c.emoji, label: c.label, photo: c.photo, audio: c.audio } : null;
 }

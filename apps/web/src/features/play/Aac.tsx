@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Delete, Volume2, X } from "lucide-react";
 import { AAC_CARDS, AAC_CATEGORIES, aacCard, CUSTOM_PREFIX } from "@/content/aac";
 import { api, sel, useDb } from "@/lib/api";
-import { speak, stopSpeech } from "@/lib/audio";
+import { speak, stopSpeech, playClip } from "@/lib/audio";
 import { useT } from "@/lib/i18n";
 import type { Child } from "@/lib/types";
 import { Target } from "./Target";
@@ -62,7 +62,12 @@ export function Aac({ child }: { child: Child }) {
             const c = card(id);
             return c ? (
               <span key={i} className="flex shrink-0 flex-col items-center rounded-2xl bg-sky-soft px-3 py-2">
-                <span className="text-3xl">{c.emoji}</span>
+                {c.photo ? (
+                  // eslint-disable-next-line @next/next/no-img-element -- private, same-origin card photo
+                  <img src={c.photo} alt="" className="size-9 rounded-lg object-cover" />
+                ) : (
+                  <span className="text-3xl">{c.emoji}</span>
+                )}
                 <span className="text-sm font-bold text-ink">{c.label}</span>
               </span>
             ) : null;
@@ -121,12 +126,18 @@ export function Aac({ child }: { child: Child }) {
                 if (strip.length >= MAX_STRIP) return;
                 setStrip((s) => [...s, id]);
                 setConfirm(null);
-                speak(c.label, lang);
+                if (c.audio) playClip(c.audio); // the parent's own voice
+                else speak(c.label, lang);
               }}
               className="flex flex-col items-center justify-center gap-1 rounded-3xl border-4 border-white bg-surface/95 p-3 font-extrabold text-ink shadow-soft"
               style={{ minHeight: size }}
             >
-              <span style={{ fontSize: size * 0.4 }}>{c.emoji}</span>
+              {c.photo ? (
+                // eslint-disable-next-line @next/next/no-img-element -- private, same-origin card photo
+                <img src={c.photo} alt="" className="rounded-2xl object-cover" style={{ width: size * 0.55, height: size * 0.55 }} />
+              ) : (
+                <span style={{ fontSize: size * 0.4 }}>{c.emoji}</span>
+              )}
               <span className="text-center text-base leading-tight">{c.label}</span>
             </Target>
           );

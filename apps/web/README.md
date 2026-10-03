@@ -139,7 +139,7 @@ Defined in `security-headers.ts` and applied to every response by `next.config.t
 | `Content-Security-Policy` | `default-src 'self'`; scripts, styles, fonts, images, media and `connect-src` only from this origin — no third-party scripts, analytics or ads. `object-src 'none'` (no plugins), `base-uri 'self'`, `form-action 'self'`, `frame-ancestors 'none'` (no framing). |
 | `X-Frame-Options: DENY` | Framing protection for browsers that ignore `frame-ancestors`. |
 | `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin` | Standard hardening. |
-| `Permissions-Policy` | Camera, microphone, geolocation and payment off everywhere; microphone allowed only under `/parent` (AAC card recording). |
+| `Permissions-Policy` | Camera, geolocation and payment off; microphone for our own origin only (parents record their voice for My Voice cards — it can't be limited to `/parent`, because the single-page app keeps the policy of the page it was first loaded on). |
 
 **Decision (2026-09-29):** the policy is static and allows `'unsafe-inline'` scripts (needed by Next's inline bootstrap).
 Per-request nonces were rejected because in Next 16 they force dynamic rendering of every page, and the public

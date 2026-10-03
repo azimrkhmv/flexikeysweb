@@ -26,6 +26,8 @@ const BY_TITLE: Record<string, string> = {
     confirmation_mismatch: "confirmation_mismatch",
     email_not_verified_by_provider: "email_not_verified_by_provider",
     quota_exceeded: "quota_exceeded",
+    file_too_large: "file_too_large",
+    unsupported_file: "unsupported_file",
     consent_required: "consent_missing", // the server stores nothing for a child without core consent
     ai_consent_required: "ai_consent_required",
 };
@@ -96,3 +98,21 @@ export async function http<T>(method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE
   }
   return (res.status === 204 ? undefined : await res.json()) as T;
 }
+
+/** Multipart upload of one file (cookie auth + CSRF, like every write). */
+export async function upload<T>(method: "PUT" | "POST", path: string, file: Blob, name = "file"): Promise<T> {
+  const form = new FormData();
+  form.append("file", file, name);
+  const res = await fetch(BASE + path, {
+    method,
+    headers: { "X-Auth-Transport": "cookie", "X-CSRF-Token": csrf() },
+    credentials: "same-origin",
+    body: form,
+  });
+  if (!res.ok) {
+    const title = await res.json().then((j: { title?: string }) => String(j.title ?? "")).catch(() => "");
+    throw new ApiError(errorCode(res.status, title, path));
+  }
+  return (await res.json()) as T;
+}
+
