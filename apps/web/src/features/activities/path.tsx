@@ -60,7 +60,7 @@ function PathRound({ shape, mirror, stones, index, last, next }: { shape: Shape;
 
   const advance = (info: Parameters<typeof answer>[1]["info"]) => {
     if (solved) return;
-    answer(ctx, { target: `stone${reached + 1}`, actual: `stone${reached + 1}`, correct: true, latencyMs: clock.ms(), info, quiet: reached + 2 < stones });
+    answer(ctx, { target: `stone${reached + 1}`, actual: `stone${reached + 1}`, correct: reached + 2 >= stones || undefined, latencyMs: clock.ms(), info, quiet: reached + 2 < stones });
     clock.reset();
     setReached(reached + 1);
   };

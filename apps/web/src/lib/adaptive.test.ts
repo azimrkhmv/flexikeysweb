@@ -23,6 +23,20 @@ describe("applyPolicy", () => {
     for (const c of changes) expect(Math.abs(c.to - c.from)).toBeCloseTo(BOUNDS[c.param][2]);
   });
 
+  it("keeps motor and learning help apart", () => {
+    // Precise taps, wrong answers: more hints, same key size.
+    const wrong = applyPolicy(rec(), taps(12, false, 0.1)).record.params;
+    expect(wrong.hintLevel).toBe(2);
+    expect(wrong.keyScale).toBe(DEFAULT_PROFILE.keyScale);
+    // Right answers, imprecise taps: bigger keys, hints don't fade.
+    const imprecise = applyPolicy(rec(), taps(12, true, 0.5, 1200)).record.params;
+    expect(imprecise.keyScale).toBe(1.1);
+    expect(imprecise.hintLevel).toBe(DEFAULT_PROFILE.hintLevel - 1);
+    // Keyboard/switch users have no geometry: sizes never move.
+    const kb = taps(12, true, 0.1, 1200).map((e) => ({ ...e, pointerType: "keyboard" as const, offsetRatio: undefined }));
+    expect(applyPolicy(rec({ ...DEFAULT_PROFILE, keyScale: 1.3 }), kb).record.params.keyScale).toBe(1.3);
+  });
+
   it("returns help to baseline after sustained mastery — no ratchet (FR-ADAPT-1, B5)", () => {
     let r = rec();
     for (let i = 0; i < 4; i++) r = applyPolicy(r, taps(12, false, 0.5)).record; // help rises

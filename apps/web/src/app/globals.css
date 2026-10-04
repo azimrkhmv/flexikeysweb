@@ -137,7 +137,9 @@ body {
   95% { transform: scaleY(0.1); }
 }
 .fk-float { animation: fk-float 4s ease-in-out infinite; }
+/* The dashed ring is the hint itself; the pulse only adds motion, so reduced motion keeps the hint visible. */
 .fk-pulse { animation: fk-pulse 1.8s ease-in-out infinite; }
+.fk-pulse:not([data-scan-active="true"]) { outline: 4px dashed var(--fk-primary); outline-offset: 4px; }
 .fk-pop { animation: fk-pop 420ms ease-out both; }
 .fk-glow { animation: fk-glow 1.2s ease-in-out infinite; }
 

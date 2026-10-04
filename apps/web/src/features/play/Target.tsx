@@ -149,8 +149,12 @@ export function Target({
       onPointerLeave={onPointerLeave}
       onContextMenu={(e) => e.preventDefault()}
       // Pointer handlers own mouse/touch; click with detail 0 = keyboard or switch scanning.
+      // Switches and keys get the same debounce as touch, so a tremor or clonus can't double-select.
       onClick={(e) => {
-        if (e.detail === 0 && !disabled) fire({ pointerType: "keyboard" });
+        if (e.detail !== 0 || disabled) return;
+        const since = ctx.lastAccept.current === null ? null : performance.now() - ctx.lastAccept.current;
+        if (pressDecision(Infinity, since, ctx.profile) === "debounced") ctx.emit({ type: "debounced", target: targetId, pointerType: "keyboard" });
+        else fire({ pointerType: "keyboard" });
       }}
     >
       {children}
@@ -177,6 +181,7 @@ export function useScanning(enabled: boolean, root: { current: HTMLElement | nul
       if (e.key !== " " && e.key !== "Enter") return;
       e.preventDefault();
       e.stopPropagation();
+      if (e.repeat) return; // a held switch auto-repeats ~30×/s: one press = one selection
       current?.click();
     };
     step();

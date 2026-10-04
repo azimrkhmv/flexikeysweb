@@ -37,7 +37,8 @@ export const aiApi = {
     const db = read();
     const k = db.classes.find((c) => c.id === classId && c.teacherId === u.id);
     if (!k) throw new ApiError("not_found");
-    const kids = sel.classChildren(db, classId);
+    // FR-AI-4: only children whose parent gave ai_processing consent (school-managed profiles have none).
+    const kids = sel.classChildren(db, classId).filter((c) => sel.hasConsent(db, c.id, "ai_processing"));
     const avg = (childId: string) => {
       const m = sel.mastery(db, childId).filter((x) => x.attempts > 0);
       return m.length ? m.reduce((a, x) => a + x.pKnown, 0) / m.length : 0;

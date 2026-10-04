@@ -61,6 +61,7 @@ export const common = {
     "consent.therapist_sharing": "Specialists: allow sharing with a therapist that I invite",
 
     "err.generic": "Something went wrong. Please try again.",
+    "err.storage_full": "This browser's storage is full, so this was not saved. Remove some card photos or recordings and try again.",
     "err.invalid_credentials": "Email or password is not correct.",
     "err.invalid_email": "Please enter a valid email.",
     "err.weak_password": "Password needs at least 10 characters.",
@@ -214,6 +215,7 @@ export const common = {
     "consent.therapist_sharing": "Mutaxassislar: men taklif qilgan mutaxassis bilan boʻlishish",
 
     "err.generic": "Nimadir xato ketdi. Qayta urinib koʻring.",
+    "err.storage_full": "Brauzer xotirasi toʻldi, shuning uchun bu saqlanmadi. Bir nechta karta rasmi yoki yozuvini oʻchirib, qayta urinib koʻring.",
     "err.invalid_credentials": "Email yoki parol notoʻgʻri.",
     "err.invalid_email": "Toʻgʻri email kiriting.",
     "err.weak_password": "Parol kamida 10 ta belgidan iborat boʻlsin.",
@@ -367,6 +369,7 @@ export const common = {
     "consent.therapist_sharing": "Специалисты: делиться с приглашённым мной специалистом",
 
     "err.generic": "Что-то пошло не так. Попробуйте ещё раз.",
+    "err.storage_full": "Память браузера заполнена, поэтому это не сохранилось. Удалите несколько фото или записей карточек и попробуйте снова.",
     "err.invalid_credentials": "Неверный email или пароль.",
     "err.invalid_email": "Введите корректный email.",
     "err.weak_password": "Пароль должен быть не короче 10 символов.",

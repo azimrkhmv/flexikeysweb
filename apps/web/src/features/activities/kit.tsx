@@ -62,7 +62,7 @@ export function useClock() {
 }
 
 /**
- * Hint state per round (PRD §9.4 hint levels): after a miss (level ≥1), after 2 s idle (level ≥2);
+ * Hint state per round (PRD §9.4 hint levels): after a miss (level ≥1), after an idle wait (level ≥2);
  * level 3 also re-speaks the prompt after a miss. Remount (key) per round to reset.
  */
 export function useHint(onRespeak?: () => void) {
@@ -71,9 +71,11 @@ export function useHint(onRespeak?: () => void) {
   const [idle, setIdle] = useState(false);
   useEffect(() => {
     if (ctx.profile.hintLevel < 2) return;
-    const id = setTimeout(() => setIdle(true), 2000);
+    // ponytail: fixed waits; children with CP often need 3–10 s to start a movement, and scanning needs a full
+    // cycle. Upgrade path: scale with the child's own median latency once the profile carries it.
+    const id = setTimeout(() => setIdle(true), ctx.access === "touch" ? 4000 : 8000);
     return () => clearTimeout(id);
-  }, [ctx.profile.hintLevel]);
+  }, [ctx.profile.hintLevel, ctx.access]);
   return {
     show: (missed && ctx.profile.hintLevel >= 1) || idle,
     miss() {
@@ -84,7 +86,7 @@ export function useHint(onRespeak?: () => void) {
 }
 
 /** Emit a select/key event with the shared fields filled in. */
-export function answer(ctx: PlayCtx, e: { target: string; actual: string; correct: boolean; latencyMs: number; info?: SelectInfo; type?: "select" | "key"; quiet?: boolean }) {
+export function answer(ctx: PlayCtx, e: { target: string; actual: string; correct?: boolean; latencyMs: number; info?: SelectInfo; type?: "select" | "key"; quiet?: boolean }) {
   ctx.emit({
     type: e.type ?? "select",
     levelId: ctx.levelId,
@@ -97,7 +99,9 @@ export function answer(ctx: PlayCtx, e: { target: string; actual: string; correc
     pointerType: e.info?.pointerType,
   });
   // `quiet`: intermediate correct steps (e.g. one letter of a word) don't trigger praise.
-  if (!(e.quiet && e.correct)) ctx.react(e.correct ? "success" : "try");
+  // `correct` undefined = a step that cannot fail (tracing): no accuracy/BKT evidence, reacts as success.
+  const ok = e.correct ?? true;
+  if (!(e.quiet && ok)) ctx.react(ok ? "success" : "try");
 }
 
 export function Dots({ total, done }: { total: number; done: number }) {

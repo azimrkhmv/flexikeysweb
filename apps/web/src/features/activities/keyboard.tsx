@@ -103,6 +103,7 @@ export function AdaptiveKeyboard({
     const all = LAYOUTS[lang].flat();
     const onDown = (e: KeyboardEvent) => {
       if (e.repeat || e.ctrlKey || e.metaKey || e.altKey || e.key.length !== 1 || e.key === " ") return;
+      if (document.querySelector('[aria-modal="true"]')) return; // pause menu / My Voice open over the game
       let k = e.key.toLowerCase();
       if (lang === "ru" && !/[а-яё]/.test(k)) k = RU_BY_CODE[e.code] ?? k;
       // ponytail: "o"/"g" count as "oʻ"/"gʻ" when that is the expected key — hardware keyboards have no ʻ key.

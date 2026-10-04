@@ -68,7 +68,7 @@ function DotRound({ mode, item, index, total, last, next }: { mode: "trace" | "d
   const advance = (info: SelectInfo) => {
     if (solved) return;
     const finishing = reached + 2 >= pts.length;
-    answer(ctx, { target: `dot${reached + 1}`, actual: `dot${reached + 1}`, correct: true, latencyMs: clock.ms(), info, quiet: !finishing });
+    answer(ctx, { target: `dot${reached + 1}`, actual: `dot${reached + 1}`, correct: finishing || undefined, latencyMs: clock.ms(), info, quiet: !finishing });
     clock.reset();
     setReached(reached + 1);
     if (finishing && mode === "dots") ctx.say(name, ctx.learnLang); // the picture appears: say what it is
@@ -450,9 +450,8 @@ function MazeRound({ n, seed, index, total, last, next }: { n: number; seed: num
   const move = useCallback(
     (to: Cell, info: SelectInfo) => {
       if (solved || !open.has(edge(at, to))) return;
-      const onWay = way[0] === to;
-      // Exploring is never wrong for the child (no reaction), but the step's direction feeds accuracy.
-      ctx.emit({ type: "select", levelId: ctx.levelId, activityId: ctx.activityId, target: `cell${way[0]}`, actual: `cell${to}`, correct: onWay, latencyMs: clock.ms(), pointerType: info.pointerType });
+      // Exploring is never wrong: steps carry no `correct`, so wrong turns don't count as errors for accuracy/BKT.
+      ctx.emit({ type: "select", levelId: ctx.levelId, activityId: ctx.activityId, target: `cell${way[0]}`, actual: `cell${to}`, latencyMs: clock.ms(), pointerType: info.pointerType });
       clock.reset();
       setAt(to);
       if (to === goal) answer(ctx, { target: "goal", actual: "goal", correct: true, latencyMs: 0, info });
@@ -464,7 +463,8 @@ function MazeRound({ n, seed, index, total, last, next }: { n: number; seed: num
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const d = { ArrowUp: -n, ArrowDown: n, ArrowLeft: -1, ArrowRight: 1 }[e.key];
-      if (d === undefined) return;
+      if (d === undefined || document.querySelector('[aria-modal="true"]')) return;
+      if (e.repeat) return void e.preventDefault(); // held key = one step
       const to = at + d;
       if ((d === -1 && at % n === 0) || (d === 1 && at % n === n - 1) || to < 0 || to >= n * n) return;
       e.preventDefault();

@@ -83,7 +83,7 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
   const t = useT(lang);
   const [view, setView] = useState<View>({ v: "start" });
   const [mood, setMood] = useState<MascotMood>("wave");
-  const [overlay, setOverlay] = useState<null | "menu" | "gate" | "break">(null);
+  const [overlay, setOverlay] = useState<null | "menu" | "gate" | "break" | "aac">(null);
   const [breakDue, setBreakDue] = useState(false);
   const [input, setInput] = useState<InputProfile>("touch");
   const online = useOnline();
@@ -286,11 +286,13 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
     router.replace(auth.grantedBy === "class" ? "/class" : "/parent");
   };
 
-  const showBreak = overlay === "break" || (breakDue && !overlay && !["activity", "start", "bye"].includes(view.v));
+  // My Voice is a communication aid: no break or offline screen ever covers it.
+  const showBreak = overlay === "break" || (breakDue && !overlay && !["activity", "start", "bye", "aac"].includes(view.v));
+  const offlineBlock = !online && view.v !== "aac" && overlay !== "aac";
   // Switch scanning covers the whole shell (nav included), or only the open overlay.
-  useScanning(child.access === "scan" && overlay !== "gate", overlay === "menu" || showBreak ? overlayRef : shellRef);
-  // Escape = "Continue" on the pause menu and the break screen (never exits child mode).
-  useFocusTrap(overlayRef, overlay === "menu" ? "menu" : showBreak ? "break" : null, () => {
+  useScanning(child.access === "scan" && overlay !== "gate", overlay === "menu" || overlay === "aac" || showBreak || offlineBlock ? overlayRef : shellRef);
+  // Escape = "Continue" on the pause menu, My Voice and the break screen (never exits child mode).
+  useFocusTrap(overlayRef, overlay === "menu" || overlay === "aac" ? overlay : showBreak ? "break" : null, () => {
     if (showBreak) {
       breakStart.current = Date.now();
       setBreakDue(false);
@@ -397,6 +399,11 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
             <span aria-hidden>{child.avatar}</span> {child.name}
           </span>
           <div className="ml-auto flex items-center gap-2">
+            {["activity", "celebrate"].includes(view.v) && (
+              <Target label={t("play.nav.aac")} onSelect={() => setOverlay("aac")} className="grid place-items-center rounded-full bg-surface/90 px-3 text-3xl shadow-soft">
+                <span aria-hidden>💬</span>
+              </Target>
+            )}
             <Target
               label={t("play.fullscreen")}
               onSelect={() => void (document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.())?.catch?.(() => {})}
@@ -465,6 +472,16 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
           </div>
         </div>
       )}
+      {overlay === "aac" && (
+        <div className="fixed inset-0 z-40 overflow-y-auto bg-[#eaf3fc]/95 p-3 backdrop-blur sm:p-6" role="dialog" aria-modal="true" aria-label={t("play.nav.aac")}>
+          <div ref={overlayRef} className="flex flex-col gap-3">
+            <Target label={t("play.menu.continue")} onSelect={() => setOverlay(null)} className={`${bigBtn} self-start bg-teal text-white`}>
+              ▶ {t("play.menu.continue")}
+            </Target>
+            <Aac child={child} />
+          </div>
+        </div>
+      )}
       {overlay === "gate" && <ParentGate lang={lang} onPass={exit} onCancel={() => setOverlay(null)} />}
       {showBreak && (
         <div className="fixed inset-0 z-40 grid place-items-center bg-[#dfe8f8]/85 p-4 backdrop-blur" role="dialog" aria-modal="true" aria-label={t("play.break.title")}>
@@ -491,12 +508,18 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
           </div>
         </div>
       )}
-      {!online && (
+      {offlineBlock && (
         <div className="fixed inset-0 z-50 grid place-items-center bg-[#eef2f8]/90 p-4 backdrop-blur" role="status">
-          <div className="flex flex-col items-center gap-4 text-center">
+          <div ref={overlayRef} className="flex flex-col items-center gap-4 text-center">
             <Mascot mood="sleepy" size={200} hat={hat} tint={tint} />
             <h2 className="text-3xl font-extrabold text-ink">{t("play.offline")}</h2>
             <p className="text-lg text-ink-2">{t("play.offline.sub")}</p>
+            {/* Cards and voice are on the device, so My Voice keeps working without internet. */}
+            {!["start", "bye"].includes(view.v) && (
+              <Target label={t("play.nav.aac")} onSelect={() => setOverlay("aac")} className={`${bigBtn} bg-teal text-white`}>
+                💬 {t("play.nav.aac")}
+              </Target>
+            )}
           </div>
         </div>
       )}

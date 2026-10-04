@@ -64,11 +64,14 @@ export function computeMetrics(events: InteractionEvent[]): SessionMetrics {
   };
 }
 
-/** Desired direction per param: +1 = more help, -1 = less help, 0 = keep. */
+/**
+ * Desired direction per param: +1 = more help, -1 = less help, 0 = keep.
+ * Motor help (sizes, spacing, tolerance) follows motor signals only; learning help (hints, options) follows
+ * accuracy only. Mixing them grew keys for wrong answers and shrank them for a child who knows the answers
+ * but struggles to hit them.
+ */
 function wants(m: SessionMetrics): Partial<Record<ParamKey, 1 | -1>> {
   const w: Partial<Record<ParamKey, 1 | -1>> = {};
-  const struggling = m.accuracy < 0.6;
-  const mastering = m.accuracy >= 0.9 && (m.offsetRatio === null || m.offsetRatio < 0.2);
 
   if (m.accidentalRate > 0.15) w.dwellMs = 1;
   else if (m.accidentalRate < 0.03) w.dwellMs = -1;
@@ -76,25 +79,25 @@ function wants(m: SessionMetrics): Partial<Record<ParamKey, 1 | -1>> {
   if (m.debounceRate > 0.1) w.debounceMs = 1;
   else if (m.debounceRate < 0.02) w.debounceMs = -1;
 
-  if ((m.offsetRatio ?? 0) > 0.35 || struggling) {
-    w.keyScale = 1;
-    w.targetScale = 1;
-    w.traceTolerance = 1;
-  } else if (mastering) {
-    w.keyScale = -1;
-    w.targetScale = -1;
-    w.traceTolerance = -1;
-  }
-
+  // Sizes only move with touch/pen geometry; keyboard and switch users keep theirs.
   if (m.offsetRatio !== null) {
+    if (m.offsetRatio > 0.35 || m.accidentalRate > 0.15) {
+      w.keyScale = 1;
+      w.targetScale = 1;
+      w.traceTolerance = 1;
+    } else if (m.offsetRatio < 0.2 && m.accidentalRate < 0.03) {
+      w.keyScale = -1;
+      w.targetScale = -1;
+      w.traceTolerance = -1;
+    }
     if (m.offsetRatio > 0.35) w.spacing = 1;
     else if (m.offsetRatio < 0.15) w.spacing = -1;
   }
 
-  if (struggling) {
+  if (m.accuracy < 0.6) {
     w.hintLevel = 1;
     w.optionCount = 1; // more help → fewer choices (see HELP_IS_LOWER)
-  } else if (mastering && m.avgLatencyMs < 3000) {
+  } else if (m.accuracy >= 0.9 && m.avgLatencyMs < 3000) {
     w.hintLevel = -1;
     w.optionCount = -1;
   }

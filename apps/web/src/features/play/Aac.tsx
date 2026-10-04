@@ -39,15 +39,15 @@ export function Aac({ child }: { child: Child }) {
     setConfirm(null);
   };
 
+  // The child's own words are spoken at once — never held back by the network or an extra choice.
+  // An AI-polished sentence, if any, is only offered afterwards.
   const speakStrip = async () => {
     if (!labels.length) return;
     const plain = labels.join(" ");
-    const res = await api.aacCompose(labels, lang).catch(() => ({ sentence: plain, ai: false }));
+    say(plain);
+    const res = await api.aacCompose(labels, lang).catch(() => null);
     const norm = (s: string) => s.toLowerCase().replace(/[.!?,]/g, "").trim();
-    if (res.ai && norm(res.sentence) !== norm(plain)) {
-      setConfirm({ sentence: res.sentence, plain, lang });
-      speak(t("aac.confirm"), lang);
-    } else say(res.sentence);
+    if (res?.ai && norm(res.sentence) !== norm(plain)) setConfirm({ sentence: res.sentence, plain, lang });
   };
 
   const size = Math.round(120 * profile.targetScale);
