@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useRef, useState, useSyncExternalStore } from "react";
 import { Check, Clock, Coins, Copy, Download, Flame, Mic, Star, Trash } from "lucide-react";
 import { Bars, Button, Card, Chip, Empty, Field, Input, Meter, Modal, Select, Stat, Toggle, useAction } from "@/components/ui";
 import { AAC_CATEGORIES } from "@/content/aac";
@@ -10,6 +10,7 @@ import { api, sel, useDb } from "@/lib/api";
 import { LANGS, useLang, useT, type Lang } from "@/lib/i18n";
 import type { AccessMode, Child, ConsentScope } from "@/lib/types";
 import { fmtDate } from "@/lib/format";
+import { hasVoice, subscribeVoices } from "@/lib/audio";
 import { aacLabel, BIRTH_YEARS, download, profileLines } from "./lib";
 import { AccessPicker, AvatarGrid } from "./pickers";
 
@@ -592,6 +593,7 @@ export function SettingsTab({ child }: { child: Child }) {
             </Select>
           </Field>
         </div>
+        <VoiceNotice langs={[uiLang, learningLang]} />
         <AccessPicker value={access} onChange={setAccess} />
         <fieldset>
           <legend className="mb-3 text-sm font-bold">{t("parent.field.avatar")}</legend>
@@ -615,6 +617,22 @@ export function SettingsTab({ child }: { child: Child }) {
 
 // ---------------------------------------------------------------- privacy
 const OPTIONAL: ConsentScope[] = ["ai_processing", "voice_recording", "school_sharing", "therapist_sharing"];
+
+/** Warns when this device can't speak a child's language (most devices have no Uzbek voice). */
+function VoiceNotice({ langs }: { langs: Lang[] }) {
+  const t = useT();
+  const missing = useSyncExternalStore(
+    subscribeVoices,
+    () => [...new Set(langs)].filter((l) => hasVoice(l) === false).join(","),
+    () => "",
+  );
+  if (!missing) return null;
+  return (
+    <p role="note" className="rounded-xl bg-sun-soft px-4 py-3 text-sm font-semibold text-ink">
+      {t("parent.voice.missing", { lang: missing.split(",").map((l) => t(`lang.${l}`)).join(", ") })}
+    </p>
+  );
+}
 
 export function PrivacyTab({ child }: { child: Child }) {
   const t = useT();

@@ -23,7 +23,7 @@ export interface PlayCtx {
   emit(e: PlayEvent): void;
   /** Mascot + sound reaction. "try" is the gentle, never-negative response to a miss. */
   react(kind: "success" | "try"): void;
-  say(text: string, lang?: Lang): void;
+  say(text: string, lang?: Lang, queue?: boolean): void;
   /** Shared across all targets for debounce. */
   lastAccept: { current: number | null };
 }

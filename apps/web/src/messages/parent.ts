@@ -49,6 +49,7 @@ export const parent = {
     "parent.field.learningLangHint": "Letters and words your child will learn.",
     "parent.field.uiLang": "Instructions language",
     "parent.field.uiLangHint": "Language of spoken instructions and My Voice.",
+    "parent.voice.missing": "No voice on this device — {lang}: spoken instructions and My Voice will be silent in this language. Record your voice on your own My Voice cards so your child hears you instead.",
     "parent.field.access": "How does your child choose things?",
     "parent.field.avatar": "Choose an avatar",
 
@@ -295,6 +296,7 @@ export const parent = {
     "parent.field.learningLangHint": "Farzandingiz oʻrganadigan harf va soʻzlar tili.",
     "parent.field.uiLang": "Koʻrsatmalar tili",
     "parent.field.uiLangHint": "Ovozli koʻrsatmalar va “Mening ovozim” tili.",
+    "parent.voice.missing": "Bu qurilmada ovoz yoʻq — {lang}: ovozli koʻrsatmalar va “Mening ovozim” bu tilda jim boʻladi. Farzandingiz sizni eshitishi uchun oʻz kartalaringizga ovozingizni yozib qoʻying.",
     "parent.field.access": "Farzandingiz qanday tanlaydi?",
     "parent.field.avatar": "Avatar tanlang",
 
@@ -541,6 +543,7 @@ export const parent = {
     "parent.field.learningLangHint": "На этом языке ребёнок учит буквы и слова.",
     "parent.field.uiLang": "Язык подсказок",
     "parent.field.uiLangHint": "Язык озвученных инструкций и «Моего голоса».",
+    "parent.voice.missing": "На этом устройстве нет голоса — {lang}: озвученные инструкции и «Мой голос» на этом языке будут без звука. Запишите свой голос на своих карточках «Моего голоса», чтобы ребёнок слышал вас.",
     "parent.field.access": "Как ребёнок выбирает?",
     "parent.field.avatar": "Выберите аватар",
 

@@ -160,14 +160,13 @@ export function Frame({
 }) {
   const ctx = usePlay();
   const t = useActT();
-  const later = useLater();
   const lines = speak ?? [[prompt, "ui"] as [string, "ui"]];
   const sayAll = () => {
-    // ponytail: one utterance per language; learn-language words follow the instruction after a short pause.
+    // One utterance per language; the learn-language words are queued so a long instruction is never cut off.
     const ui = lines.filter(([, l]) => l === "ui").map(([s]) => s).join(". ");
     const learn = lines.filter(([, l]) => l === "learn").map(([s]) => s).join(". ");
     if (ui) ctx.say(ui, ctx.uiLang);
-    if (learn) later(() => ctx.say(learn, ctx.learnLang), ui ? 1600 : 0);
+    if (learn) ctx.say(learn, ctx.learnLang, !!ui);
   };
   const key = `${speakKey ?? ""}|${lines.map((l) => l[0]).join("|")}`;
   const said = useRef("");

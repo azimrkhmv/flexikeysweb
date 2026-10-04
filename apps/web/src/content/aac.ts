@@ -67,6 +67,21 @@ export const AAC_CARDS: AacCard[] = [
 
 export const AAC_BY_ID: Record<string, AacCard> = Object.fromEntries(AAC_CARDS.map((x) => [x.id, x]));
 
+/** Always on screen, in the same place, on every My Voice page: a child must never have to look for these. */
+export const AAC_QUICK = ["yes", "no", "help", "stop"] as const;
+
+/** Modified Fitzgerald Key word classes — card border colours that teach sentence building. */
+export type WordClass = "person" | "action" | "describe" | "thing" | "social";
+const WORD_CLASS: Record<string, WordClass> = {
+  i: "person", mom: "person", dad: "person", teacher: "person", friend: "person", grandma: "person",
+  want: "action", go: "action", like: "action", help: "action", eat: "action", sleep: "action", hug: "action",
+  draw: "action", wash: "action", brush: "action", dress: "action", bath: "action",
+  more: "describe", happy: "describe", sad: "describe", tired: "describe", hurt: "describe", scared: "describe", calm: "describe",
+  yes: "social", no: "social", stop: "social", finished: "social",
+};
+/** Built-in cards by id; custom cards by category (people → person, everything else → thing). */
+export const wordClass = (id: string, category: string): WordClass => WORD_CLASS[id] ?? (category === "people" ? "person" : "thing");
+
 /** Custom (parent-made) cards are referenced as `custom:<id>` in the sentence strip and in AAC events. */
 export const CUSTOM_PREFIX = "custom:";
 

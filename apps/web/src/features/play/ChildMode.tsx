@@ -187,7 +187,7 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
     clearTimeout(moodTimer.current);
     moodTimer.current = setTimeout(() => setMood("calm"), ms);
   }, []);
-  const say = useCallback((text: string, l: Lang = lang) => speak(text, l), [lang]);
+  const say = useCallback((text: string, l: Lang = lang, queue = false) => speak(text, l, queue), [lang]);
   const react = useCallback(
     (kind: "success" | "try") => {
       if (kind === "success") {
