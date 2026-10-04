@@ -4,7 +4,7 @@ import { createContext, useContext } from "react";
 import { DEFAULT_PROFILE } from "@/lib/adaptive";
 import { sfx, speak } from "@/lib/audio";
 import type { Lang } from "@/lib/i18n";
-import type { AccessMode, AdaptiveProfile, InteractionEvent } from "@/lib/types";
+import type { AccessMode, AdaptiveProfile, ChildSupport, InteractionEvent } from "@/lib/types";
 
 export type PlayEvent = Omit<InteractionEvent, "sessionId" | "t">;
 
@@ -13,6 +13,8 @@ export interface PlayCtx {
   childName: string;
   profile: AdaptiveProfile;
   access: AccessMode;
+  /** Adult-chosen access settings (hover time, scanning). */
+  support?: ChildSupport;
   /** Language of words/letters being learned. */
   learnLang: Lang;
   /** Language of instructions, mascot lines and AAC. */

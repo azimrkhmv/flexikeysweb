@@ -6,10 +6,11 @@ import { useState } from "react";
 import { ArrowLeft, Check, ShieldCheck } from "lucide-react";
 import { Button, Card, Checkbox, Chip, Field, Input, PageHeader, Select, useAction } from "@/components/ui";
 import { AccessPicker, AvatarGrid } from "@/features/parent/pickers";
+import { LevelFields } from "@/features/parent/support";
 import { AVATARS, BIRTH_YEARS } from "@/features/parent/lib";
 import { api, CONSENT_VERSION, sel, useDb } from "@/lib/api";
 import { LANGS, useLang, useT, type Lang } from "@/lib/i18n";
-import type { AccessMode, ConsentScope } from "@/lib/types";
+import type { AccessMode, ChildSupport, ConsentScope } from "@/lib/types";
 
 const SCOPES: ConsentScope[] = ["core", "ai_processing", "voice_recording", "school_sharing", "therapist_sharing"];
 
@@ -26,13 +27,14 @@ export default function NewChild() {
   const [childUi, setChildUi] = useState<Lang>(uiLang);
   const [access, setAccess] = useState<AccessMode>("touch");
   const [avatar, setAvatar] = useState(AVATARS[0]);
+  const [support, setSupport] = useState<ChildSupport>({});
   const create = useAction(api.createChild);
 
   const toggle = (s: ConsentScope, on: boolean) => setScopes((xs) => (on ? [...xs, s] : xs.filter((x) => x !== s)));
   const steps = [t("parent.new.step.consent"), t("parent.new.step.profile"), t("parent.new.step.avatar")];
 
   const submit = async () => {
-    const child = await create.run({ name, birthYear, learningLang, uiLang: childUi, avatar, access }, scopes);
+    const child = await create.run({ name, birthYear, learningLang, uiLang: childUi, avatar, access, support }, scopes);
     if (child) router.replace(`/parent/child/${child.id}`);
   };
 
@@ -143,6 +145,7 @@ export default function NewChild() {
               </Field>
             </div>
             <AccessPicker value={access} onChange={setAccess} />
+            <LevelFields value={support} onChange={setSupport} />
             <div className="flex justify-between">
               <Button variant="ghost" onClick={() => setStep(0)}>
                 {t("common.back")}

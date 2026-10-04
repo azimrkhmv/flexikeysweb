@@ -143,6 +143,12 @@ body {
 .fk-pop { animation: fk-pop 420ms ease-out both; }
 .fk-glow { animation: fk-glow 1.2s ease-in-out infinite; }
 
+/* Calm screen (per child, set by an adult): same as reduced motion, regardless of the device setting. */
+.fk-calm *, .fk-calm *::before, .fk-calm *::after {
+  animation: none !important;
+  transition: none !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

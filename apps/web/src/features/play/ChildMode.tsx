@@ -15,7 +15,7 @@ import type { AdaptiveProfile, Child, InputProfile, InteractionEvent, MascotMood
 import { Aac } from "./Aac";
 import { ParentGate } from "./ParentGate";
 import { Shop } from "./Shop";
-import { Target, useScanning, type SelectInfo } from "./Target";
+import { SCAN_DEFAULT, Target, useScanning, type SelectInfo } from "./Target";
 import { LevelView, WorldMap } from "./WorldMap";
 import { PlayContext, type PlayCtx, type PlayEvent } from "./context";
 
@@ -204,8 +204,8 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
   );
 
   const ctx: PlayCtx = useMemo(
-    () => ({ childName: child.name, profile, access: child.access, learnLang: child.learningLang, uiLang: lang, levelId, activityId, emit, react, say, lastAccept }),
-    [child.name, profile, child.access, child.learningLang, lang, levelId, activityId, emit, react, say],
+    () => ({ childName: child.name, profile, access: child.access, support: child.support, learnLang: child.learningLang, uiLang: lang, levelId, activityId, emit, react, say, lastAccept }),
+    [child.name, profile, child.access, child.support, child.learningLang, lang, levelId, activityId, emit, react, say],
   );
 
   // ---------- navigation
@@ -290,7 +290,19 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
   const showBreak = overlay === "break" || (breakDue && !overlay && !["activity", "start", "bye", "aac"].includes(view.v));
   const offlineBlock = !online && view.v !== "aac" && overlay !== "aac";
   // Switch scanning covers the whole shell (nav included), or only the open overlay.
-  useScanning(child.access === "scan" && overlay !== "gate", overlay === "menu" || overlay === "aac" || showBreak || offlineBlock ? overlayRef : shellRef);
+  const scan = child.support?.scan ?? SCAN_DEFAULT;
+  useScanning(child.access === "scan" && overlay !== "gate", overlay === "menu" || overlay === "aac" || showBreak || offlineBlock ? overlayRef : shellRef, {
+    stepMs: scan.stepMs,
+    mode: scan.mode,
+    speak: scan.speak,
+    lang,
+  });
+  // Calm screen: no moving or glowing effects anywhere in child mode (hints keep their static ring).
+  const calm = !!child.support?.calm;
+  useEffect(() => {
+    document.documentElement.classList.toggle("fk-calm", calm);
+    return () => document.documentElement.classList.remove("fk-calm");
+  }, [calm]);
   // Escape = "Continue" on the pause menu, My Voice and the break screen (never exits child mode).
   useFocusTrap(overlayRef, overlay === "menu" || overlay === "aac" ? overlay : showBreak ? "break" : null, () => {
     if (showBreak) {
@@ -405,6 +417,7 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
               </Target>
             )}
             <Target
+              scanSkip
               label={t("play.fullscreen")}
               onSelect={() => void (document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.())?.catch?.(() => {})}
               className="grid place-items-center rounded-full bg-surface/70 text-ink-2"

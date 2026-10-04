@@ -13,6 +13,7 @@ import { fmtDate } from "@/lib/format";
 import { hasVoice, subscribeVoices } from "@/lib/audio";
 import { aacLabel, BIRTH_YEARS, download, profileLines } from "./lib";
 import { AccessPicker, AvatarGrid } from "./pickers";
+import { SupportCard } from "./support";
 
 export const TABS = ["progress", "changes", "aac", "sharing", "settings", "privacy"] as const;
 export type Tab = (typeof TABS)[number];
@@ -552,66 +553,69 @@ export function SettingsTab({ child }: { child: Child }) {
   const save = useAction(api.updateChild);
 
   return (
-    <Card className="max-w-2xl">
-      <form
-        className="space-y-5"
-        onSubmit={async (e) => {
-          e.preventDefault();
-          setSaved(false);
-          if ((await save.run(child.id, { name: name.trim(), birthYear, learningLang, uiLang, avatar, access })) !== undefined) setSaved(true);
-        }}
-      >
-        <div className="grid gap-5 sm:grid-cols-2">
-          <Field label={t("parent.field.name")}>
-            <Input value={name} onChange={(e) => setName(e.target.value)} maxLength={30} required />
-          </Field>
-          <Field label={t("parent.field.birthYear")}>
-            <Select value={birthYear} onChange={(e) => setBirthYear(Number(e.target.value))}>
-              {BIRTH_YEARS.map((y) => (
-                <option key={y} value={y}>
-                  {y}
-                </option>
-              ))}
-            </Select>
-          </Field>
-          <Field label={t("parent.field.learningLang")} hint={t("parent.field.learningLangHint")}>
-            <Select value={learningLang} onChange={(e) => setLearningLang(e.target.value as Lang)}>
-              {LANGS.map((l) => (
-                <option key={l} value={l}>
-                  {t(`lang.${l}`)}
-                </option>
-              ))}
-            </Select>
-          </Field>
-          <Field label={t("parent.field.uiLang")} hint={t("parent.field.uiLangHint")}>
-            <Select value={uiLang} onChange={(e) => setUiLang(e.target.value as Lang)}>
-              {LANGS.map((l) => (
-                <option key={l} value={l}>
-                  {t(`lang.${l}`)}
-                </option>
-              ))}
-            </Select>
-          </Field>
-        </div>
-        <VoiceNotice langs={[uiLang, learningLang]} />
-        <AccessPicker value={access} onChange={setAccess} />
-        <fieldset>
-          <legend className="mb-3 text-sm font-bold">{t("parent.field.avatar")}</legend>
-          <AvatarGrid value={avatar} onChange={setAvatar} />
-        </fieldset>
-        {save.error && <p role="alert" className="text-sm font-semibold text-[#8f3a2c]">{save.error}</p>}
-        <div className="flex items-center gap-3">
-          <Button type="submit" pending={save.pending}>
-            {t("common.save")}
-          </Button>
-          {saved && (
-            <span role="status" className="text-sm font-bold text-teal">
-              {t("parent.saved")}
-            </span>
-          )}
-        </div>
-      </form>
-    </Card>
+    <div className="space-y-6">
+      <Card className="max-w-2xl">
+        <form
+          className="space-y-5"
+          onSubmit={async (e) => {
+            e.preventDefault();
+            setSaved(false);
+            if ((await save.run(child.id, { name: name.trim(), birthYear, learningLang, uiLang, avatar, access })) !== undefined) setSaved(true);
+          }}
+        >
+          <div className="grid gap-5 sm:grid-cols-2">
+            <Field label={t("parent.field.name")}>
+              <Input value={name} onChange={(e) => setName(e.target.value)} maxLength={30} required />
+            </Field>
+            <Field label={t("parent.field.birthYear")}>
+              <Select value={birthYear} onChange={(e) => setBirthYear(Number(e.target.value))}>
+                {BIRTH_YEARS.map((y) => (
+                  <option key={y} value={y}>
+                    {y}
+                  </option>
+                ))}
+              </Select>
+            </Field>
+            <Field label={t("parent.field.learningLang")} hint={t("parent.field.learningLangHint")}>
+              <Select value={learningLang} onChange={(e) => setLearningLang(e.target.value as Lang)}>
+                {LANGS.map((l) => (
+                  <option key={l} value={l}>
+                    {t(`lang.${l}`)}
+                  </option>
+                ))}
+              </Select>
+            </Field>
+            <Field label={t("parent.field.uiLang")} hint={t("parent.field.uiLangHint")}>
+              <Select value={uiLang} onChange={(e) => setUiLang(e.target.value as Lang)}>
+                {LANGS.map((l) => (
+                  <option key={l} value={l}>
+                    {t(`lang.${l}`)}
+                  </option>
+                ))}
+              </Select>
+            </Field>
+          </div>
+          <VoiceNotice langs={[uiLang, learningLang]} />
+          <AccessPicker value={access} onChange={setAccess} />
+          <fieldset>
+            <legend className="mb-3 text-sm font-bold">{t("parent.field.avatar")}</legend>
+            <AvatarGrid value={avatar} onChange={setAvatar} />
+          </fieldset>
+          {save.error && <p role="alert" className="text-sm font-semibold text-[#8f3a2c]">{save.error}</p>}
+          <div className="flex items-center gap-3">
+            <Button type="submit" pending={save.pending}>
+              {t("common.save")}
+            </Button>
+            {saved && (
+              <span role="status" className="text-sm font-bold text-teal">
+                {t("parent.saved")}
+              </span>
+            )}
+          </div>
+        </form>
+      </Card>
+      <SupportCard key={child.id} child={child} />
+    </div>
   );
 }
 

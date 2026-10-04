@@ -1,4 +1,4 @@
-import type { AdaptiveProfile, InteractionEvent, ParamKey, ProfileRecord } from "./types";
+import type { AdaptiveProfile, ChildSupport, FloorKey, InteractionEvent, ParamKey, ProfileRecord } from "./types";
 
 // Client mirror of the server adaptive engine (PRD §9.5). The real engine runs in the
 // backend worker; this copy powers the demo and documents the rules the UI relies on.
@@ -27,6 +27,28 @@ export const BOUNDS: Record<ParamKey, [number, number, number]> = {
   traceTolerance: [24, 72, 8],
   breakAfterMin: [8, 20, 3],
 };
+
+/**
+ * First profile for a new child from the parent-reported levels, so a child with severe motor or vision
+ * difficulties doesn't start on the defaults and wait sessions for help. The engine adapts from here.
+ */
+export function startingProfile(s?: ChildSupport): AdaptiveProfile {
+  const p = { ...DEFAULT_PROFILE };
+  const hands = s?.macs ?? 1;
+  if (hands >= 4) Object.assign(p, { keyScale: 1.3, targetScale: 1.3, spacing: 12, dwellMs: 300, debounceMs: 450, traceTolerance: 56 });
+  else if (hands === 3) Object.assign(p, { keyScale: 1.2, targetScale: 1.2, spacing: 12, dwellMs: 150, debounceMs: 375, traceTolerance: 48 });
+  if ((s?.vfcs ?? 1) >= 3) Object.assign(p, { targetScale: 1.4, keyScale: Math.max(p.keyScale, 1.3), optionCount: 2 });
+  if ((s?.cfcs ?? 1) >= 4) p.hintLevel = 2;
+  return withFloors(p, s?.floors);
+}
+
+/** Raises params to the adult-set minimums. */
+export function withFloors(p: AdaptiveProfile, floors?: Partial<Record<FloorKey, number>>): AdaptiveProfile {
+  if (!floors) return p;
+  const out = { ...p };
+  for (const [k, v] of Object.entries(floors) as [FloorKey, number][]) if (typeof v === "number") out[k] = Math.max(out[k], v);
+  return out;
+}
 
 /** Sessions during which the opposite direction stays blocked. Expires — no ratchet (fixes B5). */
 export const HYSTERESIS_SESSIONS = 2;
@@ -117,7 +139,7 @@ export interface PolicyChange {
   reasonKey: string;
 }
 
-export function applyPolicy(rec: ProfileRecord, events: InteractionEvent[]): { record: ProfileRecord; changes: PolicyChange[] } {
+export function applyPolicy(rec: ProfileRecord, events: InteractionEvent[], floors?: ChildSupport["floors"]): { record: ProfileRecord; changes: PolicyChange[] } {
   const m = computeMetrics(events);
   // Age out hysteresis every session so it can never ratchet.
   const lastDir: ProfileRecord["lastDir"] = {};
@@ -129,7 +151,8 @@ export function applyPolicy(rec: ProfileRecord, events: InteractionEvent[]): { r
   const params = { ...rec.params };
   const changes: PolicyChange[] = [];
   for (const [param, help] of Object.entries(wants(m)) as [ParamKey, 1 | -1][]) {
-    const [min, max, step] = BOUNDS[param];
+    const [bound, max, step] = BOUNDS[param];
+    const min = Math.max(bound, floors?.[param as FloorKey] ?? bound);
     const valueDir = HELP_IS_LOWER.includes(param) ? -help : help;
     const blocked = rec.lastDir[param];
     if (blocked && blocked.left > 0 && blocked.dir !== valueDir) continue;

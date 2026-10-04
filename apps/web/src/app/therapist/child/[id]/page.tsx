@@ -7,6 +7,7 @@ import { ArrowLeft, Trash } from "lucide-react";
 import { aacCard } from "@/content/aac";
 import { LEVELS } from "@/content/levels";
 import { Avatar, Button, Card, Chip, Empty, Field, Input, PageHeader, Select, Textarea, Toggle, useAction } from "@/components/ui";
+import { SupportCard } from "@/features/parent/support";
 import { AdaptationLog, LevelLabel, LevelOptions, LockNote, MasteryList, MinutesChart, NotFound, SectionTitle, SessionsList, useMe, useNow } from "@/features/pro/shared";
 import { fmtDate } from "@/lib/format";
 import { api, sel } from "@/lib/api";
@@ -51,6 +52,7 @@ export default function TherapistChild() {
         </div>
         <AacUsage childId={id} />
         <AdaptationLog childId={id} limit={10} />
+        <SupportCard child={child} />
         <SessionsList childId={id} />
       </div>
     </>

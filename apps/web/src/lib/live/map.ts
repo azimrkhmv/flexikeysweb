@@ -4,7 +4,7 @@
 import { AAC_BY_ID, CUSTOM_PREFIX } from "@/content/aac";
 import { DEFAULT_PROFILE } from "@/lib/adaptive";
 import type { Lang } from "@/lib/translate";
-import type {
+import type { ChildSupport,
   AacCustomCard, AacEvent, AccessMode, AuditLog, AdaptationChange, AdaptiveProfile, Assignment, CareLink, Child, ClassRoom, Consent, ConsentScope, Goal,
   InteractionEvent, LearningSession, LevelProgress, Note, Notification, Order, ParamKey, Role, SkillMastery, Subscription, User, UserStatus,
 } from "@/lib/types";
@@ -14,6 +14,8 @@ export interface BUser { id: string; email: string | null; display_name: string 
 export interface BChild {
   id: string; parent_id: string | null; display_name: string; learning_language: string; ui_language: string;
   birth_year: number | null; avatar_id: string | null; access_mode?: string; equipped?: Record<string, string>; created_at: string;
+  /** JSON column; the backend stores it as given (ChildSupport). */
+  support?: ChildSupport | null;
 }
 export interface BConsent { id: string; child_id: string; consent_type: string; granted_at: string; version: string | null }
 export interface BLevel { slug: string; completed: string[]; stars: number; state: string }
@@ -64,12 +66,13 @@ export function childFrom(c: BChild): Child {
     uiLang: lang(c.ui_language, lang(c.learning_language)),
     avatar: c.avatar_id ?? "🦊",
     access: (["touch", "dwell", "scan"].includes(c.access_mode ?? "") ? c.access_mode : "touch") as AccessMode,
+    support: c.support ?? undefined,
     equipped: { hat: eq.hat, color: eq.color, bg: eq.bg },
     createdAt: c.created_at,
   };
 }
 
-export function childTo(c: Partial<Pick<Child, "name" | "birthYear" | "learningLang" | "uiLang" | "avatar" | "access">>) {
+export function childTo(c: Partial<Pick<Child, "name" | "birthYear" | "learningLang" | "uiLang" | "avatar" | "access" | "support">>) {
   const body: Record<string, unknown> = {};
   if (c.name !== undefined) body.display_name = c.name;
   if (c.birthYear !== undefined) body.birth_year = c.birthYear;
@@ -77,6 +80,7 @@ export function childTo(c: Partial<Pick<Child, "name" | "birthYear" | "learningL
   if (c.uiLang !== undefined) body.ui_language = c.uiLang;
   if (c.avatar !== undefined) body.avatar_id = c.avatar;
   if (c.access !== undefined) body.access_mode = c.access;
+  if (c.support !== undefined) body.support = c.support;
   return body;
 }
 

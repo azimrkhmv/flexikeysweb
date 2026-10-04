@@ -6,12 +6,12 @@ import { read, write, net } from "./db";
 import { requireUser, requireChildAccess, audit, purgeChild } from "./guards";
 import { ApiError, CONSENT_VERSION, id, iso } from "./schema";
 import { sel } from "./selectors";
-import type { Child, ConsentScope } from "../types";
+import type { Child, ChildSupport, ConsentScope } from "../types";
 
 export const childrenApi = {
   // ------------------------------------------------------------ children (/children/*)
   /** POST /children — consent + child in one transaction; core consent is mandatory (FR-CHILD-1). */
-  async createChild(input: Pick<Child, "name" | "birthYear" | "learningLang" | "uiLang" | "avatar" | "access">, scopes: ConsentScope[]) {
+  async createChild(input: Pick<Child, "name" | "birthYear" | "learningLang" | "uiLang" | "avatar" | "access" | "support">, scopes: ConsentScope[]) {
     const u = requireUser(["parent"]);
     if (!u.emailVerified) throw new ApiError("email_not_verified");
     if (!scopes.includes("core")) throw new ApiError("consent_required");
@@ -28,6 +28,15 @@ export const childrenApi = {
   async updateChild(childId: string, patch: Partial<Pick<Child, "name" | "birthYear" | "learningLang" | "uiLang" | "avatar" | "access">>) {
     requireChildAccess(childId, ["owner", "admin"]);
     write((db) => Object.assign(db.children.find((c) => c.id === childId)!, patch));
+    return net(true);
+  },
+  /** PATCH /children/{id} {support} — parent, or a linked therapist (access settings are clinical work). Audited. */
+  async updateSupport(childId: string, support: ChildSupport) {
+    const { user } = requireChildAccess(childId, ["owner", "therapist", "admin"]);
+    write((db) => {
+      db.children.find((c) => c.id === childId)!.support = support;
+      audit(db, user.id, "child.support", childId, JSON.stringify(support));
+    });
     return net(true);
   },
   /** DELETE /children/{id} */

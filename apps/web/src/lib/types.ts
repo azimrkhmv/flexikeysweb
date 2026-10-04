@@ -34,8 +34,29 @@ export interface Child {
   uiLang: Lang;
   avatar: string;
   access: AccessMode;
+  /** Optional: how the child moves, sees and communicates, and the access settings adults chose. */
+  support?: ChildSupport;
   equipped: { hat?: string; color?: string; bg?: string };
   createdAt: string;
+}
+
+/** Function level I–V of a classification system; undefined = the parent doesn't know. */
+export type FnLevel = 1 | 2 | 3 | 4 | 5;
+/** Params an adult can set a minimum for — the adaptive engine never goes below it. */
+export type FloorKey = "dwellMs" | "debounceMs" | "keyScale" | "targetScale";
+
+export interface ChildSupport {
+  /** Hand use (MACS), communication (CFCS), vision (VFCS) — parent-reported, used only for starting settings. */
+  macs?: FnLevel;
+  cfcs?: FnLevel;
+  vfcs?: FnLevel;
+  /** No moving or glowing effects (seizures, photosensitivity, vision difficulties). */
+  calm?: boolean;
+  floors?: Partial<Record<FloorKey, number>>;
+  /** Switch scanning: ms per item, auto (1 switch) or step (2 switches: Space moves, Enter selects), speak items. */
+  scan?: { stepMs: number; mode: "auto" | "step"; speak: boolean };
+  /** Hover / eye-gaze "waiting" time in ms. */
+  hoverMs?: number;
 }
 
 export type ConsentScope = "core" | "ai_processing" | "voice_recording" | "school_sharing" | "therapist_sharing";

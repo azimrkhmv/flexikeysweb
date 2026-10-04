@@ -83,7 +83,8 @@ export function AdaptiveKeyboard({
   const t = useActT();
   const narrow = useNarrow();
   const p = ctx.profile;
-  const reduced = forceReduced ?? (p.hintLevel >= 2 || narrow);
+  // Scanning a full keyboard takes ~50 s per letter: switch users always get the reduced keys.
+  const reduced = forceReduced ?? (p.hintLevel >= 2 || narrow || ctx.access === "scan");
   const rows = reduced ? [reducedKeys(lang, needed)] : LAYOUTS[lang];
   const size = Math.max(64, Math.round(76 * p.keyScale));
   // Physical key press → same debounce rule as on-screen keys (FR-KBD-3), then onKey.

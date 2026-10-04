@@ -3,7 +3,7 @@
 // Pure read functions over the DB. `sel.access` is the single authorization rule (PRD §15.4).
 
 import { FREE_LEVELS, LEVEL_BY_ID, LEVELS, levelComplete } from "@/content/levels";
-import { DEFAULT_PROFILE } from "../adaptive";
+import { startingProfile, withFloors } from "../adaptive";
 import { DAY, iso, type DB } from "./schema";
 import type { AdaptiveProfile, Child, ClassRoom, ConsentScope, InputProfile, LevelProgress, Subscription, Wallet } from "../types";
 
@@ -34,8 +34,11 @@ export const sel = {
     return null;
   },
 
+  /** The adapted profile, never below the adult-set floors; a child with no sessions yet starts from their levels. */
   profile(db: DB, childId: string, input: InputProfile = "touch"): AdaptiveProfile {
-    return (db.profiles.find((p) => p.childId === childId && p.input === input) ?? db.profiles.find((p) => p.childId === childId))?.params ?? DEFAULT_PROFILE;
+    const support = db.children.find((c) => c.id === childId)?.support;
+    const p = (db.profiles.find((p) => p.childId === childId && p.input === input) ?? db.profiles.find((p) => p.childId === childId))?.params;
+    return p ? withFloors(p, support?.floors) : startingProfile(support);
   },
   changes: (db: DB, childId: string) => db.changes.filter((c) => c.childId === childId).sort((a, b) => b.at.localeCompare(a.at)),
   sessions: (db: DB, childId: string) => db.sessions.filter((s) => s.childId === childId).sort((a, b) => b.startedAt.localeCompare(a.startedAt)),
