@@ -3,7 +3,7 @@
 // Pure read functions over the DB. `sel.access` is the single authorization rule (PRD §15.4).
 
 import { FREE_LEVELS, LEVEL_BY_ID, LEVELS, levelComplete } from "@/content/levels";
-import { startingProfile, withFloors } from "../adaptive";
+import { computeMetrics, startingProfile, withFloors } from "../adaptive";
 import { DAY, iso, type DB } from "./schema";
 import type { AdaptiveProfile, Child, ClassRoom, ConsentScope, InputProfile, LevelProgress, Subscription, Wallet } from "../types";
 
@@ -42,6 +42,13 @@ export const sel = {
   },
   changes: (db: DB, childId: string) => db.changes.filter((c) => c.childId === childId).sort((a, b) => b.at.localeCompare(a.at)),
   sessions: (db: DB, childId: string) => db.sessions.filter((s) => s.childId === childId).sort((a, b) => b.startedAt.localeCompare(a.startedAt)),
+  /** Newest sessions with their adaptive-engine metrics (only sessions with events; live mode has none client-side). */
+  sessionMetrics: (db: DB, childId: string, limit: number) =>
+    sel
+      .sessions(db, childId)
+      .map((s) => ({ s, m: computeMetrics(db.events.filter((e) => e.sessionId === s.id)) }))
+      .filter((r) => r.m.taps > 0)
+      .slice(0, limit),
   mastery: (db: DB, childId: string) => LEVELS.map((l) => db.mastery.find((m) => m.childId === childId && m.skill === l.id) ?? { childId, skill: l.id, pKnown: 0, attempts: 0, updatedAt: "" }),
   wallet: (db: DB, childId: string): Wallet => db.wallets.find((w) => w.childId === childId) ?? { childId, coins: 0, stars: 0, owned: [] },
   levelProgress: (db: DB, childId: string, levelId: string): LevelProgress =>
