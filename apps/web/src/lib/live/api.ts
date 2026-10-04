@@ -197,10 +197,11 @@ export const liveApi = {
     sessionStart.set(s.id, Date.now());
     return s.id;
   },
-  async postEvents(sessionId: string, events: Omit<InteractionEvent, "sessionId">[]) {
-    const start = sessionStart.get(sessionId) ?? Date.now();
+  /** `batchId` stays the same on retries (the server ignores a batch it already has); `startedAt` = session start, wall clock. */
+  async postEvents(sessionId: string, events: Omit<InteractionEvent, "sessionId">[], batchId?: string, startedAt?: number) {
+    const start = startedAt ?? sessionStart.get(sessionId) ?? Date.now();
     const mapped = events.map((e) => eventTo(e, start)).filter((e) => e !== null);
-    if (mapped.length) await http("POST", `/sessions/${sessionId}/events`, { batch_id: id(), events: mapped });
+    if (mapped.length) await http("POST", `/sessions/${sessionId}/events`, { batch_id: batchId ?? id(), events: mapped });
     return true;
   },
   async completeActivity(sessionId: string, levelId: string, activityId: string) {

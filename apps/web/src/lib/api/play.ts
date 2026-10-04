@@ -57,7 +57,8 @@ export const playApi = {
     return net(s.id, 0);
   },
   /** POST /sessions/{id}/events — session must belong to the child token (fixes B2). */
-  async postEvents(sessionId: string, events: Omit<InteractionEvent, "sessionId">[]) {
+  async postEvents(sessionId: string, events: Omit<InteractionEvent, "sessionId">[], batchId?: string, startedAt?: number) {
+    void [batchId, startedAt]; // the mock stores events synchronously, so there are no retries to de-duplicate
     const c = requireChildToken();
     const s = read().sessions.find((x) => x.id === sessionId);
     if (!s || s.childId !== c.childId) throw new ApiError("not_found");

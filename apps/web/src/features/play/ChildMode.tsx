@@ -11,6 +11,7 @@ import { api, sel, useDb, type ChildAuth, type DB } from "@/lib/api";
 import { sfx, speak, unlockAudio } from "@/lib/audio";
 import { useT, type Lang } from "@/lib/i18n";
 import { useFocusTrap } from "@/lib/useFocusTrap";
+import { createOutbox, retryable, type OutboxItem } from "@/lib/outbox";
 import type { AdaptiveProfile, Child, InputProfile, InteractionEvent, MascotMood } from "@/lib/types";
 import { Aac } from "./Aac";
 import { ParentGate } from "./ParentGate";
@@ -32,6 +33,11 @@ type View =
 const DEFAULT_BG = "linear-gradient(180deg,#eaf3fc 0%,#f5f9f0 60%,#e3f0dc 100%)";
 const FLUSH_EVERY = 10;
 const FLUSH_MS = 5000;
+
+const send = (i: OutboxItem) =>
+  i.kind === "events" ? api.postEvents(i.sessionId, i.events, i.id, i.startedAt) : i.kind === "complete" ? api.completeActivity(i.sessionId, i.levelId, i.activityId) : api.endSession(i.sessionId);
+/** One queue per page: telemetry, completions and session ends are sent in order and retried until delivered. */
+const outbox = typeof window === "undefined" ? null : createOutbox(send);
 
 const inputOf = (p: SelectInfo["pointerType"]): InputProfile => (p === "mouse" ? "pointer" : p === "keyboard" || p === "switch" ? "keyboard" : "touch");
 const pick = (prefix: string, n: number) => `${prefix}.${1 + Math.floor(Math.random() * n)}`;
@@ -90,7 +96,7 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
   const shellRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
 
-  const session = useRef<{ id: string; start: number } | null>(null);
+  const session = useRef<{ id: string; start: number; wall: number } | null>(null);
   /** True between Start and "finish for today" — a session should exist while this is set. */
   const playing = useRef(false);
   const inputRef = useRef<InputProfile>("touch");
@@ -115,25 +121,25 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
   const profile = useMemo(() => JSON.parse(profileKey) as AdaptiveProfile, [profileKey]);
 
   // ---------- telemetry (batched: every 10 events, every 5 s, and when the page hides)
-  const flush = useCallback((force = false) => {
+  // Nothing is dropped on a bad connection: batches go through the outbox and are retried when it returns.
+  const flush = useCallback(() => {
     const s = session.current;
-    if (!s || !buffer.current.length || (!force && !navigator.onLine)) return;
-    const batch = buffer.current.splice(0);
-    api.postEvents(s.id, batch).catch(() => {});
+    if (!s || !buffer.current.length) return;
+    void outbox?.add({ kind: "events", sessionId: s.id, startedAt: s.wall, events: buffer.current.splice(0) });
   }, []);
 
   const endSession = useCallback(() => {
-    flush(true);
+    flush();
     const s = session.current;
     session.current = null;
-    if (s) api.endSession(s.id).catch(() => {});
+    if (s) void outbox?.add({ kind: "end", sessionId: s.id });
   }, [flush]);
 
   /** `pagehide` ends the session, but a page restored from the back/forward cache keeps playing — start a new one. */
   const ensureSession = useCallback(async () => {
     if (!session.current && playing.current) {
       const id = await api.startSession(inputRef.current).catch(() => null);
-      if (id && !session.current) session.current = { id, start: performance.now() };
+      if (id && !session.current) session.current = { id, start: performance.now(), wall: Date.now() };
     }
     return session.current;
   }, []);
@@ -149,7 +155,10 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
   );
 
   useEffect(() => {
-    const tick = setInterval(() => flush(), FLUSH_MS);
+    const tick = setInterval(() => {
+      flush();
+      void outbox?.drain();
+    }, FLUSH_MS);
     const breakCheck = setInterval(() => {
       if (session.current && Date.now() - breakStart.current >= profile.breakAfterMin * 60_000) setBreakDue(true);
     }, 20_000);
@@ -160,19 +169,23 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
   }, [flush, profile.breakAfterMin]);
 
   useEffect(() => {
-    const onVis = () => document.visibilityState === "hidden" && flush(true);
+    const onVis = () => document.visibilityState === "hidden" && flush();
+    const onOnline = () => void outbox?.drain();
+    void outbox?.drain(); // whatever an earlier visit couldn't send
     const onShow = (e: PageTransitionEvent) => e.persisted && void ensureSession();
     const onPtr = (e: PointerEvent) => setInput(inputOf(e.pointerType as SelectInfo["pointerType"]));
     const onKey = (e: KeyboardEvent) => (e.key.length === 1 || e.key === "Enter") && setInput("keyboard");
     document.addEventListener("visibilitychange", onVis);
     window.addEventListener("pagehide", endSession);
     window.addEventListener("pageshow", onShow);
+    window.addEventListener("online", onOnline);
     window.addEventListener("pointerdown", onPtr, true);
     window.addEventListener("keydown", onKey, true);
     return () => {
       document.removeEventListener("visibilitychange", onVis);
       window.removeEventListener("pagehide", endSession);
       window.removeEventListener("pageshow", onShow);
+      window.removeEventListener("online", onOnline);
       window.removeEventListener("pointerdown", onPtr, true);
       window.removeEventListener("keydown", onKey, true);
       clearTimeout(startTimer.current);
@@ -244,11 +257,20 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
   };
 
   const finishActivity = async (lvl: string, act: string) => {
-    flush(true);
+    flush();
     sfx("chime");
     setMood("celebrate");
     const s = await ensureSession();
-    const r = s ? await api.completeActivity(s.id, lvl, act).catch(() => null) : null;
+    // Sent straight away for the reward; queued (and celebrated without coins for now) when the connection is
+    // down or older items are still waiting, so the completion is never lost and stays in order.
+    let r: Awaited<ReturnType<typeof api.completeActivity>> | null = null;
+    await outbox?.drain();
+    if (s && outbox?.size) void outbox.add({ kind: "complete", sessionId: s.id, levelId: lvl, activityId: act });
+    else if (s)
+      r = await api.completeActivity(s.id, lvl, act).catch((e) => {
+        if (retryable(e)) void outbox?.add({ kind: "complete", sessionId: s.id, levelId: lvl, activityId: act });
+        return null;
+      });
     const reward = r ?? { coins: 0, stars: 0, levelDone: false };
     setView({ v: "celebrate", levelId: lvl, activityId: act, coins: reward.coins, stars: reward.stars, levelDone: reward.levelDone });
     speak(t(reward.levelDone ? "play.levelDone" : "play.celebrate"), lang);
