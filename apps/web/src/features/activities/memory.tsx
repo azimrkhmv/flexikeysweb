@@ -13,6 +13,7 @@ import type { EngineProps } from "./registry";
 // Archetype B (Stage & Replay): watch something, then repeat or recall it.
 
 const STEP_MS = 1000;
+const STEP_MS_CVI = 2000; // children with CVI often need seconds before they look
 
 /** Watch → repeat state machine shared by `sequence` and `light_path`. No time limit to answer. */
 function useSequence(seq: string[], onSolved: () => void) {
@@ -24,24 +25,25 @@ function useSequence(seq: string[], onSolved: () => void) {
   const [run, setRun] = useState(0);
   const hint = useHint();
 
+  const step = ctx.support?.cvi ? STEP_MS_CVI : STEP_MS;
   useEffect(() => {
     if (phase !== "watch") return;
     const timers = seq.map((_, k) =>
       setTimeout(() => {
         setLit(k);
         sfx("pop");
-      }, 900 + k * STEP_MS),
+      }, 900 + k * step),
     );
     timers.push(
       setTimeout(() => {
         setLit(-1);
         setPhase("repeat");
         clock.reset();
-      }, 900 + seq.length * STEP_MS),
+      }, 900 + seq.length * step),
     );
     return () => timers.forEach(clearTimeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- replay is driven by `run`
-  }, [phase, run, seq]);
+  }, [phase, run, seq, step]);
 
   return {
     phase,

@@ -328,11 +328,18 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
     lang,
   });
   // Calm screen: no moving or glowing effects anywhere in child mode (hints keep their static ring).
-  const calm = !!child.support?.calm;
+  // Vision mode implies it, and outlines every target in the child's preferred colour.
+  const cvi = child.support?.cvi?.color;
+  const calm = !!child.support?.calm || !!cvi;
   useEffect(() => {
-    document.documentElement.classList.toggle("fk-calm", calm);
-    return () => document.documentElement.classList.remove("fk-calm");
-  }, [calm]);
+    const root = document.documentElement;
+    root.classList.toggle("fk-calm", calm);
+    if (cvi) root.dataset.cvi = cvi;
+    return () => {
+      root.classList.remove("fk-calm");
+      delete root.dataset.cvi;
+    };
+  }, [calm, cvi]);
   // Escape = "Continue" on the pause menu, My Voice and the break screen (never exits child mode).
   useFocusTrap(overlayRef, overlay === "menu" || overlay === "aac" ? overlay : showBreak ? "break" : null, () => {
     if (showBreak) {
@@ -441,7 +448,7 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
       <div
         ref={shellRef}
         className="flex h-dvh flex-col overflow-hidden pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] pt-[env(safe-area-inset-top)] text-ink"
-        style={{ background: SHOP_BY_ID[child.equipped.bg ?? ""]?.value ?? DEFAULT_BG }}
+        style={{ background: cvi ? "#111827" : (SHOP_BY_ID[child.equipped.bg ?? ""]?.value ?? DEFAULT_BG) }}
       >
         {/* top bar */}
         <header className="flex items-center gap-2 px-3 py-2">
@@ -481,7 +488,7 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
         </main>
 
         {/* mascot companion */}
-        {!["start", "bye", "celebrate", "shop"].includes(view.v) && (
+        {!cvi && !["start", "bye", "celebrate", "shop"].includes(view.v) && (
           <div className="pointer-events-none fixed bottom-24 left-2 z-10 hidden sm:block" aria-hidden>
             <Mascot mood={mood} size={view.v === "activity" ? 96 : 120} hat={hat} tint={tint} />
           </div>

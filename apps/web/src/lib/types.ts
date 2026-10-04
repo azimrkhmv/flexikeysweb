@@ -40,6 +40,8 @@ export interface Child {
   createdAt: string;
 }
 
+export type CviColor = "yellow" | "red" | "green" | "blue";
+
 /** Function level I–V of a classification system; undefined = the parent doesn't know. */
 export type FnLevel = 1 | 2 | 3 | 4 | 5;
 /** Params an adult can set a minimum for — the adaptive engine never goes below it. */
@@ -52,6 +54,11 @@ export interface ChildSupport {
   vfcs?: FnLevel;
   /** No moving or glowing effects (seizures, photosensitivity, vision difficulties). */
   calm?: boolean;
+  /**
+   * Vision mode for cerebral/cortical visual impairment: calm screen + plain dark background, no mascot, every
+   * target outlined in the child's preferred colour, slower "watch" sequences.
+   */
+  cvi?: { color: CviColor };
   floors?: Partial<Record<FloorKey, number>>;
   /** Switch scanning: ms per item, auto (1 switch) or step (2 switches: Space moves, Enter selects), speak items. */
   scan?: { stepMs: number; mode: "auto" | "step"; speak: boolean };

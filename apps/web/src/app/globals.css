@@ -143,6 +143,13 @@ body {
 .fk-pop { animation: fk-pop 420ms ease-out both; }
 .fk-glow { animation: fk-glow 1.2s ease-in-out infinite; }
 
+/* Vision mode (CVI): one strong, preferred colour around every target, nothing else competing. */
+[data-cvi] { --fk-cvi: #ffd400; }
+[data-cvi="red"] { --fk-cvi: #e53935; }
+[data-cvi="green"] { --fk-cvi: #2e9e44; }
+[data-cvi="blue"] { --fk-cvi: #1e66f5; }
+[data-cvi] [data-fk-target]:not([disabled]) { box-shadow: 0 0 0 6px var(--fk-cvi); }
+
 /* Calm screen (per child, set by an adult): same as reduced motion, regardless of the device setting. */
 .fk-calm *, .fk-calm *::before, .fk-calm *::after {
   animation: none !important;

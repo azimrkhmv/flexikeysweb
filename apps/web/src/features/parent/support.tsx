@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button, Card, Checkbox, Field, Select, useAction } from "@/components/ui";
 import { api } from "@/lib/api";
 import { useT } from "@/lib/i18n";
-import type { Child, ChildSupport, FnLevel } from "@/lib/types";
+import type { Child, ChildSupport, CviColor, FnLevel } from "@/lib/types";
 
 // How a child moves, sees and communicates (parent-reported MACS / CFCS / VFCS levels) and the access settings
 // adults choose. Levels only set the starting profile; the floors are minimums the adaptive engine never goes below.
@@ -32,6 +32,23 @@ export function LevelFields({ value, onChange }: { value: ChildSupport; onChange
         </Field>
       ))}
       <Checkbox checked={!!value.calm} onChange={(calm) => onChange({ ...value, calm })} label={t("support.calm")} description={t("support.calmHint")} />
+      <Checkbox
+        checked={!!value.cvi}
+        onChange={(on) => onChange({ ...value, cvi: on ? { color: "yellow" } : undefined })}
+        label={t("support.cvi")}
+        description={t("support.cviHint")}
+      />
+      {value.cvi && (
+        <Field label={t("support.cviColor")}>
+          <Select value={value.cvi.color} onChange={(e) => onChange({ ...value, cvi: { color: e.target.value as CviColor } })}>
+            {(["yellow", "red", "green", "blue"] as const).map((c) => (
+              <option key={c} value={c}>
+                {t(`support.color.${c}`)}
+              </option>
+            ))}
+          </Select>
+        </Field>
+      )}
     </fieldset>
   );
 }
