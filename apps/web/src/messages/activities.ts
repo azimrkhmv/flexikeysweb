@@ -4,6 +4,10 @@ export const activities = {
   en: {
     "act.progress": "{n} of {total}",
     "act.replay": "Listen again",
+    "warm.title": "Warm-up",
+    "warm.anywhere": "Press anywhere!",
+    "warm.star": "Press the star!",
+    "warm.starLabel": "Star",
     "act.next": "Next",
     "act.done": "Done",
     "act.find_same": "Find the same one",
@@ -65,6 +69,10 @@ export const activities = {
   uz: {
     "act.progress": "{total} tadan {n} tasi",
     "act.replay": "Yana tinglash",
+    "warm.title": "Isinish",
+    "warm.anywhere": "Istalgan joyni bos!",
+    "warm.star": "Yulduzchani bos!",
+    "warm.starLabel": "Yulduzcha",
     "act.next": "Keyingi",
     "act.done": "Tayyor",
     "act.find_same": "Xuddi shunday narsani top",
@@ -126,6 +134,10 @@ export const activities = {
   ru: {
     "act.progress": "{n} из {total}",
     "act.replay": "Послушать ещё раз",
+    "warm.title": "Разминка",
+    "warm.anywhere": "Нажми куда угодно!",
+    "warm.star": "Нажми на звёздочку!",
+    "warm.starLabel": "Звёздочка",
     "act.next": "Следующее",
     "act.done": "Готово",
     "act.find_same": "Найди такой же предмет",

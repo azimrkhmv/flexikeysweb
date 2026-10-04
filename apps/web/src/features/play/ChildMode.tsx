@@ -13,6 +13,7 @@ import { useT, type Lang } from "@/lib/i18n";
 import { useFocusTrap } from "@/lib/useFocusTrap";
 import { createOutbox, retryable, type OutboxItem } from "@/lib/outbox";
 import type { AdaptiveProfile, Child, InputProfile, InteractionEvent, MascotMood } from "@/lib/types";
+import { WarmUp } from "@/features/activities/warmup";
 import { Aac } from "./Aac";
 import { ParentGate } from "./ParentGate";
 import { Shop } from "./Shop";
@@ -26,6 +27,7 @@ type View =
   | { v: "map" }
   | { v: "aac" }
   | { v: "shop" }
+  | { v: "warmup" }
   | { v: "level"; levelId: string }
   | { v: "activity"; levelId: string; activityId: string }
   | { v: "celebrate"; levelId: string; activityId: string; coins: number; stars: number; levelDone: boolean };
@@ -222,6 +224,12 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
   );
 
   // ---------- navigation
+  const warmFirst = child.access !== "touch" || (child.support?.macs ?? 0) >= 4 || (child.support?.vfcs ?? 0) >= 4;
+  const afterWarmUp = (): View => {
+    const next = nextUp(db, child.id);
+    return next ? { v: "activity", ...next } : { v: "map" };
+  };
+
   const [starting, setStarting] = useState(false);
   const begin = async (info: SelectInfo) => {
     if (starting) return;
@@ -236,12 +244,12 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
     await ensureSession();
     breakStart.current = Date.now();
     setBreakDue(false);
-    const next = nextUp(db, child.id);
-    // Let the greeting finish, then go straight into the next game.
+    // Let the greeting finish, then go straight into the next game — after a warm-up for children who use
+    // switches, hover/eye-gaze, or have severe hand or vision difficulties.
     startTimer.current = setTimeout(() => {
       setStarting(false);
       setMood("calm");
-      setView(next ? { v: "activity", ...next } : { v: "map" });
+      setView(warmFirst ? { v: "warmup" } : afterWarmUp());
     }, 1600);
   };
 
@@ -309,7 +317,7 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
   };
 
   // My Voice is a communication aid: no break or offline screen ever covers it.
-  const showBreak = overlay === "break" || (breakDue && !overlay && !["activity", "start", "bye", "aac"].includes(view.v));
+  const showBreak = overlay === "break" || (breakDue && !overlay && !["activity", "warmup", "start", "bye", "aac"].includes(view.v));
   const offlineBlock = !online && view.v !== "aac" && overlay !== "aac";
   // Switch scanning covers the whole shell (nav included), or only the open overlay.
   const scan = child.support?.scan ?? SCAN_DEFAULT;
@@ -401,6 +409,19 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
     case "aac":
       body = <Aac child={child} />;
       break;
+    case "warmup":
+      body = (
+        <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col rounded-fk-lg border-4 border-white bg-surface/90 p-4 shadow-soft sm:p-6">
+          <WarmUp
+            onDone={() => {
+              sfx("chime");
+              setMoodFor("happy");
+              setView(afterWarmUp());
+            }}
+          />
+        </div>
+      );
+      break;
     case "shop":
       body = <Shop child={child} />;
       break;
@@ -433,7 +454,7 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
             <span aria-hidden>{child.avatar}</span> {child.name}
           </span>
           <div className="ml-auto flex items-center gap-2">
-            {["activity", "celebrate"].includes(view.v) && (
+            {["activity", "celebrate", "warmup"].includes(view.v) && (
               <Target label={t("play.nav.aac")} onSelect={() => setOverlay("aac")} className="grid place-items-center rounded-full bg-surface/90 px-3 text-3xl shadow-soft">
                 <span aria-hidden>💬</span>
               </Target>
@@ -472,6 +493,7 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
             {(
               [
                 ["map", "🗺️", "play.nav.map"],
+                ["warmup", "🎈", "warm.title"],
                 ["aac", "💬", "play.nav.aac"],
                 ["shop", "☁️", "play.nav.shop"],
               ] as const
