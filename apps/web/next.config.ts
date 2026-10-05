@@ -7,6 +7,8 @@ const nextConfig: NextConfig = {
   // Self-contained server in .next/standalone for the Docker image (PRD §29–30: Docker Compose on an Uzbek VM).
   output: "standalone",
   poweredByHeader: false,
+  // No floating "N" dev-tools button: it covered the sidebar's user card. Error overlays still show.
+  devIndicators: false,
   // CSP and other security headers: see security-headers.ts (static policy, no nonces — keeps pages static).
   async headers() {
     return securityHeaders(dev);
