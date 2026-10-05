@@ -90,7 +90,8 @@ function Shell({ me, nav, children }: { me: User; nav: NavItem[]; children: Reac
             <Logo href={`/${me.role}`} small />
             <span className="rounded-full bg-surface-2 px-2.5 py-0.5 text-xs font-bold text-ink-2">{t(`role.${me.role}`)}</span>
           </div>
-          <nav aria-label={t("nav.menu")} className="min-h-0 flex-1 overflow-y-auto">
+          {/* A scroll container clips what's outside it: -m/p-1.5 leaves room for the 3px + 3px focus ring. */}
+          <nav aria-label={t("nav.menu")} className="-m-1.5 min-h-0 flex-1 overflow-y-auto p-1.5">
             <ul className="space-y-1">
               {nav.map(({ href, label, icon: Icon }) => (
                 <li key={href}>
@@ -198,7 +199,7 @@ function Notifications({ userId }: { userId: string }) {
               </button>
             )}
           </div>
-          <ul className="max-h-80 overflow-y-auto">
+          <ul className="-m-1.5 max-h-80 overflow-y-auto p-1.5">
             {list.length === 0 && <li className="px-3 py-4 text-sm text-muted">{t("common.none")}</li>}
             {list.slice(0, 10).map((n) => (
               <li key={n.id}>
