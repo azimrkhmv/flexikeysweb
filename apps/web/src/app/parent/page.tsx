@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronRight, Clock, Flame, MessageCircle, Play, Plus, School, Star, Stethoscope } from "lucide-react";
+import { ChevronRight, Clock, Flame, Play, Plus, School, Stethoscope } from "lucide-react";
 import { Mascot } from "@/components/Mascot";
-import { Avatar, Card, Chip, LinkButton, Meter, PageHeader, Stat } from "@/components/ui";
+import { Avatar, Card, Chip, LinkButton, Meter, PageHeader } from "@/components/ui";
+import { StatTrend } from "@/components/StatTrend";
 import { LEVEL_BY_ID } from "@/content/levels";
 import { age } from "@/features/parent/lib";
 import { fmtDate } from "@/lib/format";
@@ -19,7 +20,19 @@ export default function ParentHome() {
   if (!me) return null;
   const kids = sel.childrenOf(db, me.id);
   const suggestions = kids.flatMap((c) => sel.assignmentsFor(db, c.id).map((a) => ({ a, child: c })));
-  const sum = (f: (c: (typeof kids)[number]) => number) => kids.reduce((a, c) => a + f(c), 0);
+  // Family totals per day for the last 14 days: this week is the chart and value, the week before the comparison.
+  const days = kids.length ? sel.dailySeries(db, kids[0].id, 14).map((d) => d.date) : [];
+  const series = kids.map((c) => sel.dailySeries(db, c.id, 14));
+  const trend = (k: "minutes" | "activities" | "sentences") => {
+    const daily = days.map((_, i) => series.reduce((a, s) => a + s[i][k], 0));
+    const now = daily.slice(7).reduce((a, v) => a + v, 0);
+    const diff = now - daily.slice(0, 7).reduce((a, v) => a + v, 0);
+    return {
+      value: now,
+      delta: { dir: Math.sign(diff) as 1 | 0 | -1, text: diff ? t(diff > 0 ? "parent.home.delta.up" : "parent.home.delta.down", { n: Math.abs(diff) }) : t("parent.home.delta.same") },
+      series: daily.slice(7).map((value, i) => ({ value, label: fmtDate(days[7 + i], lang, "dayMonth") })),
+    };
+  };
 
   return (
     <>
@@ -62,10 +75,12 @@ export default function ParentHome() {
         <>
           {/* the week at a glance, for the whole family */}
           <div className="mb-6 grid grid-cols-2 gap-4 xl:grid-cols-4">
-            <Stat tone="sky" icon={<Clock className="size-6" aria-hidden />} value={sum((c) => sel.dailyMinutes(db, c.id, 7).reduce((a, d) => a + d.minutes, 0))} label={t("parent.home.stat.minutes")} />
-            <Stat tone="sun" icon={<Flame className="size-6" aria-hidden />} value={Math.max(...kids.map((c) => sel.streak(db, c.id)))} label={t("parent.home.stat.streak")} />
-            <Stat tone="leaf" icon={<Star className="size-6" aria-hidden />} value={sum((c) => sel.weekActivities(db, c.id))} label={t("parent.home.stat.activities")} />
-            <Stat tone="lavender" icon={<MessageCircle className="size-6" aria-hidden />} value={sum((c) => sel.aacStats(db, c.id).sentences)} label={t("parent.home.stat.sentences")} />
+            <StatTrend label={t("parent.home.trend.minutes")} period={t("parent.home.period.week")} {...trend("minutes")} href="/parent/reports" hrefLabel={t("parent.nav.reports")} />
+            <StatTrend label={t("parent.home.trend.streak")} period={t("parent.home.period.days")} value={Math.max(...kids.map((c) => sel.streak(db, c.id)))}
+              days={days.slice(7).map((d, i) => ({ label: fmtDate(d, lang, "dayMonth"), on: series.some((s) => s[7 + i].minutes > 0) }))}
+            />
+            <StatTrend label={t("parent.home.trend.activities")} period={t("parent.home.period.week")} {...trend("activities")} href="/parent/reports" hrefLabel={t("parent.nav.reports")} />
+            <StatTrend label={t("parent.home.trend.sentences")} period={t("parent.home.period.week")} {...trend("sentences")} href={`/parent/child/${kids[0].id}#aac`} hrefLabel={t("parent.home.trend.sentences")} />
           </div>
 
           <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
