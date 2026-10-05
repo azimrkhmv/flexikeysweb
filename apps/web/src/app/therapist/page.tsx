@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ChevronRight, Mail } from "lucide-react";
-import { Avatar, Button, Card, Chip, Empty, Field, Input, Meter, PageHeader, useAction } from "@/components/ui";
+import { Activity, ChevronRight, Mail, Target, Users } from "lucide-react";
+import { Avatar, Button, Card, Chip, Empty, Field, Input, Meter, PageHeader, Stat, useAction } from "@/components/ui";
+import { DAY } from "@/lib/api/schema";
 import { avgMastery, pct, SectionTitle, useMe, useNow } from "@/features/pro/shared";
 import { fmtDate } from "@/lib/format";
 import { api, sel } from "@/lib/api";
@@ -13,7 +14,9 @@ export default function TherapistHome() {
   const t = useT();
   const [lang] = useLang();
   const { db, me } = useMe();
-  const year = new Date(useNow()).getFullYear();
+  const now = useNow();
+  const year = new Date(now).getFullYear();
+  const weekAgo = new Date(now - 7 * DAY).toISOString();
   const kids = sel.therapistChildren(db, me.id);
   const invites = sel.invitesFor(db, me.email);
   const accept = useAction(api.acceptInvite);
@@ -23,7 +26,14 @@ export default function TherapistHome() {
     <>
       <PageHeader title={t("therapist.home.title")} subtitle={t("therapist.home.subtitle")} />
 
-      <div className="grid gap-6 xl:grid-cols-[1fr_360px]">
+      <div className="mb-6 grid grid-cols-2 gap-4 xl:grid-cols-4">
+        <Stat tone="sky" icon={<Users className="size-6" aria-hidden />} value={kids.length} label={t("therapist.home.stat.children")} />
+        <Stat tone="leaf" icon={<Target className="size-6" aria-hidden />} value={kids.reduce((a, c) => a + sel.openGoals(db, c.id), 0)} label={t("therapist.home.stat.goals")} />
+        <Stat tone="lavender" icon={<Activity className="size-6" aria-hidden />} value={kids.filter((c) => (sel.sessions(db, c.id)[0]?.startedAt ?? "") > weekAgo).length} label={t("therapist.home.stat.active")} />
+        <Stat tone="sun" icon={<Mail className="size-6" aria-hidden />} value={invites.length} label={t("therapist.home.stat.invites")} />
+      </div>
+
+      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
         <section aria-labelledby="my-children">
           <h2 id="my-children" className="sr-only">
             {t("therapist.nav.children")}

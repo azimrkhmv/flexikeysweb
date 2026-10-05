@@ -56,6 +56,8 @@ const MIN_EVENTS = 8;
 
 export interface SessionMetrics {
   taps: number;
+  /** Assessed answers (accuracy is only meaningful when > 0). */
+  answers: number;
   accuracy: number;
   accidentalRate: number;
   debounceRate: number;
@@ -77,6 +79,7 @@ export function computeMetrics(events: InteractionEvent[]): SessionMetrics {
   const avg = (xs: number[]) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0);
   return {
     taps: presses,
+    answers: answers.length,
     accuracy: answers.length ? correct / answers.length : 1,
     accidentalRate: presses ? accidental / presses : 0,
     debounceRate: presses ? debounced / presses : 0,
