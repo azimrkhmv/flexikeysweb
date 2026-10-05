@@ -83,10 +83,9 @@ function Shell({ me, nav, children }: { me: User; nav: NavItem[]; children: Reac
 
   return (
     <div className="min-h-dvh bg-bg">
-      <div className="mx-auto flex max-w-[1440px] gap-6 px-4 pb-28 lg:px-6 lg:pb-8">
-        {/* Desktop: the menu is one full-height panel — brand on top, the signed-in person at the bottom. */}
-        <aside className="sticky top-6 mt-6 hidden h-[calc(100dvh-3rem)] print:!hidden w-64 shrink-0 flex-col rounded-fk-lg border border-line bg-surface p-4 shadow-soft lg:flex">
-          <div className="flex items-center gap-2 px-2 pb-6 pt-1">
+      {/* Desktop: the menu is a full-height panel fixed to the left edge — brand on top, the signed-in person at the bottom. */}
+      <aside className="fixed inset-y-0 left-0 z-20 hidden w-64 flex-col border-r border-line bg-surface p-4 print:!hidden lg:flex">
+          <div className="flex items-center gap-2 px-2 pb-6 pt-2">
             <Logo href={`/${me.role}`} small />
             <span className="rounded-full bg-surface-2 px-2.5 py-0.5 text-xs font-bold text-ink-2">{t(`role.${me.role}`)}</span>
           </div>
@@ -119,9 +118,11 @@ function Shell({ me, nav, children }: { me: User; nav: NavItem[]; children: Reac
               <LogOut className="size-5" />
             </button>
           </div>
-        </aside>
+      </aside>
 
-        <div className="min-w-0 flex-1">
+      {/* Content sits right of the panel; on very wide screens it stays centred in the remaining space. */}
+      <div className="pb-28 lg:pb-8 lg:pl-64">
+        <div className="mx-auto min-w-0 max-w-[1200px] px-4 lg:px-8">
           {/* Top bar: brand + sign-out only on small screens (the panel holds them on desktop). */}
           <header className="sticky top-0 z-30 -mx-4 flex h-16 items-center gap-3 bg-bg/90 px-4 backdrop-blur lg:static lg:mx-0 lg:mt-6 lg:h-12 lg:bg-transparent lg:px-0 lg:backdrop-blur-none">
             <div className="flex items-center gap-2 lg:hidden">
