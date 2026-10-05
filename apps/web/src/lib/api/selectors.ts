@@ -99,19 +99,6 @@ export const sel = {
     }
     return out;
   },
-  /** Per day, oldest first: minutes played, activities finished and My Voice sentences (for trend charts). */
-  dailySeries(db: DB, childId: string, days = 14) {
-    return Array.from({ length: days }, (_, k) => {
-      const date = iso(Date.now() - (days - 1 - k) * DAY).slice(0, 10);
-      const ss = db.sessions.filter((s) => s.childId === childId && s.startedAt.slice(0, 10) === date);
-      return {
-        date,
-        minutes: ss.reduce((a, s) => a + (s.minutes ?? 0), 0),
-        activities: ss.reduce((a, s) => a + (s.activities ?? 0), 0),
-        sentences: db.aacEvents.filter((e) => e.childId === childId && e.at.slice(0, 10) === date).length,
-      };
-    });
-  },
   /** Activities finished in the last 7 days. */
   weekActivities: (db: DB, childId: string) =>
     db.sessions.filter((s) => s.childId === childId && s.startedAt > iso(Date.now() - 7 * DAY)).reduce((a, s) => a + (s.activities ?? 0), 0),
