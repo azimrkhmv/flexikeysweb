@@ -99,6 +99,18 @@ export const sel = {
     }
     return out;
   },
+  /** Activities finished in the last 7 days. */
+  weekActivities: (db: DB, childId: string) =>
+    db.sessions.filter((s) => s.childId === childId && s.startedAt > iso(Date.now() - 7 * DAY)).reduce((a, s) => a + (s.activities ?? 0), 0),
+  /** The level the child is working on now (first open, unfinished one) and how far along; null when all are done. */
+  currentLevel(db: DB, childId: string) {
+    const i = LEVELS.findIndex((_, k) => sel.levelState(db, childId, k) === "open");
+    if (i < 0) return null;
+    const level = LEVELS[i];
+    const required = level.activities.filter((a) => !a.optional);
+    const completed = sel.levelProgress(db, childId, level.id).completed;
+    return { level, done: required.filter((a) => completed.includes(a.id)).length, total: required.length };
+  },
   streak(db: DB, childId: string) {
     let n = 0;
     for (let d = 0; d < 60; d++) {

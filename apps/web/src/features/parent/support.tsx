@@ -71,7 +71,7 @@ export function SupportCard({ child }: { child: Child }) {
   const num = (v: string) => (v ? Number(v) : undefined);
 
   return (
-    <Card className="max-w-2xl">
+    <Card className="max-w-3xl">
       <form
         className="space-y-5"
         onSubmit={async (e) => {
