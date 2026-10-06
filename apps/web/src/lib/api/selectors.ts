@@ -58,27 +58,33 @@ export const sel = {
     if (s.plan !== "free" && s.status !== "expired") return true;
     return db.enrollments.some((e) => e.childId === childId) || db.careLinks.some((l) => l.childId === childId && l.status === "active");
   },
-  /** done | open | sleeping (mastery gate) | plan (needs subscription — shown to the child as sleeping too). */
-  levelState(db: DB, childId: string, index: number): "done" | "open" | "sleeping" | "plan" {
+  /**
+   * done (required activities finished — replayable) | started (some activities finished) | open | plan (needs
+   * subscription — shown to the child as a sleeping cloud). Levels are independent: any level the child has
+   * access to can be played in any order; nothing depends on finishing the level before it.
+   */
+  levelState(db: DB, childId: string, index: number): "done" | "started" | "open" | "plan" {
     const level = LEVELS[index];
     const p = sel.levelProgress(db, childId, level.id);
     if (levelComplete(level, p.completed)) return "done";
     if (index >= FREE_LEVELS && !sel.entitled(db, childId)) return "plan";
-    if (index === 0) return "open";
-    const prev = LEVELS[index - 1];
-    return levelComplete(prev, sel.levelProgress(db, childId, prev.id).completed) ? "open" : "sleeping";
+    return p.completed.length ? "started" : "open";
   },
   /**
-   * Why a level can't be opened yet — null when it is playable. Teacher/therapist assignments never change
-   * this: levels open only through mastery, and paid levels only with access (FR-CUR-4, product rule 5).
+   * Why a level can't be opened — null when it is playable. The only lock is access: paid levels need the
+   * family plan (or a school/therapist link). Teacher/therapist assignments never change this (product rule 5).
    */
-  lockReason(db: DB, childId: string, levelId: string): null | { kind: "mastery"; after: string } | { kind: "plan" } {
+  lockReason(db: DB, childId: string, levelId: string): null | { kind: "plan" } {
     const level = LEVEL_BY_ID[levelId];
     if (!level) return null;
-    const state = sel.levelState(db, childId, level.n - 1);
-    if (state === "plan") return { kind: "plan" };
-    if (state === "sleeping") return { kind: "mastery", after: LEVELS[level.n - 2].id };
-    return null;
+    return sel.levelState(db, childId, level.n - 1) === "plan" ? { kind: "plan" } : null;
+  },
+  /** Levels finished out of the levels the child can play (done ones always count) — from real completions. */
+  levelsProgress(db: DB, childId: string) {
+    const states = LEVELS.map((_, i) => sel.levelState(db, childId, i));
+    const done = states.filter((s) => s === "done").length;
+    const total = states.filter((s) => s !== "plan").length;
+    return { done, total, pct: total ? Math.round((done / total) * 100) : 0 };
   },
   dailyMinutes(db: DB, childId: string, days = 14) {
     const out: { date: string; minutes: number }[] = [];

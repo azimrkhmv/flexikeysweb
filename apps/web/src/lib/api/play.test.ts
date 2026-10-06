@@ -2,16 +2,17 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { LEVEL_BY_ID } from "@/content/levels";
 import { api, DEMO_PASSWORD, dbStore, sel } from "./index";
 
-// The mock server enforces the level gate itself — a client (or an assignment) can't play a sleeping level.
+// The mock server checks access itself: levels are played in any order, only the plan can close one.
 describe("api.completeActivity", () => {
   beforeEach(async () => {
     api.resetDemo();
     await api.classLoginChild("cl_sun", "ch_ali"); // child token for Ali (class path)
   });
 
-  it("rejects activities of a level the child hasn't unlocked, even when it is assigned", async () => {
+  it("accepts a level far beyond the ones the child has finished (no sequential gate)", async () => {
     const session = await api.startSession("touch");
-    await expect(api.completeActivity(session, "body", LEVEL_BY_ID.body.activities[0].id)).rejects.toMatchObject({ code: "level_locked" });
+    const r = await api.completeActivity(session, "body", LEVEL_BY_ID.body.activities[0].id); // level 11, Ali is on 6
+    expect(r).toMatchObject({ stars: 3, coins: 5, first: true });
   });
 
   it("still rewards activities of an open level", async () => {

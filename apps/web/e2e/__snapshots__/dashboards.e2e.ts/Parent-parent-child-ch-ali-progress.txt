@@ -53,7 +53,9 @@ Minutes per day (last 14 days)
 
 Levels and mastery
 
-Levels open by mastery, never by time or payment of coins. The bar shows how confidently your child knows each topic.
+5 of 16 levels finished (31%)
+
+Your child chooses which level to play, in any order. A level is finished when its main activities are done. The bar shows how confidently your child knows each topic.
 
 🔤
 1. Letters
@@ -81,31 +83,31 @@ In progress
 49%
 🍎
 7. Fruits
-Coming next
+Not started
 🥕
 8. Vegetables
-Coming next
+Not started
 🧸
 9. Toys
-Coming next
+Not started
 🚌
 10. Transport
-Coming next
+Not started
 ✋
 11. Body parts
-Coming next
+Not started
 👕
 12. Clothes
-Coming next
+Not started
 🌳
 13. Nature
-Coming next
+Not started
 📝
 14. Simple words
-Coming next
+Not started
 💬
 15. Sentences
-Coming next
+Not started
 📖
 16. Stories
-Coming next
+Not started

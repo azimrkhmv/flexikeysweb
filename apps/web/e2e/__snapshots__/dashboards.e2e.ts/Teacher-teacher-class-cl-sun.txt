@@ -151,7 +151,7 @@ Bekzod
 65%
 Assignments
 
-Assignments point the way: a level still opens only when the child has finished the one before it (and has access to it).
+Assignments point the way. Children can play any level they have access to, in any order.
 
 Level
 1. Letters
@@ -175,7 +175,6 @@ Due date
 Assign
 🐾 6. Animals
 Hayvonlar haftasi · due Oct 2
-Not open yet for 4 of 5 children
 Class code
 
 Children open the class login page, enter this code and tap their picture — no email or password needed.

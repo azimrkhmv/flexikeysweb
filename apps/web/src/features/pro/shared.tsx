@@ -173,16 +173,14 @@ export function LevelLabel({ levelId }: { levelId: string }) {
   ) : null;
 }
 
-/** Why an assigned level isn't open for this child yet — assignments never unlock levels (FR-CUR-4). */
+/** Why an assigned level isn't open for this child — only access (the plan) can close a level. */
 export function LockNote({ childId, levelId }: { childId: string; levelId: string }) {
   const t = useT();
-  const [lang] = useLang();
   const db = useDb();
-  const r = sel.lockReason(db, childId, levelId);
-  if (!r) return null;
+  if (!sel.lockReason(db, childId, levelId)) return null;
   return (
     <Chip tone="gray" className="mt-1">
-      <Lock className="size-3.5" aria-hidden /> {r.kind === "plan" ? t("lock.plan") : t("lock.mastery", { level: LEVEL_BY_ID[r.after].title[lang] })}
+      <Lock className="size-3.5" aria-hidden /> {t("lock.plan")}
     </Chip>
   );
 }

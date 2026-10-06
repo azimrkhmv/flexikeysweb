@@ -101,7 +101,6 @@ export const common = {
     "err.verify_by_email": "Open the link in the email we sent you to confirm your address.",
     "err.rate_limited": "Too many tries. Please wait a minute and try again.",
     "err.already_owned": "You already have this.",
-    "lock.mastery": "Opens after “{level}” is finished",
     "lock.plan": "Needs the Family plan",
 
     "adapt.keyScale.more": "Keys got a little bigger so taps land more easily.",
@@ -254,7 +253,6 @@ export const common = {
     "err.verify_by_email": "Manzilingizni tasdiqlash uchun biz yuborgan xatdagi havolani oching.",
     "err.rate_limited": "Juda koʻp urinish. Bir daqiqa kutib, qayta urinib koʻring.",
     "err.already_owned": "Bu sizda allaqachon bor.",
-    "lock.mastery": "“{level}” tugagach ochiladi",
     "lock.plan": "Oilaviy tarif kerak",
 
     "adapt.keyScale.more": "Tugmalar biroz kattalashdi — bosish osonroq boʻladi.",
@@ -407,7 +405,6 @@ export const common = {
     "err.verify_by_email": "Откройте ссылку в письме, которое мы отправили, чтобы подтвердить адрес.",
     "err.rate_limited": "Слишком много попыток. Подождите минуту и попробуйте снова.",
     "err.already_owned": "Это у вас уже есть.",
-    "lock.mastery": "Откроется после уровня «{level}»",
     "lock.plan": "Нужен семейный тариф",
 
     "adapt.keyScale.more": "Клавиши стали чуть больше — попадать легче.",

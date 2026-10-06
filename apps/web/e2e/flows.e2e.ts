@@ -41,9 +41,11 @@ test("new parent: sign up → consent → add child → play → progress is vis
   await page.getByRole("button", { name: "Create profile" }).click();
   await expect(page.getByRole("heading", { level: 1, name: "Lola" })).toBeVisible();
 
-  // FR-PLAY-1: from the child's page, Start leads straight into the first game.
+  // From the child's page: Start → the map, where the child picks any level → the level's game.
   await page.getByRole("button", { name: "Play now" }).click();
   await page.getByRole("button", { name: "Start" }).press("Enter");
+  await page.getByRole("button", { name: "Letters — new", exact: true }).press("Enter");
+  await page.getByRole("button", { name: "Find the letter", exact: true }).press("Enter");
   await playLetterActivity(page);
   await expect(page.getByRole("heading", { name: "You did it! Great effort." })).toBeVisible();
   await expect(page.getByText("⭐ +3")).toBeVisible(); // rewards are granted by the (mock) server rule

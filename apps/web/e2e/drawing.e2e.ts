@@ -7,7 +7,7 @@ import { expectNoA11yIssues, loginAs, setup } from "./helpers";
 async function openActivity(page: Page, level: string, kind: string) {
   const map = page.getByRole("heading", { name: "Where shall we go?" });
   for (let i = 0; i < 4 && !(await map.isVisible()); i++) await page.getByRole("button", { name: /^(Back|Map)$/ }).first().press("Enter");
-  await page.getByRole("button", { name: level, exact: true }).first().press("Enter");
+  await page.getByRole("button", { name: new RegExp(`^${level} — `) }).first().press("Enter"); // "Toys — new"
   await page.getByRole("button", { name: kind, exact: true }).press("Enter");
 }
 
@@ -56,14 +56,9 @@ test("drawing activities: trace, connect the dots, paint, coloring and maze can 
   test.setTimeout(120_000);
   await setup(page);
   await loginAs(page, "Parent");
-  // Open Ali's levels 7–9 so the Toys maze is reachable, in English (demo data only).
+  // Ali in English (demo data only). Level 9 (Toys) is reachable directly: levels are played in any order.
   await page.evaluate(() => {
     const db = JSON.parse(localStorage.getItem("fk_db_v1")!);
-    for (const levelId of ["fruits", "vegetables"]) {
-      const lv = { fruits: ["fruits-same", "fruits-sort", "fruits-type"], vegetables: ["veg-listen", "veg-sort", "veg-missing"] }[levelId]!;
-      db.progress = db.progress.filter((p: { childId: string; levelId: string }) => !(p.childId === "ch_ali" && p.levelId === levelId));
-      db.progress.push({ childId: "ch_ali", levelId, completed: lv, stars: 9 });
-    }
     const ali = db.children.find((c: { id: string }) => c.id === "ch_ali");
     Object.assign(ali, { uiLang: "en", learningLang: "en" }); // English copy in the assertions below
     localStorage.setItem("fk_db_v1", JSON.stringify(db));

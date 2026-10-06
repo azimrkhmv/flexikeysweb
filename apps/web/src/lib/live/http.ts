@@ -14,7 +14,7 @@ const BY_TITLE: Record<string, string> = {
     "School sharing consent required": "consent_required",
     "Core consent can't be withdrawn — delete the profile": "core_consent_required_use_delete",
     level_locked: "level_locked",
-    plan_required: "level_locked", // same gentle "not open yet" as the mastery gate (sel.lockReason)
+    plan_required: "level_locked", // the gentle "not open yet" of the plan gate (sel.lockReason)
     not_owned: "not_owned",
     already_owned: "already_owned",
     "CSRF check failed": "unauthorized",

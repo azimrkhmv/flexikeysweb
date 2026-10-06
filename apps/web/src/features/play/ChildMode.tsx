@@ -4,10 +4,10 @@ import { useRouter } from "next/navigation";
 import { Component, useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ComponentType, type ReactNode } from "react";
 import { ArrowLeft, Maximize, Pause } from "lucide-react";
 import { Mascot } from "@/components/Mascot";
-import { LEVELS, LEVEL_BY_ID } from "@/content/levels";
+import { LEVEL_BY_ID } from "@/content/levels";
 import { SHOP_BY_ID } from "@/content/shop";
 import { ENGINES, type EngineProps } from "@/features/activities/registry";
-import { api, sel, useDb, type ChildAuth, type DB } from "@/lib/api";
+import { api, sel, useDb, type ChildAuth } from "@/lib/api";
 import { sfx, speak, unlockAudio } from "@/lib/audio";
 import { useT, type Lang } from "@/lib/i18n";
 import { useFocusTrap } from "@/lib/useFocusTrap";
@@ -35,17 +35,6 @@ const FLUSH_MS = 5000;
 
 const inputOf = (p: SelectInfo["pointerType"]): InputProfile => (p === "mouse" ? "pointer" : p === "keyboard" || p === "switch" ? "keyboard" : "touch");
 const pick = (prefix: string, n: number) => `${prefix}.${1 + Math.floor(Math.random() * n)}`;
-
-/** First incomplete activity of the first open level — so Start leads straight into a game (FR-PLAY-1). */
-function nextUp(db: DB, childId: string) {
-  for (let i = 0; i < LEVELS.length; i++) {
-    if (sel.levelState(db, childId, i) !== "open") continue;
-    const l = LEVELS[i];
-    const done = sel.levelProgress(db, childId, l.id).completed;
-    return { levelId: l.id, activityId: (l.activities.find((a) => !done.includes(a.id)) ?? l.activities[0]).id };
-  }
-  return null;
-}
 
 function useOnline() {
   return useSyncExternalStore(
@@ -89,6 +78,7 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
   const online = useOnline();
   const shellRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLElement>(null);
 
   const session = useRef<{ id: string; start: number } | null>(null);
   /** True between Start and "finish for today" — a session should exist while this is set. */
@@ -106,6 +96,11 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
   useEffect(() => {
     here.current = { levelId, activityId };
   }, [levelId, activityId]);
+  // Every new screen starts at its top (a game opened from far down the map list, too). The map scrolls
+  // itself to where the child left off.
+  useEffect(() => {
+    if (view.v !== "map") stageRef.current?.scrollTo(0, 0);
+  }, [view.v, levelId, activityId]);
   useEffect(() => {
     inputRef.current = input;
   }, [input]);
@@ -223,12 +218,11 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
     await ensureSession();
     breakStart.current = Date.now();
     setBreakDue(false);
-    const next = nextUp(db, child.id);
-    // Let the greeting finish, then go straight into the next game.
+    // Let the greeting finish, then show the map: the child picks any level they like.
     startTimer.current = setTimeout(() => {
       setStarting(false);
       setMood("calm");
-      setView(next ? { v: "activity", ...next } : { v: "map" });
+      setView({ v: "map" });
     }, 1600);
   };
 
@@ -243,6 +237,16 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
     setView({ v: "level", levelId: id });
   };
 
+  /** A game picked from the sorted list beside the map: straight into it, same access gate as the map. */
+  const playActivity = (levelId: string, activityId: string) => {
+    if (sel.lockReason(db, child.id, levelId)) {
+      setMoodFor("sleepy");
+      speak(t("play.map.sleeping"), lang);
+      return;
+    }
+    setView({ v: "activity", levelId, activityId });
+  };
+
   const finishActivity = async (lvl: string, act: string) => {
     flush(true);
     sfx("chime");
@@ -254,14 +258,16 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
     speak(t(reward.levelDone ? "play.levelDone" : "play.celebrate"), lang);
   };
 
+  /** "Next" stays inside the chosen level: its next unfinished activity, or the level's cards when all are done.
+   *  It never moves the child on to another level — the child picks levels on the map. */
   const goNext = (lvl: string, act: string) => {
     setMood("calm");
     const level = LEVEL_BY_ID[lvl];
+    const done = sel.levelProgress(db, child.id, lvl).completed;
     const i = level.activities.findIndex((a) => a.id === act);
-    if (i + 1 < level.activities.length) return setView({ v: "activity", levelId: lvl, activityId: level.activities[i + 1].id });
-    const nextLevel = LEVELS[level.n];
-    if (nextLevel && ["open", "done"].includes(sel.levelState(db, child.id, level.n))) return setView({ v: "level", levelId: nextLevel.id });
-    setView({ v: "map" });
+    const rest = [...level.activities.slice(i + 1), ...level.activities.slice(0, i)];
+    const next = rest.find((a) => !done.includes(a.id));
+    setView(next ? { v: "activity", levelId: lvl, activityId: next.id } : { v: "level", levelId: lvl });
   };
 
   const back = () => {
@@ -324,7 +330,7 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
       );
       break;
     case "map":
-      body = <WorldMap child={child} onOpen={openLevel} />;
+      body = <WorldMap child={child} onOpen={openLevel} onPlay={playActivity} />;
       break;
     case "level":
       body = <LevelView child={child} levelId={view.levelId} onPlay={(a) => setView({ v: "activity", levelId: view.levelId, activityId: a })} />;
@@ -411,7 +417,7 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
         </header>
 
         {/* stage */}
-        <main className="relative flex min-h-0 flex-1 flex-col overflow-y-auto px-3 pb-4 sm:px-6">
+        <main ref={stageRef} className="relative flex min-h-0 flex-1 flex-col overflow-y-auto px-3 pb-4 sm:px-6">
           <ChildBoundary key={view.v === "activity" ? view.activityId : view.v} fallback={fallback}>
             {body}
           </ChildBoundary>

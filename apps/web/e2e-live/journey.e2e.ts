@@ -40,6 +40,8 @@ test("parent signs up, adds a child, the child plays, the parent sees it — all
   await page.getByRole("button", { name: "Play now" }).click();
   await expect(page).toHaveURL(/\/play$/);
   await page.getByRole("button", { name: "Start" }).press("Enter");
+  await page.getByRole("button", { name: "Letters — new", exact: true }).press("Enter"); // the child picks a level on the map
+  await page.getByRole("button", { name: "Find the letter", exact: true }).press("Enter");
   await expect(page.getByRole("heading", { name: "Find this letter on the keyboard" })).toBeVisible({ timeout: 8000 });
   for (let round = 0; round < 10; round++) {
     const letter = (await page.locator("span.text-8xl").innerText()).trim();
@@ -327,9 +329,8 @@ test("My Voice: parent's own card on the child's device, the spoken sentence on 
   await page.getByRole("button", { name: "Play now" }).click();
   await expect(page).toHaveURL(/\/play$/);
   await page.getByRole("button", { name: "Start" }).press("Enter");
-  const voice = page.getByRole("button", { name: "My Voice" });
-  for (let i = 0; i < 4 && !(await voice.isVisible()); i++) await page.getByRole("button", { name: "Back" }).press("Enter");
-  await voice.press("Enter");
+  await expect(page.getByRole("heading", { name: "Where shall we go?" })).toBeVisible(); // Start opens the map
+  await page.getByRole("button", { name: "My Voice" }).press("Enter");
   await page.getByRole("button", { name: "People" }).press("Enter"); // the card's category
   await page.getByRole("button", { name: "Mosh" }).press("Enter"); // the parent's card, from the server
   await page.getByRole("button", { name: "Speak" }).press("Enter");

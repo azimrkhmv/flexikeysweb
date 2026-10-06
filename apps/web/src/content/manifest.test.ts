@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { FREE_LEVELS, LEVELS, requiredActivities } from "./levels";
 
-// The backend grants rewards and enforces the mastery gate and the plan gate from this manifest
+// The backend grants rewards, decides when a level is done and enforces the plan gate from this manifest
 // (level → activity ids, in order; `required` = the ones that finish the level; `free` = playable without a plan;
 // `title` = what the assistant and reports call the level). It must always match the content the app plays. Regenerate with UPDATE_MANIFEST=1 npm test,
 // then copy it to flexikeys/backend/src/flexikeys/content/levels.manifest.json.

@@ -72,11 +72,13 @@ src/messages          i18n catalogs per area (en/uz/ru). Routes register only wh
 - The child UI never shows a failure state. A miss gets a soft tone, a curious mascot and a gentle pulse on the right answer. The i18n test fails the build if failure words appear in child-facing copy.
 - The server grants coins and stars. The client never sends amounts. Coins cannot be bought. A subscription opens more levels but never changes rewards.
 - Parents see every adaptation change as a plain-language sentence. They cannot change the adaptation settings.
-- Levels unlock by mastery. Locked levels appear as "sleeping clouds", not padlocks.
-- Teacher and therapist assignments point the way but never unlock a level (FR-CUR-4). `sel.lockReason` is the
+- Levels are independent: the child picks any level they have access to, in any order, and can replay finished
+  ones. A level is done when its required activities are done (`levelComplete`), whatever order they came in.
+  The map shows each level as new, started (progress dots) or finished (⭐), plus "finished / playable" overall.
+- The only lock is access: paid levels need the Family plan (or a school/therapist link). `sel.lockReason` is the
   single gate: the child's map, the API (`completeActivity` rejects locked levels) and the parent, teacher and
-  therapist views all use it. Adults see why an assigned level is still closed ("Opens after … is finished",
-  "Needs the Family plan"); the child sees a sleeping cloud and hears a gentle line.
+  therapist views all use it. Adults see "Needs the Family plan"; the child sees a sleeping cloud and hears a
+  gentle line. Teacher and therapist assignments never open a locked level.
 
 ## Live mode (real backend)
 

@@ -71,7 +71,7 @@ Minutes played · last 14 days
 
 Recommended activities
 
-Recommendations appear as suggestions for the child and in the parent dashboard. Assignments point the way: a level still opens only when the child has finished the one before it (and has access to it).
+Recommendations appear as suggestions for the child and in the parent dashboard. Assignments point the way. Children can play any level they have access to, in any order.
 
 Level
 1. Letters
@@ -94,7 +94,6 @@ Note
 Recommend
 ✋ 11. Body parts
 Tana aʼzolari soʻzlari — kuniga 5 daqiqa
-Opens after “Transport” is finished
 My Voice (AAC) · last 7 days
 26
 Sentences spoken

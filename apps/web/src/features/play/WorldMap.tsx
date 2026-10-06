@@ -2,12 +2,14 @@
 
 import { useEffect, useRef } from "react";
 import { Mascot } from "@/components/Mascot";
-import { LEVELS, LEVEL_BY_ID } from "@/content/levels";
+import { LEVELS, LEVEL_BY_ID, requiredActivities } from "@/content/levels";
 import { sel, useDb } from "@/lib/api";
 import { useT } from "@/lib/i18n";
 import type { ActivityKind, Child, Level } from "@/lib/types";
 import { Target } from "./Target";
+import { TaskGroups } from "./TaskGroups";
 import { usePlay } from "./context";
+import { activityLabelKey } from "./gameGroups";
 
 const STEP = 136; // vertical distance between level nodes (px)
 const NODE = 104;
@@ -28,14 +30,19 @@ export const KIND_EMOJI: Record<ActivityKind, string> = {
   trace: "✏️", dots: "🔵", color: "🖍️", maze: "🌀", paint: "🎨",
 };
 
-/** World map: 16 levels on a winding path. Locked levels are sleeping clouds, never padlocks. */
-export function WorldMap({ child, onOpen }: { child: Child; onOpen: (levelId: string) => void }) {
+/**
+ * World map: 16 levels on a winding path. The child picks any level they like — levels don't depend on each
+ * other. A level without access (family plan) is a sleeping cloud, never a padlock.
+ */
+export function WorldMap({ child, onOpen, onPlay }: { child: Child; onOpen: (levelId: string) => void; onPlay: (levelId: string, activityId: string) => void }) {
   const db = useDb();
   const t = useT(child.uiLang);
   const { profile } = usePlay();
   const focusRef = useRef<HTMLDivElement>(null);
   const states = LEVELS.map((_, i) => sel.levelState(db, child.id, i));
-  const firstOpen = states.indexOf("open");
+  const progress = sel.levelsProgress(db, child.id);
+  // Scroll to where the child left off: a started level, else the first one not finished yet.
+  const focusIndex = states.includes("started") ? states.indexOf("started") : states.findIndex((s) => s === "open");
   const tasks = sel.assignmentsFor(db, child.id).filter((a) => LEVEL_BY_ID[a.levelId] && states[LEVEL_BY_ID[a.levelId].n - 1] !== "done");
   const taskLevels = [...new Set(tasks.map((a) => a.levelId))];
   const size = Math.round(NODE * profile.targetScale);
@@ -49,80 +56,114 @@ export function WorldMap({ child, onOpen }: { child: Child; onOpen: (levelId: st
   const height = 70 + LEVELS.length * STEP;
 
   return (
-    <div className="mx-auto w-full max-w-3xl">
-      <h1 className="mb-4 text-center text-3xl font-extrabold text-ink">{t("play.map.title")}</h1>
-
-      {taskLevels.length > 0 && (
-        <section className="mb-6 flex flex-wrap items-center gap-4 rounded-fk-lg border border-line bg-surface/90 p-4 shadow-soft">
-          <Mascot mood="happy" size={72} float={false} />
-          <div className="min-w-0 flex-1">
-            <p className="text-lg font-extrabold text-ink">{t("play.tasks.title")}</p>
-            <p className="text-ink-2">
-              {t(`play.tasks.from.${tasks[0].kind}`)} · {t("play.tasks.count", { n: taskLevels.length })}
-            </p>
+    // The road map, with every game sorted by type beside it (above it on narrow screens).
+    <div className="mx-auto grid w-full max-w-6xl gap-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
+      <div className="lg:sticky lg:top-0 lg:order-last">
+        <TaskGroups child={child} onPlay={onPlay} />
+      </div>
+      <div className="mx-auto w-full max-w-3xl">
+        <h1 className="mb-4 text-center text-3xl font-extrabold text-ink">{t("play.map.title")}</h1>
+        <div className="mx-auto mb-6 flex max-w-md items-center gap-3 rounded-full bg-surface/90 px-4 py-2 shadow-soft">
+          <span className="text-2xl" aria-hidden>
+            ⭐
+          </span>
+          <div
+            className="h-4 flex-1 overflow-hidden rounded-full bg-surface-2"
+            role="progressbar"
+            aria-valuemin={0}
+            aria-valuemax={progress.total}
+            aria-valuenow={progress.done}
+            aria-label={t("play.map.progress", { n: progress.done, total: progress.total })}
+          >
+            <div className="h-full rounded-full bg-leaf transition-[width] duration-500" style={{ width: `${progress.pct}%` }} />
           </div>
-          <div className="flex flex-wrap gap-3">
-            {taskLevels.map((id) => {
-              // A task points the way but never opens a sleeping level (FR-CUR-4): tapping it gets the same
-              // gentle "still sleeping" answer as the map.
-              const state = states[LEVEL_BY_ID[id].n - 1];
-              const asleep = state === "sleeping" || state === "plan";
-              return (
-                <Target
-                  key={id}
-                  label={LEVEL_BY_ID[id].title[child.uiLang]}
-                  onSelect={() => onOpen(id)}
-                  className={`flex flex-col items-center justify-center gap-1 rounded-3xl px-4 font-bold text-ink shadow-soft ${asleep ? "bg-[#eef2f8]" : "bg-sun-soft"}`}
-                >
-                  {asleep ? <Mascot mood="sleepy" size={44} float={false} label="" /> : <span className="text-3xl">{LEVEL_BY_ID[id].emoji}</span>}
-                  <span className="text-sm">{LEVEL_BY_ID[id].title[child.uiLang]}</span>
-                </Target>
-              );
-            })}
-          </div>
-        </section>
-      )}
+          <span className="text-lg font-extrabold text-ink">
+            {progress.done}/{progress.total}
+          </span>
+        </div>
 
-      <div className="relative" style={{ height }}>
-        <svg className="absolute inset-0 h-full w-full" viewBox={`0 0 100 ${height}`} preserveAspectRatio="none" aria-hidden>
-          <path d={d} fill="none" stroke="#ffffff" strokeWidth="14" strokeLinecap="round" vectorEffect="non-scaling-stroke" opacity="0.9" />
-          <path d={d} fill="none" stroke="#c9d9ef" strokeWidth="4" strokeDasharray="2 14" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
-        </svg>
-        {LEVELS.map((level, i) => {
-          const state = states[i];
-          const asleep = state === "sleeping" || state === "plan";
-          const stars = sel.levelProgress(db, child.id, level.id).stars;
-          return (
-            <div
-              key={level.id}
-              ref={i === firstOpen ? focusRef : undefined}
-              className="absolute flex -translate-x-1/2 flex-col items-center"
-              style={{ left: `${pts[i][0]}%`, top: pts[i][1] - size / 2 }}
-            >
-              <Target
-                label={level.title[child.uiLang]}
-                onSelect={() => onOpen(level.id)}
-                pulse={state === "open" && profile.hintLevel >= 2}
-                className={`grid place-items-center rounded-full border-4 shadow-lift transition ${asleep ? "border-white/70 bg-[#eef2f8]" : "border-white"}`}
-                style={{ width: size, height: size, background: asleep ? undefined : TONE[level.color] }}
-              >
-                {asleep ? (
-                  <Mascot mood="sleepy" size={size * 0.72} float={false} label="" />
-                ) : (
-                  <span className={`leading-none ${state === "open" ? "fk-glow" : ""}`} style={{ fontSize: size * 0.46 }}>
-                    {level.emoji}
-                  </span>
-                )}
-                {state === "done" && <span className="absolute -right-1 -top-1 grid size-9 place-items-center rounded-full bg-sun text-lg shadow-soft">⭐</span>}
-                <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 rounded-full bg-surface px-2 text-xs font-extrabold text-ink-2 shadow-soft">{level.n}</span>
-              </Target>
-              <span className={`mt-3 max-w-36 rounded-full px-3 py-0.5 text-center text-sm font-extrabold ${asleep ? "text-muted" : "bg-surface/90 text-ink"}`}>
-                {level.title[child.uiLang]}
-                {stars > 0 && <span className="ml-1 text-xs text-[#7a5a0c]">⭐{stars}</span>}
-              </span>
+        {taskLevels.length > 0 && (
+          <section className="mb-6 flex flex-wrap items-center gap-4 rounded-fk-lg border border-line bg-surface/90 p-4 shadow-soft">
+            <Mascot mood="happy" size={72} float={false} />
+            <div className="min-w-0 flex-1">
+              <p className="text-lg font-extrabold text-ink">{t("play.tasks.title")}</p>
+              <p className="text-ink-2">
+                {t(`play.tasks.from.${tasks[0].kind}`)} · {t("play.tasks.count", { n: taskLevels.length })}
+              </p>
             </div>
-          );
-        })}
+            <div className="flex flex-wrap gap-3">
+              {taskLevels.map((id) => {
+                // A task points the way but never opens a level without access (plan): tapping it gets the same
+                // gentle "still sleeping" answer as the map.
+                const state = states[LEVEL_BY_ID[id].n - 1];
+                const asleep = state === "plan";
+                return (
+                  <Target
+                    key={id}
+                    label={LEVEL_BY_ID[id].title[child.uiLang]}
+                    onSelect={() => onOpen(id)}
+                    className={`flex flex-col items-center justify-center gap-1 rounded-3xl px-4 font-bold text-ink shadow-soft ${asleep ? "bg-[#eef2f8]" : "bg-sun-soft"}`}
+                  >
+                    {asleep ? <Mascot mood="sleepy" size={44} float={false} label="" /> : <span className="text-3xl">{LEVEL_BY_ID[id].emoji}</span>}
+                    <span className="text-sm">{LEVEL_BY_ID[id].title[child.uiLang]}</span>
+                  </Target>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+        <div className="relative" style={{ height }}>
+          <svg className="absolute inset-0 h-full w-full" viewBox={`0 0 100 ${height}`} preserveAspectRatio="none" aria-hidden>
+            <path d={d} fill="none" stroke="#ffffff" strokeWidth="14" strokeLinecap="round" vectorEffect="non-scaling-stroke" opacity="0.9" />
+            <path d={d} fill="none" stroke="#c9d9ef" strokeWidth="4" strokeDasharray="2 14" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+          </svg>
+          {LEVELS.map((level, i) => {
+            const state = states[i];
+            const asleep = state === "plan";
+            const { stars, completed } = sel.levelProgress(db, child.id, level.id);
+            const required = requiredActivities(level);
+            const doneRequired = required.filter((a) => completed.includes(a)).length;
+            return (
+              <div
+                key={level.id}
+                ref={i === focusIndex ? focusRef : undefined}
+                className="absolute flex -translate-x-1/2 flex-col items-center"
+                style={{ left: `${pts[i][0]}%`, top: pts[i][1] - size / 2 }}
+              >
+                <Target
+                  label={asleep ? level.title[child.uiLang] : `${level.title[child.uiLang]} — ${t(`play.map.state.${state}`)}`}
+                  onSelect={() => onOpen(level.id)}
+                  pulse={i === focusIndex && profile.hintLevel >= 2}
+                  className={`grid place-items-center rounded-full border-4 shadow-lift transition ${asleep ? "border-white/70 bg-[#eef2f8]" : "border-white"}`}
+                  style={{ width: size, height: size, background: asleep ? undefined : TONE[level.color] }}
+                >
+                  {asleep ? (
+                    <Mascot mood="sleepy" size={size * 0.72} float={false} label="" />
+                  ) : (
+                    <span className={`leading-none ${i === focusIndex ? "fk-glow" : ""}`} style={{ fontSize: size * 0.46 }}>
+                      {level.emoji}
+                    </span>
+                  )}
+                  {state === "done" && <span className="absolute -right-1 -top-1 grid size-9 place-items-center rounded-full bg-sun text-lg shadow-soft">⭐</span>}
+                  {state === "started" && (
+                    // How far the child got: one dot per activity that finishes the level.
+                    <span className="absolute -right-2 -top-1 flex gap-0.5 rounded-full bg-surface px-1.5 py-1 shadow-soft" aria-hidden>
+                      {required.map((a, k) => (
+                        <span key={a} className={`size-2.5 rounded-full ${k < doneRequired ? "bg-leaf" : "bg-line"}`} />
+                      ))}
+                    </span>
+                  )}
+                  <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 rounded-full bg-surface px-2 text-xs font-extrabold text-ink-2 shadow-soft">{level.n}</span>
+                </Target>
+                <span className={`mt-3 max-w-36 rounded-full px-3 py-0.5 text-center text-sm font-extrabold ${asleep ? "text-muted" : "bg-surface/90 text-ink"}`}>
+                  {level.title[child.uiLang]}
+                  {stars > 0 && <span className="ml-1 text-xs text-[#7a5a0c]">⭐{stars}</span>}
+                </span>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
@@ -144,13 +185,13 @@ export function LevelView({ child, levelId, onPlay }: { child: Child; levelId: s
         {level.activities.map((a) => (
           <Target
             key={a.id}
-            label={t(`play.kind.${a.kind}`)}
+            label={t(activityLabelKey(a))}
             onSelect={() => onPlay(a.id)}
             className="flex min-h-40 flex-col items-center justify-center gap-2 rounded-fk-lg border-4 border-white p-4 font-extrabold text-ink shadow-soft"
             style={{ background: TONE[level.color] }}
           >
             <span className="text-5xl">{KIND_EMOJI[a.kind]}</span>
-            <span className="text-lg">{t(`play.kind.${a.kind}`)}</span>
+            <span className="text-lg">{t(activityLabelKey(a))}</span>
             {done.includes(a.id) && <span className="absolute right-3 top-3 text-2xl">⭐</span>}
           </Target>
         ))}

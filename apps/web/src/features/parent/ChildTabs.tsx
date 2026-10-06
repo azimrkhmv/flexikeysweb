@@ -27,6 +27,7 @@ export function ProgressTab({ childId }: { childId: string }) {
   const week = days.slice(-7).reduce((a, d) => a + d.minutes, 0);
   const wallet = sel.wallet(db, childId);
   const mastery = sel.mastery(db, childId);
+  const levels = sel.levelsProgress(db, childId);
 
   return (
     <div className="space-y-6">
@@ -45,12 +46,13 @@ export function ProgressTab({ childId }: { childId: string }) {
 
       <Card>
         <H2>{t("parent.progress.levels")}</H2>
+        <p className="mb-2 font-bold text-ink">{t("parent.progress.levelsDone", { n: levels.done, total: levels.total, pct: levels.pct })}</p>
         <p className="mb-4 text-sm text-muted">{t("parent.progress.levelsHint")}</p>
         <ul className="grid gap-3 md:grid-cols-2">
           {LEVELS.map((l, i) => {
             const m = mastery[i];
             const state = sel.levelState(db, childId, i);
-            const muted = m.attempts === 0 && state !== "open";
+            const muted = state === "plan";
             return (
               <li key={l.id} className={`flex items-center gap-3 rounded-2xl p-3 ${muted ? "border border-dashed border-line" : "bg-surface-2"}`}>
                 <span className="text-2xl" aria-hidden>
@@ -61,7 +63,7 @@ export function ProgressTab({ childId }: { childId: string }) {
                     <span className="truncate font-bold">
                       {l.n}. {l.title[lang]}
                     </span>
-                    <Chip tone={state === "done" ? "leaf" : state === "open" ? "sky" : "gray"}>{t(`parent.level.${state}`)}</Chip>
+                    <Chip tone={state === "done" ? "leaf" : state === "started" ? "sky" : "gray"}>{t(`parent.level.${state}`)}</Chip>
                   </div>
                   {m.attempts > 0 && (
                     <div className="flex items-center gap-2">

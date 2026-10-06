@@ -225,7 +225,7 @@ export const LEVELS: Level[] = [
 
 export const LEVEL_BY_ID: Record<string, Level> = Object.fromEntries(LEVELS.map((l) => [l.id, l]));
 
-/** Activities that finish a level (mastery gate). Optional ones (drawing) are extra practice. */
+/** Activities that finish a level ("done", level bonus). Optional ones (drawing) are extra practice. */
 export const requiredActivities = (level: Level) => level.activities.filter((a) => !a.optional).map((a) => a.id);
 
 /** All required activities of `level` are in `completed`. */
