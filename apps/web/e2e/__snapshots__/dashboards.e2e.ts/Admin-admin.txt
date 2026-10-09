@@ -2,7 +2,7 @@ Admin overview
 
 Every admin action is recorded in the audit log.
 
-6
+7
 Accounts
 7
 Child profiles

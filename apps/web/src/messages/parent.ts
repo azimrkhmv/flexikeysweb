@@ -121,6 +121,7 @@ export const parent = {
 
     "parent.child.playNow": "Play now",
     "parent.tab.progress": "Progress",
+    "parent.tab.plan": "Plan",
     "parent.tab.changes": "What changed and why",
     "parent.tab.aac": "My Voice",
     "parent.tab.sharing": "Sharing",
@@ -426,6 +427,7 @@ export const parent = {
 
     "parent.child.playNow": "Hozir oʻynash",
     "parent.tab.progress": "Natijalar",
+    "parent.tab.plan": "Reja",
     "parent.tab.changes": "Nima oʻzgardi va nega",
     "parent.tab.aac": "Mening ovozim",
     "parent.tab.sharing": "Ulashish",
@@ -731,6 +733,7 @@ export const parent = {
 
     "parent.child.playNow": "Играть сейчас",
     "parent.tab.progress": "Прогресс",
+    "parent.tab.plan": "План",
     "parent.tab.changes": "Что изменилось и почему",
     "parent.tab.aac": "Мой голос",
     "parent.tab.sharing": "Доступ",

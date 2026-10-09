@@ -18,7 +18,7 @@ const keysUsed = (paths: string[]) =>
 const AREAS: [string, string[], Record<string, string>[]][] = [
   ["public", ["app/[locale]", "features/marketing"], [m.common.en, m.marketing.en]],
   ["child", ["app/play", "app/class", "app/demo", "features/play", "features/activities"], [m.common.en, m.play.en, m.activities.en, m.aac.en]],
-  ["adult", ["app/(auth)", "app/parent", "app/teacher", "app/therapist", "app/admin", "features/parent", "features/pro", "features/auth", "components/AppShell.tsx"], [m.common.en, m.auth.en, m.parent.en, m.pro.en]],
+  ["adult", ["app/(auth)", "app/parent", "app/teacher", "app/therapist", "app/admin", "features/parent", "features/pro", "features/auth", "features/intake", "app/physio", "components/AppShell.tsx"], [m.common.en, m.auth.en, m.parent.en, m.pro.en, m.intake.en]],
   ["shared components & error pages", ["components/ui.tsx", "components/brand.tsx", "components/StatusPage.tsx", "app/not-found.tsx", "app/error.tsx", "app/global-error.tsx"], [m.common.en]],
 ];
 

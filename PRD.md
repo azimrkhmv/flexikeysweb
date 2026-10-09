@@ -1,5 +1,7 @@
 # FlexiKeys Web — Product Requirements Document (PRD)
 
+> **Superseded where they disagree** by the founders' product spec of 6 October 2026 (`docs/product-spec-2026-10-06.pdf`): phone + SMS sign-in, parent intake, exercise roadmap with physio-approved videos, Home Kit, booking, 24/7 assistant, four app languages.
+
 | | |
 |---|---|
 | **Document** | Web migration PRD — v1.0 |

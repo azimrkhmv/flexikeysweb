@@ -15,7 +15,7 @@ import { aacLabel, BIRTH_YEARS, download, profileLines } from "./lib";
 import { AccessPicker, AvatarGrid } from "./pickers";
 import { SupportCard } from "./support";
 
-export const TABS = ["progress", "changes", "aac", "sharing", "settings", "privacy"] as const;
+export const TABS = ["plan", "progress", "changes", "aac", "sharing", "settings", "privacy"] as const;
 export type Tab = (typeof TABS)[number];
 
 const H2 = ({ children }: { children: React.ReactNode }) => <h2 className="mb-3 text-lg font-extrabold">{children}</h2>;
@@ -620,7 +620,7 @@ export function SettingsTab({ child }: { child: Child }) {
 }
 
 // ---------------------------------------------------------------- privacy
-const OPTIONAL: ConsentScope[] = ["ai_processing", "voice_recording", "school_sharing", "therapist_sharing"];
+const OPTIONAL: ConsentScope[] = ["health", "movement_videos", "ai_processing", "voice_recording", "school_sharing", "therapist_sharing"];
 
 /** Warns when this device can't speak a child's language (most devices have no Uzbek voice). */
 function VoiceNotice({ langs }: { langs: Lang[] }) {

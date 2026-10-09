@@ -24,6 +24,7 @@ const empty = (): DB => ({
   v: 1, auth: { userId: null, child: null }, users: [], children: [], consents: [], profiles: [], changes: [], sessions: [],
   events: [], mastery: [], progress: [], wallets: [], classes: [], enrollments: [], assignments: [], careLinks: [], notes: [],
   goals: [], aacEvents: [], aacCards: [], notifications: [], subscriptions: [], orders: [], audit: [], flags: [], aiMessages: [],
+  otp: [], intakeAnswers: [], intakeRounds: [], videos: [], roadmaps: [],
 });
 
 const PER_CHILD = ["levels", "summary", "changes", "consents", "minutes", "skills", "profile", "tasks", "careLinks", "classes", "notes", "goals", "aacCards", "aacSentences", "aiMessages"] as const;

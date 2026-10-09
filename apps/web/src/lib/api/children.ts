@@ -13,7 +13,7 @@ export const childrenApi = {
   /** POST /children — consent + child in one transaction; core consent is mandatory (FR-CHILD-1). */
   async createChild(input: Pick<Child, "name" | "birthYear" | "learningLang" | "uiLang" | "avatar" | "access" | "support">, scopes: ConsentScope[]) {
     const u = requireUser(["parent"]);
-    if (!u.emailVerified) throw new ApiError("email_not_verified");
+    if (!u.emailVerified && !u.consentVersion) throw new ApiError("email_not_verified"); // phone sign-up = verified
     if (!scopes.includes("core")) throw new ApiError("consent_required");
     if (!input.name.trim()) throw new ApiError("name_required");
     const child: Child = { ...input, name: input.name.trim(), id: id(), parentId: u.id, equipped: {}, createdAt: iso() };
@@ -57,6 +57,9 @@ export const childrenApi = {
       exportedAt: iso(),
       child: sel.child(db, childId),
       consents: by(db.consents),
+      intakeAnswers: by(db.intakeAnswers),
+      intakeRounds: by(db.intakeRounds),
+      roadmaps: by(db.roadmaps),
       adaptiveProfiles: by(db.profiles),
       adaptationChanges: by(db.changes),
       sessions: by(db.sessions),
@@ -78,6 +81,15 @@ export const childrenApi = {
       const cur = db.consents.find((c) => c.childId === childId && c.scope === scope && !c.withdrawnAt);
       if (granted && !cur) db.consents.push({ id: id(), childId, scope, version: CONSENT_VERSION, grantedBy: user.id, grantedAt: iso() });
       if (!granted && cur) cur.withdrawnAt = iso();
+      // Health answers are deleted with the consent; without them exercises can't be kept safe (spec §4).
+      if (!granted && scope === "health") {
+        db.intakeAnswers = db.intakeAnswers.filter((a) => !(a.childId === childId && /^P(9|1[0-7])(_|$)/.test(a.questionId)));
+        db.roadmaps.forEach((r) => {
+          if (r.childId !== childId) return;
+          r.exercisesAllowed = false;
+          r.days.forEach((d) => (d.exercises = []));
+        });
+      }
       if (!granted && scope === "school_sharing") db.enrollments = db.enrollments.filter((e) => e.childId !== childId);
       if (!granted && scope === "therapist_sharing")
         db.careLinks.forEach((l) => {

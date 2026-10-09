@@ -2,17 +2,17 @@
 
 import { createContext, useCallback, useContext, useEffect, type ReactNode } from "react";
 import { persisted, useMounted, useStore } from "./store";
-import { translate, type Lang, type Vars } from "./translate";
+import { baseLang, isUiLang, translate, type Lang, type UiLang, type Vars } from "./translate";
 
-export { LANG_NAMES, LANGS, translate, type Lang, type Vars } from "./translate";
+export { baseLang, LANG_NAMES, LANGS, UI_LANGS, translate, type Lang, type UiLang, type Vars } from "./translate";
 
-const langStore = persisted<Lang | null>("fk_lang", null);
+const langStore = persisted<UiLang | null>("fk_lang", null, { accept: (l) => l === null || isUiLang(l) });
 
 /** Cookie copy of the choice so the server (proxy.ts) can send `/` to the right `/uz|/ru|/en` page. */
 export const LANG_COOKIE = "fk_lang";
-function chooseLang(l: Lang) {
+function chooseLang(l: UiLang) {
   langStore.set(l);
-  document.cookie = `${LANG_COOKIE}=${l}; path=/; max-age=31536000; samesite=lax`;
+  document.cookie = `${LANG_COOKIE}=${baseLang(l)}; path=/; max-age=31536000; samesite=lax`;
 }
 
 function detect(): Lang {
@@ -32,24 +32,34 @@ export const useRouteLang = () => useContext(RouteLang);
  * UI language precedence: the URL on public pages; elsewhere a choice made on this device (saved to the
  * account by the dashboard shell) > the account's saved language (applied at login) > the browser language.
  */
-export function applyAccountLang(accountLang: Lang) {
+export function applyAccountLang(accountLang: UiLang) {
   if (langStore.get() === null) langStore.set(accountLang);
 }
 
-export function useLang(): [Lang, (l: Lang) => void] {
+/** False until someone picks a language on this device (sign-up starts with that choice, spec §4). */
+export const useLangChosen = () => useStore(langStore) !== null;
+
+/** The app language including Uzbek Cyrillic (for text). */
+export function useUiLang(): [UiLang, (l: UiLang) => void] {
   const route = useRouteLang();
   const stored = useStore(langStore);
   const mounted = useMounted();
-  const lang = route ?? stored ?? (mounted ? detect() : "uz");
+  const lang: UiLang = route ?? stored ?? (mounted ? detect() : "uz");
   useEffect(() => {
-    document.documentElement.lang = lang;
+    document.documentElement.lang = lang === "uz_cyrl" ? "uz-Cyrl" : lang;
   }, [lang]);
   return [lang, chooseLang];
 }
 
+/** The content language (Uzbek Cyrillic reads Uzbek content). Use for curriculum, voices and formatting. */
+export function useLang(): [Lang, (l: UiLang) => void] {
+  const [lang, set] = useUiLang();
+  return [baseLang(lang), set];
+}
+
 /** `t("area.key", {name})`. Pass `lang` to force a language (e.g. the child's UI language). */
-export function useT(forceLang?: Lang) {
-  const [uiLang] = useLang();
+export function useT(forceLang?: UiLang) {
+  const [uiLang] = useUiLang();
   const lang = forceLang ?? uiLang;
   return useCallback((key: string, vars?: Vars) => translate(lang, key, vars), [lang]);
 }

@@ -7,7 +7,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Bell, LogOut, type LucideIcon } from "lucide-react";
 import { api, LIVE, sel, useDb } from "@/lib/api";
 import { LiveProvider } from "@/lib/live/client";
-import { useLang, useT } from "@/lib/i18n";
+import { useT, useUiLang } from "@/lib/i18n";
 import { useMounted } from "@/lib/store";
 import { useDismiss } from "@/lib/useDismiss";
 import type { Role, User } from "@/lib/types";
@@ -35,20 +35,21 @@ export function RequireRole({ role, children }: { role: Role | Role[]; children:
   const router = useRouter();
   const path = usePathname();
   const roles = Array.isArray(role) ? role : [role];
-  const ok = !!me && roles.includes(me.role) && me.status !== "disabled";
+  const ok = !!me && roles.includes(me.role) && me.status !== "disabled" && !(me.phone && !me.consentVersion);
 
   useEffect(() => {
     if (!mounted || sel.loading(db)) return; // live mode: wait for the server before deciding
     if (childMode) router.replace("/play");
     else if (!me) router.replace(`/login?next=${encodeURIComponent(path)}`);
     else if (!roles.includes(me.role)) router.replace(homeFor(me.role));
+    else if (me.phone && !me.consentVersion) router.replace("/signup"); // sign-up not finished (consent, district)
   });
 
   if (!mounted || sel.loading(db) || !ok || childMode) return <Spinner />;
   return <>{children(me)}</>;
 }
 
-export function AppShell({ role, nav, children }: { role: Role; nav: NavItem[]; children: (me: User) => ReactNode }) {
+export function AppShell({ role, nav, children }: { role: Role | Role[]; nav: NavItem[]; children: (me: User) => ReactNode }) {
   return (
     <LiveProvider>
       <RequireRole role={role}>
@@ -66,7 +67,7 @@ export function AppShell({ role, nav, children }: { role: Role; nav: NavItem[]; 
 
 function Shell({ me, nav, children }: { me: User; nav: NavItem[]; children: ReactNode }) {
   const t = useT();
-  const [lang] = useLang();
+  const [lang] = useUiLang();
   // The language picked on this device is the user's preference: keep the account in sync (PATCH /users/me).
   useEffect(() => {
     if (me.uiLang !== lang) api.updateMe({ uiLang: lang }).catch(() => {});

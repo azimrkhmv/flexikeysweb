@@ -6,18 +6,21 @@ import { read, write, net } from "./db";
 import { requireUser, requireChildAccess, audit, notify } from "./guards";
 import { ApiError, id, iso, makeCode } from "./schema";
 import { sel } from "./selectors";
+import { normalizePhone } from "./auth";
 import type { CareLink } from "../types";
 
 export const careApi = {
   // ------------------------------------------------------------ care links & classes (parent side)
   /** POST /parent/children/{id}/care-links */
-  async inviteCare(childId: string, email: string, kind: "therapist" | "teacher" = "therapist") {
+  async inviteCare(childId: string, contact: string, kind: "therapist" | "teacher" = "therapist") {
     const { user } = requireChildAccess(childId, ["owner"]);
     if (!sel.hasConsent(read(), childId, "therapist_sharing")) throw new ApiError("consent_required");
-    const link: CareLink = { id: id(), childId, kind, email: email.trim().toLowerCase(), status: "invited", code: makeCode(), createdAt: iso() };
+    const phone = normalizePhone(contact); // spec P41: invite by phone number
+    if (!phone && !contact.includes("@")) throw new ApiError("invalid_phone");
+    const link: CareLink = { id: id(), childId, kind, email: phone ? "" : contact.trim().toLowerCase(), phone: phone ?? undefined, status: "invited", code: makeCode(), createdAt: iso() };
     write((db) => {
       db.careLinks.push(link);
-      const pro = db.users.find((u) => u.email === link.email);
+      const pro = db.users.find((u) => (phone ? u.phone === phone : u.email === link.email));
       notify(db, pro?.id ?? null, "notif.care_invite", { name: sel.child(db, childId)?.name ?? "" });
       audit(db, user.id, "care_link.invite", childId);
     });

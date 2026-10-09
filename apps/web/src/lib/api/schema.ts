@@ -2,7 +2,7 @@
 
 // Shape of the mock database, shared constants and id/time helpers.
 
-import type { AacCustomCard, AacEvent, AdaptationChange, AiMessage, Assignment, AuditLog, CareLink, Child, ClassRoom, Consent, Enrollment, FeatureFlag, Goal, InteractionEvent, LearningSession, LevelProgress, Note, Notification, Order, Plan, ProfileRecord, SkillMastery, Subscription, User, Wallet } from "../types";
+import type { AacCustomCard, AacEvent, AdaptationChange, AiMessage, Assignment, AuditLog, CareLink, Child, ClassRoom, Consent, Enrollment, ExerciseVideo, FeatureFlag, IntakeAnswer, IntakeRound, Goal, InteractionEvent, LearningSession, LevelProgress, Note, Notification, Order, Plan, ProfileRecord, Roadmap, SkillMastery, Subscription, User, Wallet } from "../types";
 
 export interface ChildAuth {
   childId: string;
@@ -41,6 +41,12 @@ export interface DB {
   audit: AuditLog[];
   flags: FeatureFlag[];
   aiMessages: AiMessage[];
+  /** Spec 2026-10-06. MOCK ONLY: the last SMS code per phone (the server never returns it). */
+  otp: { phone: string; code: string; sentAt: number; tries: number }[];
+  intakeAnswers: IntakeAnswer[];
+  intakeRounds: IntakeRound[];
+  videos: ExerciseVideo[];
+  roadmaps: Roadmap[];
 }
 
 export class ApiError extends Error {
@@ -51,8 +57,12 @@ export class ApiError extends Error {
 
 export const CONSENT_VERSION = "2026-09-v1";
 export const DEMO_PASSWORD = "demo12345";
+/** Demo sign-in numbers (mock: the SMS code is shown on screen). */
+export const DEMO_PHONES = { parent: "+998900000001", therapist: "+998900000002", physio: "+998900000003", admin: "+998900000004" } as const;
 export const PRICES: Record<Exclude<Plan, "free">, number> = { monthly: 49_000_00, yearly: 390_000_00 }; // tiyin
 export const AI_DAILY_QUOTA = 30;
+export const OTP_RESEND_MS = 60_000;
+export const OTP_MAX_TRIES = 5;
 export const CHILD_TOKEN_MS = 8 * 3600_000;
 export const DAY = 86_400_000;
 
@@ -62,4 +72,4 @@ const CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"; // no 0/O/1/I/L (SEC-5)
 export const makeCode = (n = 6) => Array.from({ length: n }, () => CODE_ALPHABET[Math.floor(Math.random() * CODE_ALPHABET.length)]).join("");
 
 /** Bump when the DB shape changes: browsers holding an older shape are reseeded instead of crashing. */
-export const DB_VERSION = 1;
+export const DB_VERSION = 2;

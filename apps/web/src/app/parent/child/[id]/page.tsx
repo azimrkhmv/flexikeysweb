@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { ArrowLeft, Play } from "lucide-react";
 import { Avatar, Button, Empty, useAction } from "@/components/ui";
+import { PlanTab } from "@/features/intake/PlanTab";
 import { AacTab, ChangesTab, PrivacyTab, ProgressTab, SettingsTab, SharingTab, TABS, type Tab } from "@/features/parent/ChildTabs";
 import { age } from "@/features/parent/lib";
 import { api, sel, useDb } from "@/lib/api";
@@ -19,7 +20,7 @@ export default function ChildPage() {
   // Page only renders after hydration (AppShell gate), so reading the hash here is safe.
   const [tab, setTab] = useState<Tab>(() => {
     const h = (typeof window === "undefined" ? "" : window.location.hash.slice(1)) as Tab;
-    return TABS.includes(h) ? h : "progress";
+    return TABS.includes(h) ? h : "plan";
   });
   const start = useAction(api.startChildMode);
   const child = sel.child(db, id);
@@ -112,6 +113,7 @@ export default function ChildPage() {
       </div>
 
       <div role="tabpanel" id="child-tabpanel" aria-labelledby={`tab-${tab}`} tabIndex={0}>
+        {tab === "plan" && <PlanTab child={child} />}
         {tab === "progress" && <ProgressTab childId={child.id} />}
         {tab === "changes" && <ChangesTab childId={child.id} />}
         {tab === "aac" && <AacTab childId={child.id} />}

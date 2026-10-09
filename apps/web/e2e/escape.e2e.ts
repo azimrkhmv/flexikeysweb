@@ -21,7 +21,8 @@ test.describe("Escape key", () => {
     await expect(bell).toHaveAttribute("aria-expanded", "false");
   });
 
-  test("adult modal dialog closes with Escape", async ({ page }) => {
+  // Legacy teacher area: hidden by the product spec of 2026-10-06 (the `legacy` flag brings it back).
+  test.skip("adult modal dialog closes with Escape", async ({ page }) => {
     await loginAs(page, "Teacher");
     await page.getByRole("button", { name: "New class" }).click();
     await expect(page.getByRole("dialog")).toBeVisible();
@@ -29,7 +30,7 @@ test.describe("Escape key", () => {
     await expect(page.getByRole("dialog")).toHaveCount(0);
   });
 
-  test("classroom mode closes with Escape", async ({ page }) => {
+  test.skip("classroom mode closes with Escape", async ({ page }) => {
     await loginAs(page, "Teacher");
     await page.goto("/teacher/class/cl_sun");
     await page.getByRole("button", { name: "Classroom mode" }).click();

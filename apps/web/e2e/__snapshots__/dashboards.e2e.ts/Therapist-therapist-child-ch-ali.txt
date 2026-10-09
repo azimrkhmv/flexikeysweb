@@ -163,6 +163,66 @@ Key size
 
 Keys got a little bigger so taps land more easily.
 
+How your child moves, sees and communicates
+
+Optional. Pick the sentence that fits best, or “Not sure”. It is only used to start with bigger buttons and more help; the app keeps adapting from there. You can change it any time.
+
+Using hands
+Not sure
+Uses hands easily
+Uses hands well, but slower or less precisely
+Handles things with difficulty and needs help to get ready
+Handles only a few easy things, with adapted help
+Does not handle objects; needs full help
+Communicating
+Not sure
+Talks and understands easily with everyone
+Communicates with everyone, but more slowly
+Communicates well with familiar people
+Sometimes communicates with familiar people
+Rarely communicates clearly, even with family
+Seeing
+Not sure
+Uses vision easily
+Uses vision well, but needs more time or to be closer
+Uses vision when things are bigger, clearer or fewer
+Uses vision only in very adapted settings
+Does not use vision in daily activities
+Calm screen
+No moving or glowing effects. Recommended for seizures, light sensitivity or vision difficulties.
+Vision mode (CVI)
+Plain dark background, no mascot, every button outlined in one strong colour, slower “watch” games. For cerebral visual impairment.
+Access settings
+
+Minimums the app never goes below while it adapts. A therapist linked to this child can change them too.
+
+Minimum press-and-hold time
+Automatic
+0.15 s
+0.3 s
+0.45 s
+0.6 s
+A touch shorter than this is ignored — helps with accidental touches.
+Ignore repeat presses for at least
+Automatic
+0.3 s
+0.45 s
+0.6 s
+Helps with tremor and double presses.
+Minimum button size
+Automatic
++10%
++20%
++30%
++40%
+Hover or eye-gaze waiting time
+0.6 s
+1.1 s
+1.5 s
+2 s
+3 s
+For a head mouse or eye tracker: how long to rest on a button to choose it.
+Save
 Recent sessions
 Sep 28, 09:49 PM
 16 min · 4 activities
@@ -180,3 +240,8 @@ Sep 20, 10:03 AM
 12 min · 5 activities
 Sep 19, 01:09 PM
 12 min · 4 activities
+Motor signals per session
+
+Accidental = touches shorter than the hold time. Repeats = extra presses the filter ignored. Tiring = slower at the end of the session than at the start.
+
+Nothing here yet

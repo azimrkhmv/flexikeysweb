@@ -127,3 +127,5 @@ auto_approve_professionals
 Skip admin verification for teachers/therapists (pilot)
 connect_dots
 Connect-the-dots activity (cut line)
+legacy
+Pre-spec features: teacher/class, 16-level map, cloud shop, email login

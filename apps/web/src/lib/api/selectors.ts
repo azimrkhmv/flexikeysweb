@@ -4,11 +4,26 @@
 
 import { FREE_LEVELS, LEVEL_BY_ID, LEVELS, levelComplete } from "@/content/levels";
 import { computeMetrics, startingProfile, withFloors } from "../adaptive";
+import type { Answers } from "@/content/intake";
+import { LANGS, type Lang } from "../i18n";
 import { DAY, iso, type DB } from "./schema";
-import type { AdaptiveProfile, Child, ClassRoom, ConsentScope, InputProfile, LevelProgress, Subscription, Wallet } from "../types";
+import type { AdaptiveProfile, Child, ClassRoom, ConsentScope, InputProfile, LevelProgress, Roadmap, Subscription, VideoStatus, Wallet } from "../types";
 
 // ---------------------------------------------------------------- selectors (pure)
 export const sel = {
+  // ---- intake, roadmap, video library (product spec 2026-10-06)
+  /** Latest intake round of a child. */
+  intakeRound: (db: DB, childId: string) => db.intakeRounds.filter((r) => r.childId === childId).sort((a, b) => b.round - a.round)[0] ?? null,
+  intakeAnswers: (db: DB, childId: string, round: number): Answers =>
+    Object.fromEntries(db.intakeAnswers.filter((a) => a.childId === childId && a.round === round).map((a) => [a.questionId, a.value])),
+  roadmap: (db: DB, childId: string): Roadmap | null => db.roadmaps.filter((r) => r.childId === childId).sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0] ?? null,
+  video: (db: DB, videoId: string) => db.videos.find((v) => v.id === videoId) ?? null,
+  videos: (db: DB) => db.videos,
+  /** Language versions with this review status, and how many there are of each status. */
+  videosByStatus: (db: DB, status: VideoStatus) => db.videos.flatMap((video) => LANGS.filter((l) => video.versions[l]?.status === status).map((lang) => ({ video, lang }))),
+  /** The single rule for "a family may see this video": a physio approved this language version (spec §8). */
+  usableVideos: (db: DB, lang: Lang) => db.videos.filter((v) => v.versions[lang]?.status === "approved"),
+
   me: (db: DB) => db.users.find((u) => u.id === db.auth.userId) ?? null,
   /** Live mode: server data not loaded yet — show a spinner, don't conclude "signed out". */
   loading: (db: DB) => !!db.loading,
@@ -132,7 +147,8 @@ export const sel = {
     db.enrollments.filter((e) => e.classId === classId).map((e) => sel.child(db, e.childId)).filter((c): c is Child => !!c),
   therapistChildren: (db: DB, userId: string) =>
     db.careLinks.filter((l) => l.professionalId === userId && l.status === "active").map((l) => sel.child(db, l.childId)).filter((c): c is Child => !!c),
-  invitesFor: (db: DB, email: string) => db.careLinks.filter((l) => l.status === "invited" && l.email.toLowerCase() === email.toLowerCase()),
+  invitesFor: (db: DB, email: string, phone?: string) =>
+    db.careLinks.filter((l) => l.status === "invited" && ((!!l.email && l.email.toLowerCase() === email.toLowerCase()) || (!!phone && l.phone === phone))),
   careLinks: (db: DB, childId: string) => db.careLinks.filter((l) => l.childId === childId && l.status !== "revoked"),
   notifications: (db: DB, userId: string) => db.notifications.filter((n) => n.userId === userId).sort((a, b) => b.at.localeCompare(a.at)),
   aacStats(db: DB, childId: string) {

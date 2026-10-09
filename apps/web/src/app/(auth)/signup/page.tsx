@@ -6,6 +6,8 @@ import { useState } from "react";
 import { House, School, Stethoscope, type LucideIcon } from "lucide-react";
 import { Button, Checkbox, Field, Input, Select, useAction } from "@/components/ui";
 import { AuthTitle, FormError } from "@/features/auth/parts";
+import { PhoneFlow } from "@/features/auth/PhoneFlow";
+import { useEmailMode } from "@/features/auth/mode";
 import { api } from "@/lib/api";
 import { LANG_NAMES, LANGS, useLang, useT, type Lang } from "@/lib/i18n";
 
@@ -17,6 +19,11 @@ const ROLES: [SignupRole, LucideIcon][] = [
 ];
 
 export default function SignupPage() {
+  const [emailMode] = useEmailMode();
+  return emailMode ? <EmailSignup /> : <PhoneFlow />;
+}
+
+function EmailSignup() {
   const t = useT();
   const router = useRouter();
   const [lang, setLang] = useLang();

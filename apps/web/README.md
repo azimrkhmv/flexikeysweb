@@ -1,6 +1,10 @@
 # FlexiKeys Web
 
-Next.js 16 web app for FlexiKeys, built from `../../PRD.md` and the design board. It covers the marketing site, auth, child play mode, AAC, parents, teachers, therapists and admins.
+Next.js 16 web app for FlexiKeys, built from `../../PRD.md`, the design board and — where they disagree — the
+product spec of 6 October 2026 (`../../docs/product-spec-2026-10-06.pdf`). It covers the marketing site, phone sign-in,
+the parent intake and 4-week exercise roadmap, the physio video review queue, child play mode, AAC, parents,
+therapists and admins. Pre-spec features (teacher/class codes, email sign-in, the old add-child form) are hidden behind
+the `legacy` flag (Admin → Content → flags); live mode keeps them until the backend has the spec's features.
 
 ## Run
 
@@ -22,16 +26,29 @@ Dashboard text snapshots live in `e2e/__snapshots__`. After an intended copy or 
 
 ### Demo accounts
 
-All demo accounts use the password `demo12345`.
+Sign-in is phone + SMS code. In the demo no SMS is sent: the code is shown on screen, and the demo buttons on
+`/login` sign in at once.
 
-| Role | Email |
+| Role | Phone |
 |---|---|
-| Parent (2 children: Ali, Madina) | parent@demo.uz |
-| Teacher (class code `KQ7M4P`) | teacher@demo.uz |
-| Therapist (linked to Ali) | therapist@demo.uz |
-| Admin | admin@demo.uz |
+| Parent (2 children: Ali with a finished intake and roadmap, Madina) | +998 90 000 00 01 |
+| Therapist (linked to Ali) | +998 90 000 00 02 |
+| Video reviewer (physiotherapist, `/physio`) | +998 90 000 00 03 |
+| Admin | +998 90 000 00 04 |
 
-Class login for children: `/class`, then enter code `KQ7M4P`. You can reset all demo data from **Admin → Support**.
+With the `legacy` flag on, `/login?email=1` signs in the older email accounts (password `demo12345`, e.g.
+teacher@demo.uz, class code `KQ7M4P`). You can reset all demo data from **Admin → Support**.
+
+### Product spec (2026-10-06) — what is built
+
+- **Sign-up** (`/signup`, `src/features/auth/PhoneFlow.tsx`): language first (Uzbek Latin, Uzbek Cyrillic, Russian,
+  English), phone + SMS code (WebOTP autofill on Android), basic consent, city and district (`src/content/districts.ts`).
+  Uzbek Cyrillic is transliterated from the Uzbek catalog (`src/lib/cyrillic.ts`); content stays in uz/ru/en.
+- **Parent intake P1–P41** (`/parent/children/new`, questions as data in `src/content/intake.ts`): saved as you go,
+  "Not sure" stored as `null`, health consent gate (declined = games only), 3-month re-intake pre-filled.
+- **Video library + physio review** (`/physio`, `src/content/exercises.ts`): only approved language versions reach a roadmap.
+- **Roadmap engine** (`src/lib/roadmap.ts`, tests in `roadmap.test.ts`): deterministic rules, safety filters that are
+  tested over every restriction / seizure / surgery / movement-level combination, 4 weeks, daily count from P34.
 
 ## What is real and what is mocked
 

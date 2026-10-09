@@ -2,15 +2,76 @@
 
 // /auth/*, /users/me, notifications.
 
-import type { Lang } from "../i18n";
+import type { Lang, UiLang } from "../i18n";
 import { read, write, net } from "./db";
 import { requireUser, purgeChild } from "./guards";
-import { ApiError, id, iso } from "./schema";
+import { ApiError, CONSENT_VERSION, DEMO_PHONES, id, iso, OTP_MAX_TRIES, OTP_RESEND_MS } from "./schema";
 import type { Role, User } from "../types";
 
+/** "+998 90 123-45-67", "90 123 45 67" → "+998901234567"; null when it isn't an Uzbek mobile number. */
+export function normalizePhone(raw: string): string | null {
+  const d = raw.replace(/\D/g, "");
+  const local = d.length === 12 && d.startsWith("998") ? d.slice(3) : d;
+  return /^\d{9}$/.test(local) ? `+998${local}` : null;
+}
+const OTP_TTL_MS = 5 * 60_000;
+
 export const authApi = {
-  /** POST /auth/register */
-  async register(input: { email: string; password: string; name: string; role: Exclude<Role, "admin">; uiLang: Lang }) {
+  /** POST /auth/phone/start — sends a 6-digit SMS code (spec §4). Mock: the code comes back so the demo can show it. */
+  async requestCode(rawPhone: string) {
+    const phone = normalizePhone(rawPhone);
+    if (!phone) throw new ApiError("invalid_phone");
+    const prev = read().otp.find((o) => o.phone === phone);
+    const demo = (Object.values(DEMO_PHONES) as string[]).includes(phone); // mock: demo buttons can sign in again at once
+    if (prev && !demo && Date.now() - prev.sentAt < OTP_RESEND_MS) throw new ApiError("code_too_soon");
+    const code = String(Math.floor(100000 + Math.random() * 900000));
+    write((db) => {
+      db.otp = db.otp.filter((o) => o.phone !== phone).concat({ phone, code, sentAt: Date.now(), tries: 0 });
+    });
+    return net({ phone, resendAfterMs: OTP_RESEND_MS, demoCode: code }, 300);
+  },
+  /** POST /auth/phone/verify — signs in, or creates a parent account the first time this number is used. */
+  async verifyCode(rawPhone: string, code: string, uiLang: UiLang) {
+    const phone = normalizePhone(rawPhone);
+    const otp = read().otp.find((o) => o.phone === phone);
+    if (!phone || !otp) throw new ApiError("code_expired");
+    if (Date.now() - otp.sentAt > OTP_TTL_MS) throw new ApiError("code_expired");
+    if (otp.tries >= OTP_MAX_TRIES) throw new ApiError("too_many_tries");
+    if (otp.code !== code.trim()) {
+      write((db) => {
+        db.otp.find((o) => o.phone === phone)!.tries++;
+      });
+      throw await net(new ApiError("invalid_code"), 300);
+    }
+    let user = read().users.find((u) => u.phone === phone);
+    if (user?.status === "disabled") throw new ApiError("account_disabled");
+    const isNew = !user;
+    user ??= { id: id(), email: "", name: "", role: "parent", status: "active", password: id(), uiLang, emailVerified: false, phone, createdAt: iso() };
+    const u = user;
+    write((db) => {
+      db.otp = db.otp.filter((o) => o.phone !== phone);
+      if (isNew) {
+        db.users.push(u);
+        db.subscriptions.push({ userId: u.id, plan: "free", status: "active" });
+      }
+      db.auth.userId = u.id;
+    });
+    return net({ user: u, isNew });
+  },
+  /** PATCH /users/me/signup — basic consent, city and district (spec §4: required before anything else). */
+  async completeSignup(input: { name: string; region: string; district: string; consent: boolean }) {
+    const u = requireUser();
+    if (!input.consent) throw new ApiError("consent_required");
+    write((db) => {
+      const me = db.users.find((x) => x.id === u.id)!;
+      me.name = input.name.trim() || me.name;
+      me.district = { region: input.region, district: input.district };
+      me.consentVersion = CONSENT_VERSION;
+    });
+    return net(true);
+  },
+  /** POST /auth/register (legacy email sign-up) */
+  async register(input: { email: string; password: string; name: string; role: Exclude<Role, "admin" | "physio">; uiLang: Lang }) {
     const email = input.email.trim().toLowerCase();
     if (!/^\S+@\S+\.\S+$/.test(email)) throw new ApiError("invalid_email");
     if (input.password.length < 10) throw new ApiError("weak_password");

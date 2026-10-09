@@ -18,7 +18,7 @@ export default function TherapistHome() {
   const year = new Date(now).getFullYear();
   const weekAgo = new Date(now - 7 * DAY).toISOString();
   const kids = sel.therapistChildren(db, me.id);
-  const invites = sel.invitesFor(db, me.email);
+  const invites = sel.invitesFor(db, me.email, me.phone);
   const accept = useAction(api.acceptInvite);
   const [code, setCode] = useState("");
 
