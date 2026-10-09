@@ -15,7 +15,7 @@ test.describe("axe", () => {
     await setup(page);
   });
 
-  for (const path of ["/", "/pricing", "/privacy", "/login", "/signup", "/forgot-password", "/class", "/demo"])
+  for (const path of ["/", "/pricing", "/privacy", "/login", "/signup", "/forgot-password", "/demo"])
     test(`public ${path}`, async ({ page }) => scan(page, path));
 
   test("parent area", async ({ page }) => {
@@ -23,10 +23,10 @@ test.describe("axe", () => {
     for (const p of ["/parent", "/parent/child/ch_ali", "/parent/child/ch_ali#aac", "/parent/children/new", "/parent/reports", "/parent/billing", "/parent/assistant", "/parent/account"]) await scan(page, p);
   });
 
-  test("teacher, therapist and admin areas", async ({ page }) => {
-    await loginAs(page, "Teacher");
-    for (const p of ["/teacher", "/teacher/class/cl_sun"]) await scan(page, p);
-    await page.goto("/login");
+  // The teacher area is legacy (hidden by the product spec of 2026-10-06); the video reviewer replaces it here.
+  test("reviewer, therapist and admin areas", async ({ page }) => {
+    await loginAs(page, "Video reviewer");
+    await scan(page, "/physio");
     await loginAs(page, "Therapist");
     for (const p of ["/therapist", "/therapist/child/ch_ali"]) await scan(page, p);
     await loginAs(page, "Admin");
@@ -46,17 +46,17 @@ test("child page tabs work with arrow keys", async ({ page }, info) => {
   await setup(page);
   await loginAs(page, "Parent");
   await page.goto("/parent/child/ch_ali");
-  const progress = page.getByRole("tab", { name: "Progress" });
-  await progress.focus();
+  const plan = page.getByRole("tab", { name: "Plan" });
+  await plan.focus();
   await page.keyboard.press("ArrowRight");
-  const changes = page.getByRole("tab", { name: "What changed and why" });
-  await expect(changes).toBeFocused();
-  await expect(changes).toHaveAttribute("aria-selected", "true");
-  await expect(page.getByRole("tabpanel", { name: "What changed and why" })).toBeVisible();
+  const progress = page.getByRole("tab", { name: "Progress" });
+  await expect(progress).toBeFocused();
+  await expect(progress).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByRole("tabpanel", { name: "Progress" })).toBeVisible();
   await page.keyboard.press("End");
   await expect(page.getByRole("tab", { name: "Privacy" })).toBeFocused();
   await page.keyboard.press("ArrowRight"); // wraps
-  await expect(progress).toBeFocused();
+  await expect(plan).toBeFocused();
 });
 
 test("game replay and watch-again are full-size child targets", async ({ page }, info) => {
@@ -77,7 +77,7 @@ test.describe("phone width", () => {
   test.use({ viewport: { width: 375, height: 740 }, hasTouch: true });
   const AREAS = {
     Parent: ["/parent", "/parent/child/ch_ali", "/parent/child/ch_ali#aac", "/parent/children/new", "/parent/reports", "/parent/billing", "/parent/assistant", "/parent/account"],
-    Teacher: ["/teacher", "/teacher/class/cl_sun", "/teacher/child/ch_ali"],
+    "Video reviewer": ["/physio"],
     Therapist: ["/therapist", "/therapist/child/ch_ali"],
     Admin: ["/admin", "/admin/users", "/admin/billing", "/admin/content", "/admin/audit"],
   } as const;
@@ -93,7 +93,7 @@ test.describe("phone width", () => {
     await setup(page);
   });
   test("public pages", async ({ page }) => {
-    for (const p of ["/", "/pricing", "/privacy", "/login", "/signup", "/class", "/demo"]) await fits(page, p);
+    for (const p of ["/", "/pricing", "/privacy", "/login", "/signup", "/demo"]) await fits(page, p);
   });
   for (const [role, paths] of Object.entries(AREAS) as [keyof typeof AREAS, readonly string[]][])
     test(`${role} area`, async ({ page }) => {

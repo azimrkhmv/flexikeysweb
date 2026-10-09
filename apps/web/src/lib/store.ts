@@ -46,12 +46,15 @@ export function persisted<T>(key: string, initial: T, opts: { accept?: (stored: 
     },
     set(next: T | ((prev: T) => T)) {
       load();
-      value = typeof next === "function" ? (next as (p: T) => T)(value) : next;
+      const v = typeof next === "function" ? (next as (p: T) => T)(value) : next;
       try {
-        localStorage.setItem(key, JSON.stringify(value));
-      } catch {
-        /* ignore quota / blocked storage */
+        localStorage.setItem(key, JSON.stringify(v));
+      } catch (e) {
+        // Full storage: refuse the write so the caller can tell the user, instead of keeping it in memory
+        // until the next reload silently drops it. Blocked storage (private mode) keeps working in memory.
+        if (e instanceof DOMException && e.name === "QuotaExceededError") throw e;
       }
+      value = v;
       listeners.forEach((l) => l());
     },
     subscribe(l: () => void) {

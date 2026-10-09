@@ -1,7 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
 // E2E runs against the production build and standalone server (same as the Docker image).
-const PORT = 3100;
+const PORT = Number(process.env.E2E_PORT ?? 3100);
 
 export default defineConfig({
   testDir: "e2e",

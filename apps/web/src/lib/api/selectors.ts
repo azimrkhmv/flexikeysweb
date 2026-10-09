@@ -3,12 +3,27 @@
 // Pure read functions over the DB. `sel.access` is the single authorization rule (PRD §15.4).
 
 import { FREE_LEVELS, LEVEL_BY_ID, LEVELS, levelComplete } from "@/content/levels";
-import { DEFAULT_PROFILE } from "../adaptive";
+import { computeMetrics, startingProfile, withFloors } from "../adaptive";
+import type { Answers } from "@/content/intake";
+import { LANGS, type Lang } from "../i18n";
 import { DAY, iso, type DB } from "./schema";
-import type { AdaptiveProfile, Child, ClassRoom, ConsentScope, InputProfile, LevelProgress, Subscription, Wallet } from "../types";
+import type { AdaptiveProfile, Child, ClassRoom, ConsentScope, InputProfile, LevelProgress, Roadmap, Subscription, VideoStatus, Wallet } from "../types";
 
 // ---------------------------------------------------------------- selectors (pure)
 export const sel = {
+  // ---- intake, roadmap, video library (product spec 2026-10-06)
+  /** Latest intake round of a child. */
+  intakeRound: (db: DB, childId: string) => db.intakeRounds.filter((r) => r.childId === childId).sort((a, b) => b.round - a.round)[0] ?? null,
+  intakeAnswers: (db: DB, childId: string, round: number): Answers =>
+    Object.fromEntries(db.intakeAnswers.filter((a) => a.childId === childId && a.round === round).map((a) => [a.questionId, a.value])),
+  roadmap: (db: DB, childId: string): Roadmap | null => db.roadmaps.filter((r) => r.childId === childId).sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0] ?? null,
+  video: (db: DB, videoId: string) => db.videos.find((v) => v.id === videoId) ?? null,
+  videos: (db: DB) => db.videos,
+  /** Language versions with this review status, and how many there are of each status. */
+  videosByStatus: (db: DB, status: VideoStatus) => db.videos.flatMap((video) => LANGS.filter((l) => video.versions[l]?.status === status).map((lang) => ({ video, lang }))),
+  /** The single rule for "a family may see this video": a physio approved this language version (spec §8). */
+  usableVideos: (db: DB, lang: Lang) => db.videos.filter((v) => v.versions[lang]?.status === "approved"),
+
   me: (db: DB) => db.users.find((u) => u.id === db.auth.userId) ?? null,
   /** Live mode: server data not loaded yet — show a spinner, don't conclude "signed out". */
   loading: (db: DB) => !!db.loading,
@@ -34,11 +49,21 @@ export const sel = {
     return null;
   },
 
+  /** The adapted profile, never below the adult-set floors; a child with no sessions yet starts from their levels. */
   profile(db: DB, childId: string, input: InputProfile = "touch"): AdaptiveProfile {
-    return (db.profiles.find((p) => p.childId === childId && p.input === input) ?? db.profiles.find((p) => p.childId === childId))?.params ?? DEFAULT_PROFILE;
+    const support = db.children.find((c) => c.id === childId)?.support;
+    const p = (db.profiles.find((p) => p.childId === childId && p.input === input) ?? db.profiles.find((p) => p.childId === childId))?.params;
+    return p ? withFloors(p, support?.floors) : startingProfile(support);
   },
   changes: (db: DB, childId: string) => db.changes.filter((c) => c.childId === childId).sort((a, b) => b.at.localeCompare(a.at)),
   sessions: (db: DB, childId: string) => db.sessions.filter((s) => s.childId === childId).sort((a, b) => b.startedAt.localeCompare(a.startedAt)),
+  /** Newest sessions with their adaptive-engine metrics (only sessions with events; live mode has none client-side). */
+  sessionMetrics: (db: DB, childId: string, limit: number) =>
+    sel
+      .sessions(db, childId)
+      .map((s) => ({ s, m: computeMetrics(db.events.filter((e) => e.sessionId === s.id)) }))
+      .filter((r) => r.m.taps > 0)
+      .slice(0, limit),
   mastery: (db: DB, childId: string) => LEVELS.map((l) => db.mastery.find((m) => m.childId === childId && m.skill === l.id) ?? { childId, skill: l.id, pKnown: 0, attempts: 0, updatedAt: "" }),
   wallet: (db: DB, childId: string): Wallet => db.wallets.find((w) => w.childId === childId) ?? { childId, coins: 0, stars: 0, owned: [] },
   levelProgress: (db: DB, childId: string, levelId: string): LevelProgress =>
@@ -89,6 +114,18 @@ export const sel = {
     }
     return out;
   },
+  /** Activities finished in the last 7 days. */
+  weekActivities: (db: DB, childId: string) =>
+    db.sessions.filter((s) => s.childId === childId && s.startedAt > iso(Date.now() - 7 * DAY)).reduce((a, s) => a + (s.activities ?? 0), 0),
+  /** The level the child is working on now (first open, unfinished one) and how far along; null when all are done. */
+  currentLevel(db: DB, childId: string) {
+    const i = LEVELS.findIndex((_, k) => sel.levelState(db, childId, k) === "open");
+    if (i < 0) return null;
+    const level = LEVELS[i];
+    const required = level.activities.filter((a) => !a.optional);
+    const completed = sel.levelProgress(db, childId, level.id).completed;
+    return { level, done: required.filter((a) => completed.includes(a.id)).length, total: required.length };
+  },
   streak(db: DB, childId: string) {
     let n = 0;
     for (let d = 0; d < 60; d++) {
@@ -110,7 +147,8 @@ export const sel = {
     db.enrollments.filter((e) => e.classId === classId).map((e) => sel.child(db, e.childId)).filter((c): c is Child => !!c),
   therapistChildren: (db: DB, userId: string) =>
     db.careLinks.filter((l) => l.professionalId === userId && l.status === "active").map((l) => sel.child(db, l.childId)).filter((c): c is Child => !!c),
-  invitesFor: (db: DB, email: string) => db.careLinks.filter((l) => l.status === "invited" && l.email.toLowerCase() === email.toLowerCase()),
+  invitesFor: (db: DB, email: string, phone?: string) =>
+    db.careLinks.filter((l) => l.status === "invited" && ((!!l.email && l.email.toLowerCase() === email.toLowerCase()) || (!!phone && l.phone === phone))),
   careLinks: (db: DB, childId: string) => db.careLinks.filter((l) => l.childId === childId && l.status !== "revoked"),
   notifications: (db: DB, userId: string) => db.notifications.filter((n) => n.userId === userId).sort((a, b) => b.at.localeCompare(a.at)),
   aacStats(db: DB, childId: string) {

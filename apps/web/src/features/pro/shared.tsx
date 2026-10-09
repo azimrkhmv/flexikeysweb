@@ -163,6 +163,55 @@ export function SessionsList({ childId, limit = 8 }: { childId: string; limit?: 
   );
 }
 
+/**
+ * Per-session motor and learning signals the adaptive engine already computes — what an OT/SLP tracks:
+ * reaction time, accuracy, accidental touches (shorter than the hold time), repeat presses caught by the
+ * filter, and whether the child slowed down within the session (fatigue).
+ */
+export function MotorMetrics({ childId, limit = 8 }: { childId: string; limit?: number }) {
+  const t = useT();
+  const [lang] = useLang();
+  const db = useDb();
+  const rows = sel.sessionMetrics(db, childId, limit);
+  const pct = (x: number) => `${Math.round(x * 100)}%`;
+  return (
+    <Card>
+      <SectionTitle>{t("pro.metrics")}</SectionTitle>
+      <p className="mb-3 text-xs text-muted">{t("pro.metrics.hint")}</p>
+      {rows.length === 0 ? (
+        <Empty />
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-left text-xs text-muted">
+                <th className="py-1.5 pr-3 font-semibold">{t("pro.metrics.date")}</th>
+                <th className="py-1.5 pr-3 font-semibold">{t("pro.metrics.reaction")}</th>
+                <th className="py-1.5 pr-3 font-semibold">{t("pro.metrics.accuracy")}</th>
+                <th className="py-1.5 pr-3 font-semibold">{t("pro.metrics.accidental")}</th>
+                <th className="py-1.5 pr-3 font-semibold">{t("pro.metrics.repeats")}</th>
+                <th className="py-1.5 font-semibold">{t("pro.metrics.tiring")}</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-line">
+              {rows.map(({ s, m }) => (
+                <tr key={s.id}>
+                  <td className="py-2 pr-3 text-ink">{fmtDate(s.startedAt, lang, "dateTime")}</td>
+                  <td className="py-2 pr-3">{m.avgLatencyMs ? `${(m.avgLatencyMs / 1000).toFixed(1)} s` : "—"}</td>
+                  <td className="py-2 pr-3">{m.answers ? pct(m.accuracy) : "—"}</td>
+                  <td className="py-2 pr-3">{pct(m.accidentalRate)}</td>
+                  <td className="py-2 pr-3">{pct(m.debounceRate)}</td>
+                  <td className="py-2">{m.fatigue ? t("pro.metrics.yes") : "—"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </Card>
+  );
+}
+
 export function LevelLabel({ levelId }: { levelId: string }) {
   const [lang] = useLang();
   const l = LEVEL_BY_ID[levelId];

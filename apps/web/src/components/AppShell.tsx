@@ -7,7 +7,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Bell, LogOut, type LucideIcon } from "lucide-react";
 import { api, LIVE, sel, useDb } from "@/lib/api";
 import { LiveProvider } from "@/lib/live/client";
-import { useLang, useT } from "@/lib/i18n";
+import { useT, useUiLang } from "@/lib/i18n";
 import { useMounted } from "@/lib/store";
 import { useDismiss } from "@/lib/useDismiss";
 import type { Role, User } from "@/lib/types";
@@ -35,20 +35,21 @@ export function RequireRole({ role, children }: { role: Role | Role[]; children:
   const router = useRouter();
   const path = usePathname();
   const roles = Array.isArray(role) ? role : [role];
-  const ok = !!me && roles.includes(me.role) && me.status !== "disabled";
+  const ok = !!me && roles.includes(me.role) && me.status !== "disabled" && !(me.phone && !me.consentVersion);
 
   useEffect(() => {
     if (!mounted || sel.loading(db)) return; // live mode: wait for the server before deciding
     if (childMode) router.replace("/play");
     else if (!me) router.replace(`/login?next=${encodeURIComponent(path)}`);
     else if (!roles.includes(me.role)) router.replace(homeFor(me.role));
+    else if (me.phone && !me.consentVersion) router.replace("/signup"); // sign-up not finished (consent, district)
   });
 
   if (!mounted || sel.loading(db) || !ok || childMode) return <Spinner />;
   return <>{children(me)}</>;
 }
 
-export function AppShell({ role, nav, children }: { role: Role; nav: NavItem[]; children: (me: User) => ReactNode }) {
+export function AppShell({ role, nav, children }: { role: Role | Role[]; nav: NavItem[]; children: (me: User) => ReactNode }) {
   return (
     <LiveProvider>
       <RequireRole role={role}>
@@ -66,7 +67,7 @@ export function AppShell({ role, nav, children }: { role: Role; nav: NavItem[]; 
 
 function Shell({ me, nav, children }: { me: User; nav: NavItem[]; children: ReactNode }) {
   const t = useT();
-  const [lang] = useLang();
+  const [lang] = useUiLang();
   // The language picked on this device is the user's preference: keep the account in sync (PATCH /users/me).
   useEffect(() => {
     if (me.uiLang !== lang) api.updateMe({ uiLang: lang }).catch(() => {});
@@ -75,57 +76,77 @@ function Shell({ me, nav, children }: { me: User; nav: NavItem[]; children: Reac
   const router = useRouter();
   const active = (href: string) => (href === `/${me.role}` ? path === href : path.startsWith(href));
 
+  const logout = async () => {
+    await api.logout();
+    router.replace("/");
+  };
+  const initial = me.name.trim().charAt(0).toUpperCase() || "?";
+
   return (
     <div className="min-h-dvh bg-bg">
-      <header className="sticky top-0 z-30 border-b border-line bg-bg/90 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-[1400px] items-center gap-3 px-4">
-          <Logo href={`/${me.role}`} small />
-          <span className="hidden rounded-full bg-surface-2 px-3 py-1 text-xs font-bold text-ink-2 sm:inline">{t(`role.${me.role}`)}</span>
-          <div className="ml-auto flex items-center gap-2">
-            <LangSwitch compact />
-            <Notifications userId={me.id} />
-            <span className="hidden text-sm font-bold text-ink md:inline">{me.name}</span>
-            <button
-              type="button"
-              onClick={async () => {
-                await api.logout();
-                router.replace("/");
-              }}
-              className="grid size-10 place-items-center rounded-full text-ink-2 hover:bg-surface-2"
-              aria-label={t("nav.logout")}
-              title={t("nav.logout")}
-            >
+      {/* Desktop: the menu is a full-height panel fixed to the left edge — brand on top, the signed-in person at the bottom. */}
+      <aside className="fixed inset-y-0 left-0 z-20 hidden w-64 flex-col border-r border-line bg-surface p-4 print:!hidden lg:flex">
+          <div className="flex items-center gap-2 px-2 pb-6 pt-2">
+            <Logo href={`/${me.role}`} small />
+            <span className="rounded-full bg-surface-2 px-2.5 py-0.5 text-xs font-bold text-ink-2">{t(`role.${me.role}`)}</span>
+          </div>
+          {/* A scroll container clips what's outside it: -m/p-1.5 leaves room for the 3px + 3px focus ring. */}
+          <nav aria-label={t("nav.menu")} className="-m-1.5 min-h-0 flex-1 overflow-y-auto p-1.5">
+            <ul className="space-y-1">
+              {nav.map(({ href, label, icon: Icon }) => (
+                <li key={href}>
+                  <Link
+                    href={href}
+                    aria-current={active(href) ? "page" : undefined}
+                    className={`flex items-center gap-3 rounded-2xl px-3 py-2.5 font-bold transition ${active(href) ? "bg-primary-soft text-primary" : "text-ink-2 hover:bg-surface-2"}`}
+                  >
+                    <Icon className="size-5" aria-hidden />
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+          <div className="mt-4 flex items-center gap-3 rounded-2xl bg-surface-2 p-3">
+            <span className="grid size-10 shrink-0 place-items-center rounded-full bg-primary text-sm font-extrabold text-white" aria-hidden>
+              {initial}
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-sm font-extrabold text-ink">{me.name}</span>
+              <span className="block truncate text-xs text-muted">{t(`role.${me.role}`)}</span>
+            </span>
+            <button type="button" onClick={logout} className="grid size-9 place-items-center rounded-full text-ink-2 hover:bg-surface" aria-label={t("nav.logout")} title={t("nav.logout")}>
               <LogOut className="size-5" />
             </button>
           </div>
-        </div>
-      </header>
+      </aside>
 
-      <div className="mx-auto flex max-w-[1400px] gap-6 px-4 pb-28 pt-6 lg:pb-10">
-        <nav aria-label={t("nav.menu")} className="sticky top-22 hidden h-fit w-60 shrink-0 lg:block">
-          <ul className="space-y-1">
-            {nav.map(({ href, label, icon: Icon }) => (
-              <li key={href}>
-                <Link
-                  href={href}
-                  aria-current={active(href) ? "page" : undefined}
-                  className={`flex items-center gap-3 rounded-2xl px-4 py-3 font-bold transition ${active(href) ? "bg-surface text-primary shadow-soft" : "text-ink-2 hover:bg-surface/70"}`}
-                >
-                  <Icon className="size-5" aria-hidden />
-                  {label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-        <main className="min-w-0 flex-1">
-          {me.status === "pending_verification" && (
-            <div role="status" className="mb-6 rounded-2xl border border-sun bg-sun-soft p-4 text-sm font-semibold text-[#7a5a0c]">
-              {t("err.pending_verification")}
+      {/* Content sits right of the panel; on very wide screens it stays centred in the remaining space. */}
+      <div className="pb-28 lg:pb-8 lg:pl-64">
+        <div className="mx-auto min-w-0 max-w-[1200px] px-4 lg:px-8">
+          {/* Top bar: brand + sign-out only on small screens (the panel holds them on desktop). */}
+          <header className="sticky top-0 z-30 -mx-4 flex h-16 items-center gap-3 bg-bg/90 px-4 backdrop-blur lg:static lg:mx-0 lg:mt-6 lg:h-12 lg:bg-transparent lg:px-0 lg:backdrop-blur-none">
+            <div className="flex items-center gap-2 lg:hidden">
+              <Logo href={`/${me.role}`} small />
+              <span className="hidden rounded-full bg-surface-2 px-3 py-1 text-xs font-bold text-ink-2 sm:inline">{t(`role.${me.role}`)}</span>
             </div>
-          )}
-          {children}
-        </main>
+            <div className="ml-auto flex items-center gap-2">
+              <LangSwitch compact />
+              <Notifications userId={me.id} />
+              <button type="button" onClick={logout} className="grid size-10 place-items-center rounded-full text-ink-2 hover:bg-surface-2 lg:hidden" aria-label={t("nav.logout")} title={t("nav.logout")}>
+                <LogOut className="size-5" />
+              </button>
+            </div>
+          </header>
+          <main className="pt-2 lg:pt-4">
+            {me.status === "pending_verification" && (
+              <div role="status" className="mb-6 rounded-2xl border border-sun bg-sun-soft p-4 text-sm font-semibold text-[#7a5a0c]">
+                {t("err.pending_verification")}
+              </div>
+            )}
+            {children}
+          </main>
+        </div>
       </div>
 
       <nav aria-label={t("nav.menu")} className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden">
@@ -180,7 +201,7 @@ function Notifications({ userId }: { userId: string }) {
               </button>
             )}
           </div>
-          <ul className="max-h-80 overflow-y-auto">
+          <ul className="-m-1.5 max-h-80 overflow-y-auto p-1.5">
             {list.length === 0 && <li className="px-3 py-4 text-sm text-muted">{t("common.none")}</li>}
             {list.slice(0, 10).map((n) => (
               <li key={n.id}>

@@ -3,9 +3,10 @@ import { loginAs, setup } from "./helpers";
 
 // Text snapshots of every dashboard with the seeded demo data and a fixed clock. They guard refactors of the
 // data layer: the same data must render the same words. Update intentionally with `--update-snapshots`.
-const PAGES: Record<"Parent" | "Teacher" | "Therapist" | "Admin", string[]> = {
+const PAGES: Record<"Parent" | "Video reviewer" | "Therapist" | "Admin", string[]> = {
   Parent: [
     "/parent",
+    "/parent/child/ch_ali#plan",
     "/parent/child/ch_ali#progress",
     "/parent/child/ch_ali#changes",
     "/parent/child/ch_ali#aac",
@@ -15,7 +16,7 @@ const PAGES: Record<"Parent" | "Teacher" | "Therapist" | "Admin", string[]> = {
     "/parent/billing",
     "/parent/assistant",
   ],
-  Teacher: ["/teacher", "/teacher/class/cl_sun", "/teacher/child/ch_ali"],
+  "Video reviewer": ["/physio"],
   Therapist: ["/therapist", "/therapist/child/ch_ali"],
   Admin: ["/admin", "/admin/users", "/admin/billing", "/admin/content", "/admin/audit"],
 };
@@ -31,7 +32,7 @@ for (const [role, paths] of Object.entries(PAGES) as [keyof typeof PAGES, string
       const main = page.locator("main").last();
       await expect(main.locator("h1").first()).toBeVisible();
       const text = (await main.innerText()).replace(/[ \t]+\n/g, "\n");
-      expect(text).toMatchSnapshot(`${role}${path.replace(/[/#]+/g, "_")}.txt`);
+      expect(text).toMatchSnapshot(`${role.replace(" ", "_")}${path.replace(/[/#]+/g, "_")}.txt`);
     }
   });
 }

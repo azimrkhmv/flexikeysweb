@@ -102,6 +102,7 @@ export function WorldMap({ child, onOpen }: { child: Child; onOpen: (levelId: st
               <Target
                 label={level.title[child.uiLang]}
                 onSelect={() => onOpen(level.id)}
+                scanSkip={asleep}
                 pulse={state === "open" && profile.hintLevel >= 2}
                 className={`grid place-items-center rounded-full border-4 shadow-lift transition ${asleep ? "border-white/70 bg-[#eef2f8]" : "border-white"}`}
                 style={{ width: size, height: size, background: asleep ? undefined : TONE[level.color] }}

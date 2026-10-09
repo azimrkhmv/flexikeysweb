@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useRef, useState, useSyncExternalStore } from "react";
 import { Check, Clock, Coins, Copy, Download, Flame, Mic, Star, Trash } from "lucide-react";
 import { Bars, Button, Card, Chip, Empty, Field, Input, Meter, Modal, Select, Stat, Toggle, useAction } from "@/components/ui";
 import { AAC_CATEGORIES } from "@/content/aac";
@@ -10,10 +10,12 @@ import { api, sel, useDb } from "@/lib/api";
 import { LANGS, useLang, useT, type Lang } from "@/lib/i18n";
 import type { AccessMode, Child, ConsentScope } from "@/lib/types";
 import { fmtDate } from "@/lib/format";
+import { hasVoice, subscribeVoices } from "@/lib/audio";
 import { aacLabel, BIRTH_YEARS, download, profileLines } from "./lib";
 import { AccessPicker, AvatarGrid } from "./pickers";
+import { SupportCard } from "./support";
 
-export const TABS = ["progress", "changes", "aac", "sharing", "settings", "privacy"] as const;
+export const TABS = ["plan", "progress", "changes", "aac", "sharing", "settings", "privacy"] as const;
 export type Tab = (typeof TABS)[number];
 
 const H2 = ({ children }: { children: React.ReactNode }) => <h2 className="mb-3 text-lg font-extrabold">{children}</h2>;
@@ -551,70 +553,90 @@ export function SettingsTab({ child }: { child: Child }) {
   const save = useAction(api.updateChild);
 
   return (
-    <Card className="max-w-2xl">
-      <form
-        className="space-y-5"
-        onSubmit={async (e) => {
-          e.preventDefault();
-          setSaved(false);
-          if ((await save.run(child.id, { name: name.trim(), birthYear, learningLang, uiLang, avatar, access })) !== undefined) setSaved(true);
-        }}
-      >
-        <div className="grid gap-5 sm:grid-cols-2">
-          <Field label={t("parent.field.name")}>
-            <Input value={name} onChange={(e) => setName(e.target.value)} maxLength={30} required />
-          </Field>
-          <Field label={t("parent.field.birthYear")}>
-            <Select value={birthYear} onChange={(e) => setBirthYear(Number(e.target.value))}>
-              {BIRTH_YEARS.map((y) => (
-                <option key={y} value={y}>
-                  {y}
-                </option>
-              ))}
-            </Select>
-          </Field>
-          <Field label={t("parent.field.learningLang")} hint={t("parent.field.learningLangHint")}>
-            <Select value={learningLang} onChange={(e) => setLearningLang(e.target.value as Lang)}>
-              {LANGS.map((l) => (
-                <option key={l} value={l}>
-                  {t(`lang.${l}`)}
-                </option>
-              ))}
-            </Select>
-          </Field>
-          <Field label={t("parent.field.uiLang")} hint={t("parent.field.uiLangHint")}>
-            <Select value={uiLang} onChange={(e) => setUiLang(e.target.value as Lang)}>
-              {LANGS.map((l) => (
-                <option key={l} value={l}>
-                  {t(`lang.${l}`)}
-                </option>
-              ))}
-            </Select>
-          </Field>
-        </div>
-        <AccessPicker value={access} onChange={setAccess} />
-        <fieldset>
-          <legend className="mb-3 text-sm font-bold">{t("parent.field.avatar")}</legend>
-          <AvatarGrid value={avatar} onChange={setAvatar} />
-        </fieldset>
-        {save.error && <p role="alert" className="text-sm font-semibold text-[#8f3a2c]">{save.error}</p>}
-        <div className="flex items-center gap-3">
-          <Button type="submit" pending={save.pending}>
-            {t("common.save")}
-          </Button>
-          {saved && (
-            <span role="status" className="text-sm font-bold text-teal">
-              {t("parent.saved")}
-            </span>
-          )}
-        </div>
-      </form>
-    </Card>
+    <div className="grid items-start gap-6 xl:grid-cols-2">
+      <Card>
+        <form
+          className="space-y-5"
+          onSubmit={async (e) => {
+            e.preventDefault();
+            setSaved(false);
+            if ((await save.run(child.id, { name: name.trim(), birthYear, learningLang, uiLang, avatar, access })) !== undefined) setSaved(true);
+          }}
+        >
+          <div className="grid gap-5 sm:grid-cols-2">
+            <Field label={t("parent.field.name")}>
+              <Input value={name} onChange={(e) => setName(e.target.value)} maxLength={30} required />
+            </Field>
+            <Field label={t("parent.field.birthYear")}>
+              <Select value={birthYear} onChange={(e) => setBirthYear(Number(e.target.value))}>
+                {BIRTH_YEARS.map((y) => (
+                  <option key={y} value={y}>
+                    {y}
+                  </option>
+                ))}
+              </Select>
+            </Field>
+            <Field label={t("parent.field.learningLang")} hint={t("parent.field.learningLangHint")}>
+              <Select value={learningLang} onChange={(e) => setLearningLang(e.target.value as Lang)}>
+                {LANGS.map((l) => (
+                  <option key={l} value={l}>
+                    {t(`lang.${l}`)}
+                  </option>
+                ))}
+              </Select>
+            </Field>
+            <Field label={t("parent.field.uiLang")} hint={t("parent.field.uiLangHint")}>
+              <Select value={uiLang} onChange={(e) => setUiLang(e.target.value as Lang)}>
+                {LANGS.map((l) => (
+                  <option key={l} value={l}>
+                    {t(`lang.${l}`)}
+                  </option>
+                ))}
+              </Select>
+            </Field>
+          </div>
+          <VoiceNotice langs={[uiLang, learningLang]} />
+          <AccessPicker value={access} onChange={setAccess} />
+          <fieldset>
+            <legend className="mb-3 text-sm font-bold">{t("parent.field.avatar")}</legend>
+            <AvatarGrid value={avatar} onChange={setAvatar} />
+          </fieldset>
+          {save.error && <p role="alert" className="text-sm font-semibold text-[#8f3a2c]">{save.error}</p>}
+          <div className="flex items-center gap-3">
+            <Button type="submit" pending={save.pending}>
+              {t("common.save")}
+            </Button>
+            {saved && (
+              <span role="status" className="text-sm font-bold text-teal">
+                {t("parent.saved")}
+              </span>
+            )}
+          </div>
+        </form>
+      </Card>
+      <SupportCard key={child.id} child={child} />
+    </div>
   );
 }
 
 // ---------------------------------------------------------------- privacy
-const OPTIONAL: ConsentScope[] = ["ai_processing", "voice_recording", "school_sharing", "therapist_sharing"];
+const OPTIONAL: ConsentScope[] = ["health", "movement_videos", "ai_processing", "voice_recording", "school_sharing", "therapist_sharing"];
+
+/** Warns when this device can't speak a child's language (most devices have no Uzbek voice). */
+function VoiceNotice({ langs }: { langs: Lang[] }) {
+  const t = useT();
+  const missing = useSyncExternalStore(
+    subscribeVoices,
+    () => [...new Set(langs)].filter((l) => hasVoice(l) === false).join(","),
+    () => "",
+  );
+  if (!missing) return null;
+  return (
+    <p role="note" className="rounded-xl bg-sun-soft px-4 py-3 text-sm font-semibold text-ink">
+      {t("parent.voice.missing", { lang: missing.split(",").map((l) => t(`lang.${l}`)).join(", ") })}
+    </p>
+  );
+}
 
 export function PrivacyTab({ child }: { child: Child }) {
   const t = useT();

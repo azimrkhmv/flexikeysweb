@@ -6,6 +6,8 @@ import { useState } from "react";
 import { homeFor } from "@/components/brand";
 import { Button, Field, Input, useAction } from "@/components/ui";
 import { AuthTitle, FormError, GoogleMark } from "@/features/auth/parts";
+import { PhoneFlow, safeNext } from "@/features/auth/PhoneFlow";
+import { useEmailMode } from "@/features/auth/mode";
 import { api, DEMO_PASSWORD, LIVE } from "@/lib/api";
 import { applyAccountLang, useT } from "@/lib/i18n";
 import type { Role, User } from "@/lib/types";
@@ -17,10 +19,24 @@ const DEMOS: [Role, string][] = [
   ["admin", "admin@demo.uz"],
 ];
 
-/** Only same-site relative paths — never "//host" or "/\host" (open redirect). */
-const safeNext = (next: string | null) => (next && /^\/(?![/\\])/.test(next) ? next : null);
-
+/** Spec §4: phone + SMS only. Email sign-in stays for live mode (backend has no phone auth yet) and legacy accounts. */
 export default function LoginPage() {
+  const [emailMode, legacy] = useEmailMode();
+  const t = useT();
+  if (emailMode) return <EmailLogin />;
+  return (
+    <>
+      <PhoneFlow showDemos />
+      {legacy && (
+        <p className="mt-6 text-center text-sm">
+          <Link href="/login?email=1" className="font-bold text-primary hover:underline">{t("auth.phone.email")}</Link>
+        </p>
+      )}
+    </>
+  );
+}
+
+function EmailLogin() {
   const t = useT();
   const router = useRouter();
   const [email, setEmail] = useState("");

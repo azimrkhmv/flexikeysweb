@@ -84,7 +84,7 @@ function ChoiceRound({ spec, index, total, last, onNext }: { spec: ChoiceSpec; i
   );
 }
 
-function PromptCard({ id }: { id: string }) {
+export function PromptCard({ id }: { id: string }) {
   const ctx = usePlay();
   const s = sizeFor(ctx, 150);
   return (

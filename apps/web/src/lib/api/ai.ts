@@ -9,7 +9,22 @@ import { requireUser, requireChildAccess } from "./guards";
 import { ApiError, AI_DAILY_QUOTA, id, iso, type DB } from "./schema";
 import { sel } from "./selectors";
 
+/** Keywords (en/uz/ru stems) → the hint they suggest. ponytail: keyword stub for the LLM extraction (spec P39). */
+const HINTS: [RegExp, string][] = [
+  [/left hand|chap qo|левой рук|левая рук/i, "stronger_left"],
+  [/right hand|o.ng qo|правой рук|правая рук/i, "stronger_right"],
+  [/tired|tires|charcha|устаёт|устает|устал/i, "tires"],
+  [/music|song|musiqa|qo.shiq|музык|песн/i, "loves_music"],
+  [/animal|cat|dog|hayvon|mushuk|живот|кошк|собак/i, "loves_animals"],
+  [/car\b|cars|mashina|машин/i, "loves_cars"],
+];
+
 export const aiApi = {
+  /** POST /ai/intake-hints — a few hints from "in your own words"; the parent confirms each one (spec P39). */
+  async ownWordsHints(text: string) {
+    requireUser(["parent"]);
+    return net(HINTS.filter(([re]) => re.test(text)).map(([, h]) => h), 200);
+  },
   // ------------------------------------------------------------ AI (/ai-assistant/*, /teacher/ai/summary)
   /** POST /ai-assistant/chat — pseudonymized context, consent-gated, quota-limited (PRD §16). */
   async askAssistant(childId: string, text: string, lang: Lang) {
@@ -37,7 +52,8 @@ export const aiApi = {
     const db = read();
     const k = db.classes.find((c) => c.id === classId && c.teacherId === u.id);
     if (!k) throw new ApiError("not_found");
-    const kids = sel.classChildren(db, classId);
+    // FR-AI-4: only children whose parent gave ai_processing consent (school-managed profiles have none).
+    const kids = sel.classChildren(db, classId).filter((c) => sel.hasConsent(db, c.id, "ai_processing"));
     const avg = (childId: string) => {
       const m = sel.mastery(db, childId).filter((x) => x.attempts > 0);
       return m.length ? m.reduce((a, x) => a + x.pKnown, 0) / m.length : 0;

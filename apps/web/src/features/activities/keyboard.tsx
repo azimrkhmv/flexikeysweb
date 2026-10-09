@@ -83,7 +83,8 @@ export function AdaptiveKeyboard({
   const t = useActT();
   const narrow = useNarrow();
   const p = ctx.profile;
-  const reduced = forceReduced ?? (p.hintLevel >= 2 || narrow);
+  // Scanning a full keyboard takes ~50 s per letter: switch users always get the reduced keys.
+  const reduced = forceReduced ?? (p.hintLevel >= 2 || narrow || ctx.access === "scan");
   const rows = reduced ? [reducedKeys(lang, needed)] : LAYOUTS[lang];
   const size = Math.max(64, Math.round(76 * p.keyScale));
   // Physical key press → same debounce rule as on-screen keys (FR-KBD-3), then onKey.
@@ -103,6 +104,7 @@ export function AdaptiveKeyboard({
     const all = LAYOUTS[lang].flat();
     const onDown = (e: KeyboardEvent) => {
       if (e.repeat || e.ctrlKey || e.metaKey || e.altKey || e.key.length !== 1 || e.key === " ") return;
+      if (document.querySelector('[aria-modal="true"]')) return; // pause menu / My Voice open over the game
       let k = e.key.toLowerCase();
       if (lang === "ru" && !/[а-яё]/.test(k)) k = RU_BY_CODE[e.code] ?? k;
       // ponytail: "o"/"g" count as "oʻ"/"gʻ" when that is the expected key — hardware keyboards have no ʻ key.

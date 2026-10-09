@@ -147,7 +147,7 @@ export function Stat({ label, value, icon, tone = "sky" }: { label: string; valu
       {icon && <span className={`grid size-12 shrink-0 place-items-center rounded-2xl ${TONES[tone]}`}>{icon}</span>}
       <div className="min-w-0">
         <div className="text-2xl font-extrabold text-ink">{value}</div>
-        <div className="truncate text-sm text-muted">{label}</div>
+        <div className="line-clamp-2 text-sm leading-snug text-muted">{label}</div>
       </div>
     </Card>
   );

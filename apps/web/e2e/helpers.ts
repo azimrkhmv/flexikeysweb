@@ -9,11 +9,13 @@ export async function setup(page: Page, lang: "en" | "uz" | "ru" = "en") {
   }, lang);
 }
 
-/** Signs in with one of the seeded demo accounts via the login page's demo buttons. */
-export async function loginAs(page: Page, role: "Parent" | "Teacher" | "Therapist" | "Admin") {
+const HOME = { Parent: "/parent", Teacher: "/teacher", Therapist: "/therapist", Admin: "/admin", "Video reviewer": "/physio" };
+
+/** Signs in with one of the seeded demo accounts via the login page's demo buttons (phone sign-in, spec §4). */
+export async function loginAs(page: Page, role: keyof typeof HOME) {
   await page.goto("/login");
   await page.getByRole("button", { name: `Log in: ${role}` }).click();
-  await expect(page).toHaveURL(new RegExp(`/${role.toLowerCase()}`));
+  await expect(page).toHaveURL(new RegExp(HOME[role]));
 }
 
 // Parent gate labels + number words per child UI language (the question is written in words for pre-readers).

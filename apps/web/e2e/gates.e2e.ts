@@ -24,7 +24,7 @@ test.describe("assignments vs level gates", () => {
     await expect(page.getByRole("heading", { level: 1, name: "Tana aʼzolari" })).toHaveCount(0);
   });
 
-  test("parent, therapist and teacher see why the level is still closed", async ({ page }) => {
+  test("parent and therapist see why the level is still closed", async ({ page }) => {
     await loginAs(page, "Parent");
     await expect(page.getByText("Opens after “Transport” is finished")).toBeVisible();
 
@@ -32,9 +32,5 @@ test.describe("assignments vs level gates", () => {
     await page.goto("/therapist/child/ch_ali");
     await expect(page.getByText("Opens after “Transport” is finished")).toBeVisible();
 
-    await loginAs(page, "Teacher");
-    await page.goto("/teacher/class/cl_sun");
-    await expect(page.getByText("Not open yet for 4 of 5 children")).toBeVisible(); // "Animals": open only for Ali
-    await expect(page.getByText(/Assignments point the way/)).toBeVisible();
   });
 });

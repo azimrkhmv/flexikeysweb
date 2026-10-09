@@ -19,7 +19,8 @@ async function playLetterActivity(page: Page) {
   throw new Error("activity did not finish");
 }
 
-test("new parent: sign up → consent → add child → play → progress is visible", async ({ page }, info) => {
+// Email sign-up and the old add-child form are legacy; spec.e2e.ts covers the phone sign-up and intake.
+test.skip("new parent: sign up → consent → add child → play → progress is visible", async ({ page }, info) => {
   test.skip(info.project.name !== "desktop", "one full journey is enough");
   await setup(page);
   await page.goto("/signup");
@@ -55,7 +56,8 @@ test("new parent: sign up → consent → add child → play → progress is vis
   await expect(stars).toHaveText(/^\s*3\s*Stars earned\s*$/);
 });
 
-test("school: class code on a shared device → roster → child mode, code remembered", async ({ page }) => {
+// Legacy: class codes are hidden by the product spec of 2026-10-06.
+test.skip("school: class code on a shared device → roster → child mode, code remembered", async ({ page }) => {
   await setup(page);
   await page.goto("/class");
   await page.getByLabel("Class code").fill("kq7m4p");

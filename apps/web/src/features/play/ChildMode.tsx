@@ -11,11 +11,13 @@ import { api, sel, useDb, type ChildAuth, type DB } from "@/lib/api";
 import { sfx, speak, unlockAudio } from "@/lib/audio";
 import { useT, type Lang } from "@/lib/i18n";
 import { useFocusTrap } from "@/lib/useFocusTrap";
+import { createOutbox, retryable, type OutboxItem } from "@/lib/outbox";
 import type { AdaptiveProfile, Child, InputProfile, InteractionEvent, MascotMood } from "@/lib/types";
+import { WarmUp } from "@/features/activities/warmup";
 import { Aac } from "./Aac";
 import { ParentGate } from "./ParentGate";
 import { Shop } from "./Shop";
-import { Target, useScanning, type SelectInfo } from "./Target";
+import { SCAN_DEFAULT, Target, useScanning, type SelectInfo } from "./Target";
 import { LevelView, WorldMap } from "./WorldMap";
 import { PlayContext, type PlayCtx, type PlayEvent } from "./context";
 
@@ -25,6 +27,7 @@ type View =
   | { v: "map" }
   | { v: "aac" }
   | { v: "shop" }
+  | { v: "warmup" }
   | { v: "level"; levelId: string }
   | { v: "activity"; levelId: string; activityId: string }
   | { v: "celebrate"; levelId: string; activityId: string; coins: number; stars: number; levelDone: boolean };
@@ -32,6 +35,11 @@ type View =
 const DEFAULT_BG = "linear-gradient(180deg,#eaf3fc 0%,#f5f9f0 60%,#e3f0dc 100%)";
 const FLUSH_EVERY = 10;
 const FLUSH_MS = 5000;
+
+const send = (i: OutboxItem) =>
+  i.kind === "events" ? api.postEvents(i.sessionId, i.events, i.id, i.startedAt) : i.kind === "complete" ? api.completeActivity(i.sessionId, i.levelId, i.activityId) : api.endSession(i.sessionId);
+/** One queue per page: telemetry, completions and session ends are sent in order and retried until delivered. */
+const outbox = typeof window === "undefined" ? null : createOutbox(send);
 
 const inputOf = (p: SelectInfo["pointerType"]): InputProfile => (p === "mouse" ? "pointer" : p === "keyboard" || p === "switch" ? "keyboard" : "touch");
 const pick = (prefix: string, n: number) => `${prefix}.${1 + Math.floor(Math.random() * n)}`;
@@ -83,14 +91,14 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
   const t = useT(lang);
   const [view, setView] = useState<View>({ v: "start" });
   const [mood, setMood] = useState<MascotMood>("wave");
-  const [overlay, setOverlay] = useState<null | "menu" | "gate" | "break">(null);
+  const [overlay, setOverlay] = useState<null | "menu" | "gate" | "break" | "aac">(null);
   const [breakDue, setBreakDue] = useState(false);
   const [input, setInput] = useState<InputProfile>("touch");
   const online = useOnline();
   const shellRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
 
-  const session = useRef<{ id: string; start: number } | null>(null);
+  const session = useRef<{ id: string; start: number; wall: number } | null>(null);
   /** True between Start and "finish for today" — a session should exist while this is set. */
   const playing = useRef(false);
   const inputRef = useRef<InputProfile>("touch");
@@ -115,25 +123,25 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
   const profile = useMemo(() => JSON.parse(profileKey) as AdaptiveProfile, [profileKey]);
 
   // ---------- telemetry (batched: every 10 events, every 5 s, and when the page hides)
-  const flush = useCallback((force = false) => {
+  // Nothing is dropped on a bad connection: batches go through the outbox and are retried when it returns.
+  const flush = useCallback(() => {
     const s = session.current;
-    if (!s || !buffer.current.length || (!force && !navigator.onLine)) return;
-    const batch = buffer.current.splice(0);
-    api.postEvents(s.id, batch).catch(() => {});
+    if (!s || !buffer.current.length) return;
+    void outbox?.add({ kind: "events", sessionId: s.id, startedAt: s.wall, events: buffer.current.splice(0) });
   }, []);
 
   const endSession = useCallback(() => {
-    flush(true);
+    flush();
     const s = session.current;
     session.current = null;
-    if (s) api.endSession(s.id).catch(() => {});
+    if (s) void outbox?.add({ kind: "end", sessionId: s.id });
   }, [flush]);
 
   /** `pagehide` ends the session, but a page restored from the back/forward cache keeps playing — start a new one. */
   const ensureSession = useCallback(async () => {
     if (!session.current && playing.current) {
       const id = await api.startSession(inputRef.current).catch(() => null);
-      if (id && !session.current) session.current = { id, start: performance.now() };
+      if (id && !session.current) session.current = { id, start: performance.now(), wall: Date.now() };
     }
     return session.current;
   }, []);
@@ -149,7 +157,10 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
   );
 
   useEffect(() => {
-    const tick = setInterval(() => flush(), FLUSH_MS);
+    const tick = setInterval(() => {
+      flush();
+      void outbox?.drain();
+    }, FLUSH_MS);
     const breakCheck = setInterval(() => {
       if (session.current && Date.now() - breakStart.current >= profile.breakAfterMin * 60_000) setBreakDue(true);
     }, 20_000);
@@ -160,19 +171,23 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
   }, [flush, profile.breakAfterMin]);
 
   useEffect(() => {
-    const onVis = () => document.visibilityState === "hidden" && flush(true);
+    const onVis = () => document.visibilityState === "hidden" && flush();
+    const onOnline = () => void outbox?.drain();
+    void outbox?.drain(); // whatever an earlier visit couldn't send
     const onShow = (e: PageTransitionEvent) => e.persisted && void ensureSession();
     const onPtr = (e: PointerEvent) => setInput(inputOf(e.pointerType as SelectInfo["pointerType"]));
     const onKey = (e: KeyboardEvent) => (e.key.length === 1 || e.key === "Enter") && setInput("keyboard");
     document.addEventListener("visibilitychange", onVis);
     window.addEventListener("pagehide", endSession);
     window.addEventListener("pageshow", onShow);
+    window.addEventListener("online", onOnline);
     window.addEventListener("pointerdown", onPtr, true);
     window.addEventListener("keydown", onKey, true);
     return () => {
       document.removeEventListener("visibilitychange", onVis);
       window.removeEventListener("pagehide", endSession);
       window.removeEventListener("pageshow", onShow);
+      window.removeEventListener("online", onOnline);
       window.removeEventListener("pointerdown", onPtr, true);
       window.removeEventListener("keydown", onKey, true);
       clearTimeout(startTimer.current);
@@ -187,7 +202,7 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
     clearTimeout(moodTimer.current);
     moodTimer.current = setTimeout(() => setMood("calm"), ms);
   }, []);
-  const say = useCallback((text: string, l: Lang = lang) => speak(text, l), [lang]);
+  const say = useCallback((text: string, l: Lang = lang, queue = false) => speak(text, l, queue), [lang]);
   const react = useCallback(
     (kind: "success" | "try") => {
       if (kind === "success") {
@@ -204,11 +219,17 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
   );
 
   const ctx: PlayCtx = useMemo(
-    () => ({ childName: child.name, profile, access: child.access, learnLang: child.learningLang, uiLang: lang, levelId, activityId, emit, react, say, lastAccept }),
-    [child.name, profile, child.access, child.learningLang, lang, levelId, activityId, emit, react, say],
+    () => ({ childName: child.name, profile, access: child.access, support: child.support, learnLang: child.learningLang, uiLang: lang, levelId, activityId, emit, react, say, lastAccept }),
+    [child.name, profile, child.access, child.support, child.learningLang, lang, levelId, activityId, emit, react, say],
   );
 
   // ---------- navigation
+  const warmFirst = child.access !== "touch" || (child.support?.macs ?? 0) >= 4 || (child.support?.vfcs ?? 0) >= 4;
+  const afterWarmUp = (): View => {
+    const next = nextUp(db, child.id);
+    return next ? { v: "activity", ...next } : { v: "map" };
+  };
+
   const [starting, setStarting] = useState(false);
   const begin = async (info: SelectInfo) => {
     if (starting) return;
@@ -223,12 +244,12 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
     await ensureSession();
     breakStart.current = Date.now();
     setBreakDue(false);
-    const next = nextUp(db, child.id);
-    // Let the greeting finish, then go straight into the next game.
+    // Let the greeting finish, then go straight into the next game — after a warm-up for children who use
+    // switches, hover/eye-gaze, or have severe hand or vision difficulties.
     startTimer.current = setTimeout(() => {
       setStarting(false);
       setMood("calm");
-      setView(next ? { v: "activity", ...next } : { v: "map" });
+      setView(warmFirst ? { v: "warmup" } : afterWarmUp());
     }, 1600);
   };
 
@@ -244,11 +265,20 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
   };
 
   const finishActivity = async (lvl: string, act: string) => {
-    flush(true);
+    flush();
     sfx("chime");
     setMood("celebrate");
     const s = await ensureSession();
-    const r = s ? await api.completeActivity(s.id, lvl, act).catch(() => null) : null;
+    // Sent straight away for the reward; queued (and celebrated without coins for now) when the connection is
+    // down or older items are still waiting, so the completion is never lost and stays in order.
+    let r: Awaited<ReturnType<typeof api.completeActivity>> | null = null;
+    await outbox?.drain();
+    if (s && outbox?.size) void outbox.add({ kind: "complete", sessionId: s.id, levelId: lvl, activityId: act });
+    else if (s)
+      r = await api.completeActivity(s.id, lvl, act).catch((e) => {
+        if (retryable(e)) void outbox?.add({ kind: "complete", sessionId: s.id, levelId: lvl, activityId: act });
+        return null;
+      });
     const reward = r ?? { coins: 0, stars: 0, levelDone: false };
     setView({ v: "celebrate", levelId: lvl, activityId: act, coins: reward.coins, stars: reward.stars, levelDone: reward.levelDone });
     speak(t(reward.levelDone ? "play.levelDone" : "play.celebrate"), lang);
@@ -286,11 +316,32 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
     router.replace(auth.grantedBy === "class" ? "/class" : "/parent");
   };
 
-  const showBreak = overlay === "break" || (breakDue && !overlay && !["activity", "start", "bye"].includes(view.v));
+  // My Voice is a communication aid: no break or offline screen ever covers it.
+  const showBreak = overlay === "break" || (breakDue && !overlay && !["activity", "warmup", "start", "bye", "aac"].includes(view.v));
+  const offlineBlock = !online && view.v !== "aac" && overlay !== "aac";
   // Switch scanning covers the whole shell (nav included), or only the open overlay.
-  useScanning(child.access === "scan" && overlay !== "gate", overlay === "menu" || showBreak ? overlayRef : shellRef);
-  // Escape = "Continue" on the pause menu and the break screen (never exits child mode).
-  useFocusTrap(overlayRef, overlay === "menu" ? "menu" : showBreak ? "break" : null, () => {
+  const scan = child.support?.scan ?? SCAN_DEFAULT;
+  useScanning(child.access === "scan" && overlay !== "gate", overlay === "menu" || overlay === "aac" || showBreak || offlineBlock ? overlayRef : shellRef, {
+    stepMs: scan.stepMs,
+    mode: scan.mode,
+    speak: scan.speak,
+    lang,
+  });
+  // Calm screen: no moving or glowing effects anywhere in child mode (hints keep their static ring).
+  // Vision mode implies it, and outlines every target in the child's preferred colour.
+  const cvi = child.support?.cvi?.color;
+  const calm = !!child.support?.calm || !!cvi;
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.toggle("fk-calm", calm);
+    if (cvi) root.dataset.cvi = cvi;
+    return () => {
+      root.classList.remove("fk-calm");
+      delete root.dataset.cvi;
+    };
+  }, [calm, cvi]);
+  // Escape = "Continue" on the pause menu, My Voice and the break screen (never exits child mode).
+  useFocusTrap(overlayRef, overlay === "menu" || overlay === "aac" ? overlay : showBreak ? "break" : null, () => {
     if (showBreak) {
       breakStart.current = Date.now();
       setBreakDue(false);
@@ -365,6 +416,19 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
     case "aac":
       body = <Aac child={child} />;
       break;
+    case "warmup":
+      body = (
+        <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col rounded-fk-lg border-4 border-white bg-surface/90 p-4 shadow-soft sm:p-6">
+          <WarmUp
+            onDone={() => {
+              sfx("chime");
+              setMoodFor("happy");
+              setView(afterWarmUp());
+            }}
+          />
+        </div>
+      );
+      break;
     case "shop":
       body = <Shop child={child} />;
       break;
@@ -384,7 +448,7 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
       <div
         ref={shellRef}
         className="flex h-dvh flex-col overflow-hidden pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] pt-[env(safe-area-inset-top)] text-ink"
-        style={{ background: SHOP_BY_ID[child.equipped.bg ?? ""]?.value ?? DEFAULT_BG }}
+        style={{ background: cvi ? "#111827" : (SHOP_BY_ID[child.equipped.bg ?? ""]?.value ?? DEFAULT_BG) }}
       >
         {/* top bar */}
         <header className="flex items-center gap-2 px-3 py-2">
@@ -397,7 +461,13 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
             <span aria-hidden>{child.avatar}</span> {child.name}
           </span>
           <div className="ml-auto flex items-center gap-2">
+            {["activity", "celebrate", "warmup"].includes(view.v) && (
+              <Target label={t("play.nav.aac")} onSelect={() => setOverlay("aac")} className="grid place-items-center rounded-full bg-surface/90 px-3 text-3xl shadow-soft">
+                <span aria-hidden>💬</span>
+              </Target>
+            )}
             <Target
+              scanSkip
               label={t("play.fullscreen")}
               onSelect={() => void (document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.())?.catch?.(() => {})}
               className="grid place-items-center rounded-full bg-surface/70 text-ink-2"
@@ -418,7 +488,7 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
         </main>
 
         {/* mascot companion */}
-        {!["start", "bye", "celebrate", "shop"].includes(view.v) && (
+        {!cvi && !["start", "bye", "celebrate", "shop"].includes(view.v) && (
           <div className="pointer-events-none fixed bottom-24 left-2 z-10 hidden sm:block" aria-hidden>
             <Mascot mood={mood} size={view.v === "activity" ? 96 : 120} hat={hat} tint={tint} />
           </div>
@@ -430,6 +500,7 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
             {(
               [
                 ["map", "🗺️", "play.nav.map"],
+                ["warmup", "🎈", "warm.title"],
                 ["aac", "💬", "play.nav.aac"],
                 ["shop", "☁️", "play.nav.shop"],
               ] as const
@@ -465,6 +536,16 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
           </div>
         </div>
       )}
+      {overlay === "aac" && (
+        <div className="fixed inset-0 z-40 overflow-y-auto bg-[#eaf3fc]/95 p-3 backdrop-blur sm:p-6" role="dialog" aria-modal="true" aria-label={t("play.nav.aac")}>
+          <div ref={overlayRef} className="flex flex-col gap-3">
+            <Target label={t("play.menu.continue")} onSelect={() => setOverlay(null)} className={`${bigBtn} self-start bg-teal text-white`}>
+              ▶ {t("play.menu.continue")}
+            </Target>
+            <Aac child={child} />
+          </div>
+        </div>
+      )}
       {overlay === "gate" && <ParentGate lang={lang} onPass={exit} onCancel={() => setOverlay(null)} />}
       {showBreak && (
         <div className="fixed inset-0 z-40 grid place-items-center bg-[#dfe8f8]/85 p-4 backdrop-blur" role="dialog" aria-modal="true" aria-label={t("play.break.title")}>
@@ -491,12 +572,18 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
           </div>
         </div>
       )}
-      {!online && (
+      {offlineBlock && (
         <div className="fixed inset-0 z-50 grid place-items-center bg-[#eef2f8]/90 p-4 backdrop-blur" role="status">
-          <div className="flex flex-col items-center gap-4 text-center">
+          <div ref={overlayRef} className="flex flex-col items-center gap-4 text-center">
             <Mascot mood="sleepy" size={200} hat={hat} tint={tint} />
             <h2 className="text-3xl font-extrabold text-ink">{t("play.offline")}</h2>
             <p className="text-lg text-ink-2">{t("play.offline.sub")}</p>
+            {/* Cards and voice are on the device, so My Voice keeps working without internet. */}
+            {!["start", "bye"].includes(view.v) && (
+              <Target label={t("play.nav.aac")} onSelect={() => setOverlay("aac")} className={`${bigBtn} bg-teal text-white`}>
+                💬 {t("play.nav.aac")}
+              </Target>
+            )}
           </div>
         </div>
       )}

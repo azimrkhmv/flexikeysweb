@@ -3,6 +3,7 @@
 import type { Lang } from "./i18n";
 
 // ponytail: on-device speechSynthesis stands in for the pre-generated Azure audio manifest (PRD §9.8).
+// Most devices have no Uzbek voice, so Uzbek stays silent except for recorded My Voice cards until then.
 // Only `localService` voices are used so no text leaves the device. Swap `speak()` for manifest playback
 // once content audio exists.
 
@@ -29,11 +30,39 @@ function voiceFor(lang: Lang) {
   return local.find((v) => v.lang.toLowerCase().startsWith(BCP[lang])) ?? null;
 }
 
-export function speak(text: string, lang: Lang) {
+// Chrome fills getVoices() asynchronously: the first line (the greeting) used to be dropped. Hold the latest
+// request until the voice list arrives.
+let pending: (() => void) | null = null;
+if (typeof window !== "undefined")
+  window.speechSynthesis?.addEventListener?.("voiceschanged", () => {
+    const run = pending;
+    pending = null;
+    run?.();
+  });
+
+/** Whether this device can speak `lang` on-device; null while the voice list is still loading. */
+export function hasVoice(lang: Lang): boolean | null {
+  if (typeof window === "undefined" || !window.speechSynthesis) return false;
+  if (!window.speechSynthesis.getVoices().length) return null;
+  return voiceFor(lang) !== null;
+}
+
+/** Re-renders when the device's voice list changes (for `hasVoice`). */
+export function subscribeVoices(cb: () => void) {
+  window.speechSynthesis?.addEventListener?.("voiceschanged", cb);
+  return () => window.speechSynthesis?.removeEventListener?.("voiceschanged", cb);
+}
+
+/** `queue`: play after what is already speaking instead of cutting it off (e.g. a word after its instruction). */
+export function speak(text: string, lang: Lang, queue = false) {
   if (muted || typeof window === "undefined" || !window.speechSynthesis) return;
+  if (!window.speechSynthesis.getVoices().length) {
+    pending = () => speak(text, lang, queue);
+    return;
+  }
   const voice = voiceFor(lang);
   if (!voice) return; // no local voice for this language: stay silent rather than send text to a cloud voice
-  window.speechSynthesis.cancel();
+  if (!queue) window.speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
   u.voice = voice;
   u.lang = voice.lang;
@@ -43,7 +72,10 @@ export function speak(text: string, lang: Lang) {
 }
 
 export function stopSpeech() {
-  if (typeof window !== "undefined") window.speechSynthesis?.cancel();
+  if (typeof window === "undefined") return;
+  pending = null;
+  window.speechSynthesis?.cancel();
+  clip?.pause();
 }
 
 type Sfx = "tap" | "success" | "soft" | "chime" | "pop";
@@ -75,10 +107,19 @@ export function sfx(kind: Sfx) {
   }
 }
 
-/** Plays a recorded clip (a parent's own voice on a My Voice card) instead of the synthetic voice. */
-export function playClip(url: string) {
-  if (typeof window === "undefined") return;
+let clip: HTMLAudioElement | null = null;
+
+/** Plays recorded clips (a parent's own voice on My Voice cards) one after another, instead of the synthetic voice. */
+export function playClip(...urls: string[]) {
+  if (typeof window === "undefined" || muted) return;
   window.speechSynthesis?.cancel();
-  void new Audio(url).play().catch(() => {});
+  clip?.pause();
+  const next = (i: number) => {
+    if (i >= urls.length) return;
+    const a = (clip = new Audio(urls[i]));
+    a.onended = () => clip === a && next(i + 1);
+    void a.play().catch(() => {});
+  };
+  next(0);
 }
 

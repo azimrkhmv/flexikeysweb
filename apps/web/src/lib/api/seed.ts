@@ -2,11 +2,13 @@
 
 // Demo data: 6 accounts, 7 children and ~2 weeks of play history (deterministic apart from ids).
 
+import { exerciseLibrary } from "@/content/exercises";
 import { LEVEL_BY_ID } from "@/content/levels";
 import { DEFAULT_PROFILE } from "../adaptive";
+import { buildRoadmap } from "../roadmap";
 import type { Lang } from "../i18n";
-import { CONSENT_VERSION, DEMO_PASSWORD, DAY, DB_VERSION, id, iso, type DB } from "./schema";
-import type { AdaptationChange, Child, Consent, ConsentScope, ProfileRecord, Role, User, UserStatus } from "../types";
+import { CONSENT_VERSION, DEMO_PASSWORD, DEMO_PHONES, DAY, DB_VERSION, id, iso, type DB } from "./schema";
+import type { AdaptationChange, Child, Consent, ConsentScope, IntakeValue, ProfileRecord, Role, User, UserStatus } from "../types";
 
 // ---------------------------------------------------------------- seed
 function rng(seed: number) {
@@ -22,8 +24,9 @@ function rng(seed: number) {
 export function seed(): DB {
   const r = rng(42);
   const now = Date.now();
-  const user = (uid: string, email: string, name: string, role: Role, status: UserStatus = "active"): User => ({
+  const user = (uid: string, email: string, name: string, role: Role, status: UserStatus = "active", phone?: string): User => ({
     id: uid, email, name, role, status, password: DEMO_PASSWORD, uiLang: "uz", emailVerified: true, createdAt: iso(now - 40 * DAY),
+    ...(phone && { phone, district: { region: "tashkent_city", district: "Chilonzor" }, consentVersion: CONSENT_VERSION }),
   });
   const kid = (cid: string, parentId: string | null, name: string, birthYear: number, avatar: string, learningLang: Lang = "uz", access: Child["access"] = "touch"): Child => ({
     id: cid, parentId, name, birthYear, avatar, learningLang, uiLang: learningLang, access, equipped: {}, createdAt: iso(now - 30 * DAY),
@@ -36,10 +39,11 @@ export function seed(): DB {
     v: DB_VERSION,
     auth: { userId: null, child: null },
     users: [
-      user("u_parent", "parent@demo.uz", "Dilnoza", "parent"),
+      user("u_parent", "parent@demo.uz", "Dilnoza", "parent", "active", DEMO_PHONES.parent),
       user("u_teacher", "teacher@demo.uz", "Gulnora Karimova", "teacher"),
-      user("u_therapist", "therapist@demo.uz", "Kamola Rashidova", "therapist"),
-      user("u_admin", "admin@demo.uz", "FlexiKeys Admin", "admin"),
+      user("u_therapist", "therapist@demo.uz", "Kamola Rashidova", "therapist", "active", DEMO_PHONES.therapist),
+      user("u_physio", "physio@demo.uz", "Rustam Yusupov", "physio", "active", DEMO_PHONES.physio),
+      user("u_admin", "admin@demo.uz", "FlexiKeys Admin", "admin", "active", DEMO_PHONES.admin),
       user("u_pending", "new.therapist@demo.uz", "Sardor Aliev", "therapist", "pending_verification"),
       user("u_parent2", "family@demo.uz", "Aziza", "parent"),
     ],
@@ -107,8 +111,14 @@ export function seed(): DB {
       { key: "recurring_payments", enabled: false, description: "Card tokenization + auto-renew" },
       { key: "auto_approve_professionals", enabled: false, description: "Skip admin verification for teachers/therapists (pilot)" },
       { key: "connect_dots", enabled: false, description: "Connect-the-dots activity (cut line)" },
+      { key: "legacy", enabled: false, description: "Pre-spec features: teacher/class, 16-level map, cloud shop, email login" },
     ],
     aiMessages: [],
+    otp: [],
+    intakeAnswers: [],
+    intakeRounds: [],
+    videos: exerciseLibrary("u_physio", iso(now - 10 * DAY)),
+    roadmaps: [],
   };
 
   // ~2 weeks of play history so dashboards have something real to show.
@@ -160,6 +170,23 @@ export function seed(): DB {
     ch("ch_madina", "optionCount", 3, 2, "adapt.optionCount.more", 5),
     ch("ch_madina", "targetScale", 1.1, 1.2, "adapt.targetScale.more", 2),
   );
+
+  // Ali finished the intake 3 days ago (spec §5): CP, walks with help on stairs, no jumping, 20 minutes a day.
+  const aliAnswers: Record<string, IntakeValue> = {
+    P1: "Ali", P2: "2019-04-12", P3: "boy", P4: "mother", P5: "parent", P8: "sky",
+    P9: ["cp"], P10: "spastic", P11: "one_side", P12: "walks_help", P13: "never", P14: ["jumping"], P15: "no", P16: ["braces"], P17: "no",
+    P18: 2, P19: 2, P20: 1, P21: 1, P22: "words", P23: 1, P24: 1, P25: "lines", P26: 1, P27: 2,
+    P28: "yes", P29: 2, P30: 1, P31: 1, P32: 1, P33: ["hands", "walk", "communicate"], P34: "20", P35: "evening",
+  };
+  const doneAt = iso(now - 3 * DAY);
+  db.consents.push(consent("ch_ali", "health"));
+  db.intakeRounds.push({ childId: "ch_ali", round: 1, startedAt: doneAt, completedAt: doneAt });
+  db.intakeAnswers = Object.entries(aliAnswers).map(([questionId, value]) => ({ childId: "ch_ali", round: 1, questionId, value, answeredAt: doneAt, respondent: "parent" }));
+  db.roadmaps.push({
+    ...buildRoadmap({ childId: "ch_ali", round: 1, birthDate: "2019-04-12", startDate: doneAt.slice(0, 10), lang: "uz", answers: aliAnswers, healthConsent: true }, db.videos),
+    id: "rm_ali", createdAt: doneAt,
+  });
+  Object.assign(db.children.find((c) => c.id === "ch_ali")!, { birthDate: "2019-04-12", sex: "boy", relationship: "mother" });
 
   const phrases = [["i", "want", "water"], ["i", "want", "more"], ["mom", "hug"], ["happy"], ["go", "outside"], ["i", "like", "music"], ["tired"], ["i", "want", "ball"], ["help"], ["finished"]];
   for (let k = 0; k < 26; k++) {

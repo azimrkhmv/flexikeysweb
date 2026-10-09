@@ -1,4 +1,4 @@
-import type { AdaptiveProfile, InteractionEvent, ParamKey, ProfileRecord } from "./types";
+import type { AdaptiveProfile, ChildSupport, FloorKey, InteractionEvent, ParamKey, ProfileRecord } from "./types";
 
 // Client mirror of the server adaptive engine (PRD §9.5). The real engine runs in the
 // backend worker; this copy powers the demo and documents the rules the UI relies on.
@@ -28,12 +28,36 @@ export const BOUNDS: Record<ParamKey, [number, number, number]> = {
   breakAfterMin: [8, 20, 3],
 };
 
+/**
+ * First profile for a new child from the parent-reported levels, so a child with severe motor or vision
+ * difficulties doesn't start on the defaults and wait sessions for help. The engine adapts from here.
+ */
+export function startingProfile(s?: ChildSupport): AdaptiveProfile {
+  const p = { ...DEFAULT_PROFILE };
+  const hands = s?.macs ?? 1;
+  if (hands >= 4) Object.assign(p, { keyScale: 1.3, targetScale: 1.3, spacing: 12, dwellMs: 300, debounceMs: 450, traceTolerance: 56 });
+  else if (hands === 3) Object.assign(p, { keyScale: 1.2, targetScale: 1.2, spacing: 12, dwellMs: 150, debounceMs: 375, traceTolerance: 48 });
+  if ((s?.vfcs ?? 1) >= 3) Object.assign(p, { targetScale: 1.4, keyScale: Math.max(p.keyScale, 1.3), optionCount: 2 });
+  if ((s?.cfcs ?? 1) >= 4) p.hintLevel = 2;
+  return withFloors(p, s?.floors);
+}
+
+/** Raises params to the adult-set minimums. */
+export function withFloors(p: AdaptiveProfile, floors?: Partial<Record<FloorKey, number>>): AdaptiveProfile {
+  if (!floors) return p;
+  const out = { ...p };
+  for (const [k, v] of Object.entries(floors) as [FloorKey, number][]) if (typeof v === "number") out[k] = Math.max(out[k], v);
+  return out;
+}
+
 /** Sessions during which the opposite direction stays blocked. Expires — no ratchet (fixes B5). */
 export const HYSTERESIS_SESSIONS = 2;
 const MIN_EVENTS = 8;
 
 export interface SessionMetrics {
   taps: number;
+  /** Assessed answers (accuracy is only meaningful when > 0). */
+  answers: number;
   accuracy: number;
   accidentalRate: number;
   debounceRate: number;
@@ -55,6 +79,7 @@ export function computeMetrics(events: InteractionEvent[]): SessionMetrics {
   const avg = (xs: number[]) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0);
   return {
     taps: presses,
+    answers: answers.length,
     accuracy: answers.length ? correct / answers.length : 1,
     accidentalRate: presses ? accidental / presses : 0,
     debounceRate: presses ? debounced / presses : 0,
@@ -64,11 +89,14 @@ export function computeMetrics(events: InteractionEvent[]): SessionMetrics {
   };
 }
 
-/** Desired direction per param: +1 = more help, -1 = less help, 0 = keep. */
+/**
+ * Desired direction per param: +1 = more help, -1 = less help, 0 = keep.
+ * Motor help (sizes, spacing, tolerance) follows motor signals only; learning help (hints, options) follows
+ * accuracy only. Mixing them grew keys for wrong answers and shrank them for a child who knows the answers
+ * but struggles to hit them.
+ */
 function wants(m: SessionMetrics): Partial<Record<ParamKey, 1 | -1>> {
   const w: Partial<Record<ParamKey, 1 | -1>> = {};
-  const struggling = m.accuracy < 0.6;
-  const mastering = m.accuracy >= 0.9 && (m.offsetRatio === null || m.offsetRatio < 0.2);
 
   if (m.accidentalRate > 0.15) w.dwellMs = 1;
   else if (m.accidentalRate < 0.03) w.dwellMs = -1;
@@ -76,25 +104,25 @@ function wants(m: SessionMetrics): Partial<Record<ParamKey, 1 | -1>> {
   if (m.debounceRate > 0.1) w.debounceMs = 1;
   else if (m.debounceRate < 0.02) w.debounceMs = -1;
 
-  if ((m.offsetRatio ?? 0) > 0.35 || struggling) {
-    w.keyScale = 1;
-    w.targetScale = 1;
-    w.traceTolerance = 1;
-  } else if (mastering) {
-    w.keyScale = -1;
-    w.targetScale = -1;
-    w.traceTolerance = -1;
-  }
-
+  // Sizes only move with touch/pen geometry; keyboard and switch users keep theirs.
   if (m.offsetRatio !== null) {
+    if (m.offsetRatio > 0.35 || m.accidentalRate > 0.15) {
+      w.keyScale = 1;
+      w.targetScale = 1;
+      w.traceTolerance = 1;
+    } else if (m.offsetRatio < 0.2 && m.accidentalRate < 0.03) {
+      w.keyScale = -1;
+      w.targetScale = -1;
+      w.traceTolerance = -1;
+    }
     if (m.offsetRatio > 0.35) w.spacing = 1;
     else if (m.offsetRatio < 0.15) w.spacing = -1;
   }
 
-  if (struggling) {
+  if (m.accuracy < 0.6) {
     w.hintLevel = 1;
     w.optionCount = 1; // more help → fewer choices (see HELP_IS_LOWER)
-  } else if (mastering && m.avgLatencyMs < 3000) {
+  } else if (m.accuracy >= 0.9 && m.avgLatencyMs < 3000) {
     w.hintLevel = -1;
     w.optionCount = -1;
   }
@@ -114,7 +142,7 @@ export interface PolicyChange {
   reasonKey: string;
 }
 
-export function applyPolicy(rec: ProfileRecord, events: InteractionEvent[]): { record: ProfileRecord; changes: PolicyChange[] } {
+export function applyPolicy(rec: ProfileRecord, events: InteractionEvent[], floors?: ChildSupport["floors"]): { record: ProfileRecord; changes: PolicyChange[] } {
   const m = computeMetrics(events);
   // Age out hysteresis every session so it can never ratchet.
   const lastDir: ProfileRecord["lastDir"] = {};
@@ -126,7 +154,8 @@ export function applyPolicy(rec: ProfileRecord, events: InteractionEvent[]): { r
   const params = { ...rec.params };
   const changes: PolicyChange[] = [];
   for (const [param, help] of Object.entries(wants(m)) as [ParamKey, 1 | -1][]) {
-    const [min, max, step] = BOUNDS[param];
+    const [bound, max, step] = BOUNDS[param];
+    const min = Math.max(bound, floors?.[param as FloorKey] ?? bound);
     const valueDir = HELP_IS_LOWER.includes(param) ? -help : help;
     const blocked = rec.lastDir[param];
     if (blocked && blocked.left > 0 && blocked.dir !== valueDir) continue;

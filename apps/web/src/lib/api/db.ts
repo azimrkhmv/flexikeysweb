@@ -4,7 +4,7 @@
 
 import { sessionStore } from "../session";
 import { persisted, useStore } from "../store";
-import { DB_VERSION, type DB } from "./schema";
+import { ApiError, DB_VERSION, type DB } from "./schema";
 import { seed } from "./seed";
 
 export const dbStore = persisted<DB>("fk_db_v1", seed(), { accept: (d) => d?.v === DB_VERSION });
@@ -12,11 +12,16 @@ export const useDb = () => useStore(dbStore);
 
 export const read = () => dbStore.get();
 export const write = (fn: (db: DB) => void) => {
-  dbStore.set((prev) => {
-    const next = structuredClone(prev);
-    fn(next);
-    return next;
-  });
+  try {
+    dbStore.set((prev) => {
+      const next = structuredClone(prev);
+      fn(next);
+      return next;
+    });
+  } catch (e) {
+    if (e instanceof DOMException && e.name === "QuotaExceededError") throw new ApiError("storage_full");
+    throw e;
+  }
   syncSession();
 };
 

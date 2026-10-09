@@ -4,7 +4,7 @@
 
 import { LEVEL_BY_ID, levelComplete } from "@/content/levels";
 import { SHOP_BY_ID } from "@/content/shop";
-import { applyPolicy, bkt, DEFAULT_PROFILE } from "../adaptive";
+import { applyPolicy, bkt, startingProfile } from "../adaptive";
 import type { Lang } from "../i18n";
 import { read, write, net } from "./db";
 import { requireChildAccess, requireChildToken, notify } from "./guards";
@@ -57,7 +57,8 @@ export const playApi = {
     return net(s.id, 0);
   },
   /** POST /sessions/{id}/events — session must belong to the child token (fixes B2). */
-  async postEvents(sessionId: string, events: Omit<InteractionEvent, "sessionId">[]) {
+  async postEvents(sessionId: string, events: Omit<InteractionEvent, "sessionId">[], batchId?: string, startedAt?: number) {
+    void [batchId, startedAt]; // the mock stores events synchronously, so there are no retries to de-duplicate
     const c = requireChildToken();
     const s = read().sessions.find((x) => x.id === sessionId);
     if (!s || s.childId !== c.childId) throw new ApiError("not_found");
@@ -105,6 +106,7 @@ export const playApi = {
       s.endedAt = iso();
       s.minutes = Math.max(1, Math.round((Date.parse(s.endedAt) - Date.parse(s.startedAt)) / 60_000));
       const events = db.events.filter((e) => e.sessionId === sessionId);
+      const child = db.children.find((x) => x.id === c.childId);
 
       for (const e of events) {
         if (!e.levelId || e.correct === undefined) continue;
@@ -117,14 +119,13 @@ export const playApi = {
 
       let rec = db.profiles.find((p) => p.childId === c.childId && p.input === s.input);
       if (!rec) {
-        rec = { childId: c.childId, input: s.input, params: { ...DEFAULT_PROFILE }, version: 1, lastDir: {}, updatedAt: iso() };
+        rec = { childId: c.childId, input: s.input, params: startingProfile(child?.support), version: 1, lastDir: {}, updatedAt: iso() };
         db.profiles.push(rec);
       }
-      const { record, changes } = applyPolicy(rec, events);
+      const { record, changes } = applyPolicy(rec, events, child?.support?.floors);
       Object.assign(rec, record);
       changed = changes.map((x) => ({ ...x, id: id(), childId: c.childId, input: s.input, at: iso() }));
       db.changes.push(...changed);
-      const child = db.children.find((x) => x.id === c.childId);
       if (changed.length && child?.parentId) notify(db, child.parentId, "notif.adaptation", { name: child.name });
     });
     return net(changed, 0);

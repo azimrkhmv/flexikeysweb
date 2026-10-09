@@ -1,9 +1,10 @@
-import type { Lang } from "./i18n";
+import type { Lang, UiLang } from "./i18n";
 
 export type L10n<T = string> = Record<Lang, T>;
 
 // ---------- Accounts ----------
-export type Role = "parent" | "teacher" | "therapist" | "admin";
+/** `physio` reviews exercise videos before families see them (spec §8). `teacher` is legacy (hidden). */
+export type Role = "parent" | "teacher" | "therapist" | "physio" | "admin";
 export type UserStatus = "active" | "pending_verification" | "disabled";
 
 export interface User {
@@ -14,8 +15,14 @@ export interface User {
   status: UserStatus;
   /** MOCK ONLY — the real backend stores an Argon2id hash, never the password. */
   password: string;
-  uiLang: Lang;
+  uiLang: UiLang;
   emailVerified: boolean;
+  /** Sign-in is phone + SMS code (spec §4): +998XXXXXXXXX. */
+  phone?: string;
+  /** City/region and district ids from content/districts.ts (Find help, booking, Home Kit delivery). */
+  district?: { region: string; district: string };
+  /** Basic consent (account, play data) accepted at sign-up. */
+  consentVersion?: string;
   createdAt: string;
 }
 
@@ -34,11 +41,44 @@ export interface Child {
   uiLang: Lang;
   avatar: string;
   access: AccessMode;
+  /** Optional: how the child moves, sees and communicates, and the access settings adults chose. */
+  support?: ChildSupport;
   equipped: { hat?: string; color?: string; bg?: string };
+  /** Spec §5 P2/P3/P4 (children made by the intake). birthYear stays for the older screens. */
+  birthDate?: string;
+  sex?: "boy" | "girl";
+  relationship?: "mother" | "father" | "grandparent" | "carer";
   createdAt: string;
 }
 
-export type ConsentScope = "core" | "ai_processing" | "voice_recording" | "school_sharing" | "therapist_sharing";
+export type CviColor = "yellow" | "red" | "green" | "blue";
+
+/** Function level I–V of a classification system; undefined = the parent doesn't know. */
+export type FnLevel = 1 | 2 | 3 | 4 | 5;
+/** Params an adult can set a minimum for — the adaptive engine never goes below it. */
+export type FloorKey = "dwellMs" | "debounceMs" | "keyScale" | "targetScale";
+
+export interface ChildSupport {
+  /** Hand use (MACS), communication (CFCS), vision (VFCS) — parent-reported, used only for starting settings. */
+  macs?: FnLevel;
+  cfcs?: FnLevel;
+  vfcs?: FnLevel;
+  /** No moving or glowing effects (seizures, photosensitivity, vision difficulties). */
+  calm?: boolean;
+  /**
+   * Vision mode for cerebral/cortical visual impairment: calm screen + plain dark background, no mascot, every
+   * target outlined in the child's preferred colour, slower "watch" sequences.
+   */
+  cvi?: { color: CviColor };
+  floors?: Partial<Record<FloorKey, number>>;
+  /** Switch scanning: ms per item, auto (1 switch) or step (2 switches: Space moves, Enter selects), speak items. */
+  scan?: { stepMs: number; mode: "auto" | "step"; speak: boolean };
+  /** Hover / eye-gaze "waiting" time in ms. */
+  hoverMs?: number;
+}
+
+/** `health` gates the exercise roadmap; `movement_videos` gates P40 clips (spec §4). */
+export type ConsentScope = "core" | "health" | "movement_videos" | "ai_processing" | "voice_recording" | "school_sharing" | "therapist_sharing";
 
 export interface Consent {
   id: string;
@@ -171,6 +211,8 @@ export interface CareLink {
   childId: string;
   kind: "therapist" | "teacher";
   email: string;
+  /** Invites by phone (spec P41); email stays for older invites. */
+  phone?: string;
   professionalId?: string;
   status: "invited" | "active" | "revoked";
   code: string;
@@ -343,3 +385,94 @@ export interface Level {
 }
 
 export type MascotMood = "calm" | "happy" | "curious" | "sleepy" | "wave" | "thinking" | "celebrate";
+
+// ---------- Intake, video library, roadmap (product spec 2026-10-06) ----------
+/** "Not sure" is stored as null (spec §5). Everyday abilities: 2 yes · 1 sometimes · 0 not yet. */
+export type IntakeValue = string | string[] | number | null;
+export type Respondent = "parent" | "therapist" | "together";
+
+export interface IntakeAnswer {
+  childId: string;
+  /** 1 at sign-up, +1 at every 3-month re-intake. */
+  round: number;
+  questionId: string;
+  value: IntakeValue;
+  answeredAt: string;
+  respondent: Respondent;
+}
+
+export interface IntakeRound {
+  childId: string;
+  round: number;
+  startedAt: string;
+  completedAt?: string;
+}
+
+/** Things a child must not do. P14 / T6 restrictions plus tags the engine derives (standing, high intensity…). */
+export type Restriction = "jumping" | "prone" | "neck_flexion" | "single_leg_weight" | "standing" | "walking" | "high_intensity" | "leg_balance" | "mouth_face";
+export type BodyArea = "legs" | "arms" | "hands" | "trunk" | "head_neck" | "mouth_face";
+/** P33 goals. */
+export type GoalKey = "walk" | "hands" | "sit" | "communicate" | "understand" | "eat" | "play_others" | "school";
+export type AgeBand = "2-4" | "5-8" | "9-12" | "13-20";
+export type VideoStatus = "generated" | "changes_requested" | "rejected" | "approved";
+
+export interface VideoVersion {
+  url: string;
+  durationS: number;
+  status: VideoStatus;
+  approvedBy?: string;
+  approvedAt?: string;
+  notes: { by: string; text: string; at: string }[];
+}
+
+/** One exercise of the AI-generated, physio-approved library (spec §8). */
+export interface ExerciseVideo {
+  id: string;
+  title: L10n;
+  bodyArea: BodyArea;
+  goals: GoalKey[];
+  gmfcs: FnLevel[];
+  ages: AgeBand[];
+  /** Home Kit tool the exercise uses, or null. */
+  tool: string | null;
+  difficulty: 1 | 2 | 3;
+  conflicts: Restriction[];
+  versions: Partial<Record<Lang, VideoVersion>>;
+}
+
+/** What a therapist set (T2–T8). Their answers override the parent's (spec §6). */
+export interface TherapistInput {
+  gmfcs?: FnLevel;
+  restrictions: Restriction[];
+  goals: GoalKey[];
+  assign: string[];
+  exclude: string[];
+  legBalanceApproved: boolean;
+}
+
+export interface RoadmapDay {
+  date: string;
+  exercises: { videoId: string; level: 1 | 2 | 3 }[];
+  games: { kind: ActivityKind; minutes: number }[];
+}
+
+/** Structured reasons the rules give for each choice; AI (later) only rewords these. */
+export interface RoadmapReason {
+  slot: "exercise" | "game";
+  goal: GoalKey;
+  ref: string;
+  level: number;
+}
+
+export interface Roadmap {
+  id: string;
+  childId: string;
+  round: number;
+  startDate: string;
+  /** 28 days. */
+  days: RoadmapDay[];
+  reasons: RoadmapReason[];
+  /** false when health consent was declined: games and Find help only. */
+  exercisesAllowed: boolean;
+  createdAt: string;
+}

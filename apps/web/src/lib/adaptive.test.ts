@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { applyPolicy, BOUNDS, DEFAULT_PROFILE, pressDecision } from "./adaptive";
+import { applyPolicy, BOUNDS, DEFAULT_PROFILE, pressDecision, startingProfile } from "./adaptive";
 import type { InteractionEvent, ProfileRecord } from "./types";
 
 const rec = (params = DEFAULT_PROFILE): ProfileRecord => ({ childId: "c", input: "touch", params: { ...params }, version: 1, lastDir: {}, updatedAt: "" });
@@ -21,6 +21,37 @@ describe("applyPolicy", () => {
     expect(record.params.hintLevel).toBe(2);
     expect(record.params.optionCount).toBe(2);
     for (const c of changes) expect(Math.abs(c.to - c.from)).toBeCloseTo(BOUNDS[c.param][2]);
+  });
+
+  it("keeps motor and learning help apart", () => {
+    // Precise taps, wrong answers: more hints, same key size.
+    const wrong = applyPolicy(rec(), taps(12, false, 0.1)).record.params;
+    expect(wrong.hintLevel).toBe(2);
+    expect(wrong.keyScale).toBe(DEFAULT_PROFILE.keyScale);
+    // Right answers, imprecise taps: bigger keys, hints don't fade.
+    const imprecise = applyPolicy(rec(), taps(12, true, 0.5, 1200)).record.params;
+    expect(imprecise.keyScale).toBe(1.1);
+    expect(imprecise.hintLevel).toBe(DEFAULT_PROFILE.hintLevel - 1);
+    // Keyboard/switch users have no geometry: sizes never move.
+    const kb = taps(12, true, 0.1, 1200).map((e) => ({ ...e, pointerType: "keyboard" as const, offsetRatio: undefined }));
+    expect(applyPolicy(rec({ ...DEFAULT_PROFILE, keyScale: 1.3 }), kb).record.params.keyScale).toBe(1.3);
+  });
+
+  it("never goes below adult-set floors", () => {
+    let r = rec({ ...DEFAULT_PROFILE, dwellMs: 300 });
+    for (let i = 0; i < 6; i++) r = applyPolicy(r, taps(12, true, 0.1, 1200), { dwellMs: 300, keyScale: 1.2 }).record; // calm, precise sessions
+    expect(r.params.dwellMs).toBe(300);
+    expect(r.params.keyScale).toBeGreaterThanOrEqual(1);
+    expect(applyPolicy(rec({ ...DEFAULT_PROFILE, keyScale: 1.2 }), taps(12, true, 0.1, 1200), { keyScale: 1.2 }).record.params.keyScale).toBe(1.2);
+  });
+
+  it("starts children with severe hand or vision difficulties with more help", () => {
+    expect(startingProfile()).toEqual(DEFAULT_PROFILE);
+    const hands = startingProfile({ macs: 5 });
+    expect(hands.dwellMs).toBeGreaterThan(0);
+    expect(hands.targetScale).toBeGreaterThan(1);
+    expect(startingProfile({ vfcs: 4 }).optionCount).toBe(2);
+    expect(startingProfile({ floors: { debounceMs: 600 } }).debounceMs).toBe(600);
   });
 
   it("returns help to baseline after sustained mastery — no ratchet (FR-ADAPT-1, B5)", () => {

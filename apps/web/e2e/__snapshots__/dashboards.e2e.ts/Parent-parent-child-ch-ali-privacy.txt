@@ -5,6 +5,7 @@ Ali
 7 years · learns Uzbek
 
 Play now
+Plan
 Progress
 What changed and why
 My Voice
@@ -18,6 +19,12 @@ Core: store my child's nickname, birth year and learning progress on servers in 
 On
 
 Core consent is needed for the profile to exist. To withdraw it, delete the profile below.
+
+Health: diagnosis, movement and safety answers, so home exercises can be made safe (stored encrypted)
+
+Given Aug 30, 2026 · version 2026-09-v1
+
+Movement videos: keep the clips I add for a therapist I choose (never analysed by AI)
 
 AI help: send anonymous, name-free progress summaries to an AI service abroad for tips and reports
 

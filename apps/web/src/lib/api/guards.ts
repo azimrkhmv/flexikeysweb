@@ -53,5 +53,8 @@ export function purgeChild(db: DB, childId: string) {
   db.aacEvents = keep(db.aacEvents);
   db.aacCards = keep(db.aacCards);
   db.aiMessages = keep(db.aiMessages);
+  db.intakeAnswers = keep(db.intakeAnswers);
+  db.intakeRounds = keep(db.intakeRounds);
+  db.roadmaps = keep(db.roadmaps);
   if (db.auth.child?.childId === childId) db.auth.child = null;
 }

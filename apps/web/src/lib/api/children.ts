@@ -6,14 +6,14 @@ import { read, write, net } from "./db";
 import { requireUser, requireChildAccess, audit, purgeChild } from "./guards";
 import { ApiError, CONSENT_VERSION, id, iso } from "./schema";
 import { sel } from "./selectors";
-import type { Child, ConsentScope } from "../types";
+import type { Child, ChildSupport, ConsentScope } from "../types";
 
 export const childrenApi = {
   // ------------------------------------------------------------ children (/children/*)
   /** POST /children — consent + child in one transaction; core consent is mandatory (FR-CHILD-1). */
-  async createChild(input: Pick<Child, "name" | "birthYear" | "learningLang" | "uiLang" | "avatar" | "access">, scopes: ConsentScope[]) {
+  async createChild(input: Pick<Child, "name" | "birthYear" | "learningLang" | "uiLang" | "avatar" | "access" | "support">, scopes: ConsentScope[]) {
     const u = requireUser(["parent"]);
-    if (!u.emailVerified) throw new ApiError("email_not_verified");
+    if (!u.emailVerified && !u.consentVersion) throw new ApiError("email_not_verified"); // phone sign-up = verified
     if (!scopes.includes("core")) throw new ApiError("consent_required");
     if (!input.name.trim()) throw new ApiError("name_required");
     const child: Child = { ...input, name: input.name.trim(), id: id(), parentId: u.id, equipped: {}, createdAt: iso() };
@@ -28,6 +28,15 @@ export const childrenApi = {
   async updateChild(childId: string, patch: Partial<Pick<Child, "name" | "birthYear" | "learningLang" | "uiLang" | "avatar" | "access">>) {
     requireChildAccess(childId, ["owner", "admin"]);
     write((db) => Object.assign(db.children.find((c) => c.id === childId)!, patch));
+    return net(true);
+  },
+  /** PATCH /children/{id} {support} — parent, or a linked therapist (access settings are clinical work). Audited. */
+  async updateSupport(childId: string, support: ChildSupport) {
+    const { user } = requireChildAccess(childId, ["owner", "therapist", "admin"]);
+    write((db) => {
+      db.children.find((c) => c.id === childId)!.support = support;
+      audit(db, user.id, "child.support", childId, JSON.stringify(support));
+    });
     return net(true);
   },
   /** DELETE /children/{id} */
@@ -48,6 +57,9 @@ export const childrenApi = {
       exportedAt: iso(),
       child: sel.child(db, childId),
       consents: by(db.consents),
+      intakeAnswers: by(db.intakeAnswers),
+      intakeRounds: by(db.intakeRounds),
+      roadmaps: by(db.roadmaps),
       adaptiveProfiles: by(db.profiles),
       adaptationChanges: by(db.changes),
       sessions: by(db.sessions),
@@ -69,6 +81,15 @@ export const childrenApi = {
       const cur = db.consents.find((c) => c.childId === childId && c.scope === scope && !c.withdrawnAt);
       if (granted && !cur) db.consents.push({ id: id(), childId, scope, version: CONSENT_VERSION, grantedBy: user.id, grantedAt: iso() });
       if (!granted && cur) cur.withdrawnAt = iso();
+      // Health answers are deleted with the consent; without them exercises can't be kept safe (spec §4).
+      if (!granted && scope === "health") {
+        db.intakeAnswers = db.intakeAnswers.filter((a) => !(a.childId === childId && /^P(9|1[0-7])(_|$)/.test(a.questionId)));
+        db.roadmaps.forEach((r) => {
+          if (r.childId !== childId) return;
+          r.exercisesAllowed = false;
+          r.days.forEach((d) => (d.exercises = []));
+        });
+      }
       if (!granted && scope === "school_sharing") db.enrollments = db.enrollments.filter((e) => e.childId !== childId);
       if (!granted && scope === "therapist_sharing")
         db.careLinks.forEach((l) => {
