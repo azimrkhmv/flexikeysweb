@@ -16,7 +16,8 @@ export interface Question {
   max?: number;
   /** An option that clears the others (P14 "Nothing", P16 "None"). */
   exclusive?: string;
-  showIf?: (a: Answers) => boolean;
+  /** `dep` is the same rule as data ([question id, answer]) — the backend checks it too (backend-content.test.ts). */
+  showIf?: ((a: Answers) => boolean) & { dep: [id: string, value: string] };
 }
 
 export type StepId = "child" | "health_consent" | "diagnosis" | "safety" | "talk" | "hands" | "everyday" | "goals" | "routine" | "words" | "videos" | "invite";
@@ -29,10 +30,14 @@ export interface Step {
   questions: Question[];
 }
 
-const has = (id: string, v: string) => (a: Answers) => {
-  const x = a[id];
-  return Array.isArray(x) ? x.includes(v) : x === v;
-};
+const has = (id: string, v: string) =>
+  Object.assign(
+    (a: Answers) => {
+      const x = a[id];
+      return Array.isArray(x) ? x.includes(v) : x === v;
+    },
+    { dep: [id, v] as [string, string] },
+  );
 
 /** Spec §5: every required question except name, birthday, district and language has a "Not sure" answer. */
 export const NO_NOT_SURE = new Set(["P1", "P2"]);
