@@ -225,6 +225,8 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `A2.6` Write down where the encryption key lives and how it is backed up
   - Done when: a restore test on another computer reads old health answers
   - Needs: A2.5
+  - BLOCKED: docs/health-key.md and `app.cli check-health-key` are ready and rehearsed on one Mac. Waiting for: the
+    production host (Q4), the second key keeper and password manager, and a second computer for the real restore test
 - [ ] **Azim** — `A2.7` Finish a round; start the 3-month repeat with last time's answers filled in
   - Done when: a new round starts with the last answers; every old round is kept
   - Needs: A2.4

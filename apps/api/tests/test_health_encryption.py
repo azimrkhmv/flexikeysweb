@@ -1,5 +1,8 @@
 """A2.5: health answers are encrypted. A raw copy of the database does not show them."""
 
+import os
+import subprocess
+import sys
 import uuid
 from collections.abc import Iterator
 
@@ -80,3 +83,22 @@ def test_wrong_key_cannot_read(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(crypto, "_fernet", MultiFernet([Fernet(Fernet.generate_key())]))
     with pytest.raises(RuntimeError, match="cannot be decrypted"):
         crypto.decrypt_json(token)
+
+
+def test_restore_check_command(client: TestClient) -> None:
+    """`python -m app.cli check-health-key`: the command the restore test runs (docs/health-key.md)."""
+    owner = parent(client)
+    child = add_child(client, owner)
+    health_consent(client, owner, child)
+    save(client, owner, child, {"P14": ["jumping"]})
+
+    ok = subprocess.run([sys.executable, "-m", "app.cli", "check-health-key"], capture_output=True, text=True)
+    assert ok.returncode == 0, ok.stderr
+    assert "health answers readable with this key" in ok.stdout
+
+    wrong = os.environ | {"HEALTH_KEYS": Fernet.generate_key().decode()}
+    bad = subprocess.run(
+        [sys.executable, "-m", "app.cli", "check-health-key"], capture_output=True, text=True, env=wrong
+    )
+    assert bad.returncode != 0
+    assert "cannot read them" in bad.stderr
