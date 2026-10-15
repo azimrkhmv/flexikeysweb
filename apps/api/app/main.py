@@ -28,4 +28,4 @@ app = FastAPI(
 errors.install(app)
 logs.install(app)
 app.include_router(health.router)
-app.include_router(auth.router)
+app.include_router(auth.router, prefix="/api/v1")  # the website proxies /api/v1 (apps/web/next.config.ts)

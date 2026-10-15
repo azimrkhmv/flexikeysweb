@@ -192,7 +192,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A1.3` `POST /auth/phone/verify`: sign in; on first use create a parent and their family, with the parent as owner; give a short sign-in token and a long one that changes on every use
   - Done when: a test proves that using an old long token again signs the user out everywhere
   - Needs: A1.2
-- [ ] **Azim** — `A1.4` Sign-in by cookie for the website and by header token for the future app; protection against forged requests on cookie writes; refresh, sign out, sign out everywhere
+- [x] **Azim** — `A1.4` Sign-in by cookie for the website and by header token for the future app; protection against forged requests on cookie writes; refresh, sign out, sign out everywhere
   - Done when: both kinds of request work; a website write without the protection token is refused
   - Needs: A1.3
 - [ ] **Azim** — `A1.5` The server refuses to start in production while SMS is simulated

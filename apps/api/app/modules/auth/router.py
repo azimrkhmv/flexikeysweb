@@ -2,16 +2,17 @@ import re
 import uuid
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, Response
+from fastapi.responses import JSONResponse
 from redis.asyncio import Redis
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db import get_session
-from app.errors import AppError
+from app.errors import AppError, problem
 from app.modules.accounts.models import Family, FamilyMember, Lang, MemberRole, Role, User, UserStatus
-from app.modules.auth import otp, tokens
+from app.modules.auth import otp, session, tokens
 from app.modules.auth.otp import Check
 from app.modules.auth.sms import SmsSender, get_sms
 from app.redis import get_redis
@@ -76,8 +77,18 @@ class UserOut(ApiModel):
 class SignedIn(ApiModel):
     user: UserOut
     is_new: bool
-    access_token: str
-    refresh_token: str
+    # Only for the app. The website gets cookies instead (app/modules/auth/session.py).
+    access_token: str | None = None
+    refresh_token: str | None = None
+
+
+class Tokens(ApiModel):
+    access_token: str | None = None
+    refresh_token: str | None = None
+
+
+class RefreshBody(ApiModel):
+    refresh_token: str | None = None  # the app sends it here; the website's is in a cookie
 
 
 async def _new_parent(db: AsyncSession, phone: str, lang: Lang) -> User:
@@ -93,9 +104,11 @@ async def _new_parent(db: AsyncSession, phone: str, lang: Lang) -> User:
 _CODE_ERRORS = {Check.invalid_code: 400, Check.code_expired: 400, Check.too_many_tries: 429}
 
 
-@router.post("/phone/verify")
+@router.post("/phone/verify", response_model_exclude_none=True)
 async def phone_verify(
     body: PhoneVerify,
+    request: Request,
+    response: Response,
     redis: Annotated[Redis, Depends(get_redis)],
     db: Annotated[AsyncSession, Depends(get_session)],
 ) -> SignedIn:
@@ -119,9 +132,64 @@ async def phone_verify(
         raise AppError(403, "account_disabled")
     pair = await tokens.issue(db, user)
     await db.commit()
+    body_pair = session.deliver(request, response, pair)
     return SignedIn(
         user=UserOut.model_validate(user, from_attributes=True),
         is_new=is_new,
-        access_token=pair.access_token,
-        refresh_token=pair.refresh_token,
+        access_token=body_pair.access_token if body_pair else None,
+        refresh_token=body_pair.refresh_token if body_pair else None,
     )
+
+
+def _refresh_token(request: Request, body: RefreshBody | None) -> str:
+    """The refresh token from the website's cookie (with the CSRF check) or from the app's body."""
+    if session.wants_cookies(request):
+        session.check_csrf(request)
+        token = request.cookies.get(session.REFRESH_COOKIE)
+    else:
+        token = body.refresh_token if body else None
+    if not token:
+        raise AppError(401, "unauthorized")
+    return token
+
+
+@router.post("/refresh", response_model=Tokens, response_model_exclude_none=True)
+async def refresh(
+    request: Request,
+    response: Response,
+    db: Annotated[AsyncSession, Depends(get_session)],
+    body: RefreshBody | None = None,
+) -> Tokens | JSONResponse:
+    """New tokens for a refresh token. Each refresh token works once."""
+    try:
+        pair = await tokens.rotate(db, _refresh_token(request, body))
+    except AppError as e:
+        failed = problem(e.status, e.code)
+        session.clear(failed)  # a dead session: the browser drops its cookies too
+        return failed
+    await db.commit()
+    body_pair = session.deliver(request, response, pair)
+    return Tokens(**vars(body_pair)) if body_pair else Tokens()
+
+
+@router.post("/logout", status_code=204)
+async def logout(
+    request: Request,
+    response: Response,
+    db: Annotated[AsyncSession, Depends(get_session)],
+    body: RefreshBody | None = None,
+) -> None:
+    """Sign out on this device."""
+    await tokens.revoke_chain(db, _refresh_token(request, body))
+    await db.commit()
+    session.clear(response)
+
+
+@router.post("/logout-all", status_code=204)
+async def logout_all(
+    user: session.CurrentUser, response: Response, db: Annotated[AsyncSession, Depends(get_session)]
+) -> None:
+    """Sign out on every device."""
+    await tokens.revoke_all(db, user.id)
+    await db.commit()
+    session.clear(response)

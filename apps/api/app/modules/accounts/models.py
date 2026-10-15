@@ -1,9 +1,10 @@
 """People and families. A child (A2.1) belongs to a family; the family has one owner and at most one helper."""
 
 import uuid
+from datetime import datetime
 from enum import StrEnum
 
-from sqlalchemy import Enum, ForeignKey, Index, String, UniqueConstraint, text
+from sqlalchemy import DateTime, Enum, ForeignKey, Index, String, UniqueConstraint, text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db import Base, IdTimeMixin
@@ -51,6 +52,8 @@ class User(IdTimeMixin, Base):
     # Ids from apps/web/src/content/districts.ts; empty until the sign-up step (A1.6).
     region: Mapped[str | None] = mapped_column(String(32))
     district: Mapped[str | None] = mapped_column(String(64))
+    # "Sign out everywhere": access tokens issued before this moment are refused (app/modules/auth/session.py).
+    signed_out_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
 
 class Family(IdTimeMixin, Base):

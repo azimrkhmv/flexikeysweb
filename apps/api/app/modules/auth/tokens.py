@@ -31,7 +31,14 @@ def _hash(token: str) -> str:
 
 def access_token(user: User) -> str:
     now = datetime.now(UTC)
-    claims = {"sub": str(user.id), "role": user.role, "iat": now, "exp": now + ACCESS_TTL}
+    # ts: issue time in milliseconds, compared with users.signed_out_at ("sign out everywhere")
+    claims = {
+        "sub": str(user.id),
+        "role": user.role,
+        "iat": now,
+        "exp": now + ACCESS_TTL,
+        "ts": int(now.timestamp() * 1000),
+    }
     return jwt.encode(claims, settings.jwt_secret, algorithm="HS256")
 
 
@@ -60,10 +67,21 @@ async def issue(db: AsyncSession, user: User) -> TokenPair:
 
 
 async def revoke_all(db: AsyncSession, user_id: uuid.UUID) -> None:
-    """Sign out everywhere."""
+    """Sign out everywhere: no refresh token works, and access tokens made before now stop working."""
+    await db.execute(update(User).where(User.id == user_id).values(signed_out_at=datetime.now(UTC)))
     await db.execute(
         update(RefreshToken)
         .where(RefreshToken.user_id == user_id, RefreshToken.revoked_at.is_(None))
+        .values(revoked_at=datetime.now(UTC))
+    )
+
+
+async def revoke_chain(db: AsyncSession, refresh_token: str) -> None:
+    """Sign out on this device only: the token's whole chain stops working. Unknown tokens are ignored."""
+    chain = select(RefreshToken.chain_id).where(RefreshToken.token_hash == _hash(refresh_token)).scalar_subquery()
+    await db.execute(
+        update(RefreshToken)
+        .where(RefreshToken.chain_id == chain, RefreshToken.revoked_at.is_(None))
         .values(revoked_at=datetime.now(UTC))
     )
 

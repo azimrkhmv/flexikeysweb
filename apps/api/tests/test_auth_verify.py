@@ -23,8 +23,8 @@ def client() -> Iterator[TestClient]:
 
 
 def sign_in(client: TestClient, phone: str) -> dict[str, object]:
-    code = client.post("/auth/phone/start", json={"phone": phone}).json()["demoCode"]
-    r = client.post("/auth/phone/verify", json={"phone": phone, "code": code, "lang": "ru"})
+    code = client.post("/api/v1/auth/phone/start", json={"phone": phone}).json()["demoCode"]
+    r = client.post("/api/v1/auth/phone/verify", json={"phone": phone, "code": code, "lang": "ru"})
     assert r.status_code == 200, r.text
     return r.json()  # type: ignore[no-any-return]
 
@@ -57,13 +57,13 @@ def test_second_sign_in_finds_the_same_person(client: TestClient) -> None:
 
 
 def test_wrong_code(client: TestClient) -> None:
-    client.post("/auth/phone/start", json={"phone": "+998911000003"})
-    r = client.post("/auth/phone/verify", json={"phone": "+998911000003", "code": "not-it"})
+    client.post("/api/v1/auth/phone/start", json={"phone": "+998911000003"})
+    r = client.post("/api/v1/auth/phone/verify", json={"phone": "+998911000003", "code": "not-it"})
     assert (r.status_code, r.json()["title"]) == (400, "invalid_code")
 
 
 def test_no_code_was_asked_for(client: TestClient) -> None:
-    r = client.post("/auth/phone/verify", json={"phone": "+998911000004", "code": "123456"})
+    r = client.post("/api/v1/auth/phone/verify", json={"phone": "+998911000004", "code": "123456"})
     assert (r.status_code, r.json()["title"]) == (400, "code_expired")
 
 

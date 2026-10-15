@@ -26,7 +26,7 @@ def client() -> Iterator[TestClient]:
 
 
 def test_sends_a_code_and_shows_it_while_sms_is_simulated(client: TestClient) -> None:
-    r = client.post("/auth/phone/start", json={"phone": "+998 90 123-45-67"})
+    r = client.post("/api/v1/auth/phone/start", json={"phone": "+998 90 123-45-67"})
     assert r.status_code == 200
     body = r.json()
     assert body["phone"] == "+998901234567"
@@ -35,13 +35,13 @@ def test_sends_a_code_and_shows_it_while_sms_is_simulated(client: TestClient) ->
 
 
 def test_not_an_uzbek_mobile_number(client: TestClient) -> None:
-    r = client.post("/auth/phone/start", json={"phone": "12345"})
+    r = client.post("/api/v1/auth/phone/start", json={"phone": "12345"})
     assert (r.status_code, r.json()["title"]) == (422, "invalid_phone")
 
 
 def test_new_code_only_after_60_seconds(client: TestClient) -> None:
-    assert client.post("/auth/phone/start", json={"phone": "901234567"}).status_code == 200
-    r = client.post("/auth/phone/start", json={"phone": "901234567"})
+    assert client.post("/api/v1/auth/phone/start", json={"phone": "901234567"}).status_code == 200
+    r = client.post("/api/v1/auth/phone/start", json={"phone": "901234567"})
     assert (r.status_code, r.json()["title"]) == (429, "code_too_soon")
     assert 0 < r.json()["retryAfterMs"] <= 60_000
 
