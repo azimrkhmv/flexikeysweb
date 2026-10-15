@@ -216,7 +216,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A2.3` Load the question rules from `apps/web/src/content/backend/intake.json` and check answers against them
   - Done when: an answer outside a question's allowed values is refused
   - Needs: A2.1
-- [ ] **Azim** — `A2.4` Tables for question rounds and answers; `PUT /children/{id}/intake/{round}` saves some answers at a time
+- [x] **Azim** — `A2.4` Tables for question rounds and answers; `PUT /children/{id}/intake/{round}` saves some answers at a time
   - Done when: "Not sure" is saved as empty; a parent can stop and continue later; health answers are not saved without the health consent
   - Needs: A2.2, A2.3
 - [ ] **Azim** — `A2.5` Health answers are stored encrypted
