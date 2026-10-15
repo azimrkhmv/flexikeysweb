@@ -37,6 +37,7 @@ class Question:
     show_if: tuple[str, str] | None  # shown only when this other question has this answer
     step: str
     health: bool  # a health answer: needs the child's health consent, stored encrypted (A2.4, A2.5)
+    health_step: bool  # in a section the website skips without the health consent (intake.ts Step.health)
 
     @property
     def allows_not_sure(self) -> bool:
@@ -56,6 +57,7 @@ def _load() -> dict[str, Question]:
             show_if=(q["show_if"][0], q["show_if"][1]) if q["show_if"] else None,
             step=q["step"],
             health=q["health"],
+            health_step=q["health_step"],
         )
         for q in raw
     }
@@ -121,3 +123,13 @@ def is_shown(q: Question, answers: dict[str, Value]) -> bool:
     parent, wanted = q.show_if
     given = answers.get(parent)
     return wanted in given if isinstance(given, list) else given == wanted
+
+
+def missing_answers(answers: dict[str, Value], health_consent: bool) -> list[str]:
+    """Required questions still unanswered ("Not sure" counts as answered). Follow-ups count only when shown;
+    without the health consent the health sections are skipped, as on the website."""
+    return [
+        q.id
+        for q in QUESTIONS.values()
+        if q.required and (health_consent or not q.health_step) and is_shown(q, answers) and q.id not in answers
+    ]

@@ -22,7 +22,10 @@ class Settings(BaseSettings):
     sms_provider: Literal["fake"] = "fake"  # a real provider is added after Q6
     # Encrypts health answers (app/crypto.py). Comma-separated; the first one encrypts. Never in git outside dev.
     health_keys: str
-    max_children_per_family: int = 3  # TASKS.md section 3: "Both numbers are settings"
+    max_children_per_family: int = 3
+    intake_repeat_days: int = (
+        90  # the questions come back every 3 months (spec)  # TASKS.md section 3: "Both numbers are settings"
+    )
 
     @model_validator(mode="after")
     def safe_in_production(self) -> Self:

@@ -5,7 +5,7 @@ Health questions need the child's health consent; without it nothing in the requ
 """
 
 import uuid
-from datetime import datetime
+from datetime import UTC, datetime, timedelta
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends
@@ -17,11 +17,12 @@ from app.crypto import decrypt_json, encrypt_json
 from app.db import get_session
 from app.errors import AppError
 from app.modules.auth.session import CurrentUser
-from app.modules.children.consents import ConsentKind, require_consent
+from app.modules.children.consents import ConsentKind, has_consent, require_consent
 from app.modules.children.router import get_visible_child
 from app.modules.intake.models import IntakeAnswer, IntakeRound
-from app.modules.intake.rules import check_answer
+from app.modules.intake.rules import QUESTIONS, check_answer, missing_answers
 from app.schemas import ApiModel
+from app.settings import settings
 
 router = APIRouter(prefix="/children", tags=["intake"])
 
@@ -34,6 +35,12 @@ class RoundOut(ApiModel):
     number: int
     completed_at: datetime | None
     answers: dict[str, Any]  # a question that is missing here is not answered yet
+
+
+class RoundSummary(ApiModel):
+    number: int
+    started_at: datetime
+    completed_at: datetime | None
 
 
 async def _round(db: AsyncSession, child_id: uuid.UUID, number: int, *, create_first: bool = False) -> IntakeRound:
@@ -101,3 +108,66 @@ async def save_answers(
         )
     await db.commit()
     return await _out(db, r)
+
+
+@router.get("/{child_id}/intake")
+async def list_rounds(
+    child_id: uuid.UUID, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]
+) -> list[RoundSummary]:
+    """Every round of this child, oldest first. Old rounds are never deleted (the child's history)."""
+    await get_visible_child(db, user, child_id)
+    rounds = await db.scalars(select(IntakeRound).where(IntakeRound.child_id == child_id).order_by(IntakeRound.number))
+    return [RoundSummary(number=r.number, started_at=r.created_at, completed_at=r.completed_at) for r in rounds]
+
+
+@router.post("/{child_id}/intake/{number}/finish")
+async def finish_round(
+    child_id: uuid.UUID, number: int, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]
+) -> RoundOut:
+    """Close the round once every required question has an answer ("Not sure" counts)."""
+    await get_visible_child(db, user, child_id)
+    r = await _round(db, child_id, number)
+    if r.completed_at is not None:
+        raise AppError(409, "round_finished")
+    answers = (await _out(db, r)).answers
+    if missing := missing_answers(answers, await has_consent(db, child_id, ConsentKind.health)):
+        raise AppError(422, "round_incomplete", missing=missing)
+    r.completed_at = datetime.now(UTC)
+    await db.commit()
+    return await _out(db, r)
+
+
+@router.post("/{child_id}/intake", status_code=201)
+async def start_next_round(
+    child_id: uuid.UUID, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]
+) -> RoundOut:
+    """The repeat every 3 months: a new round, filled in with last time's answers for the parent to check."""
+    await get_visible_child(db, user, child_id)
+    last = await db.scalar(
+        select(IntakeRound).where(IntakeRound.child_id == child_id).order_by(IntakeRound.number.desc()).limit(1)
+    )
+    if last is None:
+        raise AppError(409, "no_first_round")  # round 1 starts by saving answers
+    if last.completed_at is None:
+        raise AppError(409, "round_open", number=last.number)
+    ready = last.completed_at + timedelta(days=settings.intake_repeat_days)
+    if datetime.now(UTC) < ready:
+        raise AppError(409, "too_early", fromDate=ready.date().isoformat())
+    new = IntakeRound(child_id=child_id, number=last.number + 1)
+    db.add(new)
+    await db.flush()
+    keep_health = await has_consent(db, child_id, ConsentKind.health)
+    old = await db.scalars(select(IntakeAnswer).where(IntakeAnswer.round_id == last.id))
+    for a in old:
+        if a.question_id in QUESTIONS and (keep_health or not QUESTIONS[a.question_id].health):
+            db.add(
+                IntakeAnswer(
+                    round_id=new.id,
+                    question_id=a.question_id,
+                    value=a.value,
+                    secret=a.secret,
+                    answered_by=a.answered_by,
+                )
+            )
+    await db.commit()
+    return await _out(db, new)
