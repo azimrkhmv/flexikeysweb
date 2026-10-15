@@ -174,7 +174,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A0.1` Create the server project in `apps/api/`: FastAPI app, one folder per module, settings for ruff, mypy and pytest
   - Done when: the server starts; one test passes; ruff and mypy pass
   - Needs: T1
-- [ ] **Azim** — `A0.2` Docker Compose file with PostgreSQL 17, Redis and MinIO, on ports that do not clash with programs already running (for example 5433 and 6380); settings read from `.env`; a `.env.example`
+- [x] **Azim** — `A0.2` Docker Compose file with PostgreSQL 17, Redis and MinIO, on ports that do not clash with programs already running (for example 5433 and 6380); settings read from `.env`; a `.env.example`
   - Done when: `docker compose up` starts everything and the server reads its settings
   - Needs: A0.1
 - [ ] **Azim** — `A0.3` Database layer: async SQLAlchemy, shared id and time columns, Alembic, the first database change, a test database for the tests

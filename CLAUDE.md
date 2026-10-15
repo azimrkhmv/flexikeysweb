@@ -11,7 +11,8 @@ and games, and does a short task each day.
 - `apps/web/` — the website (Next.js 16, React 19, TypeScript). See `apps/web/AGENTS.md`.
 - `apps/api/` — the server (Python 3.12, FastAPI, PostgreSQL, SQLAlchemy 2, Alembic, Redis, MinIO, Docker
   Compose).
-  Commands, run in `apps/api/`: `uv run uvicorn app.main:app --reload` (start), `uv run pytest`,
+  Commands, run in `apps/api/`: `cp .env.example .env` (once), `docker compose up -d` (server, PostgreSQL,
+  Redis, MinIO), `uv run uvicorn app.main:app --reload` (server only, on your computer), `uv run pytest`,
   `uv run ruff check .`, `uv run ruff format .`, `uv run mypy app tests`. New feature = new folder in
   `app/modules/` with a `router.py`, included in `app/main.py`.
 - `apps/web/src/content/backend/` — `intake.json`, `exercises.json`, `roadmap_cases.json`: data the server must
