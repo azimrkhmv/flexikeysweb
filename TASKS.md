@@ -183,7 +183,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A0.4` Errors in the shape the website expects (problem+json with a code in `title`); a request number in every log line; `/healthz` and `/readyz`
   - Done when: both health addresses answer; a failing request returns the agreed shape
   - Needs: A0.1
-- [ ] **Azim** — `A1.1` Tables `users`, `families`, `family_members`. A user has a phone (unique), a role (`parent`, `therapist`, `physio`, `clinic`, `admin`), a status, a language, a region and a district
+- [x] **Azim** — `A1.1` Tables `users`, `families`, `family_members`. A user has a phone (unique), a role (`parent`, `therapist`, `physio`, `clinic`, `admin`), a status, a language, a region and a district
   - Done when: the database change applies and rolls back
   - Needs: A0.3
 - [ ] **Azim** — `A1.2` SMS sender with a simulated version that returns the code; `POST /auth/phone/start`
