@@ -26,7 +26,8 @@ name of the developer who does it.
 5. **Open a pull request** to `main`. Title: `<number>: <short name>`, for example `A0.1: Project skeleton`.
    In the text, say how you checked the **Done when** line.
 6. **The other developer reviews it.** Azim reviews Bekzod's pull requests; Bekzod reviews Azim's.
-7. **Merge** when the review is approved and the automatic checks are green. Delete the branch.
+7. **Azim merges** every pull request, his own and Bekzod's, when the review is approved and the automatic
+   checks are green. Delete the branch.
 8. **Stuck?** Add a line `  - BLOCKED: <why>` under the task, push it, and tell the other developer the same day.
 
 ### Rules for working together
