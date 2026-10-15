@@ -3,5 +3,6 @@
 from app.modules.accounts.models import Family, FamilyMember, User
 from app.modules.audit.models import AuditEntry
 from app.modules.auth.models import RefreshToken
+from app.modules.children.models import Child
 
-__all__ = ["AuditEntry", "Family", "FamilyMember", "RefreshToken", "User"]
+__all__ = ["AuditEntry", "Child", "Family", "FamilyMember", "RefreshToken", "User"]

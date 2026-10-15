@@ -207,7 +207,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A1.8` An admin can change a user's role and disable an account
   - Done when: each change is in the audit log; a disabled account is signed out at once
   - Needs: A1.7
-- [ ] **Azim** — `A2.1` Table `children`, linked to a family; add, list, edit, delete; at most 3 children per family
+- [x] **Azim** — `A2.1` Table `children`, linked to a family; add, list, edit, delete; at most 3 children per family
   - Done when: only members of that family see the child; only the owner can delete
   - Needs: A1.7
 - [ ] **Azim** — `A2.2` Child consents `health`, `movement_videos`, `therapist_share`: given and taken back by the owner only

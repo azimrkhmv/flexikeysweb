@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     s3_bucket: str = "flexikeys"
     jwt_secret: str  # signs access tokens; long and random outside dev
     sms_provider: Literal["fake"] = "fake"  # a real provider is added after Q6
+    max_children_per_family: int = 3  # TASKS.md section 3: "Both numbers are settings"
 
     @model_validator(mode="after")
     def safe_in_production(self) -> Self:

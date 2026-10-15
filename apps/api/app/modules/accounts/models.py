@@ -37,7 +37,7 @@ class MemberRole(StrEnum):
     helper = "helper"
 
 
-def _enum(e: type[StrEnum]) -> Enum:
+def enum_column(e: type[StrEnum]) -> Enum:
     # Stored as text with a check, not a PostgreSQL enum type: adding a value later is a one-line change.
     return Enum(e, native_enum=False, create_constraint=True, length=16, values_callable=lambda x: [m.value for m in x])
 
@@ -46,9 +46,9 @@ class User(IdTimeMixin, Base):
     __tablename__ = "users"
 
     phone: Mapped[str] = mapped_column(String(16), unique=True)  # E.164, for example +998901234567
-    role: Mapped[Role] = mapped_column(_enum(Role))
-    status: Mapped[UserStatus] = mapped_column(_enum(UserStatus), default=UserStatus.active)
-    lang: Mapped[Lang] = mapped_column(_enum(Lang), default=Lang.uz)
+    role: Mapped[Role] = mapped_column(enum_column(Role))
+    status: Mapped[UserStatus] = mapped_column(enum_column(UserStatus), default=UserStatus.active)
+    lang: Mapped[Lang] = mapped_column(enum_column(Lang), default=Lang.uz)
     # Ids from apps/web/src/content/districts.ts; empty until the sign-up step (A1.6).
     region: Mapped[str | None] = mapped_column(String(32))
     district: Mapped[str | None] = mapped_column(String(64))
@@ -75,4 +75,4 @@ class FamilyMember(IdTimeMixin, Base):
 
     family_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("families.id", ondelete="CASCADE"))
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
-    role: Mapped[MemberRole] = mapped_column(_enum(MemberRole))
+    role: Mapped[MemberRole] = mapped_column(enum_column(MemberRole))
