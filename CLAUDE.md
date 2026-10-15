@@ -16,6 +16,7 @@ and games, and does a short task each day.
   `docker compose up -d db`; builds a fresh `flexikeys_test` database), `uv run alembic upgrade head`,
   `uv run ruff check .`, `uv run ruff format .`, `uv run mypy app tests migrations`. New feature = new folder in
   `app/modules/` with a `router.py`, included in `app/main.py`.
+  Errors: `raise AppError(409, "phone_taken")` (`app/errors.py`) — the website reads the code from `title`.
 - `apps/web/src/content/backend/` — `intake.json`, `exercises.json`, `roadmap_cases.json`: data the server must
   load and match. Kept in sync by `backend-content.test.ts`.
 

@@ -10,4 +10,4 @@ RUN uv sync --frozen --no-dev --no-install-project
 COPY app ./app
 COPY alembic.ini ./
 COPY migrations ./migrations
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--no-access-log"]
