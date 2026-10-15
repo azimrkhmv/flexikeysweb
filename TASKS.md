@@ -204,7 +204,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A1.7` Roles, and one shared check "may this person see this child?": family members see their family's children, a therapist sees shared children only, everyone else gets "not found". An admin creates physiotherapist, clinic and admin accounts by phone
   - Done when: tests cover every role and family-membership combination; a non-parent with an unknown phone does not get a parent account by accident
   - Needs: A1.4
-- [ ] **Azim** — `A1.8` An admin can change a user's role and disable an account
+- [x] **Azim** — `A1.8` An admin can change a user's role and disable an account
   - Done when: each change is in the audit log; a disabled account is signed out at once
   - Needs: A1.7
 - [ ] **Azim** — `A2.1` Table `children`, linked to a family; add, list, edit, delete; at most 3 children per family
