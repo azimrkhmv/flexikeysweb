@@ -155,13 +155,13 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 
 **Azim — in this order**
 
-- [ ] **Azim** — `T3` Finish the first screen of Docker Desktop (accept the terms, enter the Mac password)
+- [x] **Azim** — `T3` Finish the first screen of Docker Desktop (accept the terms, enter the Mac password)
   - Done when: `docker compose version` prints a version and `docker run hello-world` works
   - Needs: —
-- [ ] **Azim** — `T4` Put this file on `main` and send it to Bekzod
+- [x] **Azim** — `T4` Put this file on `main` and send it to Bekzod
   - Done when: Bekzod has read it and agreed to the split, or the split is changed here
   - Needs: —
-- [ ] **Azim** — `T5` Protect `main` on GitHub: changes only by pull request, with one approval and green checks
+- [x] **Azim** — `T5` Protect `main` on GitHub: changes only by pull request, with one approval and green checks
   - Done when: a direct push to `main` is refused
   - Needs: T4
 - [x] **Azim** — `T6` Write one `CLAUDE.md` at the top of the repository: the rules of section 2, the working rules of section 1, and where things live
