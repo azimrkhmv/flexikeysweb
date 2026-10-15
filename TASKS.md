@@ -186,7 +186,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A1.1` Tables `users`, `families`, `family_members`. A user has a phone (unique), a role (`parent`, `therapist`, `physio`, `clinic`, `admin`), a status, a language, a region and a district
   - Done when: the database change applies and rolls back
   - Needs: A0.3
-- [ ] **Azim** — `A1.2` SMS sender with a simulated version that returns the code; `POST /auth/phone/start`
+- [x] **Azim** — `A1.2` SMS sender with a simulated version that returns the code; `POST /auth/phone/start`
   - Done when: tests prove the 60-second resend limit, the 5-tries limit and a limit per phone and per IP address
   - Needs: A1.1
 - [ ] **Azim** — `A1.3` `POST /auth/phone/verify`: sign in; on first use create a parent and their family, with the parent as owner; give a short sign-in token and a long one that changes on every use

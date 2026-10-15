@@ -13,7 +13,7 @@ and games, and does a short task each day.
   Compose).
   Commands, run in `apps/api/`: `cp .env.example .env` (once), `docker compose up -d` (server, PostgreSQL,
   Redis, MinIO), `uv run uvicorn app.main:app --reload` (server only, on your computer), `uv run pytest` (needs
-  `docker compose up -d db`; builds a fresh `flexikeys_test` database), `uv run alembic upgrade head`,
+  `docker compose up -d db redis`; builds a fresh `flexikeys_test` database), `uv run alembic upgrade head`,
   `uv run ruff check .`, `uv run ruff format .`, `uv run mypy app tests migrations`. New feature = new folder in
   `app/modules/` with a `router.py`, included in `app/main.py`.
   Errors: `raise AppError(409, "phone_taken")` (`app/errors.py`) — the website reads the code from `title`.
