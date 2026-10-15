@@ -27,14 +27,19 @@ class Base(DeclarativeBase):
     )
 
 
-class IdTimeMixin:
-    """The shared columns: a random UUID id, and when the row was created and last changed (UTC)."""
+class TimeMixin:
+    """When the row was created and last changed (UTC). For tables whose id comes from content, like exercises."""
 
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
+
+
+class IdTimeMixin(TimeMixin):
+    """The shared columns: a random UUID id, and when the row was created and last changed (UTC)."""
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
 
 
 async def get_session() -> AsyncIterator[AsyncSession]:

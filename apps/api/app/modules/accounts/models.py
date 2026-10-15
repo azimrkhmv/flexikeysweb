@@ -39,7 +39,9 @@ class MemberRole(StrEnum):
 
 def enum_column(e: type[StrEnum]) -> Enum:
     # Stored as text with a check, not a PostgreSQL enum type: adding a value later is a one-line change.
-    return Enum(e, native_enum=False, create_constraint=True, length=16, values_callable=lambda x: [m.value for m in x])
+    length = max(16, *(len(m.value) for m in e))
+    values = [m.value for m in e]
+    return Enum(e, native_enum=False, create_constraint=True, length=length, values_callable=lambda _: values)
 
 
 class User(IdTimeMixin, Base):

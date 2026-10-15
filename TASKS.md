@@ -230,7 +230,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A2.7` Finish a round; start the 3-month repeat with last time's answers filled in
   - Done when: a new round starts with the last answers; every old round is kept
   - Needs: A2.4
-- [ ] **Azim** — `A3.1` Tables for exercises, videos (one per exercise per language, with review status, who approved and when) and review notes
+- [x] **Azim** — `A3.1` Tables for exercises, videos (one per exercise per language, with review status, who approved and when) and review notes
   - Done when: the database change applies and rolls back
   - Needs: A0.3
 - [ ] **Azim** — `A3.2` File storage with short-lived upload and download links
