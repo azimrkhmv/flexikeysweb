@@ -18,6 +18,8 @@ and games, and does a short task each day.
   `app/modules/` with a `router.py`, included in `app/main.py`.
   Addresses live under `/api/v1` (the website proxies it). A signed-in address takes `user: session.CurrentUser`
   (`app/modules/auth/session.py`: cookie + CSRF for the website, Bearer token for the app).
+  Anything about a child: `await require_child_access(db, user, child.family_id)` (`app/modules/accounts/access.py`),
+  404 for everyone else. Admin only: `_: Admin`. First admin: `uv run python -m app.cli create-admin +998…`.
   Errors: `raise AppError(409, "phone_taken")` (`app/errors.py`) — the website reads the code from `title`.
 - `apps/web/src/content/backend/` — `intake.json`, `exercises.json`, `roadmap_cases.json`: data the server must
   load and match. Kept in sync by `backend-content.test.ts`.

@@ -7,6 +7,7 @@ from fastapi import FastAPI
 
 from app import errors, logs, redis
 from app.db import engine
+from app.modules.accounts import admin
 from app.modules.accounts import router as accounts
 from app.modules.auth import router as auth
 from app.modules.health import router as health
@@ -32,3 +33,4 @@ app.include_router(health.router)
 # The website proxies /api/v1 to this server (apps/web/next.config.ts).
 app.include_router(auth.router, prefix="/api/v1")
 app.include_router(accounts.router, prefix="/api/v1")
+app.include_router(admin.router, prefix="/api/v1")

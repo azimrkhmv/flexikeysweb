@@ -45,7 +45,7 @@ def database() -> Iterator[None]:
     yield
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def anyio_backend() -> str:
     return "asyncio"
 
