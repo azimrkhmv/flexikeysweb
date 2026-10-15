@@ -63,7 +63,7 @@ def _check_birth_date(d: date) -> None:
         raise AppError(422, "invalid_birth_date")
 
 
-async def _child(db: AsyncSession, user: User, child_id: uuid.UUID) -> Child:
+async def get_visible_child(db: AsyncSession, user: User, child_id: uuid.UUID) -> Child:
     """The child, if this person may see it; 404 otherwise (also when the id does not exist)."""
     child = await db.get(Child, child_id)
     if child is None:
@@ -72,7 +72,7 @@ async def _child(db: AsyncSession, user: User, child_id: uuid.UUID) -> Child:
     return child
 
 
-async def _require_owner(db: AsyncSession, user: User, family_id: uuid.UUID) -> None:
+async def require_owner(db: AsyncSession, user: User, family_id: uuid.UUID) -> None:
     if await family_role(db, user, family_id) != MemberRole.owner:
         raise AppError(403, "owner_only")
 
@@ -114,15 +114,15 @@ async def list_children(user: CurrentUser, db: Annotated[AsyncSession, Depends(g
 async def get_child(
     child_id: uuid.UUID, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]
 ) -> ChildOut:
-    return _out(await _child(db, user, child_id))
+    return _out(await get_visible_child(db, user, child_id))
 
 
 @router.patch("/{child_id}")
 async def change_child(
     child_id: uuid.UUID, body: ChildChange, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]
 ) -> ChildOut:
-    child = await _child(db, user, child_id)
-    await _require_owner(db, user, child.family_id)
+    child = await get_visible_child(db, user, child_id)
+    await require_owner(db, user, child.family_id)
     changes = body.model_dump(exclude_unset=True, exclude_none=True)
     if "birth_date" in changes:
         _check_birth_date(changes["birth_date"])
@@ -137,8 +137,8 @@ async def delete_child(
     child_id: uuid.UUID, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]
 ) -> None:
     """Deletes the child and, through the database, everything stored about them."""
-    child = await _child(db, user, child_id)
-    await _require_owner(db, user, child.family_id)
+    child = await get_visible_child(db, user, child_id)
+    await require_owner(db, user, child.family_id)
     audit.record(db, user.id, "child.deleted", child.id)
     await db.delete(child)
     await db.commit()

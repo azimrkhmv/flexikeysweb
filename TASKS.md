@@ -210,7 +210,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A2.1` Table `children`, linked to a family; add, list, edit, delete; at most 3 children per family
   - Done when: only members of that family see the child; only the owner can delete
   - Needs: A1.7
-- [ ] **Azim** — `A2.2` Child consents `health`, `movement_videos`, `therapist_share`: given and taken back by the owner only
+- [x] **Azim** — `A2.2` Child consents `health`, `movement_videos`, `therapist_share`: given and taken back by the owner only
   - Done when: taking a consent back stops the related use; a helper's attempt is refused
   - Needs: A2.1
 - [ ] **Azim** — `A2.3` Load the question rules from `apps/web/src/content/backend/intake.json` and check answers against them

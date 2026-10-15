@@ -10,6 +10,7 @@ from app.db import engine
 from app.modules.accounts import admin
 from app.modules.accounts import router as accounts
 from app.modules.auth import router as auth
+from app.modules.children import consents
 from app.modules.children import router as children
 from app.modules.health import router as health
 from app.settings import settings
@@ -36,3 +37,4 @@ app.include_router(auth.router, prefix="/api/v1")
 app.include_router(accounts.router, prefix="/api/v1")
 app.include_router(admin.router, prefix="/api/v1")
 app.include_router(children.router, prefix="/api/v1")
+app.include_router(consents.router, prefix="/api/v1")
