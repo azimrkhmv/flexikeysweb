@@ -146,10 +146,10 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 
 **Bekzod — in this order**
 
-- [ ] **Bekzod** — `T1` Install Docker and start it
+- [x] **Bekzod** — `T1` Install Docker and start it
   - Done when: `docker compose version` prints a version and `docker run hello-world` works
   - Needs: —
-- [ ] **Bekzod** — `T2` Remove `docs/backend-plan.md` from the `bekzod-dev` branch; this file replaces it
+- [x] **Bekzod** — `T2` Remove `docs/backend-plan.md` from the `bekzod-dev` branch; this file replaces it
   - Done when: `TASKS.md` is the only plan file on every branch
   - Needs: T4
 
