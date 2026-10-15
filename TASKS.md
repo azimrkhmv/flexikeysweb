@@ -195,7 +195,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A1.4` Sign-in by cookie for the website and by header token for the future app; protection against forged requests on cookie writes; refresh, sign out, sign out everywhere
   - Done when: both kinds of request work; a website write without the protection token is refused
   - Needs: A1.3
-- [ ] **Azim** — `A1.5` The server refuses to start in production while SMS is simulated
+- [x] **Azim** — `A1.5` The server refuses to start in production while SMS is simulated
   - Done when: a test proves it
   - Needs: A1.2
 - [ ] **Azim** — `A1.6` `GET` and `PATCH /me`; the sign-up step (basic consent, region, district); consent texts in 4 languages
