@@ -177,7 +177,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A0.2` Docker Compose file with PostgreSQL 17, Redis and MinIO, on ports that do not clash with programs already running (for example 5433 and 6380); settings read from `.env`; a `.env.example`
   - Done when: `docker compose up` starts everything and the server reads its settings
   - Needs: A0.1
-- [ ] **Azim** — `A0.3` Database layer: async SQLAlchemy, shared id and time columns, Alembic, the first database change, a test database for the tests
+- [x] **Azim** — `A0.3` Database layer: async SQLAlchemy, shared id and time columns, Alembic, the first database change, a test database for the tests
   - Done when: `alembic upgrade head` works; the tests build a fresh test database
   - Needs: A0.2
 - [ ] **Azim** — `A0.4` Errors in the shape the website expects (problem+json with a code in `title`); a request number in every log line; `/healthz` and `/readyz`

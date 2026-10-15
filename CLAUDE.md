@@ -12,8 +12,9 @@ and games, and does a short task each day.
 - `apps/api/` — the server (Python 3.12, FastAPI, PostgreSQL, SQLAlchemy 2, Alembic, Redis, MinIO, Docker
   Compose).
   Commands, run in `apps/api/`: `cp .env.example .env` (once), `docker compose up -d` (server, PostgreSQL,
-  Redis, MinIO), `uv run uvicorn app.main:app --reload` (server only, on your computer), `uv run pytest`,
-  `uv run ruff check .`, `uv run ruff format .`, `uv run mypy app tests`. New feature = new folder in
+  Redis, MinIO), `uv run uvicorn app.main:app --reload` (server only, on your computer), `uv run pytest` (needs
+  `docker compose up -d db`; builds a fresh `flexikeys_test` database), `uv run alembic upgrade head`,
+  `uv run ruff check .`, `uv run ruff format .`, `uv run mypy app tests migrations`. New feature = new folder in
   `app/modules/` with a `router.py`, included in `app/main.py`.
 - `apps/web/src/content/backend/` — `intake.json`, `exercises.json`, `roadmap_cases.json`: data the server must
   load and match. Kept in sync by `backend-content.test.ts`.
