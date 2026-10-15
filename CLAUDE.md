@@ -8,32 +8,32 @@ and games, and does a short task each day.
 - `TASKS.md` — the only plan file. All tasks, owners and order. Read section 1 before starting work.
 - `docs/product-spec-2026-10-06.pdf` — the founders' spec. Wins over `PRD.md` and over `TASKS.md`, except the
   points in `TASKS.md` section 3.
-- `apps/web/` — the website (Next.js 16, React 19, TypeScript). Owner: Azim. See `apps/web/AGENTS.md`.
+- `apps/web/` — the website (Next.js 16, React 19, TypeScript). See `apps/web/AGENTS.md`.
 - `apps/api/` — the server (Python 3.12, FastAPI, PostgreSQL, SQLAlchemy 2, Alembic, Redis, MinIO, Docker
-  Compose). Owner: Bekzod.
+  Compose).
 - `apps/web/src/content/backend/` — `intake.json`, `exercises.json`, `roadmap_cases.json`: data the server must
   load and match. Kept in sync by `backend-content.test.ts`.
 
 ## How to work
 
-1. Ask who you are working for (Azim or Bekzod) if it is not clear.
-2. Take the first unticked task under that name in the earliest milestone of `TASKS.md` section 5. Check its
-   **Needs** line is all ticked.
-3. Branch from the newest `main`: `task/<number>-<two-or-three-words>`.
-4. Do **only** that task. Other work you find becomes a new task in `TASKS.md`, not code.
-5. Tick the task's box in `TASKS.md` in the same branch.
-6. Open a pull request to `main` titled `<number>: <short name>`. Say how you checked the **Done when** line.
-7. Never merge. Azim merges every pull request after it is approved.
-8. Stuck: add `  - BLOCKED: <why>` under the task, push, and tell the developer.
+Solo phase: Azim does every open task alone, until he hands the project to Bekzod (`TASKS.md` section 4).
 
-## Rules for working together
+1. Take the first unticked task in the earliest milestone of `TASKS.md` section 5 (server list first, then
+   website list). Check its **Needs** line is all ticked.
+2. Work on `main`. Pull first.
+3. Do **only** that task. Other work you find becomes a new task in `TASKS.md`, not code.
+4. Tick the task's box in `TASKS.md` in the same commit.
+5. Check the **Done when** line and run the tests. Fix anything red before pushing.
+6. Commit and push to `main`. The message names the task, for example `feat: A0.1 project skeleton`.
+7. Stuck: add `  - BLOCKED: <why>` under the task and push.
 
-- Only Bekzod adds database tables and migrations. Never edit a merged migration; add a new one.
-- Azim owns `apps/web/`, Bekzod owns `apps/api/`. Changes in the other person's area go through their review.
-- Agree on a new server address (input and output) before building both sides. Write it in the first PR.
+## Rules
+
+- Never edit a database migration that is already pushed; add a new one.
+- Write the shape of each new server address (input and output) in its commit message.
 - Keys and passwords never go into git or chat. This repository is public.
 - Commit messages start with `feat:`, `fix:`, `docs:`, `chore:` or `test:`.
-- Bekzod is on Claude Pro: one task per session, small steps, commit and push after each working step.
+- One task per Claude session, then a fresh session.
 
 ## Rules of the product (never break these)
 

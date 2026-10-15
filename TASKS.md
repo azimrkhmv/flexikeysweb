@@ -3,10 +3,13 @@
 This is the **only plan file** of the project. Everything left to build is here, as small tasks, each with the
 name of the developer who does it.
 
+> **Solo phase (since 2026-10-15):** Azim builds alone — the base and the hardest parts — and then hands the
+> project to Bekzod (see "Handover" in section 4). Every open task is Azim's until then. No reviews.
+
 - **What we are building** is described in the founders' spec: `docs/product-spec-2026-10-06.pdf`. Where this file
   and the spec disagree, the spec wins — except for the three points listed in section 3.
 - `PRD.md` is the older product document. The spec replaced the parts where they disagree.
-- **Last updated:** 2026-10-14.
+- **Last updated:** 2026-10-15.
 
 **Contents:** 1. How we work · 2. Rules of the product · 3. Decisions already made · 4. Who does what ·
 5. Tasks (M0–M7) · 6. Ask and collect · 7. Accounts
@@ -19,30 +22,23 @@ name of the developer who does it.
 
 1. **Pick your next task.** In section 5, take the first unticked task under your name in the earliest milestone.
    Check that everything on its **Needs** line is ticked.
-2. **Make a branch** from the newest `main`. Name it `task/<number>-<two-or-three-words>`, for example
-   `task/A0.1-skeleton`.
+2. **Work on `main`.** Pull first.
 3. **Do only that task.** If you find other work, write it down as a new task in this file instead of doing it.
-4. **Tick the box** of your task in this file (`- [ ]` becomes `- [x]`) in the same branch.
-5. **Open a pull request** to `main`. Title: `<number>: <short name>`, for example `A0.1: Project skeleton`.
-   In the text, say how you checked the **Done when** line.
-6. **The other developer reviews it.** Azim reviews Bekzod's pull requests; Bekzod reviews Azim's.
-7. **Azim merges** every pull request, his own and Bekzod's, when the review is approved and the automatic
-   checks are green. Delete the branch.
-8. **Stuck?** Add a line `  - BLOCKED: <why>` under the task, push it, and tell the other developer the same day.
+4. **Tick the box** of your task in this file (`- [ ]` becomes `- [x]`) in the same commit.
+5. **Check the Done when line**, and run the tests. Fix anything red before pushing.
+6. **Commit and push to `main`.** The commit message starts with the task number, for example
+   `feat: A0.1 project skeleton`.
+7. **Stuck?** Add a line `  - BLOCKED: <why>` under the task and push it.
 
-### Rules for working together
+### Rules
 
-1. **Only Bekzod adds database tables and database changes.** When one of Azim's server tasks needs tables, a
-   "tables" task for Bekzod comes first. This keeps the database history in one line.
-2. **Never edit a database change that is already merged.** Add a new one.
-3. **Agree on the shape of a new server address before building both sides** — what goes in, what comes out.
-   Write it in the pull request of whoever builds first.
-4. **Azim owns `apps/web/`. Bekzod owns `apps/api/` and the database.** To change something in the other
-   person's area, open a pull request and let them review it.
-5. **Keys and passwords never go into git or chat.** This repository is public. Each account has one owner (section 7).
-6. **New task?** Add it to this file with the next free number, an owner, a "Done when" line and a "Needs" line.
-7. **Commit messages** start with `feat:`, `fix:`, `docs:`, `chore:` or `test:`, like the existing history.
-8. **Every week Azim tests the website on a real tablet and a real phone** and writes any problem as a new task.
+1. **One person changes the database at a time** (now Azim). This keeps the database history in one line.
+2. **Never edit a database change that is already pushed.** Add a new one.
+3. **Write the shape of each new server address** (what goes in, what comes out) in its commit message.
+4. **Keys and passwords never go into git or chat.** This repository is public. Each account has one owner (section 7).
+5. **New task?** Add it to this file with the next free number, an owner, a "Done when" line and a "Needs" line.
+6. **Commit messages** start with `feat:`, `fix:`, `docs:`, `chore:` or `test:`, like the existing history.
+7. **Every week Azim tests the website on a real tablet and a real phone** and writes any problem as a new task.
 
 ### How to read a task
 
@@ -55,10 +51,10 @@ name of the developer who does it.
 Task numbers: **T** team setup · **A** server · **B** website · **C** videos · **V** voice and audio ·
 **E** AI model · **F** launch · **Q** questions to ask · **G** things to collect.
 
-### So that Claude Pro lasts (Bekzod)
+### Keeping Claude sessions small
 
 One task per Claude session, then a fresh session. Point Claude at this file instead of explaining the project
-again. Open-ended bug hunting goes to Azim, who has Claude Max.
+again.
 
 ---
 
@@ -124,15 +120,12 @@ Every task must keep these. They come from the spec.
 
 ## 4. Who does what
 
-| | **Azim** (Claude Max) | **Bekzod** (Claude Pro) |
-|---|---|---|
-| Owns | The website, `apps/web/` | The server base and the database, `apps/api/` |
-| Server | Videos, plan engine, daily task, play check, assistant | Setup, sign-in, families, children, questions, Free and Pro, therapists, booking, Home Kit, your data, production |
-| Website | Every screen, and connecting each screen to the server | — |
-| Other | Videos with Higgsfield; asking the founders, the lawyer and the physiotherapist | Voice test, AI model test |
+**Now (solo phase): Azim does every task** — the website, the server, the database, the videos, and the
+questions to the founders. Inside a milestone, do the server list first, then the website list.
 
-Azim's list is longer on purpose: Claude Max carries more work. If Azim becomes the bottleneck, the first tasks to
-move to Bekzod are A5.1–A5.3 and A8.2b.
+**Handover.** When the base and the hardest parts are done, Azim hands the project to Bekzod. At that point:
+write down here which tasks are Bekzod's, bring back pull requests with one review, and turn the review rule
+back on for `main` on GitHub.
 
 ---
 
@@ -142,9 +135,9 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 
 ### M0 — Setup
 
-*After this: both developers can work the same way.*
+*After this: the tools and the rules are ready.*
 
-**Bekzod — in this order**
+**Bekzod**
 
 - [x] **Bekzod** — `T1` Install Docker and start it
   - Done when: `docker compose version` prints a version and `docker run hello-world` works
@@ -153,7 +146,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
   - Done when: `TASKS.md` is the only plan file on every branch
   - Needs: T4
 
-**Azim — in this order**
+**Azim**
 
 - [x] **Azim** — `T3` Finish the first screen of Docker Desktop (accept the terms, enter the Mac password)
   - Done when: `docker compose version` prints a version and `docker run hello-world` works
@@ -164,6 +157,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `T5` Protect `main` on GitHub: changes only by pull request, with one approval and green checks
   - Done when: a direct push to `main` is refused
   - Needs: T4
+  - Changed 2026-10-15 for the solo phase: no review needed now; force push and deleting `main` stay blocked
 - [x] **Azim** — `T6` Write one `CLAUDE.md` at the top of the repository: the rules of section 2, the working rules of section 1, and where things live
   - Done when: a new Claude session follows the rules without being told
   - Needs: T4
@@ -175,76 +169,76 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 
 *After this: a parent signs in, answers the questions and gets a real 4-week plan from the server.*
 
-**Bekzod — in this order**
+**Server — in this order**
 
-- [ ] **Bekzod** — `A0.1` Create the server project in `apps/api/`: FastAPI app, one folder per module, settings for ruff, mypy and pytest
+- [ ] **Azim** — `A0.1` Create the server project in `apps/api/`: FastAPI app, one folder per module, settings for ruff, mypy and pytest
   - Done when: the server starts; one test passes; ruff and mypy pass
   - Needs: T1
-- [ ] **Bekzod** — `A0.2` Docker Compose file with PostgreSQL 17, Redis and MinIO, on ports that do not clash with programs already running (for example 5433 and 6380); settings read from `.env`; a `.env.example`
+- [ ] **Azim** — `A0.2` Docker Compose file with PostgreSQL 17, Redis and MinIO, on ports that do not clash with programs already running (for example 5433 and 6380); settings read from `.env`; a `.env.example`
   - Done when: `docker compose up` starts everything and the server reads its settings
   - Needs: A0.1
-- [ ] **Bekzod** — `A0.3` Database layer: async SQLAlchemy, shared id and time columns, Alembic, the first database change, a test database for the tests
+- [ ] **Azim** — `A0.3` Database layer: async SQLAlchemy, shared id and time columns, Alembic, the first database change, a test database for the tests
   - Done when: `alembic upgrade head` works; the tests build a fresh test database
   - Needs: A0.2
-- [ ] **Bekzod** — `A0.4` Errors in the shape the website expects (problem+json with a code in `title`); a request number in every log line; `/healthz` and `/readyz`
+- [ ] **Azim** — `A0.4` Errors in the shape the website expects (problem+json with a code in `title`); a request number in every log line; `/healthz` and `/readyz`
   - Done when: both health addresses answer; a failing request returns the agreed shape
   - Needs: A0.1
-- [ ] **Bekzod** — `A1.1` Tables `users`, `families`, `family_members`. A user has a phone (unique), a role (`parent`, `therapist`, `physio`, `clinic`, `admin`), a status, a language, a region and a district
+- [ ] **Azim** — `A1.1` Tables `users`, `families`, `family_members`. A user has a phone (unique), a role (`parent`, `therapist`, `physio`, `clinic`, `admin`), a status, a language, a region and a district
   - Done when: the database change applies and rolls back
   - Needs: A0.3
-- [ ] **Bekzod** — `A1.2` SMS sender with a simulated version that returns the code; `POST /auth/phone/start`
+- [ ] **Azim** — `A1.2` SMS sender with a simulated version that returns the code; `POST /auth/phone/start`
   - Done when: tests prove the 60-second resend limit, the 5-tries limit and a limit per phone and per IP address
   - Needs: A1.1
-- [ ] **Bekzod** — `A1.3` `POST /auth/phone/verify`: sign in; on first use create a parent and their family, with the parent as owner; give a short sign-in token and a long one that changes on every use
+- [ ] **Azim** — `A1.3` `POST /auth/phone/verify`: sign in; on first use create a parent and their family, with the parent as owner; give a short sign-in token and a long one that changes on every use
   - Done when: a test proves that using an old long token again signs the user out everywhere
   - Needs: A1.2
-- [ ] **Bekzod** — `A1.4` Sign-in by cookie for the website and by header token for the future app; protection against forged requests on cookie writes; refresh, sign out, sign out everywhere
+- [ ] **Azim** — `A1.4` Sign-in by cookie for the website and by header token for the future app; protection against forged requests on cookie writes; refresh, sign out, sign out everywhere
   - Done when: both kinds of request work; a website write without the protection token is refused
   - Needs: A1.3
-- [ ] **Bekzod** — `A1.5` The server refuses to start in production while SMS is simulated
+- [ ] **Azim** — `A1.5` The server refuses to start in production while SMS is simulated
   - Done when: a test proves it
   - Needs: A1.2
-- [ ] **Bekzod** — `A1.6` `GET` and `PATCH /me`; the sign-up step (basic consent, region, district); consent texts in 4 languages
+- [ ] **Azim** — `A1.6` `GET` and `PATCH /me`; the sign-up step (basic consent, region, district); consent texts in 4 languages
   - Done when: a new user can call nothing else before giving basic consent
   - Needs: A1.4
-- [ ] **Bekzod** — `A1.7` Roles, and one shared check "may this person see this child?": family members see their family's children, a therapist sees shared children only, everyone else gets "not found". An admin creates physiotherapist, clinic and admin accounts by phone
+- [ ] **Azim** — `A1.7` Roles, and one shared check "may this person see this child?": family members see their family's children, a therapist sees shared children only, everyone else gets "not found". An admin creates physiotherapist, clinic and admin accounts by phone
   - Done when: tests cover every role and family-membership combination; a non-parent with an unknown phone does not get a parent account by accident
   - Needs: A1.4
-- [ ] **Bekzod** — `A1.8` An admin can change a user's role and disable an account
+- [ ] **Azim** — `A1.8` An admin can change a user's role and disable an account
   - Done when: each change is in the audit log; a disabled account is signed out at once
   - Needs: A1.7
-- [ ] **Bekzod** — `A2.1` Table `children`, linked to a family; add, list, edit, delete; at most 3 children per family
+- [ ] **Azim** — `A2.1` Table `children`, linked to a family; add, list, edit, delete; at most 3 children per family
   - Done when: only members of that family see the child; only the owner can delete
   - Needs: A1.7
-- [ ] **Bekzod** — `A2.2` Child consents `health`, `movement_videos`, `therapist_share`: given and taken back by the owner only
+- [ ] **Azim** — `A2.2` Child consents `health`, `movement_videos`, `therapist_share`: given and taken back by the owner only
   - Done when: taking a consent back stops the related use; a helper's attempt is refused
   - Needs: A2.1
-- [ ] **Bekzod** — `A2.3` Load the question rules from `apps/web/src/content/backend/intake.json` and check answers against them
+- [ ] **Azim** — `A2.3` Load the question rules from `apps/web/src/content/backend/intake.json` and check answers against them
   - Done when: an answer outside a question's allowed values is refused
   - Needs: A2.1
-- [ ] **Bekzod** — `A2.4` Tables for question rounds and answers; `PUT /children/{id}/intake/{round}` saves some answers at a time
+- [ ] **Azim** — `A2.4` Tables for question rounds and answers; `PUT /children/{id}/intake/{round}` saves some answers at a time
   - Done when: "Not sure" is saved as empty; a parent can stop and continue later; health answers are not saved without the health consent
   - Needs: A2.2, A2.3
-- [ ] **Bekzod** — `A2.5` Health answers are stored encrypted
+- [ ] **Azim** — `A2.5` Health answers are stored encrypted
   - Done when: they are unreadable in a raw copy of the database
   - Needs: A2.4
-- [ ] **Bekzod** — `A2.6` Write down where the encryption key lives and how it is backed up
+- [ ] **Azim** — `A2.6` Write down where the encryption key lives and how it is backed up
   - Done when: a restore test on another computer reads old health answers
   - Needs: A2.5
-- [ ] **Bekzod** — `A2.7` Finish a round; start the 3-month repeat with last time's answers filled in
+- [ ] **Azim** — `A2.7` Finish a round; start the 3-month repeat with last time's answers filled in
   - Done when: a new round starts with the last answers; every old round is kept
   - Needs: A2.4
-- [ ] **Bekzod** — `A3.1` Tables for exercises, videos (one per exercise per language, with review status, who approved and when) and review notes
+- [ ] **Azim** — `A3.1` Tables for exercises, videos (one per exercise per language, with review status, who approved and when) and review notes
   - Done when: the database change applies and rolls back
   - Needs: A0.3
-- [ ] **Bekzod** — `A3.2` File storage with short-lived upload and download links
+- [ ] **Azim** — `A3.2` File storage with short-lived upload and download links
   - Done when: an upload and a download work against MinIO
   - Needs: A0.2
-- [ ] **Bekzod** — `A4.1` Tables for plans, plan items and reasons; a plan stores its engine version
+- [ ] **Azim** — `A4.1` Tables for plans, plan items and reasons; a plan stores its engine version
   - Done when: the database change applies and rolls back
   - Needs: A2.1
 
-**Azim — in this order**
+**Website and content — in this order**
 
 - [ ] **Azim** — `B1` When "Next" is grey in the parent questions, show which question is still open
   - Done when: the open question is marked and scrolled into view
@@ -305,25 +299,25 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 
 *After this: a parent opens today's task, watches the video and marks it done.*
 
-**Bekzod — in this order**
+**Server — in this order**
 
-- [ ] **Bekzod** — `A5.1` Tables for finished tasks, paused days, daily questions and their answers
+- [ ] **Azim** — `A5.1` Tables for finished tasks, paused days, daily questions and their answers
   - Done when: the database change applies and rolls back
   - Needs: A4.1
-- [ ] **Bekzod** — `A5.2` Background worker process (ARQ) in Docker Compose
+- [ ] **Azim** — `A5.2` Background worker process (ARQ) in Docker Compose
   - Done when: a test job runs on schedule
   - Needs: A0.2
-- [ ] **Bekzod** — `V1` Listening test: the same 20 Uzbek sentences from 3–4 voice providers (Azure Speech, Yandex SpeechKit, Muxlisa AI, Aisha)
+- [ ] **Azim** — `V1` Listening test: the same 20 Uzbek sentences from 3–4 voice providers (Azure Speech, Yandex SpeechKit, Muxlisa AI, Aisha)
   - Done when: native speakers chose one without knowing which was which; the price is written here
   - Needs: —
-- [ ] **Bekzod** — `V2` Check the letter sounds that matter for children: oʻ, gʻ, q, x, h
+- [ ] **Azim** — `V2` Check the letter sounds that matter for children: oʻ, gʻ, q, x, h
   - Done when: a native speaker confirms the chosen voice says each one clearly
   - Needs: V1
-- [ ] **Bekzod** — `V3` Make the voice-over for each exercise video in Uzbek, Russian and English
+- [ ] **Azim** — `V3` Make the voice-over for each exercise video in Uzbek, Russian and English
   - Done when: every video of task C4 has its three voice tracks
   - Needs: V2, C2
 
-**Azim — in this order**
+**Website and content — in this order**
 
 - [ ] **Azim** — `C2` Write the fixed style prompt and one prompt per exercise
   - Done when: a prompt sheet exists for every exercise in the approved list
@@ -375,22 +369,22 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 
 *After this: the child does the play check and gets the right games.*
 
-**Bekzod — in this order**
+**Server — in this order**
 
-- [ ] **Bekzod** — `A6.1` Tables for access settings, play check runs, skill levels, game sessions, and try records split by month
+- [ ] **Azim** — `A6.1` Tables for access settings, play check runs, skill levels, game sessions, and try records split by month
   - Done when: the database change applies; one month of tries can be dropped in a single step
   - Needs: A2.1
-- [ ] **Bekzod** — `A6.2` Nightly job that deletes try records older than 90 days
+- [ ] **Azim** — `A6.2` Nightly job that deletes try records older than 90 days
   - Done when: old months are gone after the job runs
   - Needs: A6.1, A5.2
-- [ ] **Bekzod** — `A6.3` Table for the parent's own My Voice cards
+- [ ] **Azim** — `A6.3` Table for the parent's own My Voice cards
   - Done when: the database change applies and rolls back
   - Needs: A2.1, Q2
-- [ ] **Bekzod** — `V4` Make all fixed audio in Uzbek, Russian and English: letters, words, game instructions
+- [ ] **Azim** — `V4` Make all fixed audio in Uzbek, Russian and English: letters, words, game instructions
   - Done when: a list maps every item to its file; a test fails if one is missing
   - Needs: V2
 
-**Azim — in this order**
+**Website and content — in this order**
 
 - [ ] **Azim** — `B13` Input layer: every game receives "select, move, hold" and never a raw tap
   - Done when: hold-to-choose and switch scanning work in every game
@@ -436,31 +430,31 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 
 *After this: a parent invites a therapist and a second adult; Free and Pro work with a 7-day trial.*
 
-**Bekzod — in this order**
+**Server — in this order**
 
-- [ ] **Bekzod** — `A7.1` Free and Pro per family; 7-day trial of Pro
+- [ ] **Azim** — `A7.1` Free and Pro per family; 7-day trial of Pro
   - Done when: the trial ends on time; a helper gets the family's Pro access
   - Needs: A1.1
-- [ ] **Bekzod** — `A7.2` Free limits enforced by the server
+- [ ] **Azim** — `A7.2` Free limits enforced by the server
   - Done when: a Free family meets every limit the founders listed
   - Needs: A7.1, G3
-- [ ] **Bekzod** — `A7.3` A simulated payment turns a family to Pro; an admin can upgrade a family by hand
+- [ ] **Azim** — `A7.3` A simulated payment turns a family to Pro; an admin can upgrade a family by hand
   - Done when: a repeated payment message never upgrades twice; only the owner can pay
   - Needs: A7.1
-- [ ] **Bekzod** — `A8.1` Invite a therapist by phone or link; the therapist accepts; the owner stops the share
+- [ ] **Azim** — `A8.1` Invite a therapist by phone or link; the therapist accepts; the owner stops the share
   - Done when: stopping the share cuts the therapist's access at once
   - Needs: A2.2
-- [ ] **Bekzod** — `A8.2` Tables and addresses for the therapist form T1–T11; a therapist's answer wins over the parent's
+- [ ] **Azim** — `A8.2` Tables and addresses for the therapist form T1–T11; a therapist's answer wins over the parent's
   - Done when: the answer in use carries the therapist's name, so the parent side can show "Updated by …"
   - Needs: A8.1
-- [ ] **Bekzod** — `A8.3` Movement and feedback clips, allowed only with the movement-videos consent; the therapist replies
+- [ ] **Azim** — `A8.3` Movement and feedback clips, allowed only with the movement-videos consent; the therapist replies
   - Done when: only the shared therapist can watch; the parent can delete any clip
   - Needs: A8.1, A3.2
-- [ ] **Bekzod** — `A8.4` Helpers: the owner invites one second adult by phone; the helper accepts; the owner removes them
+- [ ] **Azim** — `A8.4` Helpers: the owner invites one second adult by phone; the helper accepts; the owner removes them
   - Done when: a helper can do daily use only (section 3); removal cuts access at once
   - Needs: A2.1
 
-**Azim — in this order**
+**Website and content — in this order**
 
 - [ ] **Azim** — `B21` Free and Pro screens, the 7-day trial, the Free limits, a reminder 2 days before the trial ends
   - Done when: only the owner sees the pay button
@@ -494,22 +488,22 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 
 *After this: a parent or therapist asks the assistant by text or by voice.*
 
-**Bekzod — in this order**
+**Server — in this order**
 
-- [ ] **Bekzod** — `E1` Write 30 real parent questions in Uzbek Latin, Uzbek Cyrillic and Russian, each with the safe answer described
+- [ ] **Azim** — `E1` Write 30 real parent questions in Uzbek Latin, Uzbek Cyrillic and Russian, each with the safe answer described
   - Done when: a therapist has read and corrected them
   - Needs: —
-- [ ] **Bekzod** — `E2` Blind test of the low-cost model from at least 3 AI providers on those questions
+- [ ] **Azim** — `E2` Blind test of the low-cost model from at least 3 AI providers on those questions
   - Done when: a native speaker rated the answers without seeing the provider; the winner and its price are written in section 3
   - Needs: E1
-- [ ] **Bekzod** — `V5` Choose speech-to-text for Uzbek and Russian
+- [ ] **Azim** — `V5` Choose speech-to-text for Uzbek and Russian
   - Done when: a test with real parent voices is good enough to use; the choice is written in section 3
   - Needs: —
-- [ ] **Bekzod** — `A9.1` Tables for chats, messages and AI usage
+- [ ] **Azim** — `A9.1` Tables for chats, messages and AI usage
   - Done when: the database change applies and rolls back
   - Needs: A2.1
 
-**Azim — in this order**
+**Website and content — in this order**
 
 - [ ] **Azim** — `B29` Assistant screen: emergency words (seizure, trouble breathing, a fall with a head injury, sudden strong pain) show **103** before anything else
   - Done when: tested in all 4 languages
@@ -549,31 +543,31 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 
 *After this: a parent finds a clinic, books a visit and orders a kit.*
 
-**Bekzod — in this order**
+**Server — in this order**
 
-- [ ] **Bekzod** — `A10.1` Table of places; an admin adds and edits places
+- [ ] **Azim** — `A10.1` Table of places; an admin adds and edits places
   - Done when: a place has every field the spec lists
   - Needs: A1.7
-- [ ] **Bekzod** — `A10.2` Search: free state centres first, then by distance; a parent reports wrong information
+- [ ] **Azim** — `A10.2` Search: free state centres first, then by distance; a parent reports wrong information
   - Done when: a price older than 6 months says "price not recently checked"; a report flags the place
   - Needs: A10.1
-- [ ] **Bekzod** — `A10.3` Clinic accounts and their free times
+- [ ] **Azim** — `A10.3` Clinic accounts and their free times
   - Done when: a clinic sees only its own data
   - Needs: A1.7
-- [ ] **Bekzod** — `A10.4` Booking, confirm and cancel, in person or online
+- [ ] **Azim** — `A10.4` Booking, confirm and cancel, in person or online
   - Done when: the database makes a double booking impossible
   - Needs: A10.3
-- [ ] **Bekzod** — `A10.5` Reminders 1 day and 2 hours before a visit
+- [ ] **Azim** — `A10.5` Reminders 1 day and 2 hours before a visit
   - Done when: the reminder jobs run on time in tests
   - Needs: A10.4, A5.2
-- [ ] **Bekzod** — `A11.1` Home Kit products, orders and delivery status
+- [ ] **Azim** — `A11.1` Home Kit products, orders and delivery status
   - Done when: an order goes from placed to delivered
   - Needs: A1.1, G3
-- [ ] **Bekzod** — `A11.2` The allergy question (P17a) is checked before an order is accepted
+- [ ] **Azim** — `A11.2` The allergy question (P17a) is checked before an order is accepted
   - Done when: an order is refused until the question is answered
   - Needs: A11.1
 
-**Azim — in this order**
+**Website and content — in this order**
 
 - [ ] **Azim** — `B34` Find help screen: pick a need, see places (free first, then by distance), report wrong information
   - Done when: "I'm not sure" suggests the child's doctor or a free state centre and never guesses
@@ -598,43 +592,43 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 
 *After this: real families use it.*
 
-**Bekzod — in this order**
+**Server — in this order**
 
-- [ ] **Bekzod** — `A12.1` See and download everything stored about a child
+- [ ] **Azim** — `A12.1` See and download everything stored about a child
   - Done when: the file contains all personal data of the child
   - Needs: A2.7
-- [ ] **Bekzod** — `A12.2` Delete a child or the whole account; the data is removed for good within 30 days
+- [ ] **Azim** — `A12.2` Delete a child or the whole account; the data is removed for good within 30 days
   - Done when: the data is gone from the database after the job runs
   - Needs: A12.1, A5.2
-- [ ] **Bekzod** — `A12.3` Delete any clip or chat; stop any share
+- [ ] **Azim** — `A12.3` Delete any clip or chat; stop any share
   - Done when: each works at once
   - Needs: A8.3, A9.4
-- [ ] **Bekzod** — `A13.1` Second sign-in step for admins
+- [ ] **Azim** — `A13.1` Second sign-in step for admins
   - Done when: an admin cannot act with only a stolen SMS code
   - Needs: A1.7
-- [ ] **Bekzod** — `A13.2` Connect a real SMS provider
+- [ ] **Azim** — `A13.2` Connect a real SMS provider
   - Done when: a real phone receives a real code
   - Needs: Q6
-- [ ] **Bekzod** — `A13.3` Production Docker files with HTTPS
+- [ ] **Azim** — `A13.3` Production Docker files with HTTPS
   - Done when: the server runs on a fresh machine with HTTPS
   - Needs: Q4
-- [ ] **Bekzod** — `A13.4` Put the server live
+- [ ] **Azim** — `A13.4` Put the server live
   - Done when: the server answers at the real address
   - Needs: A13.3, A13.2, F1
-- [ ] **Bekzod** — `A13.5` Nightly encrypted backups, and one practice restore
+- [ ] **Azim** — `A13.5` Nightly encrypted backups, and one practice restore
   - Done when: a restore has been done once and the steps are written down
   - Needs: A13.4
-- [ ] **Bekzod** — `A13.6` Error alerts and uptime checks
+- [ ] **Azim** — `A13.6` Error alerts and uptime checks
   - Done when: an alert arrives when the server is stopped on purpose
   - Needs: A13.4
-- [ ] **Bekzod** — `F3` Security check before launch
+- [ ] **Azim** — `F3` Security check before launch
   - Done when: no serious finding is open
   - Needs: A13.4
-- [ ] **Bekzod** — `F4` Load test: many children playing at once
+- [ ] **Azim** — `F4` Load test: many children playing at once
   - Done when: the server stays fast at the pilot's expected size
   - Needs: A13.4
 
-**Azim — in this order**
+**Website and content — in this order**
 
 - [ ] **Azim** — `B40` "Everything we store about your child" in plain words; delete one video or one chat
   - Done when: each delete works at once on demo data
@@ -712,9 +706,7 @@ These are not programming. The named developer asks the right person and writes 
 - [ ] **Azim** — `G7` Get the lawyer's answers: may children's health data be stored abroad, and may data be sent to AI and voice companies abroad?
   - Needed for: A9.2, F5
 
-**Bekzod**
-
-- [ ] **Bekzod** — `Q6` Compare SMS providers (Eskiz.uz and others): price and how to connect
+- [ ] **Azim** — `Q6` Compare SMS providers (Eskiz.uz and others): price and how to connect
   - Needed for: A13.2
 
 ---
