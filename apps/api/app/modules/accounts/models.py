@@ -52,6 +52,10 @@ class User(IdTimeMixin, Base):
     # Ids from apps/web/src/content/districts.ts; empty until the sign-up step (A1.6).
     region: Mapped[str | None] = mapped_column(String(32))
     district: Mapped[str | None] = mapped_column(String(64))
+    name: Mapped[str | None] = mapped_column(String(80))
+    # Basic consent (A1.6): which text version the person agreed to, and when. Empty = not given yet.
+    consent_version: Mapped[str | None] = mapped_column(String(32))
+    consent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     # "Sign out everywhere": access tokens issued before this moment are refused (app/modules/auth/session.py).
     signed_out_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 

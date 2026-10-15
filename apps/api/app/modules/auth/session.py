@@ -79,8 +79,8 @@ def check_csrf(request: Request) -> None:
         raise AppError(403, "csrf_failed")
 
 
-async def current_user(request: Request, db: Annotated[AsyncSession, Depends(get_session)]) -> User:
-    """FastAPI dependency: the signed-in, active person, or 401."""
+async def signed_in_user(request: Request, db: Annotated[AsyncSession, Depends(get_session)]) -> User:
+    """The signed-in, active person, or 401. Only for the few addresses allowed before basic consent."""
     auth = request.headers.get("authorization", "")
     if auth.lower().startswith("bearer "):
         token = auth[7:]
@@ -101,4 +101,12 @@ def _ms(t: datetime) -> int:
     return int(t.timestamp() * 1000)
 
 
-CurrentUser = Annotated[User, Depends(current_user)]
+async def current_user(user: Annotated[User, Depends(signed_in_user)]) -> User:
+    """FastAPI dependency for every normal address: signed in AND has given the basic consent (A1.6)."""
+    if user.consent_version is None:
+        raise AppError(403, "consent_required")
+    return user
+
+
+SignedInUser = Annotated[User, Depends(signed_in_user)]  # before consent: /me, /me/signup, sign-out
+CurrentUser = Annotated[User, Depends(current_user)]  # everything else

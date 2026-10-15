@@ -1,0 +1,163 @@
+[
+ {
+  "id": "tashkent_city",
+  "districts": [
+   "Bektemir",
+   "Chilonzor",
+   "Mirobod",
+   "Mirzo Ulugʻbek",
+   "Olmazor",
+   "Sergeli",
+   "Shayxontohur",
+   "Uchtepa",
+   "Yakkasaroy",
+   "Yangihayot",
+   "Yashnobod",
+   "Yunusobod"
+  ]
+ },
+ {
+  "id": "tashkent",
+  "districts": [
+   "Angren",
+   "Bekobod",
+   "Chirchiq",
+   "Olmaliq",
+   "Nurafshon",
+   "Zangiota",
+   "Qibray",
+   "Yangiyoʻl",
+   "Boʻstonliq",
+   "Parkent"
+  ]
+ },
+ {
+  "id": "andijan",
+  "districts": [
+   "Andijon shahri",
+   "Asaka",
+   "Xonobod",
+   "Shahrixon",
+   "Baliqchi",
+   "Paxtaobod"
+  ]
+ },
+ {
+  "id": "fergana",
+  "districts": [
+   "Fargʻona shahri",
+   "Margʻilon",
+   "Qoʻqon",
+   "Quvasoy",
+   "Rishton",
+   "Oltiariq"
+  ]
+ },
+ {
+  "id": "namangan",
+  "districts": [
+   "Namangan shahri",
+   "Chust",
+   "Kosonsoy",
+   "Pop",
+   "Uychi",
+   "Toʻraqoʻrgʻon"
+  ]
+ },
+ {
+  "id": "samarkand",
+  "districts": [
+   "Samarqand shahri",
+   "Kattaqoʻrgʻon",
+   "Urgut",
+   "Jomboy",
+   "Pastdargʻom",
+   "Bulungʻur"
+  ]
+ },
+ {
+  "id": "bukhara",
+  "districts": [
+   "Buxoro shahri",
+   "Kogon",
+   "Gʻijduvon",
+   "Vobkent",
+   "Qorakoʻl",
+   "Romitan"
+  ]
+ },
+ {
+  "id": "navoi",
+  "districts": [
+   "Navoiy shahri",
+   "Zarafshon",
+   "Karmana",
+   "Nurota",
+   "Qiziltepa"
+  ]
+ },
+ {
+  "id": "kashkadarya",
+  "districts": [
+   "Qarshi",
+   "Shahrisabz",
+   "Kitob",
+   "Gʻuzor",
+   "Koson",
+   "Muborak"
+  ]
+ },
+ {
+  "id": "surkhandarya",
+  "districts": [
+   "Termiz",
+   "Denov",
+   "Sherobod",
+   "Jarqoʻrgʻon",
+   "Boysun",
+   "Sariosiyo"
+  ]
+ },
+ {
+  "id": "jizzakh",
+  "districts": [
+   "Jizzax shahri",
+   "Zomin",
+   "Gʻallaorol",
+   "Paxtakor",
+   "Doʻstlik"
+  ]
+ },
+ {
+  "id": "syrdarya",
+  "districts": [
+   "Guliston",
+   "Yangiyer",
+   "Shirin",
+   "Boyovut",
+   "Sirdaryo"
+  ]
+ },
+ {
+  "id": "khorezm",
+  "districts": [
+   "Urganch",
+   "Xiva",
+   "Xonqa",
+   "Hazorasp",
+   "Shovot",
+   "Gurlan"
+  ]
+ },
+ {
+  "id": "karakalpakstan",
+  "districts": [
+   "Nukus",
+   "Xoʻjayli",
+   "Toʻrtkoʻl",
+   "Beruniy",
+   "Qoʻngʻirot",
+   "Chimboy"
+  ]
+ }
+]

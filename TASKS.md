@@ -198,7 +198,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A1.5` The server refuses to start in production while SMS is simulated
   - Done when: a test proves it
   - Needs: A1.2
-- [ ] **Azim** — `A1.6` `GET` and `PATCH /me`; the sign-up step (basic consent, region, district); consent texts in 4 languages
+- [x] **Azim** — `A1.6` `GET` and `PATCH /me`; the sign-up step (basic consent, region, district); consent texts in 4 languages
   - Done when: a new user can call nothing else before giving basic consent
   - Needs: A1.4
 - [ ] **Azim** — `A1.7` Roles, and one shared check "may this person see this child?": family members see their family's children, a therapist sees shared children only, everyone else gets "not found". An admin creates physiotherapist, clinic and admin accounts by phone

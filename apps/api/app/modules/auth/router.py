@@ -187,7 +187,7 @@ async def logout(
 
 @router.post("/logout-all", status_code=204)
 async def logout_all(
-    user: session.CurrentUser, response: Response, db: Annotated[AsyncSession, Depends(get_session)]
+    user: session.SignedInUser, response: Response, db: Annotated[AsyncSession, Depends(get_session)]
 ) -> None:
     """Sign out on every device."""
     await tokens.revoke_all(db, user.id)
