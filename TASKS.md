@@ -163,7 +163,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `T5` Protect `main` on GitHub: changes only by pull request, with one approval and green checks
   - Done when: a direct push to `main` is refused
   - Needs: T4
-- [ ] **Azim** — `T6` Write one `CLAUDE.md` at the top of the repository: the rules of section 2, the working rules of section 1, and where things live
+- [x] **Azim** — `T6` Write one `CLAUDE.md` at the top of the repository: the rules of section 2, the working rules of section 1, and where things live
   - Done when: a new Claude session follows the rules without being told
   - Needs: T4
 - [ ] **Azim** — `T7` Fill in the accounts table (section 7)
