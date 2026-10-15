@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import DateTime, ForeignKey, String, UniqueConstraint
+from sqlalchemy import DateTime, ForeignKey, String, Text, UniqueConstraint
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -21,7 +21,10 @@ class IntakeRound(IdTimeMixin, Base):
 
 
 class IntakeAnswer(IdTimeMixin, Base):
-    """One answer. `value` is the JSON answer; SQL NULL means "Not sure" (spec §5)."""
+    """One answer. `value` is the JSON answer; SQL NULL means "Not sure" (spec §5).
+
+    Health questions keep `value` empty and store the answer encrypted in `secret` instead (A2.5, app/crypto.py);
+    "Not sure" on a health question leaves both empty."""
 
     __tablename__ = "intake_answers"
     __table_args__ = (UniqueConstraint("round_id", "question_id"),)
@@ -29,4 +32,5 @@ class IntakeAnswer(IdTimeMixin, Base):
     round_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("intake_rounds.id", ondelete="CASCADE"), index=True)
     question_id: Mapped[str] = mapped_column(String(16))
     value: Mapped[Any] = mapped_column(JSONB(none_as_null=True), nullable=True)
+    secret: Mapped[str | None] = mapped_column(Text)
     answered_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))

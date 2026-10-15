@@ -13,6 +13,7 @@ from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.crypto import decrypt_json, encrypt_json
 from app.db import get_session
 from app.errors import AppError
 from app.modules.auth.session import CurrentUser
@@ -48,8 +49,11 @@ async def _round(db: AsyncSession, child_id: uuid.UUID, number: int, *, create_f
 
 
 async def _out(db: AsyncSession, r: IntakeRound) -> RoundOut:
-    rows = await db.execute(select(IntakeAnswer.question_id, IntakeAnswer.value).where(IntakeAnswer.round_id == r.id))
-    return RoundOut(number=r.number, completed_at=r.completed_at, answers={q: v for q, v in rows})
+    rows = await db.execute(
+        select(IntakeAnswer.question_id, IntakeAnswer.value, IntakeAnswer.secret).where(IntakeAnswer.round_id == r.id)
+    )
+    answers = {qid: decrypt_json(secret) if secret else value for qid, value, secret in rows}
+    return RoundOut(number=r.number, completed_at=r.completed_at, answers=answers)
 
 
 @router.get("/{child_id}/intake/{number}")
@@ -77,14 +81,22 @@ async def save_answers(
     r = await _round(db, child_id, number, create_first=True)
     if r.completed_at is not None:
         raise AppError(409, "round_finished")
-    for qid, value in body.answers.items():
+    for q in questions:
+        value = body.answers[q.id]
+        # Health answers: encrypted in `secret`, never readable in `value` (A2.5). "Not sure" stays empty.
+        plain, secret = (None, None if value is None else encrypt_json(value)) if q.health else (value, None)
         stmt = insert(IntakeAnswer).values(
-            id=uuid.uuid4(), round_id=r.id, question_id=qid, value=value, answered_by=user.id
+            id=uuid.uuid4(), round_id=r.id, question_id=q.id, value=plain, secret=secret, answered_by=user.id
         )
         await db.execute(
             stmt.on_conflict_do_update(
                 constraint="uq_intake_answers_round_id",
-                set_={"value": stmt.excluded.value, "answered_by": user.id, "updated_at": stmt.excluded.updated_at},
+                set_={
+                    "value": stmt.excluded.value,
+                    "secret": stmt.excluded.secret,
+                    "answered_by": user.id,
+                    "updated_at": stmt.excluded.updated_at,
+                },
             )
         )
     await db.commit()

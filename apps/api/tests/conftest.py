@@ -17,6 +17,7 @@ os.environ.update(
     S3_ACCESS_KEY="test",
     S3_SECRET_KEY="test",
     JWT_SECRET="test-secret-at-least-32-bytes-long!!",
+    HEALTH_KEYS="rns5GjXuzrOlYZEsm_Rpxq6AYW-NsEDRLg9XzFxbZSQ=",
 )
 
 from alembic import command  # noqa: E402

@@ -219,7 +219,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A2.4` Tables for question rounds and answers; `PUT /children/{id}/intake/{round}` saves some answers at a time
   - Done when: "Not sure" is saved as empty; a parent can stop and continue later; health answers are not saved without the health consent
   - Needs: A2.2, A2.3
-- [ ] **Azim** — `A2.5` Health answers are stored encrypted
+- [x] **Azim** — `A2.5` Health answers are stored encrypted
   - Done when: they are unreadable in a raw copy of the database
   - Needs: A2.4
 - [ ] **Azim** — `A2.6` Write down where the encryption key lives and how it is backed up
