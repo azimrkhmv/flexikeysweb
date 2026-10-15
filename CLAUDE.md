@@ -23,7 +23,8 @@ and games, and does a short task each day.
 4. Do **only** that task. Other work you find becomes a new task in `TASKS.md`, not code.
 5. Tick the task's box in `TASKS.md` in the same branch.
 6. Open a pull request to `main` titled `<number>: <short name>`. Say how you checked the **Done when** line.
-7. Stuck: add `  - BLOCKED: <why>` under the task, push, and tell the developer.
+7. Never merge. Azim merges every pull request after it is approved.
+8. Stuck: add `  - BLOCKED: <why>` under the task, push, and tell the developer.
 
 ## Rules for working together
 

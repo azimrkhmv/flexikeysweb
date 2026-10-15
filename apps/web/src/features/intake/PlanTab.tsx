@@ -22,7 +22,7 @@ export function PlanTab({ child }: { child: Child }) {
   if (!plan)
     return (
       <Empty>
-        <p>{round && !round.completedAt ? t("intake.unfinished", { name: child.name }) : t("plan.none")}</p>
+        <span className="block">{round && !round.completedAt ? t("intake.unfinished", { name: child.name }) : t("plan.none")}</span>
         <LinkButton href={`/parent/children/new?child=${child.id}`} className="mt-4">
           {round ? t("intake.continue") : t("plan.start")}
         </LinkButton>
