@@ -1,6 +1,5 @@
 """A1.2: sign-in codes. Needs Redis: `docker compose up -d db redis`."""
 
-import asyncio
 from collections.abc import AsyncIterator, Iterator
 
 import pytest
@@ -11,17 +10,6 @@ from app import redis as app_redis
 from app.main import app
 from app.modules.auth import otp
 from app.modules.auth.otp import Check
-
-
-async def _flush() -> None:
-    r = app_redis.connect()
-    await r.flushdb()  # tests use Redis database 1 (tests/conftest.py), never the dev one
-    await r.aclose()
-
-
-@pytest.fixture(autouse=True)
-def _empty_redis() -> None:
-    asyncio.run(_flush())
 
 
 @pytest.fixture

@@ -6,6 +6,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from app import errors, logs, redis
+from app.db import engine
 from app.modules.auth import router as auth
 from app.modules.health import router as health
 from app.settings import settings
@@ -18,6 +19,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     app.state.redis = redis.connect()
     yield
     await app.state.redis.aclose()
+    await engine.dispose()  # connections belong to this run's event loop
 
 
 app = FastAPI(

@@ -16,6 +16,7 @@ os.environ.update(
     S3_ENDPOINT="http://localhost:9100",
     S3_ACCESS_KEY="test",
     S3_SECRET_KEY="test",
+    JWT_SECRET="test-secret-at-least-32-bytes-long!!",
 )
 
 from alembic import command  # noqa: E402
@@ -23,6 +24,7 @@ from alembic.config import Config  # noqa: E402
 from sqlalchemy import make_url  # noqa: E402
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine  # noqa: E402
 
+from app import redis  # noqa: E402
 from app.db import SessionLocal, engine  # noqa: E402
 
 
@@ -53,3 +55,15 @@ async def session() -> AsyncIterator[AsyncSession]:
     async with SessionLocal() as s:
         yield s
     await engine.dispose()
+
+
+@pytest.fixture(autouse=True)
+def _empty_redis() -> None:
+    """Every test starts with an empty Redis (database 1, never the dev one): no leftover codes or limits."""
+
+    async def flush() -> None:
+        r = redis.connect()
+        await r.flushdb()
+        await r.aclose()
+
+    asyncio.run(flush())
