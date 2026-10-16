@@ -21,6 +21,8 @@ and games, and does a short task each day.
   Anything about a child: `await require_child_access(db, user, child.family_id)` (`app/modules/accounts/access.py`),
   404 for everyone else. Admin only: `_: Admin`. First admin: `uv run python -m app.cli create-admin +998…`.
   Errors: `raise AppError(409, "phone_taken")` (`app/errors.py`) — the website reads the code from `title`.
+  Changed an address: `UPDATE_OPENAPI=1 uv run pytest tests/test_openapi.py` rewrites `apps/api/openapi.json`;
+  `npm run typecheck` in `apps/web/` rebuilds the website's types from it (`src/lib/server/`).
 - `apps/web/src/content/backend/` — `intake.json`, `exercises.json`, `roadmap_cases.json`: data the server must
   load and match. Kept in sync by `backend-content.test.ts`.
 

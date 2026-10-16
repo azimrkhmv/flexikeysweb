@@ -1,0 +1,1881 @@
+{
+ "openapi": "3.1.0",
+ "info": {
+  "title": "FlexiKeys API",
+  "version": "0.1.0"
+ },
+ "paths": {
+  "/healthz": {
+   "get": {
+    "tags": [
+     "health"
+    ],
+    "summary": "Healthz",
+    "description": "The process is up. Says nothing about the database; that is /readyz.",
+    "operationId": "healthz_healthz_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": {
+          "type": "string"
+         },
+         "type": "object",
+         "title": "Response Healthz Healthz Get"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/readyz": {
+   "get": {
+    "tags": [
+     "health"
+    ],
+    "summary": "Readyz",
+    "description": "Ready to serve: the database and Redis both answer. 503 otherwise, so traffic waits.",
+    "operationId": "readyz_readyz_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/auth/phone/start": {
+   "post": {
+    "tags": [
+     "auth"
+    ],
+    "summary": "Phone Start",
+    "description": "Send a 6-digit sign-in code by SMS.",
+    "operationId": "phone_start_api_v1_auth_phone_start_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PhoneStart"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/PhoneStarted"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/auth/phone/verify": {
+   "post": {
+    "tags": [
+     "auth"
+    ],
+    "summary": "Phone Verify",
+    "description": "Sign in with the SMS code. The first time a number is used, this creates a parent account.",
+    "operationId": "phone_verify_api_v1_auth_phone_verify_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PhoneVerify"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/SignedIn"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/auth/refresh": {
+   "post": {
+    "tags": [
+     "auth"
+    ],
+    "summary": "Refresh",
+    "description": "New tokens for a refresh token. Each refresh token works once.",
+    "operationId": "refresh_api_v1_auth_refresh_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "anyOf": [
+         {
+          "$ref": "#/components/schemas/RefreshBody"
+         },
+         {
+          "type": "null"
+         }
+        ],
+        "title": "Body"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Tokens"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/auth/logout": {
+   "post": {
+    "tags": [
+     "auth"
+    ],
+    "summary": "Logout",
+    "description": "Sign out on this device.",
+    "operationId": "logout_api_v1_auth_logout_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "anyOf": [
+         {
+          "$ref": "#/components/schemas/RefreshBody"
+         },
+         {
+          "type": "null"
+         }
+        ],
+        "title": "Body"
+       }
+      }
+     }
+    },
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/auth/logout-all": {
+   "post": {
+    "tags": [
+     "auth"
+    ],
+    "summary": "Logout All",
+    "description": "Sign out on every device.",
+    "operationId": "logout_all_api_v1_auth_logout_all_post",
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     }
+    }
+   }
+  },
+  "/api/v1/consents/basic": {
+   "get": {
+    "tags": [
+     "me"
+    ],
+    "summary": "Basic Consent",
+    "description": "The basic consent text to show at sign-up.",
+    "operationId": "basic_consent_api_v1_consents_basic_get",
+    "parameters": [
+     {
+      "name": "lang",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "$ref": "#/components/schemas/Lang",
+       "default": "uz"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ConsentText"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/me": {
+   "get": {
+    "tags": [
+     "me"
+    ],
+    "summary": "Get Me",
+    "operationId": "get_me_api_v1_me_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Me"
+        }
+       }
+      }
+     }
+    }
+   },
+   "patch": {
+    "tags": [
+     "me"
+    ],
+    "summary": "Change Me",
+    "description": "Change your name, language, city or district. Only the fields sent are changed.",
+    "operationId": "change_me_api_v1_me_patch",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/MeChange"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Me"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/me/signup": {
+   "patch": {
+    "tags": [
+     "me"
+    ],
+    "summary": "Signup",
+    "description": "The sign-up step: basic consent, city and district (spec §4). Required before anything else.",
+    "operationId": "signup_api_v1_me_signup_patch",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/Signup"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Me"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/admin/users": {
+   "post": {
+    "tags": [
+     "admin"
+    ],
+    "summary": "Add Staff",
+    "description": "Create a physiotherapist, clinic or admin account by phone number.",
+    "operationId": "add_staff_api_v1_admin_users_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/NewStaff"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/UserOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/admin/users/{user_id}": {
+   "patch": {
+    "tags": [
+     "admin"
+    ],
+    "summary": "Change User",
+    "description": "Change a person's role, or disable / enable their account. Every change goes into the audit log.",
+    "operationId": "change_user_api_v1_admin_users__user_id__patch",
+    "parameters": [
+     {
+      "name": "user_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "User Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/UserChange"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/UserOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/children": {
+   "get": {
+    "tags": [
+     "children"
+    ],
+    "summary": "List Children",
+    "description": "The children of every family this person belongs to.",
+    "operationId": "list_children_api_v1_children_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "$ref": "#/components/schemas/ChildOut"
+         },
+         "type": "array",
+         "title": "Response List Children Api V1 Children Get"
+        }
+       }
+      }
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "children"
+    ],
+    "summary": "Add Child",
+    "operationId": "add_child_api_v1_children_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ChildIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ChildOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/children/{child_id}": {
+   "get": {
+    "tags": [
+     "children"
+    ],
+    "summary": "Get Child",
+    "operationId": "get_child_api_v1_children__child_id__get",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ChildOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "patch": {
+    "tags": [
+     "children"
+    ],
+    "summary": "Change Child",
+    "operationId": "change_child_api_v1_children__child_id__patch",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ChildChange"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ChildOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "delete": {
+    "tags": [
+     "children"
+    ],
+    "summary": "Delete Child",
+    "description": "Deletes the child and, through the database, everything stored about them.",
+    "operationId": "delete_child_api_v1_children__child_id__delete",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/children/{child_id}/consents": {
+   "get": {
+    "tags": [
+     "children"
+    ],
+    "summary": "Get Consents",
+    "operationId": "get_consents_api_v1_children__child_id__consents_get",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Consents"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/children/{child_id}/consents/{kind}": {
+   "put": {
+    "tags": [
+     "children"
+    ],
+    "summary": "Set Consent",
+    "description": "Give or take back one consent. Owner only.",
+    "operationId": "set_consent_api_v1_children__child_id__consents__kind__put",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     },
+     {
+      "name": "kind",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "$ref": "#/components/schemas/ConsentKind"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ConsentChange"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Consents"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/children/{child_id}/intake/{number}": {
+   "get": {
+    "tags": [
+     "intake"
+    ],
+    "summary": "Get Round",
+    "description": "The answers saved so far, to continue where the parent stopped.",
+    "operationId": "get_round_api_v1_children__child_id__intake__number__get",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     },
+     {
+      "name": "number",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Number"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/RoundOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "put": {
+    "tags": [
+     "intake"
+    ],
+    "summary": "Save Answers",
+    "description": "Save some answers. Answers already saved for other questions stay; the same question is overwritten.",
+    "operationId": "save_answers_api_v1_children__child_id__intake__number__put",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     },
+     {
+      "name": "number",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Number"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/AnswersIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/RoundOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/children/{child_id}/intake": {
+   "get": {
+    "tags": [
+     "intake"
+    ],
+    "summary": "List Rounds",
+    "description": "Every round of this child, oldest first. Old rounds are never deleted (the child's history).",
+    "operationId": "list_rounds_api_v1_children__child_id__intake_get",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/RoundSummary"
+         },
+         "title": "Response List Rounds Api V1 Children  Child Id  Intake Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "intake"
+    ],
+    "summary": "Start Next Round",
+    "description": "The repeat every 3 months: a new round, filled in with last time's answers for the parent to check.",
+    "operationId": "start_next_round_api_v1_children__child_id__intake_post",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/RoundOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/children/{child_id}/intake/{number}/finish": {
+   "post": {
+    "tags": [
+     "intake"
+    ],
+    "summary": "Finish Round",
+    "description": "Close the round once every required question has an answer (\"Not sure\" counts).",
+    "operationId": "finish_round_api_v1_children__child_id__intake__number__finish_post",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     },
+     {
+      "name": "number",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Number"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/RoundOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ },
+ "components": {
+  "schemas": {
+   "AnswersIn": {
+    "properties": {
+     "answers": {
+      "additionalProperties": true,
+      "type": "object",
+      "title": "Answers"
+     }
+    },
+    "type": "object",
+    "required": [
+     "answers"
+    ],
+    "title": "AnswersIn"
+   },
+   "ChildChange": {
+    "properties": {
+     "name": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 40,
+        "minLength": 1
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Name"
+     },
+     "birthDate": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Birthdate"
+     },
+     "sex": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Sex"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "color": {
+      "anyOf": [
+       {
+        "type": "string",
+        "enum": [
+         "sky",
+         "leaf",
+         "sun",
+         "lavender",
+         "peach"
+        ]
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Color"
+     },
+     "lang": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Lang"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     }
+    },
+    "type": "object",
+    "title": "ChildChange"
+   },
+   "ChildIn": {
+    "properties": {
+     "name": {
+      "type": "string",
+      "maxLength": 40,
+      "minLength": 1,
+      "title": "Name"
+     },
+     "birthDate": {
+      "type": "string",
+      "format": "date",
+      "title": "Birthdate"
+     },
+     "sex": {
+      "$ref": "#/components/schemas/Sex"
+     },
+     "color": {
+      "anyOf": [
+       {
+        "type": "string",
+        "enum": [
+         "sky",
+         "leaf",
+         "sun",
+         "lavender",
+         "peach"
+        ]
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Color"
+     },
+     "lang": {
+      "$ref": "#/components/schemas/Lang",
+      "default": "uz"
+     }
+    },
+    "type": "object",
+    "required": [
+     "name",
+     "birthDate",
+     "sex"
+    ],
+    "title": "ChildIn"
+   },
+   "ChildOut": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "familyId": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Familyid"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "birthDate": {
+      "type": "string",
+      "format": "date",
+      "title": "Birthdate"
+     },
+     "sex": {
+      "$ref": "#/components/schemas/Sex"
+     },
+     "color": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Color"
+     },
+     "lang": {
+      "$ref": "#/components/schemas/Lang"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "familyId",
+     "name",
+     "birthDate",
+     "sex",
+     "color",
+     "lang"
+    ],
+    "title": "ChildOut"
+   },
+   "ConsentChange": {
+    "properties": {
+     "granted": {
+      "type": "boolean",
+      "title": "Granted"
+     }
+    },
+    "type": "object",
+    "required": [
+     "granted"
+    ],
+    "title": "ConsentChange"
+   },
+   "ConsentKind": {
+    "type": "string",
+    "enum": [
+     "health",
+     "movement_videos",
+     "therapist_share"
+    ],
+    "title": "ConsentKind"
+   },
+   "ConsentText": {
+    "properties": {
+     "version": {
+      "type": "string",
+      "title": "Version"
+     },
+     "text": {
+      "type": "string",
+      "title": "Text"
+     },
+     "detail": {
+      "type": "string",
+      "title": "Detail"
+     }
+    },
+    "type": "object",
+    "required": [
+     "version",
+     "text",
+     "detail"
+    ],
+    "title": "ConsentText"
+   },
+   "Consents": {
+    "properties": {
+     "health": {
+      "type": "boolean",
+      "title": "Health"
+     },
+     "movementVideos": {
+      "type": "boolean",
+      "title": "Movementvideos"
+     },
+     "therapistShare": {
+      "type": "boolean",
+      "title": "Therapistshare"
+     }
+    },
+    "type": "object",
+    "required": [
+     "health",
+     "movementVideos",
+     "therapistShare"
+    ],
+    "title": "Consents"
+   },
+   "HTTPValidationError": {
+    "properties": {
+     "detail": {
+      "items": {
+       "$ref": "#/components/schemas/ValidationError"
+      },
+      "type": "array",
+      "title": "Detail"
+     }
+    },
+    "type": "object",
+    "title": "HTTPValidationError"
+   },
+   "Lang": {
+    "type": "string",
+    "enum": [
+     "uz",
+     "uz_cyrl",
+     "ru",
+     "en"
+    ],
+    "title": "Lang",
+    "description": "The website's interface languages (apps/web/src/lib/translate.ts UiLang)."
+   },
+   "Me": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "phone": {
+      "type": "string",
+      "title": "Phone"
+     },
+     "role": {
+      "$ref": "#/components/schemas/Role"
+     },
+     "status": {
+      "$ref": "#/components/schemas/UserStatus"
+     },
+     "lang": {
+      "$ref": "#/components/schemas/Lang"
+     },
+     "region": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Region"
+     },
+     "district": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "District"
+     },
+     "name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Name"
+     },
+     "consentVersion": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Consentversion"
+     },
+     "needsSignup": {
+      "type": "boolean",
+      "title": "Needssignup"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "phone",
+     "role",
+     "status",
+     "lang",
+     "region",
+     "district",
+     "name",
+     "consentVersion",
+     "needsSignup"
+    ],
+    "title": "Me"
+   },
+   "MeChange": {
+    "properties": {
+     "name": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 80
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Name"
+     },
+     "lang": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Lang"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "region": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Region"
+     },
+     "district": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "District"
+     }
+    },
+    "type": "object",
+    "title": "MeChange"
+   },
+   "NewStaff": {
+    "properties": {
+     "phone": {
+      "type": "string",
+      "title": "Phone"
+     },
+     "role": {
+      "type": "string",
+      "enum": [
+       "physio",
+       "clinic",
+       "admin"
+      ],
+      "title": "Role"
+     },
+     "name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Name"
+     },
+     "lang": {
+      "$ref": "#/components/schemas/Lang",
+      "default": "uz"
+     }
+    },
+    "type": "object",
+    "required": [
+     "phone",
+     "role"
+    ],
+    "title": "NewStaff"
+   },
+   "PhoneStart": {
+    "properties": {
+     "phone": {
+      "type": "string",
+      "title": "Phone"
+     }
+    },
+    "type": "object",
+    "required": [
+     "phone"
+    ],
+    "title": "PhoneStart"
+   },
+   "PhoneStarted": {
+    "properties": {
+     "phone": {
+      "type": "string",
+      "title": "Phone"
+     },
+     "resendAfterMs": {
+      "type": "integer",
+      "title": "Resendafterms"
+     },
+     "demoCode": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Democode"
+     }
+    },
+    "type": "object",
+    "required": [
+     "phone",
+     "resendAfterMs"
+    ],
+    "title": "PhoneStarted"
+   },
+   "PhoneVerify": {
+    "properties": {
+     "phone": {
+      "type": "string",
+      "title": "Phone"
+     },
+     "code": {
+      "type": "string",
+      "title": "Code"
+     },
+     "lang": {
+      "$ref": "#/components/schemas/Lang",
+      "default": "uz"
+     }
+    },
+    "type": "object",
+    "required": [
+     "phone",
+     "code"
+    ],
+    "title": "PhoneVerify"
+   },
+   "RefreshBody": {
+    "properties": {
+     "refreshToken": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Refreshtoken"
+     }
+    },
+    "type": "object",
+    "title": "RefreshBody"
+   },
+   "Role": {
+    "type": "string",
+    "enum": [
+     "parent",
+     "therapist",
+     "physio",
+     "clinic",
+     "admin"
+    ],
+    "title": "Role"
+   },
+   "RoundOut": {
+    "properties": {
+     "number": {
+      "type": "integer",
+      "title": "Number"
+     },
+     "completedAt": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Completedat"
+     },
+     "answers": {
+      "additionalProperties": true,
+      "type": "object",
+      "title": "Answers"
+     }
+    },
+    "type": "object",
+    "required": [
+     "number",
+     "completedAt",
+     "answers"
+    ],
+    "title": "RoundOut"
+   },
+   "RoundSummary": {
+    "properties": {
+     "number": {
+      "type": "integer",
+      "title": "Number"
+     },
+     "startedAt": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Startedat"
+     },
+     "completedAt": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Completedat"
+     }
+    },
+    "type": "object",
+    "required": [
+     "number",
+     "startedAt",
+     "completedAt"
+    ],
+    "title": "RoundSummary"
+   },
+   "Sex": {
+    "type": "string",
+    "enum": [
+     "boy",
+     "girl"
+    ],
+    "title": "Sex"
+   },
+   "SignedIn": {
+    "properties": {
+     "user": {
+      "$ref": "#/components/schemas/UserOut"
+     },
+     "isNew": {
+      "type": "boolean",
+      "title": "Isnew"
+     },
+     "accessToken": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Accesstoken"
+     },
+     "refreshToken": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Refreshtoken"
+     }
+    },
+    "type": "object",
+    "required": [
+     "user",
+     "isNew"
+    ],
+    "title": "SignedIn"
+   },
+   "Signup": {
+    "properties": {
+     "name": {
+      "type": "string",
+      "maxLength": 80,
+      "title": "Name",
+      "default": ""
+     },
+     "region": {
+      "type": "string",
+      "title": "Region"
+     },
+     "district": {
+      "type": "string",
+      "title": "District"
+     },
+     "consent": {
+      "type": "boolean",
+      "title": "Consent"
+     }
+    },
+    "type": "object",
+    "required": [
+     "region",
+     "district",
+     "consent"
+    ],
+    "title": "Signup"
+   },
+   "Tokens": {
+    "properties": {
+     "accessToken": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Accesstoken"
+     },
+     "refreshToken": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Refreshtoken"
+     }
+    },
+    "type": "object",
+    "title": "Tokens"
+   },
+   "UserChange": {
+    "properties": {
+     "role": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Role"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "status": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/UserStatus"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     }
+    },
+    "type": "object",
+    "title": "UserChange"
+   },
+   "UserOut": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "phone": {
+      "type": "string",
+      "title": "Phone"
+     },
+     "role": {
+      "$ref": "#/components/schemas/Role"
+     },
+     "status": {
+      "$ref": "#/components/schemas/UserStatus"
+     },
+     "lang": {
+      "$ref": "#/components/schemas/Lang"
+     },
+     "region": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Region"
+     },
+     "district": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "District"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "phone",
+     "role",
+     "status",
+     "lang",
+     "region",
+     "district"
+    ],
+    "title": "UserOut"
+   },
+   "UserStatus": {
+    "type": "string",
+    "enum": [
+     "active",
+     "disabled"
+    ],
+    "title": "UserStatus"
+   },
+   "ValidationError": {
+    "properties": {
+     "loc": {
+      "items": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "integer"
+        }
+       ]
+      },
+      "type": "array",
+      "title": "Location"
+     },
+     "msg": {
+      "type": "string",
+      "title": "Message"
+     },
+     "type": {
+      "type": "string",
+      "title": "Error Type"
+     },
+     "input": {
+      "title": "Input"
+     },
+     "ctx": {
+      "type": "object",
+      "title": "Context"
+     }
+    },
+    "type": "object",
+    "required": [
+     "loc",
+     "msg",
+     "type"
+    ],
+    "title": "ValidationError"
+   }
+  }
+ }
+}

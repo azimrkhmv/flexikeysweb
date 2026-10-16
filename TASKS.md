@@ -263,7 +263,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A4.3` Plan engine, part 2 — choosing exercises and games for 28 days
   - Done when: the server gives exactly the stored plan for all 284 cases in `roadmap_cases.json`
   - Needs: A4.2
-- [ ] **Azim** — `A0.6` Publish the server's address description (OpenAPI) and generate the website's types from it
+- [x] **Azim** — `A0.6` Publish the server's address description (OpenAPI) and generate the website's types from it
   - Done when: a changed address breaks the website's type check
   - Needs: A0.4
 - [ ] **Azim** — `A0.7` A test server on the internet with made-up data only, updated automatically from `main`
