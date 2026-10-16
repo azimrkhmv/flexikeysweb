@@ -6,6 +6,7 @@ from app.modules.auth.models import RefreshToken
 from app.modules.children.consents import ChildConsent
 from app.modules.children.models import Child
 from app.modules.intake.models import IntakeAnswer, IntakeRound
+from app.modules.plans.models import Plan, PlanItem, PlanReason
 from app.modules.videos.models import Exercise, Video, VideoReview
 
 __all__ = [
@@ -17,6 +18,9 @@ __all__ = [
     "FamilyMember",
     "IntakeAnswer",
     "IntakeRound",
+    "Plan",
+    "PlanItem",
+    "PlanReason",
     "RefreshToken",
     "User",
     "Video",
