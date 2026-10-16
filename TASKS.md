@@ -254,7 +254,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `C1` Connect Higgsfield and test it on 3 exercises
   - Done when: we know the longest clip, the price per clip, and whether the same person stays the same across clips
   - Needs: T7
-- [ ] **Azim** — `A0.5` GitHub Actions for the server: ruff, mypy, and tests with a PostgreSQL service
+- [x] **Azim** — `A0.5` GitHub Actions for the server: ruff, mypy, and tests with a PostgreSQL service
   - Done when: the checks run and are green on a pull request
   - Needs: A0.3
 - [ ] **Azim** — `A4.2` Plan engine, part 1 — the safety filter, moved from `apps/web/src/lib/roadmap.ts` to Python as pure calculation with no database
