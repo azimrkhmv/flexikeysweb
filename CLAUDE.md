@@ -13,7 +13,7 @@ and games, and does a short task each day.
   Compose).
   Commands, run in `apps/api/`: `cp .env.example .env` (once), `docker compose up -d` (server, PostgreSQL,
   Redis, MinIO), `uv run uvicorn app.main:app --reload` (server only, on your computer), `uv run pytest` (needs
-  `docker compose up -d db redis`; builds a fresh `flexikeys_test` database), `uv run alembic upgrade head`,
+  `docker compose up -d db redis minio`; builds a fresh `flexikeys_test` database), `uv run alembic upgrade head`,
   `uv run ruff check .`, `uv run ruff format .`, `uv run mypy app tests migrations`. New feature = new folder in
   `app/modules/` with a `router.py`, included in `app/main.py`.
   Addresses live under `/api/v1` (the website proxies it). A signed-in address takes `user: session.CurrentUser`

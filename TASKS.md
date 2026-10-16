@@ -233,7 +233,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A3.1` Tables for exercises, videos (one per exercise per language, with review status, who approved and when) and review notes
   - Done when: the database change applies and rolls back
   - Needs: A0.3
-- [ ] **Azim** — `A3.2` File storage with short-lived upload and download links
+- [x] **Azim** — `A3.2` File storage with short-lived upload and download links
   - Done when: an upload and a download work against MinIO
   - Needs: A0.2
 - [ ] **Azim** — `A4.1` Tables for plans, plan items and reasons; a plan stores its engine version

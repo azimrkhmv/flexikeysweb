@@ -8,6 +8,7 @@ dependencies = [
     "asyncpg>=0.32.0",
     "cryptography>=50.0.2",
     "fastapi>=0.143.2",
+    "minio>=7.2.20",
     "pydantic-settings>=2.16.0",
     "pyjwt>=2.15.1",
     "redis>=8.1.0",

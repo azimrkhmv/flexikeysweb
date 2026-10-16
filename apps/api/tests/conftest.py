@@ -5,7 +5,7 @@ from collections.abc import AsyncIterator, Iterator
 import pytest
 
 # The tests must not depend on a developer's .env file, so they set their own values first.
-# PostgreSQL must be running: `docker compose up -d db`.
+# Needs PostgreSQL, Redis and MinIO: `docker compose up -d db redis minio`.
 TEST_DB = "flexikeys_test"
 os.environ.update(
     ENV="test",
@@ -14,8 +14,9 @@ os.environ.update(
     ),
     REDIS_URL="redis://localhost:6380/1",
     S3_ENDPOINT="http://localhost:9100",
-    S3_ACCESS_KEY="test",
-    S3_SECRET_KEY="test",
+    S3_ACCESS_KEY="flexikeys",  # the dev MinIO from compose.yaml
+    S3_SECRET_KEY="flexikeys-dev",
+    S3_BUCKET="flexikeys-test",
     JWT_SECRET="test-secret-at-least-32-bytes-long!!",
     HEALTH_KEYS="rns5GjXuzrOlYZEsm_Rpxq6AYW-NsEDRLg9XzFxbZSQ=",
 )

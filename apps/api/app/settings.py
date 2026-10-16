@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     database_url: str
     redis_url: str
     s3_endpoint: str
+    s3_public_endpoint: str | None = None  # what browsers use; app/storage.py. Empty = same as s3_endpoint
     s3_access_key: str
     s3_secret_key: str
     s3_bucket: str = "flexikeys"

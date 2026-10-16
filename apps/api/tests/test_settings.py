@@ -12,7 +12,7 @@ def test_settings_come_from_the_environment() -> None:
     s = Settings()
     assert s.env == "test"
     assert s.redis_url == "redis://localhost:6380/1"
-    assert s.s3_bucket == "flexikeys"
+    assert s.s3_bucket == "flexikeys-test"
 
 
 def test_simulated_sms_is_fine_outside_production() -> None:
