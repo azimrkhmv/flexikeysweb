@@ -1,0 +1,959 @@
+{
+ "kit_tools": [
+  "putty",
+  "tongs",
+  "lacing",
+  "pegboard",
+  "foam_ball",
+  "bean_bags",
+  "foot_discs",
+  "cards"
+ ],
+ "exercises": [
+  {
+   "id": "putty_squeeze",
+   "title": {
+    "en": "Squeeze the putty",
+    "uz": "Plastilinni siqish",
+    "ru": "Сжимаем пластилин"
+   },
+   "body_area": "hands",
+   "goals": [
+    "hands"
+   ],
+   "gmfcs": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "ages": [
+    "2-4",
+    "5-8",
+    "9-12",
+    "13-20"
+   ],
+   "tool": "putty",
+   "difficulty": 1,
+   "conflicts": []
+  },
+  {
+   "id": "putty_pinch",
+   "title": {
+    "en": "Pinch little balls",
+    "uz": "Kichik sharchalar uzish",
+    "ru": "Отщипываем шарики"
+   },
+   "body_area": "hands",
+   "goals": [
+    "hands",
+    "eat"
+   ],
+   "gmfcs": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "ages": [
+    "2-4",
+    "5-8",
+    "9-12",
+    "13-20"
+   ],
+   "tool": "putty",
+   "difficulty": 2,
+   "conflicts": []
+  },
+  {
+   "id": "tongs_pompoms",
+   "title": {
+    "en": "Pom-poms with tongs",
+    "uz": "Qisqich bilan pompon",
+    "ru": "Помпоны щипцами"
+   },
+   "body_area": "hands",
+   "goals": [
+    "hands",
+    "school"
+   ],
+   "gmfcs": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "ages": [
+    "2-4",
+    "5-8",
+    "9-12",
+    "13-20"
+   ],
+   "tool": "tongs",
+   "difficulty": 2,
+   "conflicts": []
+  },
+  {
+   "id": "tongs_sort",
+   "title": {
+    "en": "Sort by colour with tongs",
+    "uz": "Qisqich bilan rangga ajratish",
+    "ru": "Сортируем щипцами по цвету"
+   },
+   "body_area": "hands",
+   "goals": [
+    "hands",
+    "understand"
+   ],
+   "gmfcs": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "ages": [
+    "5-8",
+    "9-12",
+    "13-20"
+   ],
+   "tool": "tongs",
+   "difficulty": 3,
+   "conflicts": []
+  },
+  {
+   "id": "pegboard_big",
+   "title": {
+    "en": "Big pegs in, big pegs out",
+    "uz": "Katta qoziqlarni qoʻyish",
+    "ru": "Большие колышки"
+   },
+   "body_area": "hands",
+   "goals": [
+    "hands"
+   ],
+   "gmfcs": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "ages": [
+    "2-4",
+    "5-8",
+    "9-12"
+   ],
+   "tool": "pegboard",
+   "difficulty": 1,
+   "conflicts": []
+  },
+  {
+   "id": "pegboard_pattern",
+   "title": {
+    "en": "Copy a peg pattern",
+    "uz": "Naqshni takrorlash",
+    "ru": "Повторяем узор из колышков"
+   },
+   "body_area": "hands",
+   "goals": [
+    "hands",
+    "understand",
+    "school"
+   ],
+   "gmfcs": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "ages": [
+    "5-8",
+    "9-12",
+    "13-20"
+   ],
+   "tool": "pegboard",
+   "difficulty": 3,
+   "conflicts": []
+  },
+  {
+   "id": "lacing_card",
+   "title": {
+    "en": "Lacing card",
+    "uz": "Ip oʻtkazish kartasi",
+    "ru": "Карточка-шнуровка"
+   },
+   "body_area": "hands",
+   "goals": [
+    "hands",
+    "school"
+   ],
+   "gmfcs": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "ages": [
+    "5-8",
+    "9-12",
+    "13-20"
+   ],
+   "tool": "lacing",
+   "difficulty": 2,
+   "conflicts": []
+  },
+  {
+   "id": "finger_walk",
+   "title": {
+    "en": "Finger walk",
+    "uz": "Barmoqlar sayri",
+    "ru": "Пальчики гуляют"
+   },
+   "body_area": "hands",
+   "goals": [
+    "hands"
+   ],
+   "gmfcs": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "ages": [
+    "2-4",
+    "5-8",
+    "9-12",
+    "13-20"
+   ],
+   "tool": null,
+   "difficulty": 1,
+   "conflicts": []
+  },
+  {
+   "id": "spoon_scoop",
+   "title": {
+    "en": "Scoop with a spoon",
+    "uz": "Qoshiq bilan olish",
+    "ru": "Набираем ложкой"
+   },
+   "body_area": "hands",
+   "goals": [
+    "eat",
+    "hands"
+   ],
+   "gmfcs": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "ages": [
+    "2-4",
+    "5-8",
+    "9-12"
+   ],
+   "tool": null,
+   "difficulty": 1,
+   "conflicts": []
+  },
+  {
+   "id": "ball_roll_seated",
+   "title": {
+    "en": "Roll the ball while sitting",
+    "uz": "Oʻtirib toʻp dumalatish",
+    "ru": "Катаем мяч сидя"
+   },
+   "body_area": "arms",
+   "goals": [
+    "hands",
+    "play_others"
+   ],
+   "gmfcs": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "ages": [
+    "2-4",
+    "5-8",
+    "9-12",
+    "13-20"
+   ],
+   "tool": "foam_ball",
+   "difficulty": 1,
+   "conflicts": []
+  },
+  {
+   "id": "bean_bag_target",
+   "title": {
+    "en": "Bean bag to the target",
+    "uz": "Xaltachani nishonga",
+    "ru": "Мешочек в цель"
+   },
+   "body_area": "arms",
+   "goals": [
+    "hands",
+    "play_others"
+   ],
+   "gmfcs": [
+    1,
+    2,
+    3
+   ],
+   "ages": [
+    "2-4",
+    "5-8",
+    "9-12",
+    "13-20"
+   ],
+   "tool": "bean_bags",
+   "difficulty": 2,
+   "conflicts": []
+  },
+  {
+   "id": "reach_up_seated",
+   "title": {
+    "en": "Reach for the sky (sitting)",
+    "uz": "Osmonga choʻzilish (oʻtirib)",
+    "ru": "Тянемся вверх сидя"
+   },
+   "body_area": "arms",
+   "goals": [
+    "sit",
+    "hands"
+   ],
+   "gmfcs": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "ages": [
+    "2-4",
+    "5-8",
+    "9-12",
+    "13-20"
+   ],
+   "tool": null,
+   "difficulty": 1,
+   "conflicts": []
+  },
+  {
+   "id": "catch_soft_ball",
+   "title": {
+    "en": "Catch the soft ball",
+    "uz": "Yumshoq toʻpni ilish",
+    "ru": "Ловим мягкий мяч"
+   },
+   "body_area": "arms",
+   "goals": [
+    "play_others",
+    "hands"
+   ],
+   "gmfcs": [
+    1,
+    2,
+    3
+   ],
+   "ages": [
+    "5-8",
+    "9-12",
+    "13-20"
+   ],
+   "tool": "foam_ball",
+   "difficulty": 3,
+   "conflicts": [
+    "standing"
+   ]
+  },
+  {
+   "id": "sit_reach_sides",
+   "title": {
+    "en": "Sit and reach to the sides",
+    "uz": "Oʻtirib yon tomonga choʻzilish",
+    "ru": "Сидя тянемся в стороны"
+   },
+   "body_area": "trunk",
+   "goals": [
+    "sit"
+   ],
+   "gmfcs": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "ages": [
+    "2-4",
+    "5-8",
+    "9-12",
+    "13-20"
+   ],
+   "tool": "bean_bags",
+   "difficulty": 1,
+   "conflicts": []
+  },
+  {
+   "id": "sit_ball_pass",
+   "title": {
+    "en": "Pass the ball around you",
+    "uz": "Toʻpni atrofdan aylantirish",
+    "ru": "Передаём мяч вокруг себя"
+   },
+   "body_area": "trunk",
+   "goals": [
+    "sit",
+    "play_others"
+   ],
+   "gmfcs": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "ages": [
+    "2-4",
+    "5-8",
+    "9-12",
+    "13-20"
+   ],
+   "tool": "foam_ball",
+   "difficulty": 2,
+   "conflicts": []
+  },
+  {
+   "id": "tummy_time_reach",
+   "title": {
+    "en": "Tummy time reach",
+    "uz": "Qorinda yotib choʻzilish",
+    "ru": "Лёжа на животе тянемся"
+   },
+   "body_area": "trunk",
+   "goals": [
+    "sit",
+    "hands"
+   ],
+   "gmfcs": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "ages": [
+    "2-4",
+    "5-8",
+    "9-12"
+   ],
+   "tool": "foam_ball",
+   "difficulty": 1,
+   "conflicts": [
+    "prone"
+   ]
+  },
+  {
+   "id": "bridge",
+   "title": {
+    "en": "Little bridge",
+    "uz": "Kichik koʻprik",
+    "ru": "Мостик"
+   },
+   "body_area": "trunk",
+   "goals": [
+    "walk",
+    "sit"
+   ],
+   "gmfcs": [
+    1,
+    2,
+    3
+   ],
+   "ages": [
+    "2-4",
+    "5-8",
+    "9-12",
+    "13-20"
+   ],
+   "tool": null,
+   "difficulty": 2,
+   "conflicts": [
+    "high_intensity"
+   ]
+  },
+  {
+   "id": "side_sit_play",
+   "title": {
+    "en": "Side-sitting play",
+    "uz": "Yonboshlab oʻtirib oʻynash",
+    "ru": "Игра сидя на боку"
+   },
+   "body_area": "trunk",
+   "goals": [
+    "sit"
+   ],
+   "gmfcs": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "ages": [
+    "2-4",
+    "5-8",
+    "9-12"
+   ],
+   "tool": "cards",
+   "difficulty": 2,
+   "conflicts": []
+  },
+  {
+   "id": "look_left_right",
+   "title": {
+    "en": "Look left, look right",
+    "uz": "Chapga, oʻngga qarash",
+    "ru": "Смотрим влево-вправо"
+   },
+   "body_area": "head_neck",
+   "goals": [
+    "sit",
+    "understand"
+   ],
+   "gmfcs": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "ages": [
+    "2-4",
+    "5-8",
+    "9-12"
+   ],
+   "tool": "cards",
+   "difficulty": 1,
+   "conflicts": [
+    "neck_flexion"
+   ]
+  },
+  {
+   "id": "chin_tuck",
+   "title": {
+    "en": "Chin to chest, slowly",
+    "uz": "Iyakni koʻkrakka sekin",
+    "ru": "Подбородок к груди"
+   },
+   "body_area": "head_neck",
+   "goals": [
+    "sit"
+   ],
+   "gmfcs": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "ages": [
+    "5-8",
+    "9-12",
+    "13-20"
+   ],
+   "tool": null,
+   "difficulty": 2,
+   "conflicts": [
+    "neck_flexion"
+   ]
+  },
+  {
+   "id": "sit_to_stand",
+   "title": {
+    "en": "Sit to stand",
+    "uz": "Oʻtirgan joydan turish",
+    "ru": "Встаём со стула"
+   },
+   "body_area": "legs",
+   "goals": [
+    "walk"
+   ],
+   "gmfcs": [
+    1,
+    2,
+    3
+   ],
+   "ages": [
+    "2-4",
+    "5-8",
+    "9-12",
+    "13-20"
+   ],
+   "tool": null,
+   "difficulty": 1,
+   "conflicts": [
+    "standing"
+   ]
+  },
+  {
+   "id": "foot_discs_steps",
+   "title": {
+    "en": "Steps on the touch discs",
+    "uz": "Sezgi disklarida qadam",
+    "ru": "Шаги по тактильным дискам"
+   },
+   "body_area": "legs",
+   "goals": [
+    "walk"
+   ],
+   "gmfcs": [
+    1,
+    2
+   ],
+   "ages": [
+    "2-4",
+    "5-8",
+    "9-12",
+    "13-20"
+   ],
+   "tool": "foot_discs",
+   "difficulty": 2,
+   "conflicts": [
+    "standing",
+    "walking"
+   ]
+  },
+  {
+   "id": "walk_line",
+   "title": {
+    "en": "Walk along the line",
+    "uz": "Chiziq boʻylab yurish",
+    "ru": "Идём по линии"
+   },
+   "body_area": "legs",
+   "goals": [
+    "walk"
+   ],
+   "gmfcs": [
+    1,
+    2
+   ],
+   "ages": [
+    "2-4",
+    "5-8",
+    "9-12",
+    "13-20"
+   ],
+   "tool": null,
+   "difficulty": 2,
+   "conflicts": [
+    "standing",
+    "walking",
+    "leg_balance"
+   ]
+  },
+  {
+   "id": "one_leg_stand",
+   "title": {
+    "en": "Stand on one leg",
+    "uz": "Bir oyoqda turish",
+    "ru": "Стоим на одной ноге"
+   },
+   "body_area": "legs",
+   "goals": [
+    "walk"
+   ],
+   "gmfcs": [
+    1,
+    2
+   ],
+   "ages": [
+    "5-8",
+    "9-12",
+    "13-20"
+   ],
+   "tool": null,
+   "difficulty": 3,
+   "conflicts": [
+    "standing",
+    "leg_balance",
+    "single_leg_weight"
+   ]
+  },
+  {
+   "id": "bunny_hops",
+   "title": {
+    "en": "Bunny hops",
+    "uz": "Quyoncha sakrashi",
+    "ru": "Прыжки зайчика"
+   },
+   "body_area": "legs",
+   "goals": [
+    "walk",
+    "play_others"
+   ],
+   "gmfcs": [
+    1
+   ],
+   "ages": [
+    "2-4",
+    "5-8",
+    "9-12",
+    "13-20"
+   ],
+   "tool": null,
+   "difficulty": 3,
+   "conflicts": [
+    "standing",
+    "jumping",
+    "high_intensity",
+    "leg_balance"
+   ]
+  },
+  {
+   "id": "kick_ball",
+   "title": {
+    "en": "Kick the soft ball",
+    "uz": "Yumshoq toʻpni tepish",
+    "ru": "Пинаем мягкий мяч"
+   },
+   "body_area": "legs",
+   "goals": [
+    "walk",
+    "play_others"
+   ],
+   "gmfcs": [
+    1,
+    2
+   ],
+   "ages": [
+    "2-4",
+    "5-8",
+    "9-12",
+    "13-20"
+   ],
+   "tool": "foam_ball",
+   "difficulty": 2,
+   "conflicts": [
+    "standing",
+    "single_leg_weight",
+    "leg_balance"
+   ]
+  },
+  {
+   "id": "seated_leg_lifts",
+   "title": {
+    "en": "Leg lifts while sitting",
+    "uz": "Oʻtirib oyoq koʻtarish",
+    "ru": "Подъём ног сидя"
+   },
+   "body_area": "legs",
+   "goals": [
+    "walk",
+    "sit"
+   ],
+   "gmfcs": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "ages": [
+    "2-4",
+    "5-8",
+    "9-12",
+    "13-20"
+   ],
+   "tool": null,
+   "difficulty": 1,
+   "conflicts": []
+  },
+  {
+   "id": "seated_foot_discs",
+   "title": {
+    "en": "Feel the discs with your feet",
+    "uz": "Oyoq bilan disklarni sezish",
+    "ru": "Ощупываем диски ногами"
+   },
+   "body_area": "legs",
+   "goals": [
+    "walk"
+   ],
+   "gmfcs": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "ages": [
+    "2-4",
+    "5-8",
+    "9-12",
+    "13-20"
+   ],
+   "tool": "foot_discs",
+   "difficulty": 1,
+   "conflicts": []
+  },
+  {
+   "id": "blow_bubbles",
+   "title": {
+    "en": "Blow like the wind",
+    "uz": "Shamoldek puflash",
+    "ru": "Дуем как ветер"
+   },
+   "body_area": "mouth_face",
+   "goals": [
+    "communicate",
+    "eat"
+   ],
+   "gmfcs": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "ages": [
+    "2-4",
+    "5-8",
+    "9-12",
+    "13-20"
+   ],
+   "tool": null,
+   "difficulty": 1,
+   "conflicts": [
+    "mouth_face"
+   ]
+  },
+  {
+   "id": "funny_faces",
+   "title": {
+    "en": "Funny faces in the mirror",
+    "uz": "Koʻzguda kulgili yuzlar",
+    "ru": "Смешные рожицы"
+   },
+   "body_area": "mouth_face",
+   "goals": [
+    "communicate"
+   ],
+   "gmfcs": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "ages": [
+    "2-4",
+    "5-8",
+    "9-12"
+   ],
+   "tool": null,
+   "difficulty": 1,
+   "conflicts": [
+    "mouth_face"
+   ]
+  },
+  {
+   "id": "sound_cards",
+   "title": {
+    "en": "Say it with the picture cards",
+    "uz": "Rasmli kartalar bilan aytish",
+    "ru": "Говорим по карточкам"
+   },
+   "body_area": "mouth_face",
+   "goals": [
+    "communicate",
+    "understand"
+   ],
+   "gmfcs": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "ages": [
+    "2-4",
+    "5-8",
+    "9-12",
+    "13-20"
+   ],
+   "tool": "cards",
+   "difficulty": 2,
+   "conflicts": []
+  },
+  {
+   "id": "emotion_cards",
+   "title": {
+    "en": "Show the feeling",
+    "uz": "Hissiyotni koʻrsatish",
+    "ru": "Покажи чувство"
+   },
+   "body_area": "head_neck",
+   "goals": [
+    "communicate",
+    "play_others"
+   ],
+   "gmfcs": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "ages": [
+    "2-4",
+    "5-8",
+    "9-12",
+    "13-20"
+   ],
+   "tool": "cards",
+   "difficulty": 1,
+   "conflicts": []
+  },
+  {
+   "id": "sequence_cards",
+   "title": {
+    "en": "What comes next? (cards)",
+    "uz": "Keyin nima? (kartalar)",
+    "ru": "Что дальше? (карточки)"
+   },
+   "body_area": "hands",
+   "goals": [
+    "understand",
+    "school"
+   ],
+   "gmfcs": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "ages": [
+    "5-8",
+    "9-12",
+    "13-20"
+   ],
+   "tool": "cards",
+   "difficulty": 2,
+   "conflicts": []
+  }
+ ]
+}

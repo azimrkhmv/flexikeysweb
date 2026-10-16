@@ -257,7 +257,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A0.5` GitHub Actions for the server: ruff, mypy, and tests with a PostgreSQL service
   - Done when: the checks run and are green on a pull request
   - Needs: A0.3
-- [ ] **Azim** — `A4.2` Plan engine, part 1 — the safety filter, moved from `apps/web/src/lib/roadmap.ts` to Python as pure calculation with no database
+- [x] **Azim** — `A4.2` Plan engine, part 1 — the safety filter, moved from `apps/web/src/lib/roadmap.ts` to Python as pure calculation with no database
   - Done when: tests cover every restriction, seizure, surgery and movement-level combination
   - Needs: A0.1
 - [ ] **Azim** — `A4.3` Plan engine, part 2 — choosing exercises and games for 28 days
