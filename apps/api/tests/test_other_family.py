@@ -1,0 +1,50 @@
+"""A2.8: someone from family B tries every child address with family A's child, and always gets "not found".
+
+The addresses come from the server's own description (openapi.json), so a new child address is tried without
+changing this test. A new kind of body or path part fails here until it gets an example below.
+"""
+
+import uuid
+
+from fastapi.testclient import TestClient
+
+from app.main import app
+from tests.test_children import API, add_child, client, parent  # noqa: F401 (client is a fixture)
+from tests.test_intake_save import save, saved
+
+BODIES = {"ChildChange": {"name": "X"}, "ConsentChange": {"granted": True}, "AnswersIn": {"answers": {}}}
+PARTS = {"kind": "health", "number": "1"}
+
+
+def child_addresses() -> list[tuple[str, str, object]]:
+    found = []
+    for path, methods in app.openapi()["paths"].items():
+        if "{child_id}" not in path:
+            continue
+        for method, op in methods.items():
+            ref = op.get("requestBody", {}).get("content", {}).get("application/json", {}).get("schema", {}).get("$ref")
+            found.append((method.upper(), path, BODIES[ref.rsplit("/", 1)[1]] if ref else None))
+    return found
+
+
+def test_another_family_always_gets_not_found(client: TestClient) -> None:  # noqa: F811
+    owner = parent(client)
+    child = add_child(client, owner)
+    # Real data behind every address, so a "not found" can only come from the family check.
+    assert save(client, owner, child, {"P1": "Ali"}).status_code == 200
+    stranger = parent(client)
+    add_child(client, stranger, name="Own")  # family B has its own child
+
+    addresses = child_addresses()
+    assert len(addresses) >= 10  # sanity: the description really lists the child addresses
+    for method, path, body in addresses:
+        for child_id in (child, str(uuid.uuid4())):  # A's child answers exactly like a child that does not exist
+            url = API + path.removeprefix(API).replace("{child_id}", child_id).format(**PARTS)
+            r = client.request(method, url, headers=stranger, json=body)
+            assert (r.status_code, r.json()["title"]) == (404, "not_found"), (method, path, r.text)
+
+    # And nothing changed for family A.
+    got = client.get(f"{API}/children/{child}", headers=owner)
+    assert (got.status_code, got.json()["name"]) == (200, "Ali")
+    assert saved(client, owner, child) == {"P1": "Ali"}
+    assert not any(client.get(f"{API}/children/{child}/consents", headers=owner).json().values())

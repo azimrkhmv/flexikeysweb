@@ -272,7 +272,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `B3` Connect the website's sign-in and sign-up to the server
   - Done when: sign-up works in the browser against the real server, covered by a browser test
   - Needs: A1.6
-- [ ] **Azim** — `A2.8` Write the test "someone from family B tries to read family A's child" for every child address
+- [x] **Azim** — `A2.8` Write the test "someone from family B tries to read family A's child" for every child address
   - Done when: family B always gets "not found"
   - Needs: A2.7
 - [ ] **Azim** — `B4` Connect the children list and the parent questions to the server
