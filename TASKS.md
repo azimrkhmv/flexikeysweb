@@ -260,7 +260,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A4.2` Plan engine, part 1 — the safety filter, moved from `apps/web/src/lib/roadmap.ts` to Python as pure calculation with no database
   - Done when: tests cover every restriction, seizure, surgery and movement-level combination
   - Needs: A0.1
-- [ ] **Azim** — `A4.3` Plan engine, part 2 — choosing exercises and games for 28 days
+- [x] **Azim** — `A4.3` Plan engine, part 2 — choosing exercises and games for 28 days
   - Done when: the server gives exactly the stored plan for all 284 cases in `roadmap_cases.json`
   - Needs: A4.2
 - [ ] **Azim** — `A0.6` Publish the server's address description (OpenAPI) and generate the website's types from it
