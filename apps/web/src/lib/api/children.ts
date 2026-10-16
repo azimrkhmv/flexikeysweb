@@ -3,7 +3,7 @@
 // /children/* — consent-first creation, edit, export, delete, consent changes.
 
 import { read, write, net } from "./db";
-import { requireUser, requireChildAccess, audit, purgeChild } from "./guards";
+import { requireUser, requireChildAccess, audit, purgeChild, familyForNewChild } from "./guards";
 import { ApiError, CONSENT_VERSION, id, iso } from "./schema";
 import { sel } from "./selectors";
 import type { Child, ChildSupport, ConsentScope } from "../types";
@@ -16,8 +16,9 @@ export const childrenApi = {
     if (!u.emailVerified && !u.consentVersion) throw new ApiError("email_not_verified"); // phone sign-up = verified
     if (!scopes.includes("core")) throw new ApiError("consent_required");
     if (!input.name.trim()) throw new ApiError("name_required");
-    const child: Child = { ...input, name: input.name.trim(), id: id(), parentId: u.id, equipped: {}, createdAt: iso() };
+    const child: Child = { ...input, name: input.name.trim(), id: id(), familyId: null, equipped: {}, createdAt: iso() };
     write((db) => {
+      child.familyId = familyForNewChild(db, u.id);
       db.children.push(child);
       scopes.forEach((scope) => db.consents.push({ id: id(), childId: child.id, scope, version: CONSENT_VERSION, grantedBy: u.id, grantedAt: iso() }));
       db.wallets.push({ childId: child.id, coins: 0, stars: 0, owned: [] });

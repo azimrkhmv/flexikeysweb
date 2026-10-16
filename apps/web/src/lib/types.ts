@@ -31,10 +31,17 @@ export interface User {
 export type AccessMode = "touch" | "dwell" | "scan";
 export type InputProfile = "touch" | "pointer" | "keyboard";
 
+/** A child belongs to a family, not to one parent (spec §4): one owner, plus helpers who may see the children. */
+export interface FamilyMember {
+  familyId: string;
+  userId: string;
+  role: "owner" | "helper";
+}
+
 export interface Child {
   id: string;
-  /** null = school‑managed profile (created by a teacher, no parent account). */
-  parentId: string | null;
+  /** null = school‑managed profile (created by a teacher, no family). */
+  familyId: string | null;
   name: string;
   birthYear: number;
   learningLang: Lang;

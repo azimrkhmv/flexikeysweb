@@ -126,7 +126,7 @@ export const playApi = {
       Object.assign(rec, record);
       changed = changes.map((x) => ({ ...x, id: id(), childId: c.childId, input: s.input, at: iso() }));
       db.changes.push(...changed);
-      if (changed.length && child?.parentId) notify(db, child.parentId, "notif.adaptation", { name: child.name });
+      if (changed.length && child?.familyId) notify(db, sel.familyOwner(db, child.familyId), "notif.adaptation", { name: child.name });
     });
     return net(changed, 0);
   },

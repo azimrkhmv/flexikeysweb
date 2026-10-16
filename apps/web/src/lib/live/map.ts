@@ -59,7 +59,7 @@ export function childFrom(c: BChild): Child {
   const eq = c.equipped ?? {};
   return {
     id: c.id,
-    parentId: c.parent_id,
+    familyId: c.parent_id, // old backend: the parent's id stands in for the family
     name: c.display_name,
     birthYear: c.birth_year ?? new Date(c.created_at).getFullYear() - 6,
     learningLang: lang(c.learning_language),

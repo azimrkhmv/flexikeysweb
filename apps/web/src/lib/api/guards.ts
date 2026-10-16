@@ -3,7 +3,7 @@
 // Server-side guards of the mock API: who is calling, may they touch this child, audit + notify, purge.
 
 import { read } from "./db";
-import { ApiError, id, iso, type DB, type ChildAuth } from "./schema";
+import { ApiError, MAX_CHILDREN, id, iso, type DB, type ChildAuth } from "./schema";
 import { sel } from "./selectors";
 import type { Notification, Role, User } from "../types";
 
@@ -20,6 +20,16 @@ export function requireChildAccess(childId: string, allow: ReturnType<typeof sel
   const rel = sel.access(read(), u.id, childId);
   if (!rel || !allow.includes(rel)) throw new ApiError("not_found"); // 404, never 403 (PRD §15.4)
   return { user: u, rel };
+}
+/** Inside write(): the owner's family id, made on first use (the server makes it at sign-up); refuses a 4th child. */
+export function familyForNewChild(db: DB, userId: string): string {
+  let familyId = sel.ownFamily(db, userId);
+  if (!familyId) {
+    familyId = id();
+    db.familyMembers.push({ familyId, userId, role: "owner" });
+  }
+  if (db.children.filter((c) => c.familyId === familyId).length >= MAX_CHILDREN) throw new ApiError("too_many_children");
+  return familyId;
 }
 export function requireChildToken(): ChildAuth {
   const c = sel.childAuth(read());

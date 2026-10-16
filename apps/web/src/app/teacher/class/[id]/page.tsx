@@ -149,8 +149,8 @@ function Roster({ k, kids }: { k: ClassRoom; kids: Child[] }) {
                           <span className="font-bold">{c.name}</span>
                         )}
                         <div>
-                          <Chip tone={c.parentId ? "lavender" : "sky"} className="mt-0.5">
-                            {t(c.parentId ? "teacher.roster.family" : "teacher.roster.school")}
+                          <Chip tone={c.familyId ? "lavender" : "sky"} className="mt-0.5">
+                            {t(c.familyId ? "teacher.roster.family" : "teacher.roster.school")}
                           </Chip>
                         </div>
                       </div>

@@ -29,7 +29,14 @@ export const sel = {
   loading: (db: DB) => !!db.loading,
   childAuth: (db: DB) => (db.auth.child && db.auth.child.exp > Date.now() ? db.auth.child : null),
   child: (db: DB, childId: string) => db.children.find((c) => c.id === childId) ?? null,
-  childrenOf: (db: DB, parentId: string) => db.children.filter((c) => c.parentId === parentId),
+  /** The family this person owns (a person owns at most one), or null. */
+  ownFamily: (db: DB, userId: string) => db.familyMembers.find((m) => m.userId === userId && m.role === "owner")?.familyId ?? null,
+  familyOwner: (db: DB, familyId: string | null) => db.familyMembers.find((m) => m.familyId === familyId && m.role === "owner")?.userId ?? null,
+  /** The children of every family this person belongs to (owner or helper). */
+  childrenOf: (db: DB, userId: string) => {
+    const families = new Set(db.familyMembers.filter((m) => m.userId === userId).map((m) => m.familyId));
+    return db.children.filter((c) => c.familyId !== null && families.has(c.familyId));
+  },
   consents: (db: DB, childId: string) => db.consents.filter((c) => c.childId === childId && !c.withdrawnAt),
   hasConsent: (db: DB, childId: string, scope: ConsentScope) => db.consents.some((c) => c.childId === childId && c.scope === scope && !c.withdrawnAt),
 
@@ -39,12 +46,12 @@ export const sel = {
     const c = db.children.find((x) => x.id === childId);
     if (!u || !c || u.status === "disabled") return null;
     if (u.role === "admin") return "admin";
-    if (u.role === "parent" && c.parentId === u.id) return "owner";
+    if (u.role === "parent" && c.familyId !== null && sel.ownFamily(db, u.id) === c.familyId) return "owner";
     if (u.role === "therapist" && db.careLinks.some((l) => l.childId === childId && l.professionalId === u.id && l.status === "active" && l.kind === "therapist")) return "therapist";
     if (u.role === "teacher") {
       const mine = db.classes.filter((k) => k.teacherId === u.id).map((k) => k.id);
       const enrolled = db.enrollments.some((e) => e.childId === childId && mine.includes(e.classId));
-      if (enrolled && (c.parentId === null || sel.hasConsent(db, childId, "school_sharing"))) return "teacher";
+      if (enrolled && (c.familyId === null || sel.hasConsent(db, childId, "school_sharing"))) return "teacher";
     }
     return null;
   },
@@ -78,8 +85,8 @@ export const sel = {
   entitled(db: DB, childId: string) {
     const c = sel.child(db, childId);
     if (!c) return false;
-    if (c.parentId === null) return true;
-    const s = sel.subscription(db, c.parentId);
+    if (c.familyId === null) return true;
+    const s = sel.subscription(db, sel.familyOwner(db, c.familyId) ?? "");
     if (s.plan !== "free" && s.status !== "expired") return true;
     return db.enrollments.some((e) => e.childId === childId) || db.careLinks.some((l) => l.childId === childId && l.status === "active");
   },

@@ -248,7 +248,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `B46` Make the browser tests that fail now and then pass every time: `parent-gate`, `seo` (hreflang), `escape`, `gates`, `drawing` (they also fail without recent changes)
   - Done when: `npx playwright test` passes 3 runs in a row
   - Needs: —
-- [ ] **Azim** — `B2` In the website's demo data and screens, make a child belong to a family instead of one parent; at most 3 children
+- [x] **Azim** — `B2` In the website's demo data and screens, make a child belong to a family instead of one parent; at most 3 children
   - Done when: demo mode uses the same shape the server will use; all tests pass
   - Needs: —
 - [ ] **Azim** — `C1` Connect Higgsfield and test it on 3 exercises

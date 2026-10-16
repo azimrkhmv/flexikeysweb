@@ -6,7 +6,7 @@ import type { Answers } from "@/content/intake";
 import { baseLang, type Lang, type UiLang } from "../i18n";
 import { buildRoadmap } from "../roadmap";
 import { read, write, net } from "./db";
-import { audit, requireChildAccess, requireUser } from "./guards";
+import { audit, familyForNewChild, requireChildAccess, requireUser } from "./guards";
 import { ApiError, CONSENT_VERSION, id, iso } from "./schema";
 import { sel } from "./selectors";
 import type { Child, IntakeValue, Respondent, VideoStatus } from "../types";
@@ -24,13 +24,14 @@ export const intakeApi = {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(birthDate) || birthDate > today()) throw new ApiError("invalid_date");
     const lang = baseLang(uiLang);
     const child: Child = {
-      id: id(), parentId: u.id, name, birthYear: Number(birthDate.slice(0, 4)), birthDate, learningLang: lang, uiLang: lang, avatar: "☁️", access: "touch",
+      id: id(), familyId: null, name, birthYear: Number(birthDate.slice(0, 4)), birthDate, learningLang: lang, uiLang: lang, avatar: "☁️", access: "touch",
       equipped: typeof answers.P8 === "string" ? { color: answers.P8 } : {},
       sex: answers.P3 === "boy" || answers.P3 === "girl" ? answers.P3 : undefined,
       relationship: (["mother", "father", "grandparent", "carer"] as const).find((r) => r === answers.P4),
       createdAt: iso(),
     };
     write((db) => {
+      child.familyId = familyForNewChild(db, u.id);
       db.children.push(child);
       db.consents.push({ id: id(), childId: child.id, scope: "core", version: CONSENT_VERSION, grantedBy: u.id, grantedAt: iso() });
       db.wallets.push({ childId: child.id, coins: 0, stars: 0, owned: [] });

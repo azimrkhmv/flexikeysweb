@@ -28,8 +28,8 @@ export function seed(): DB {
     id: uid, email, name, role, status, password: DEMO_PASSWORD, uiLang: "uz", emailVerified: true, createdAt: iso(now - 40 * DAY),
     ...(phone && { phone, district: { region: "tashkent_city", district: "Chilonzor" }, consentVersion: CONSENT_VERSION }),
   });
-  const kid = (cid: string, parentId: string | null, name: string, birthYear: number, avatar: string, learningLang: Lang = "uz", access: Child["access"] = "touch"): Child => ({
-    id: cid, parentId, name, birthYear, avatar, learningLang, uiLang: learningLang, access, equipped: {}, createdAt: iso(now - 30 * DAY),
+  const kid = (cid: string, familyId: string | null, name: string, birthYear: number, avatar: string, learningLang: Lang = "uz", access: Child["access"] = "touch"): Child => ({
+    id: cid, familyId, name, birthYear, avatar, learningLang, uiLang: learningLang, access, equipped: {}, createdAt: iso(now - 30 * DAY),
   });
   const consent = (childId: string, scope: ConsentScope, by = "u_parent"): Consent => ({
     id: id(), childId, scope, version: CONSENT_VERSION, grantedBy: by, grantedAt: iso(now - 30 * DAY),
@@ -47,10 +47,14 @@ export function seed(): DB {
       user("u_pending", "new.therapist@demo.uz", "Sardor Aliev", "therapist", "pending_verification"),
       user("u_parent2", "family@demo.uz", "Aziza", "parent"),
     ],
+    familyMembers: [
+      { familyId: "fam_1", userId: "u_parent", role: "owner" },
+      { familyId: "fam_2", userId: "u_parent2", role: "owner" },
+    ],
     children: [
-      { ...kid("ch_ali", "u_parent", "Ali", 2019, "🦊"), equipped: { hat: "hat_crown" } },
-      kid("ch_madina", "u_parent", "Madina", 2021, "🐰", "ru", "dwell"),
-      kid("ch_other", "u_parent2", "Jasur", 2020, "🐼"),
+      { ...kid("ch_ali", "fam_1", "Ali", 2019, "🦊"), equipped: { hat: "hat_crown" } },
+      kid("ch_madina", "fam_1", "Madina", 2021, "🐰", "ru", "dwell"),
+      kid("ch_other", "fam_2", "Jasur", 2020, "🐼"),
       kid("ch_s1", null, "Bekzod", 2019, "🐻"),
       kid("ch_s2", null, "Sevara", 2019, "🐱"),
       kid("ch_s3", null, "Timur", 2020, "🐯"),

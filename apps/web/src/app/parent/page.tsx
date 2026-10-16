@@ -8,7 +8,7 @@ import { LEVEL_BY_ID } from "@/content/levels";
 import { age } from "@/features/parent/lib";
 import { fmtDate } from "@/lib/format";
 import { LockNote } from "@/features/pro/shared";
-import { sel, useDb } from "@/lib/api";
+import { MAX_CHILDREN, sel, useDb } from "@/lib/api";
 import { useLang, useT } from "@/lib/i18n";
 
 export default function ParentHome() {
@@ -29,9 +29,11 @@ export default function ParentHome() {
         actions={
           kids.length > 0 && (
             <>
-              <LinkButton href="/parent/children/new" variant="soft">
-                <Plus className="size-4" aria-hidden /> {t("parent.home.addChild")}
-              </LinkButton>
+              {kids.length < MAX_CHILDREN && (
+                <LinkButton href="/parent/children/new" variant="soft">
+                  <Plus className="size-4" aria-hidden /> {t("parent.home.addChild")}
+                </LinkButton>
+              )}
               <LinkButton href="/play" size="md">
                 <Play className="size-4" aria-hidden /> {t("parent.home.play")}
               </LinkButton>

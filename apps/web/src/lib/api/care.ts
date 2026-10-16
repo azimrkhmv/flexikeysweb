@@ -68,7 +68,7 @@ export const careApi = {
     write((db) => {
       Object.assign(db.careLinks.find((l) => l.id === link.id)!, { status: "active", professionalId: u.id });
       const child = sel.child(db, link.childId);
-      notify(db, child?.parentId ?? null, "notif.care_accepted", { name: child?.name ?? "" });
+      notify(db, sel.familyOwner(db, child?.familyId ?? null), "notif.care_accepted", { name: child?.name ?? "" });
     });
     return net(true);
   },
@@ -83,7 +83,7 @@ export const careApi = {
     const { user } = requireChildAccess(childId, ["therapist"]);
     write((db) => {
       db.notes.unshift({ id: id(), childId, authorId: user.id, text: text.trim(), visibleToParent, createdAt: iso() });
-      if (visibleToParent) notify(db, sel.child(db, childId)?.parentId ?? null, "notif.therapist_note", { name: sel.child(db, childId)?.name ?? "" });
+      if (visibleToParent) notify(db, sel.familyOwner(db, sel.child(db, childId)?.familyId ?? null), "notif.therapist_note", { name: sel.child(db, childId)?.name ?? "" });
     });
     return net(true);
   },

@@ -58,8 +58,8 @@ describe("live ↔ web mappings", () => {
 
   it("school and care shapes: roster children, tasks, links, account status", () => {
     const roster = { id: "c", display_name: "Bek", avatar_id: null, learning_language: "uz", ui_language: "uz", access_mode: "touch", birth_year: null, school_managed: true, created_at: "2026-10-01T00:00:00Z" };
-    expect(rosterChildFrom(roster).parentId).toBeNull(); // school-managed
-    expect(rosterChildFrom({ ...roster, school_managed: false }).parentId).toBe("family"); // never the real parent id
+    expect(rosterChildFrom(roster).familyId).toBeNull(); // school-managed
+    expect(rosterChildFrom({ ...roster, school_managed: false }).familyId).toBe("family"); // never the real parent id
     const base = { id: "a", kind: "teacher", class_id: "k", child_id: null, created_by: "t", level_slug: "shapes", instructions: null, due_at: null, created_at: "" };
     expect(taskFrom(base)).toMatchObject({ classId: "k", levelId: "shapes", note: "", byUserId: "t" });
     expect(taskFrom({ ...base, kind: "therapist", class_id: null, child_id: "c" })).toMatchObject({ kind: "therapist", childId: "c" });

@@ -25,7 +25,7 @@ export const teacherApi = {
     if (!k) throw new ApiError("not_found");
     if (!input.attested) throw new ApiError("consent_required");
     const child: Child = {
-      id: id(), parentId: null, name: input.name.trim(), birthYear: new Date().getFullYear() - 6, avatar: input.avatar,
+      id: id(), familyId: null, name: input.name.trim(), birthYear: new Date().getFullYear() - 6, avatar: input.avatar,
       learningLang: k.learningLang, uiLang: k.learningLang, access: "touch", equipped: {}, createdAt: iso(),
     };
     write((db) => {

@@ -21,7 +21,7 @@ import { liveChild } from "./state";
 
 /** A fresh, empty DB each time — never share arrays between snapshots (they get pushed into below). */
 const empty = (): DB => ({
-  v: 1, auth: { userId: null, child: null }, users: [], children: [], consents: [], profiles: [], changes: [], sessions: [],
+  v: 1, auth: { userId: null, child: null }, users: [], familyMembers: [], children: [], consents: [], profiles: [], changes: [], sessions: [],
   events: [], mastery: [], progress: [], wallets: [], classes: [], enrollments: [], assignments: [], careLinks: [], notes: [],
   goals: [], aacEvents: [], aacCards: [], notifications: [], subscriptions: [], orders: [], audit: [], flags: [], aiMessages: [],
   otp: [], intakeAnswers: [], intakeRounds: [], videos: [], roadmaps: [],
@@ -179,6 +179,7 @@ export function useLiveDb(): DB {
     const db: DB = { ...empty(), loading, auth: { userId: user?.id ?? null, child } };
     if (user) {
       db.users = [user];
+      if (user.role === "parent") db.familyMembers = [{ familyId: user.id, userId: user.id, role: "owner" }];
       db.notifications = (notifications.data ?? []).map((n) => notificationFrom(n, user.id));
       db.flags = Object.entries(flags.data ?? {}).map(([key, enabled]) => ({ key, enabled, description: "" }));
       db.subscriptions = [subscriptionFrom(user.id, subscription.data)];

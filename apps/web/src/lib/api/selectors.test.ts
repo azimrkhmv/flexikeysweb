@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { seed } from "./seed";
+import { familyForNewChild } from "./guards";
 import { sel } from "./selectors";
 
 describe("sel.assignmentsFor", () => {
@@ -34,5 +35,20 @@ describe("assignments never bypass the gates (FR-CUR-4)", () => {
     expect(sel.lockReason(db, "ch_other", "family")).toEqual({ kind: "plan" });
     db.assignments.push({ id: "x", kind: "therapist", byUserId: "u_therapist", childId: "ch_other", levelId: "family", note: "", createdAt: "" });
     expect(sel.lockReason(db, "ch_other", "family")).toEqual({ kind: "plan" });
+  });
+});
+
+describe("families (B2)", () => {
+  it("a child belongs to a family: every member sees it, only the owner may change it, at most 3 children", () => {
+    const db = seed();
+    db.familyMembers.push({ familyId: "fam_1", userId: "u_parent2", role: "helper" });
+    expect(sel.childrenOf(db, "u_parent2").map((c) => c.id).sort()).toEqual(["ch_ali", "ch_madina", "ch_other"]);
+    expect(sel.access(db, "u_parent2", "ch_ali")).toBeNull(); // a helper is not the owner
+    expect(sel.familyOwner(db, "fam_1")).toBe("u_parent");
+
+    expect(familyForNewChild(db, "u_parent")).toBe("fam_1"); // 2 children: a 3rd is fine
+    db.children.push({ ...db.children[0], id: "ch_third" });
+    expect(() => familyForNewChild(db, "u_parent")).toThrow("too_many_children");
+    expect(familyForNewChild(db, "u_therapist")).not.toBe("fam_1"); // no family yet: one is made
   });
 });

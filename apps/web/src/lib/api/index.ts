@@ -23,7 +23,7 @@ import { useDb as useMockDb } from "./db";
 import { LIVE } from "./mode";
 import { ApiError } from "./schema";
 
-export { ApiError, CONSENT_VERSION, DB_VERSION, DEMO_PASSWORD, DEMO_PHONES, makeCode, PRICES, type ChildAuth, type DB } from "./schema";
+export { ApiError, CONSENT_VERSION, DB_VERSION, MAX_CHILDREN, DEMO_PASSWORD, DEMO_PHONES, makeCode, PRICES, type ChildAuth, type DB } from "./schema";
 export { seed } from "./seed";
 export { dbStore } from "./db";
 export { LIVE } from "./mode";

@@ -5,6 +5,7 @@
 import type { Lang, UiLang } from "../i18n";
 import { read, write, net } from "./db";
 import { requireUser, purgeChild } from "./guards";
+import { sel } from "./selectors";
 import { ApiError, CONSENT_VERSION, DEMO_PHONES, id, iso, OTP_MAX_TRIES, OTP_RESEND_MS } from "./schema";
 import type { Role, User } from "../types";
 
@@ -158,14 +159,15 @@ export const authApi = {
     write((db) => Object.assign(db.users.find((x) => x.id === u.id)!, patch));
     return net(true);
   },
-  /** DELETE /users/me — deletes the account and every owned child (PRD §20). */
+  /** DELETE /users/me — deletes the account, the family it owns and that family's children (PRD §20). */
   /** DELETE /me — `confirmEmail` is the address the parent typed (checked by the server too). */
   async deleteMe(confirmEmail?: string) {
     const u = requireUser();
     if (confirmEmail !== undefined && confirmEmail.trim().toLowerCase() !== u.email.toLowerCase()) throw new ApiError("confirmation_mismatch");
     write((db) => {
-      const kids = db.children.filter((c) => c.parentId === u.id).map((c) => c.id);
-      kids.forEach((k) => purgeChild(db, k));
+      const family = sel.ownFamily(db, u.id);
+      db.children.filter((c) => c.familyId !== null && c.familyId === family).forEach((c) => purgeChild(db, c.id));
+      db.familyMembers = db.familyMembers.filter((m) => m.userId !== u.id && m.familyId !== family);
       db.users = db.users.filter((x) => x.id !== u.id);
       db.auth = { userId: null, child: null };
     });
