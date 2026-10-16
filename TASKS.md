@@ -245,8 +245,8 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `B1` When "Next" is grey in the parent questions, show which question is still open
   - Done when: the open question is marked and scrolled into view
   - Needs: —
-- [ ] **Azim** — `B46` Make the browser tests that fail now and then pass every time: `parent-gate`, `seo` (hreflang), `escape`, `gates`, `drawing` (they also fail without recent changes)
-  - Done when: `npx playwright test` passes 3 runs in a row
+- [ ] **Azim** — `B46` Make the browser tests that fail now and then pass every time: `parent-gate`, `seo` (hreflang), `escape`, `gates`, `drawing` (they also fail without recent changes); on GitHub also `dashboards` (screenshot differences)
+  - Done when: `npx playwright test` passes 3 runs in a row, and the `ci-web` check on GitHub is green
   - Needs: —
 - [x] **Azim** — `B2` In the website's demo data and screens, make a child belong to a family instead of one parent; at most 3 children
   - Done when: demo mode uses the same shape the server will use; all tests pass
