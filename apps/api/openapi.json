@@ -1038,6 +1038,90 @@
      }
     }
    }
+  },
+  "/api/v1/admin/videos/upload-link": {
+   "post": {
+    "tags": [
+     "videos"
+    ],
+    "summary": "Upload Link",
+    "description": "A short-lived link to upload one video file straight to storage.",
+    "operationId": "upload_link_api_v1_admin_videos_upload_link_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/VideoFile"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/UploadLink"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/admin/videos": {
+   "post": {
+    "tags": [
+     "videos"
+    ],
+    "summary": "Register",
+    "description": "Register an uploaded file as the exercise's video in that language. It replaces the old file, and waits for\nreview again even if the old one was approved.",
+    "operationId": "register_api_v1_admin_videos_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/NewVideo"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/VideoOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
   }
  },
  "components": {
@@ -1487,6 +1571,39 @@
     ],
     "title": "NewStaff"
    },
+   "NewVideo": {
+    "properties": {
+     "exerciseId": {
+      "type": "string",
+      "title": "Exerciseid"
+     },
+     "lang": {
+      "$ref": "#/components/schemas/VideoLang"
+     },
+     "storageKey": {
+      "type": "string",
+      "title": "Storagekey"
+     },
+     "durationS": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Durations"
+     }
+    },
+    "type": "object",
+    "required": [
+     "exerciseId",
+     "lang",
+     "storageKey"
+    ],
+    "title": "NewVideo"
+   },
    "PhoneStart": {
     "properties": {
      "phone": {
@@ -1747,6 +1864,24 @@
     "type": "object",
     "title": "Tokens"
    },
+   "UploadLink": {
+    "properties": {
+     "storageKey": {
+      "type": "string",
+      "title": "Storagekey"
+     },
+     "uploadUrl": {
+      "type": "string",
+      "title": "Uploadurl"
+     }
+    },
+    "type": "object",
+    "required": [
+     "storageKey",
+     "uploadUrl"
+    ],
+    "title": "UploadLink"
+   },
    "UserChange": {
     "properties": {
      "role": {
@@ -1875,6 +2010,82 @@
      "type"
     ],
     "title": "ValidationError"
+   },
+   "VideoFile": {
+    "properties": {
+     "exerciseId": {
+      "type": "string",
+      "title": "Exerciseid"
+     },
+     "lang": {
+      "$ref": "#/components/schemas/VideoLang"
+     }
+    },
+    "type": "object",
+    "required": [
+     "exerciseId",
+     "lang"
+    ],
+    "title": "VideoFile"
+   },
+   "VideoLang": {
+    "type": "string",
+    "enum": [
+     "uz",
+     "ru",
+     "en"
+    ],
+    "title": "VideoLang",
+    "description": "Videos are voiced in 3 languages (V3); Uzbek Cyrillic users get the Uzbek video."
+   },
+   "VideoOut": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "exerciseId": {
+      "type": "string",
+      "title": "Exerciseid"
+     },
+     "lang": {
+      "$ref": "#/components/schemas/VideoLang"
+     },
+     "status": {
+      "$ref": "#/components/schemas/VideoStatus"
+     },
+     "durationS": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Durations"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "exerciseId",
+     "lang",
+     "status",
+     "durationS"
+    ],
+    "title": "VideoOut"
+   },
+   "VideoStatus": {
+    "type": "string",
+    "enum": [
+     "waiting_review",
+     "changes_requested",
+     "rejected",
+     "approved"
+    ],
+    "title": "VideoStatus"
    }
   }
  }

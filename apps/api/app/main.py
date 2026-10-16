@@ -14,6 +14,7 @@ from app.modules.children import consents
 from app.modules.children import router as children
 from app.modules.health import router as health
 from app.modules.intake import router as intake
+from app.modules.videos import router as videos
 from app.settings import settings
 
 logs.setup()
@@ -40,3 +41,4 @@ app.include_router(admin.router, prefix="/api/v1")
 app.include_router(children.router, prefix="/api/v1")
 app.include_router(consents.router, prefix="/api/v1")
 app.include_router(intake.router, prefix="/api/v1")
+app.include_router(videos.router, prefix="/api/v1")

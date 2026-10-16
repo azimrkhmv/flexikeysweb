@@ -393,6 +393,47 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/videos/upload-link": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload Link
+         * @description A short-lived link to upload one video file straight to storage.
+         */
+        post: operations["upload_link_api_v1_admin_videos_upload_link_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/videos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Register
+         * @description Register an uploaded file as the exercise's video in that language. It replaces the old file, and waits for
+         *     review again even if the old one was approved.
+         */
+        post: operations["register_api_v1_admin_videos_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -540,6 +581,16 @@ export interface components {
             /** @default uz */
             lang: components["schemas"]["Lang"];
         };
+        /** NewVideo */
+        NewVideo: {
+            /** Exerciseid */
+            exerciseId: string;
+            lang: components["schemas"]["VideoLang"];
+            /** Storagekey */
+            storageKey: string;
+            /** Durations */
+            durationS?: number | null;
+        };
         /** PhoneStart */
         PhoneStart: {
             /** Phone */
@@ -632,6 +683,13 @@ export interface components {
             /** Refreshtoken */
             refreshToken?: string | null;
         };
+        /** UploadLink */
+        UploadLink: {
+            /** Storagekey */
+            storageKey: string;
+            /** Uploadurl */
+            uploadUrl: string;
+        };
         /** UserChange */
         UserChange: {
             role?: components["schemas"]["Role"] | null;
@@ -672,6 +730,37 @@ export interface components {
             /** Context */
             ctx?: Record<string, never>;
         };
+        /** VideoFile */
+        VideoFile: {
+            /** Exerciseid */
+            exerciseId: string;
+            lang: components["schemas"]["VideoLang"];
+        };
+        /**
+         * VideoLang
+         * @description Videos are voiced in 3 languages (V3); Uzbek Cyrillic users get the Uzbek video.
+         * @enum {string}
+         */
+        VideoLang: "uz" | "ru" | "en";
+        /** VideoOut */
+        VideoOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Exerciseid */
+            exerciseId: string;
+            lang: components["schemas"]["VideoLang"];
+            status: components["schemas"]["VideoStatus"];
+            /** Durations */
+            durationS: number | null;
+        };
+        /**
+         * VideoStatus
+         * @enum {string}
+         */
+        VideoStatus: "waiting_review" | "changes_requested" | "rejected" | "approved";
     };
     responses: never;
     parameters: never;
@@ -1420,6 +1509,72 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RoundOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    upload_link_api_v1_admin_videos_upload_link_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VideoFile"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UploadLink"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    register_api_v1_admin_videos_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NewVideo"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VideoOut"];
                 };
             };
             /** @description Validation Error */

@@ -278,7 +278,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `B4` Connect the children list and the parent questions to the server
   - Done when: a parent answers all questions in the browser against the real server, stops halfway and continues later
   - Needs: A2.7, B2
-- [ ] **Azim** — `A3.3` Load the exercise list from `exercises.json`; an admin registers a finished video file
+- [x] **Azim** — `A3.3` Load the exercise list from `exercises.json`; an admin registers a finished video file
   - Done when: a new video starts as "waiting for review"
   - Needs: A3.1, A3.2
 - [ ] **Azim** — `A3.4` Review queue for the physiotherapist: list waiting videos; approve, reject, or ask for changes with a note
