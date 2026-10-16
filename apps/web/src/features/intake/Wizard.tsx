@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ShieldCheck } from "lucide-react";
 import { Button, Card, LinkButton, useAction } from "@/components/ui";
-import { STEPS, stepComplete, visibleQuestions, type Answers, type Step } from "@/content/intake";
+import { openQuestions, STEPS, stepComplete, visibleQuestions, type Answers, type Step } from "@/content/intake";
 import { FormError, FormNote } from "@/features/auth/parts";
 import { api, sel, useDb } from "@/lib/api";
 import { useT, useUiLang } from "@/lib/i18n";
@@ -28,12 +28,26 @@ export function IntakeWizard({ childId: initialChild }: { childId?: string }) {
   const [declined, setDeclined] = useState(false);
   const [i, setI] = useState(() => (childId ? firstOpenStep(answers, health) : 0));
   const [plan, setPlan] = useState<Roadmap | null>(null);
+  // "Next" looks grey while a required question is open; pressing it shows which one (B1).
+  const [markedStep, setMarkedStep] = useState<string | null>(null);
   const act = useAction(async (fn: () => Promise<unknown>) => fn());
 
   // Steps that apply: section B only with health consent; the consent screen only until it's decided.
   const steps = STEPS.filter((s) => (s.id === "health_consent" ? !health && !declined : !s.health || health));
   const step = steps[Math.min(i, steps.length - 1)];
   const set = (id: string, v: IntakeValue | undefined) => setAnswers((a) => ({ ...a, [id]: v }));
+  const open = new Set(openQuestions(step, answers).map((q) => q.id));
+  const marked = markedStep === step.id;
+
+  const showFirstOpen = () => {
+    setMarkedStep(step.id);
+    const first = visibleQuestions(step, answers).find((q) => open.has(q.id));
+    const card = first && document.getElementById(`q-${first.id}`);
+    if (!card) return;
+    const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    card.scrollIntoView({ behavior: still ? "auto" : "smooth", block: "center" });
+    card.querySelector<HTMLElement>("input, textarea, select")?.focus({ preventScroll: true });
+  };
   const stepAnswers = (s: Step): Answers => {
     const ids = new Set(s.questions.flatMap((q) => [q.id, `${q.id}_hints`, `${q.id}_voice`, `${q.id}_consent`]));
     return Object.fromEntries(Object.entries(answers).filter(([k]) => ids.has(k)));
@@ -91,19 +105,28 @@ export function IntakeWizard({ childId: initialChild }: { childId?: string }) {
           className="mt-6 space-y-6"
           onSubmit={(e) => {
             e.preventDefault();
-            next();
+            if (open.size) showFirstOpen();
+            else next();
           }}
         >
           {declined && step.id === "talk" && <FormNote>{t("intake.health.declined")}</FormNote>}
-          {visibleQuestions(step, answers).map((q) => (
-            <Card key={q.id} className="p-5">
-              <QuestionField q={q} answers={answers} set={set} childId={childId} previous={previous[q.id]} />
-            </Card>
-          ))}
+          {visibleQuestions(step, answers).map((q) => {
+            const mark = marked && open.has(q.id);
+            return (
+              <div key={q.id} id={`q-${q.id}`} className="scroll-mt-24">
+                <Card className={`p-5 ${mark ? "ring-4 ring-sun" : ""}`}>
+                  <QuestionField q={q} answers={answers} set={set} childId={childId} previous={previous[q.id]} />
+                  {mark && <p className="mt-3 text-sm font-bold text-ink">{t("intake.answerThis")}</p>}
+                </Card>
+              </div>
+            );
+          })}
           <FormError>{act.error}</FormError>
           <div className="flex flex-wrap items-center gap-3">
             {i > 0 && <Button variant="ghost" onClick={() => setI(i - 1)}>{t("intake.back")}</Button>}
-            <Button type="submit" size="lg" pending={act.pending} disabled={!stepComplete(step, answers)}>
+            {/* Not `disabled`: a quiet button that still answers the press, by pointing at the open question.
+                The quiet look is the soft variant, not opacity, so the text keeps enough contrast. */}
+            <Button type="submit" size="lg" pending={act.pending} variant={open.size ? "soft" : "primary"}>
               {i + 1 < steps.length ? t("intake.next") : t("intake.finish")}
             </Button>
             {step.optional && i + 1 < steps.length && <Button variant="outline" onClick={() => setI(i + 1)}>{t("intake.skip")}</Button>}

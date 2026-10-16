@@ -83,6 +83,27 @@ test("phone sign-up → intake with a restriction → 4-week plan without that e
   }
 });
 
+test("grey Next points at the question still open", async ({ page }) => {
+  await setup(page);
+  await signUpByPhone(page, "+998 93 555 77 01");
+  await page.getByLabel("Child's first name").fill("Lola");
+  await pick(page, "Boy or girl", "Girl");
+  await next(page); // date of birth, relationship and who fills it in are still open
+
+  const card = page.locator("#q-P2");
+  await expect(card.getByText("Please answer this question to continue.")).toBeVisible();
+  await expect(card).toBeInViewport();
+  await expect(page.getByLabel("Date of birth")).toBeFocused();
+  await expect(page.locator("#q-P1").getByText("Please answer this question")).toHaveCount(0); // answered: not marked
+
+  await page.getByLabel("Date of birth").fill("2019-05-01");
+  await expect(card.getByText("Please answer this question")).toHaveCount(0); // the mark goes once answered
+  await pick(page, "You are the child's…", "Mother");
+  await pick(page, "Who is filling this in?", "Parent");
+  await next(page);
+  await expect(page.getByRole("button", { name: "I agree — continue" })).toBeVisible(); // moved on
+});
+
 test("health consent declined → games only", async ({ page }, info) => {
   test.skip(info.project.name !== "desktop");
   await setup(page);

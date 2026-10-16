@@ -138,15 +138,16 @@ export function visibleQuestions(step: Step, a: Answers): Question[] {
   return step.questions.filter((q) => !q.showIf || q.showIf(a));
 }
 
-/** A required question is done when it has any answer, "Not sure" (null) included. */
-export function stepComplete(step: Step, a: Answers): boolean {
-  return visibleQuestions(step, a).every((q) => {
-    if (!q.required) return true;
+/** Required questions on this step still without an answer ("Not sure", null, counts as an answer). */
+export function openQuestions(step: Step, a: Answers): Question[] {
+  return visibleQuestions(step, a).filter((q) => {
+    if (!q.required) return false;
     const v = a[q.id];
-    if (v === undefined || v === "") return false;
-    return !Array.isArray(v) || v.length > 0;
+    return v === undefined || v === "" || (Array.isArray(v) && v.length === 0);
   });
 }
+
+export const stepComplete = (step: Step, a: Answers): boolean => openQuestions(step, a).length === 0;
 
 export const P39_MAX = 1000;
 export const P40_MAX_CLIPS = 3;
