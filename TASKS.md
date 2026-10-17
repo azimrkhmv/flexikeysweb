@@ -281,7 +281,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A3.3` Load the exercise list from `exercises.json`; an admin registers a finished video file
   - Done when: a new video starts as "waiting for review"
   - Needs: A3.1, A3.2
-- [ ] **Azim** — `A3.4` Review queue for the physiotherapist: list waiting videos; approve, reject, or ask for changes with a note
+- [x] **Azim** — `A3.4` Review queue for the physiotherapist: list waiting videos; approve, reject, or ask for changes with a note
   - Done when: each decision stores who and when, and is in the audit log
   - Needs: A3.3, A1.7
 - [ ] **Azim** — `A3.5` Serve videos to families

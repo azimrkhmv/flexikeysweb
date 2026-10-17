@@ -434,6 +434,47 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/review/videos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Review Queue
+         * @description Videos with this status (by default: waiting for review), oldest first.
+         */
+        get: operations["review_queue_api_v1_review_videos_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/review/videos/{video_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decide
+         * @description Approve, reject, or ask for changes. Rejecting and asking for changes need a note for the video team. Every
+         *     decision is kept with who, when and which file, and goes into the audit log.
+         */
+        post: operations["decide_api_v1_review_videos__video_id__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -522,6 +563,12 @@ export interface components {
             movementVideos: boolean;
             /** Therapistshare */
             therapistShare: boolean;
+        };
+        /** Decision */
+        Decision: {
+            decision: components["schemas"]["ReviewDecision"];
+            /** Note */
+            note?: string | null;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -618,6 +665,31 @@ export interface components {
         RefreshBody: {
             /** Refreshtoken */
             refreshToken?: string | null;
+        };
+        /**
+         * ReviewDecision
+         * @enum {string}
+         */
+        ReviewDecision: "approved" | "rejected" | "changes_requested";
+        /** ReviewItem */
+        ReviewItem: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Exerciseid */
+            exerciseId: string;
+            lang: components["schemas"]["VideoLang"];
+            status: components["schemas"]["VideoStatus"];
+            /** Durations */
+            durationS: number | null;
+            /** Title */
+            title: {
+                [key: string]: string;
+            };
+            /** Watchurl */
+            watchUrl: string;
         };
         /**
          * Role
@@ -1570,6 +1642,72 @@ export interface operations {
         responses: {
             /** @description Successful Response */
             201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VideoOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    review_queue_api_v1_review_videos_get: {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["VideoStatus"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewItem"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_api_v1_review_videos__video_id__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                video_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Decision"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };

@@ -8,6 +8,7 @@ physiotherapist's review (A3.4) before any family can see it.
 
 import json
 import uuid
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Annotated
 
@@ -19,12 +20,16 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app import storage
 from app.db import get_session
 from app.errors import AppError
-from app.modules.accounts.access import Admin
+from app.modules.accounts.access import Admin, require_role
+from app.modules.accounts.models import Role, User
 from app.modules.audit import models as audit
-from app.modules.videos.models import Exercise, Video, VideoLang, VideoStatus
+from app.modules.videos.models import Exercise, ReviewDecision, Video, VideoLang, VideoReview, VideoStatus
 from app.schemas import ApiModel
 
 router = APIRouter(prefix="/admin/videos", tags=["videos"])
+review_router = APIRouter(prefix="/review/videos", tags=["videos"])
+# Only a physiotherapist decides about a video, not even an admin (product rule 3).
+Physio = Annotated[User, Depends(require_role(Role.physio))]
 
 LIBRARY = Path(__file__).parents[2] / "content" / "exercises.json"
 FIELDS = ("title", "body_area", "goals", "gmfcs", "ages", "tool", "difficulty", "conflicts")
@@ -105,5 +110,65 @@ async def register(body: NewVideo, admin: Admin, db: Annotated[AsyncSession, Dep
     video.status, video.approved_by, video.approved_at = VideoStatus.waiting_review, None, None
     await db.flush()
     audit.record(db, admin.id, "video.registered", video.id, exercise=body.exercise_id, lang=body.lang.value)
+    await db.commit()
+    return VideoOut.model_validate(video, from_attributes=True)
+
+
+class ReviewItem(VideoOut):
+    title: dict[str, str]  # the exercise's name in uz, ru, en
+    watch_url: str  # a 15-minute link to the file
+
+
+@review_router.get("")
+async def review_queue(
+    _: Physio, db: Annotated[AsyncSession, Depends(get_session)], status: VideoStatus = VideoStatus.waiting_review
+) -> list[ReviewItem]:
+    """Videos with this status (by default: waiting for review), oldest first."""
+    rows = await db.execute(
+        select(Video, Exercise.title)
+        .join(Exercise, Exercise.id == Video.exercise_id)
+        .where(Video.status == status)
+        .order_by(Video.updated_at)
+    )
+    return [
+        ReviewItem(
+            id=v.id,
+            exercise_id=v.exercise_id,
+            lang=v.lang,
+            status=v.status,
+            duration_s=v.duration_s,
+            title=title,
+            watch_url=storage.download_url(v.storage_key),
+        )
+        for v, title in rows
+    ]
+
+
+class Decision(ApiModel):
+    decision: ReviewDecision
+    note: str | None = None
+
+
+@review_router.post("/{video_id}")
+async def decide(
+    video_id: uuid.UUID, body: Decision, physio: Physio, db: Annotated[AsyncSession, Depends(get_session)]
+) -> VideoOut:
+    """Approve, reject, or ask for changes. Rejecting and asking for changes need a note for the video team. Every
+    decision is kept with who, when and which file, and goes into the audit log."""
+    note = (body.note or "").strip() or None
+    if body.decision != ReviewDecision.approved and note is None:
+        raise AppError(422, "note_required")
+    video = await db.scalar(select(Video).where(Video.id == video_id).with_for_update())
+    if video is None:
+        raise AppError(404, "not_found")
+    db.add(
+        VideoReview(
+            video_id=video.id, reviewer_id=physio.id, decision=body.decision, note=note, storage_key=video.storage_key
+        )
+    )
+    video.status = VideoStatus(body.decision.value)
+    approved = body.decision == ReviewDecision.approved
+    video.approved_by, video.approved_at = (physio.id, datetime.now(UTC)) if approved else (None, None)
+    audit.record(db, physio.id, f"video.{body.decision.value}", video.id, note=note, file=video.storage_key)
     await db.commit()
     return VideoOut.model_validate(video, from_attributes=True)

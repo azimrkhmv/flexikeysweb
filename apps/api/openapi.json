@@ -1122,6 +1122,107 @@
      }
     }
    }
+  },
+  "/api/v1/review/videos": {
+   "get": {
+    "tags": [
+     "videos"
+    ],
+    "summary": "Review Queue",
+    "description": "Videos with this status (by default: waiting for review), oldest first.",
+    "operationId": "review_queue_api_v1_review_videos_get",
+    "parameters": [
+     {
+      "name": "status",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "$ref": "#/components/schemas/VideoStatus",
+       "default": "waiting_review"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/ReviewItem"
+         },
+         "title": "Response Review Queue Api V1 Review Videos Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/review/videos/{video_id}": {
+   "post": {
+    "tags": [
+     "videos"
+    ],
+    "summary": "Decide",
+    "description": "Approve, reject, or ask for changes. Rejecting and asking for changes need a note for the video team. Every\ndecision is kept with who, when and which file, and goes into the audit log.",
+    "operationId": "decide_api_v1_review_videos__video_id__post",
+    "parameters": [
+     {
+      "name": "video_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Video Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/Decision"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/VideoOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
   }
  },
  "components": {
@@ -1374,6 +1475,29 @@
      "therapistShare"
     ],
     "title": "Consents"
+   },
+   "Decision": {
+    "properties": {
+     "decision": {
+      "$ref": "#/components/schemas/ReviewDecision"
+     },
+     "note": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Note"
+     }
+    },
+    "type": "object",
+    "required": [
+     "decision"
+    ],
+    "title": "Decision"
    },
    "HTTPValidationError": {
     "properties": {
@@ -1684,6 +1808,67 @@
     },
     "type": "object",
     "title": "RefreshBody"
+   },
+   "ReviewDecision": {
+    "type": "string",
+    "enum": [
+     "approved",
+     "rejected",
+     "changes_requested"
+    ],
+    "title": "ReviewDecision"
+   },
+   "ReviewItem": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "exerciseId": {
+      "type": "string",
+      "title": "Exerciseid"
+     },
+     "lang": {
+      "$ref": "#/components/schemas/VideoLang"
+     },
+     "status": {
+      "$ref": "#/components/schemas/VideoStatus"
+     },
+     "durationS": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Durations"
+     },
+     "title": {
+      "additionalProperties": {
+       "type": "string"
+      },
+      "type": "object",
+      "title": "Title"
+     },
+     "watchUrl": {
+      "type": "string",
+      "title": "Watchurl"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "exerciseId",
+     "lang",
+     "status",
+     "durationS",
+     "title",
+     "watchUrl"
+    ],
+    "title": "ReviewItem"
    },
    "Role": {
     "type": "string",
