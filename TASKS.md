@@ -330,7 +330,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A5.1` Tables for finished tasks, paused days, daily questions and their answers
   - Done when: the database change applies and rolls back
   - Needs: A4.1
-- [ ] **Azim** — `A5.2` Background worker process (ARQ) in Docker Compose
+- [x] **Azim** — `A5.2` Background worker process (ARQ) in Docker Compose
   - Done when: a test job runs on schedule
   - Needs: A0.2
 - [ ] **Azim** — `V1` Listening test: the same 20 Uzbek sentences from ElevenLabs (main candidate) and 1–2 others (Azure Speech, Muxlisa AI or Aisha)
