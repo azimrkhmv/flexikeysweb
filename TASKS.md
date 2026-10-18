@@ -369,7 +369,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A5.4` Server: pause today; week view
   - Done when: a paused day shifts the plan and is not counted as missed
   - Needs: A5.3
-- [ ] **Azim** — `A5.5` Server: daily question
+- [x] **Azim** — `A5.5` Server: daily question
   - Done when: one question a day; the answer updates the child's profile
   - Needs: A5.1
 - [ ] **Azim** — `A5.6` Server: reminder at the parent's preferred time of day

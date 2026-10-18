@@ -18,6 +18,7 @@ BODIES = {
     "AnswersIn": {"answers": {}},
     "DoneIn": {"day": 0, "exerciseId": "putty_squeeze"},
     "FeelingIn": {"feeling": "easy"},
+    "DailyIn": {"questionId": "D1", "value": 2},
 }
 PARTS = {"kind": "health", "number": "1", "done_id": str(uuid.uuid4())}
 

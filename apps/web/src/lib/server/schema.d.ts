@@ -364,7 +364,8 @@ export interface paths {
         put?: never;
         /**
          * Start Next Round
-         * @description The repeat every 3 months: a new round, filled in with last time's answers for the parent to check.
+         * @description The repeat every 3 months: a new round, filled in with last time's answers, updated by the daily questions
+         *     answered since, for the parent to check.
          */
         post: operations["start_next_round_api_v1_children__child_id__intake_post"];
         delete?: never;
@@ -536,6 +537,31 @@ export interface paths {
          * @description Undo today's pause. Nothing happens when today is not paused.
          */
         delete: operations["resume_today_api_v1_children__child_id__pause_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/children/{child_id}/daily": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Todays Question
+         * @description Today's question, and the answer if already given.
+         */
+        get: operations["todays_question_api_v1_children__child_id__daily_get"];
+        /**
+         * Answer Question
+         * @description Answer today's question; can be changed today. The answer updates the child's profile: the next question
+         *     round (every 3 months) starts from it. 409 not_todays_question, 422 invalid_answer.
+         */
+        put: operations["answer_question_api_v1_children__child_id__daily_put"];
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -732,6 +758,33 @@ export interface components {
             movementVideos: boolean;
             /** Therapistshare */
             therapistShare: boolean;
+        };
+        /** DailyIn */
+        DailyIn: {
+            /** Questionid */
+            questionId: string;
+            /** Value */
+            value: number;
+        };
+        /** DailyOut */
+        DailyOut: {
+            /**
+             * Date
+             * Format: date
+             */
+            date: string;
+            /** Questionid */
+            questionId: string;
+            /** Text */
+            text: {
+                [key: string]: string;
+            };
+            /** Options */
+            options: {
+                [key: string]: unknown;
+            }[];
+            /** Answer */
+            answer: number | null;
         };
         /** DayOut */
         DayOut: {
@@ -2188,6 +2241,70 @@ export interface operations {
             cookie?: never;
         };
         requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    todays_question_api_v1_children__child_id__daily_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DailyOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    answer_question_api_v1_children__child_id__daily_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DailyIn"];
+            };
+        };
         responses: {
             /** @description Successful Response */
             204: {

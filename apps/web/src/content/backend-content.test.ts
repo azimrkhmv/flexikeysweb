@@ -3,11 +3,13 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { buildRoadmap, type PlanInput } from "@/lib/roadmap";
 import type { TherapistInput } from "@/lib/types";
+import { intake as intakeText } from "@/messages/intake";
+import { DAILY_QUESTIONS } from "./daily";
 import { REGIONS } from "./districts";
 import { exerciseLibrary, KIT_TOOLS } from "./exercises";
 import { STEPS, type Answers } from "./intake";
 
-// Files for the Python backend (TASKS.md, tasks A1.6, A2.3, A3.3, A4.3), kept next to the code they come from, like
+// Files for the Python backend (TASKS.md, tasks A1.6, A2.3, A3.3, A4.3, A5.5), kept next to the code they come from, like
 // levels.manifest.json: the backend validates intake answers with intake.json, seeds the exercise library from
 // exercises.json, and its roadmap engine must produce exactly the plans in roadmap_cases.json — so the server
 // and the app can never disagree. Regenerate with UPDATE_BACKEND=1 npm test, then copy them to the backend.
@@ -97,6 +99,12 @@ describe("backend content", () => {
         })),
       ),
     );
+  });
+
+  it("daily questions", () => {
+    const text = (key: string) => ({ uz: intakeText.uz[key as keyof typeof intakeText.uz], ru: intakeText.ru[key as keyof typeof intakeText.ru], en: intakeText.en[key as keyof typeof intakeText.en] });
+    const options = [2, 1, 0].map((value) => ({ value, label: text(`intake.ability.${value}`) }));
+    check("daily.json", DAILY_QUESTIONS.map((q) => ({ id: q.id, updates: q.updates, text: text(`daily.${q.id}`), options })));
   });
 
   it("regions and districts", () => {

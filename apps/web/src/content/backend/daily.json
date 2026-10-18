@@ -1,0 +1,282 @@
+[
+ {
+  "id": "D1",
+  "updates": "P18",
+  "text": {
+   "uz": "Bugun farzandingiz \"kel\" yoki \"ber\" kabi oddiy soʻzni tushundimi?",
+   "ru": "Сегодня ребёнок понял простое слово, например «иди» или «дай»?",
+   "en": "Today, did your child understand a simple word like \"come\" or \"give\"?"
+  },
+  "options": [
+   {
+    "value": 2,
+    "label": {
+     "uz": "Ha",
+     "ru": "Да",
+     "en": "Yes"
+    }
+   },
+   {
+    "value": 1,
+    "label": {
+     "uz": "Baʼzan yoki yordam bilan",
+     "ru": "Иногда или с помощью",
+     "en": "Sometimes or with help"
+    }
+   },
+   {
+    "value": 0,
+    "label": {
+     "uz": "Hali emas",
+     "ru": "Пока нет",
+     "en": "Not yet"
+    }
+   }
+  ]
+ },
+ {
+  "id": "D2",
+  "updates": "P19",
+  "text": {
+   "uz": "Bugun farzandingiz ikki qadamli topshiriqni bajardimi, masalan \"toʻpni ol va menga ber\"?",
+   "ru": "Сегодня ребёнок выполнил два шага, например «возьми мяч и дай мне»?",
+   "en": "Today, did your child follow two steps, like \"take the ball and give it to me\"?"
+  },
+  "options": [
+   {
+    "value": 2,
+    "label": {
+     "uz": "Ha",
+     "ru": "Да",
+     "en": "Yes"
+    }
+   },
+   {
+    "value": 1,
+    "label": {
+     "uz": "Baʼzan yoki yordam bilan",
+     "ru": "Иногда или с помощью",
+     "en": "Sometimes or with help"
+    }
+   },
+   {
+    "value": 0,
+    "label": {
+     "uz": "Hali emas",
+     "ru": "Пока нет",
+     "en": "Not yet"
+    }
+   }
+  ]
+ },
+ {
+  "id": "D3",
+  "updates": "P20",
+  "text": {
+   "uz": "Bugun farzandingiz siz tushungan soʻzni aytdimi?",
+   "ru": "Сегодня ребёнок сказал слово, которое вы поняли?",
+   "en": "Today, did your child say a word you understood?"
+  },
+  "options": [
+   {
+    "value": 2,
+    "label": {
+     "uz": "Ha",
+     "ru": "Да",
+     "en": "Yes"
+    }
+   },
+   {
+    "value": 1,
+    "label": {
+     "uz": "Baʼzan yoki yordam bilan",
+     "ru": "Иногда или с помощью",
+     "en": "Sometimes or with help"
+    }
+   },
+   {
+    "value": 0,
+    "label": {
+     "uz": "Hali emas",
+     "ru": "Пока нет",
+     "en": "Not yet"
+    }
+   }
+  ]
+ },
+ {
+  "id": "D4",
+  "updates": "P23",
+  "text": {
+   "uz": "Bugun farzandingiz kichik narsani barmoqlari bilan oldimi?",
+   "ru": "Сегодня ребёнок взял маленький предмет пальцами?",
+   "en": "Today, did your child pick up a small thing with their fingers?"
+  },
+  "options": [
+   {
+    "value": 2,
+    "label": {
+     "uz": "Ha",
+     "ru": "Да",
+     "en": "Yes"
+    }
+   },
+   {
+    "value": 1,
+    "label": {
+     "uz": "Baʼzan yoki yordam bilan",
+     "ru": "Иногда или с помощью",
+     "en": "Sometimes or with help"
+    }
+   },
+   {
+    "value": 0,
+    "label": {
+     "uz": "Hali emas",
+     "ru": "Пока нет",
+     "en": "Not yet"
+    }
+   }
+  ]
+ },
+ {
+  "id": "D5",
+  "updates": "P24",
+  "text": {
+   "uz": "Bugun farzandingiz qoshiq yoki qalamni ushladimi?",
+   "ru": "Сегодня ребёнок держал ложку или карандаш?",
+   "en": "Today, did your child hold a spoon or a crayon?"
+  },
+  "options": [
+   {
+    "value": 2,
+    "label": {
+     "uz": "Ha",
+     "ru": "Да",
+     "en": "Yes"
+    }
+   },
+   {
+    "value": 1,
+    "label": {
+     "uz": "Baʼzan yoki yordam bilan",
+     "ru": "Иногда или с помощью",
+     "en": "Sometimes or with help"
+    }
+   },
+   {
+    "value": 0,
+    "label": {
+     "uz": "Hali emas",
+     "ru": "Пока нет",
+     "en": "Not yet"
+    }
+   }
+  ]
+ },
+ {
+  "id": "D6",
+  "updates": "P27",
+  "text": {
+   "uz": "Bugun farzandingiz tayanchsiz oʻzi oʻtirdimi?",
+   "ru": "Сегодня ребёнок сидел сам, без опоры?",
+   "en": "Today, did your child sit on their own without support?"
+  },
+  "options": [
+   {
+    "value": 2,
+    "label": {
+     "uz": "Ha",
+     "ru": "Да",
+     "en": "Yes"
+    }
+   },
+   {
+    "value": 1,
+    "label": {
+     "uz": "Baʼzan yoki yordam bilan",
+     "ru": "Иногда или с помощью",
+     "en": "Sometimes or with help"
+    }
+   },
+   {
+    "value": 0,
+    "label": {
+     "uz": "Hali emas",
+     "ru": "Пока нет",
+     "en": "Not yet"
+    }
+   }
+  ]
+ },
+ {
+  "id": "D7",
+  "updates": "P30",
+  "text": {
+   "uz": "Bugun farzandingiz bitta oʻyinchoq bilan 5 daqiqacha oʻynadimi?",
+   "ru": "Сегодня ребёнок играл с одной игрушкой около 5 минут?",
+   "en": "Today, did your child play with one toy for about 5 minutes?"
+  },
+  "options": [
+   {
+    "value": 2,
+    "label": {
+     "uz": "Ha",
+     "ru": "Да",
+     "en": "Yes"
+    }
+   },
+   {
+    "value": 1,
+    "label": {
+     "uz": "Baʼzan yoki yordam bilan",
+     "ru": "Иногда или с помощью",
+     "en": "Sometimes or with help"
+    }
+   },
+   {
+    "value": 0,
+    "label": {
+     "uz": "Hali emas",
+     "ru": "Пока нет",
+     "en": "Not yet"
+    }
+   }
+  ]
+ },
+ {
+  "id": "D8",
+  "updates": "P31",
+  "text": {
+   "uz": "Bugun farzandingiz oʻzi ovqatlandimi?",
+   "ru": "Сегодня ребёнок ел сам?",
+   "en": "Today, did your child eat by themselves?"
+  },
+  "options": [
+   {
+    "value": 2,
+    "label": {
+     "uz": "Ha",
+     "ru": "Да",
+     "en": "Yes"
+    }
+   },
+   {
+    "value": 1,
+    "label": {
+     "uz": "Baʼzan yoki yordam bilan",
+     "ru": "Иногда или с помощью",
+     "en": "Sometimes or with help"
+    }
+   },
+   {
+    "value": 0,
+    "label": {
+     "uz": "Hali emas",
+     "ru": "Пока нет",
+     "en": "Not yet"
+    }
+   }
+  ]
+ }
+]

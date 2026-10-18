@@ -23,6 +23,7 @@ from app.modules.children.router import get_visible_child
 from app.modules.intake.models import IntakeAnswer, IntakeRound
 from app.modules.intake.rules import QUESTIONS, check_answer, missing_answers
 from app.modules.plans.router import create_plan
+from app.modules.today.router import daily_updates
 from app.schemas import ApiModel
 from app.settings import settings
 
@@ -148,7 +149,8 @@ async def finish_round(
 async def start_next_round(
     child_id: uuid.UUID, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]
 ) -> RoundOut:
-    """The repeat every 3 months: a new round, filled in with last time's answers for the parent to check."""
+    """The repeat every 3 months: a new round, filled in with last time's answers, updated by the daily questions
+    answered since, for the parent to check."""
     await get_visible_child(db, user, child_id)
     last = await db.scalar(
         select(IntakeRound).where(IntakeRound.child_id == child_id).order_by(IntakeRound.number.desc()).limit(1)
@@ -164,6 +166,7 @@ async def start_next_round(
     db.add(new)
     await db.flush()
     keep_health = await has_consent(db, child_id, ConsentKind.health)
+    daily = await daily_updates(db, child_id, since=last.completed_at)  # the profile moved by the daily questions
     old = await db.scalars(select(IntakeAnswer).where(IntakeAnswer.round_id == last.id))
     for a in old:
         if a.question_id in QUESTIONS and (keep_health or not QUESTIONS[a.question_id].health):
@@ -171,7 +174,7 @@ async def start_next_round(
                 IntakeAnswer(
                     round_id=new.id,
                     question_id=a.question_id,
-                    value=a.value,
+                    value=daily.get(a.question_id, a.value),
                     secret=a.secret,
                     answered_by=a.answered_by,
                 )

@@ -948,7 +948,7 @@
      "intake"
     ],
     "summary": "Start Next Round",
-    "description": "The repeat every 3 months: a new round, filled in with last time's answers for the parent to check.",
+    "description": "The repeat every 3 months: a new round, filled in with last time's answers, updated by the daily questions\nanswered since, for the parent to check.",
     "operationId": "start_next_round_api_v1_children__child_id__intake_post",
     "parameters": [
      {
@@ -1397,6 +1397,95 @@
       }
      }
     ],
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/children/{child_id}/daily": {
+   "get": {
+    "tags": [
+     "today"
+    ],
+    "summary": "Todays Question",
+    "description": "Today's question, and the answer if already given.",
+    "operationId": "todays_question_api_v1_children__child_id__daily_get",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/DailyOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "put": {
+    "tags": [
+     "today"
+    ],
+    "summary": "Answer Question",
+    "description": "Answer today's question; can be changed today. The answer updates the child's profile: the next question\nround (every 3 months) starts from it. 409 not_todays_question, 422 invalid_answer.",
+    "operationId": "answer_question_api_v1_children__child_id__daily_put",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/DailyIn"
+       }
+      }
+     }
+    },
     "responses": {
      "204": {
       "description": "Successful Response"
@@ -1901,6 +1990,72 @@
      "therapistShare"
     ],
     "title": "Consents"
+   },
+   "DailyIn": {
+    "properties": {
+     "questionId": {
+      "type": "string",
+      "title": "Questionid"
+     },
+     "value": {
+      "type": "integer",
+      "title": "Value"
+     }
+    },
+    "type": "object",
+    "required": [
+     "questionId",
+     "value"
+    ],
+    "title": "DailyIn"
+   },
+   "DailyOut": {
+    "properties": {
+     "date": {
+      "type": "string",
+      "format": "date",
+      "title": "Date"
+     },
+     "questionId": {
+      "type": "string",
+      "title": "Questionid"
+     },
+     "text": {
+      "additionalProperties": {
+       "type": "string"
+      },
+      "type": "object",
+      "title": "Text"
+     },
+     "options": {
+      "items": {
+       "additionalProperties": true,
+       "type": "object"
+      },
+      "type": "array",
+      "title": "Options"
+     },
+     "answer": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Answer"
+     }
+    },
+    "type": "object",
+    "required": [
+     "date",
+     "questionId",
+     "text",
+     "options",
+     "answer"
+    ],
+    "title": "DailyOut"
    },
    "DayOut": {
     "properties": {
