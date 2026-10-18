@@ -21,13 +21,15 @@ from app import storage
 from app.db import get_session
 from app.errors import AppError
 from app.modules.accounts.access import Admin, require_role
-from app.modules.accounts.models import Role, User
+from app.modules.accounts.models import Lang, Role, User
 from app.modules.audit import models as audit
+from app.modules.auth.session import CurrentUser
 from app.modules.videos.models import Exercise, ReviewDecision, Video, VideoLang, VideoReview, VideoStatus
 from app.schemas import ApiModel
 
 router = APIRouter(prefix="/admin/videos", tags=["videos"])
 review_router = APIRouter(prefix="/review/videos", tags=["videos"])
+family_router = APIRouter(prefix="/videos", tags=["videos"])
 # Only a physiotherapist decides about a video, not even an admin (product rule 3).
 Physio = Annotated[User, Depends(require_role(Role.physio))]
 
@@ -172,3 +174,32 @@ async def decide(
     audit.record(db, physio.id, f"video.{body.decision.value}", video.id, note=note, file=video.storage_key)
     await db.commit()
     return VideoOut.model_validate(video, from_attributes=True)
+
+
+class FamilyVideo(ApiModel):
+    exercise_id: str
+    lang: VideoLang
+    duration_s: int | None
+    watch_url: str  # a 15-minute link to the file
+
+
+@family_router.get("/{exercise_id}")
+async def watch(
+    exercise_id: str, lang: Lang, _: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]
+) -> FamilyVideo:
+    """The exercise's video in this language, only once a physiotherapist approved it (product rule 3). Anything
+    else, even a video waiting for review, answers "not found". Uzbek Cyrillic gets the Uzbek video."""
+    video_lang = VideoLang.uz if lang == Lang.uz_cyrl else VideoLang(lang.value)
+    video = await db.scalar(
+        select(Video).where(
+            Video.exercise_id == exercise_id, Video.lang == video_lang, Video.status == VideoStatus.approved
+        )
+    )
+    if video is None:
+        raise AppError(404, "not_found")
+    return FamilyVideo(
+        exercise_id=video.exercise_id,
+        lang=video.lang,
+        duration_s=video.duration_s,
+        watch_url=storage.download_url(video.storage_key),
+    )

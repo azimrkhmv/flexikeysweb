@@ -475,6 +475,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/videos/{exercise_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Watch
+         * @description The exercise's video in this language, only once a physiotherapist approved it (product rule 3). Anything
+         *     else, even a video waiting for review, answers "not found". Uzbek Cyrillic gets the Uzbek video.
+         */
+        get: operations["watch_api_v1_videos__exercise_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -569,6 +590,16 @@ export interface components {
             decision: components["schemas"]["ReviewDecision"];
             /** Note */
             note?: string | null;
+        };
+        /** FamilyVideo */
+        FamilyVideo: {
+            /** Exerciseid */
+            exerciseId: string;
+            lang: components["schemas"]["VideoLang"];
+            /** Durations */
+            durationS: number | null;
+            /** Watchurl */
+            watchUrl: string;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -1713,6 +1744,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["VideoOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    watch_api_v1_videos__exercise_id__get: {
+        parameters: {
+            query: {
+                lang: components["schemas"]["Lang"];
+            };
+            header?: never;
+            path: {
+                exercise_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FamilyVideo"];
                 };
             };
             /** @description Validation Error */

@@ -1223,6 +1223,57 @@
      }
     }
    }
+  },
+  "/api/v1/videos/{exercise_id}": {
+   "get": {
+    "tags": [
+     "videos"
+    ],
+    "summary": "Watch",
+    "description": "The exercise's video in this language, only once a physiotherapist approved it (product rule 3). Anything\nelse, even a video waiting for review, answers \"not found\". Uzbek Cyrillic gets the Uzbek video.",
+    "operationId": "watch_api_v1_videos__exercise_id__get",
+    "parameters": [
+     {
+      "name": "exercise_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Exercise Id"
+      }
+     },
+     {
+      "name": "lang",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "$ref": "#/components/schemas/Lang"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/FamilyVideo"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
   }
  },
  "components": {
@@ -1498,6 +1549,40 @@
      "decision"
     ],
     "title": "Decision"
+   },
+   "FamilyVideo": {
+    "properties": {
+     "exerciseId": {
+      "type": "string",
+      "title": "Exerciseid"
+     },
+     "lang": {
+      "$ref": "#/components/schemas/VideoLang"
+     },
+     "durationS": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Durations"
+     },
+     "watchUrl": {
+      "type": "string",
+      "title": "Watchurl"
+     }
+    },
+    "type": "object",
+    "required": [
+     "exerciseId",
+     "lang",
+     "durationS",
+     "watchUrl"
+    ],
+    "title": "FamilyVideo"
    },
    "HTTPValidationError": {
     "properties": {
