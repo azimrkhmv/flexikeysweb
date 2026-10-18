@@ -132,6 +132,7 @@ export function seed(): DB {
     playTime: [],
     therapistProfiles: [],
     therapistAnswers: [],
+    clipReplies: [],
   };
 
   // ~2 weeks of play history so dashboards have something real to show.

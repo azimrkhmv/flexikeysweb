@@ -1,6 +1,7 @@
 // Strings for the "parent" area. Same keys in en/uz/ru (checked by src/lib/i18n.test.ts).
 export const parent = {
   en: {
+    "parent.therapist.reply": "About your video {n}",
     "parent.therapist.title": "From {name}'s therapist",
     "parent.therapist.updatedBy": "Updated by {name}",
     "parent.nav.overview": "Overview",
@@ -309,6 +310,7 @@ export const parent = {
     "parent.account.typeEmail": "Type your email to confirm",
   },
   uz: {
+    "parent.therapist.reply": "{n}-videongiz haqida",
     "parent.therapist.title": "{name}ning mutaxassisidan",
     "parent.therapist.updatedBy": "{name} yangiladi",
     "parent.nav.overview": "Umumiy",
@@ -617,6 +619,7 @@ export const parent = {
     "parent.account.typeEmail": "Tasdiqlash uchun emailingizni yozing",
   },
   ru: {
+    "parent.therapist.reply": "О вашем видео {n}",
     "parent.therapist.title": "От специалиста ({name})",
     "parent.therapist.updatedBy": "Обновил(а): {name}",
     "parent.nav.overview": "Обзор",

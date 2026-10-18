@@ -31,7 +31,7 @@ test("the required answers follow the profession", async ({ page }, info) => {
   await page.getByRole("checkbox", { name: "Sit better" }).check();
   await page.getByLabel("Message to the parent").fill("Keep going!");
   await form.getByRole("button", { name: "Save" }).click();
-  await expect(page.getByText("Saved", { exact: true })).toBeVisible();
+  await expect(page.getByText("Saved. The plan was updated.")).toBeVisible(); // Ali has a plan: a new level rebuilds it
   await page.reload();
   await expect(page.getByLabel("Message to the parent")).toHaveValue("Keep going!");
 
@@ -62,7 +62,7 @@ test("the parent sees the therapist's updates and message", async ({ page }, inf
   await page.getByRole("checkbox", { name: "Sit better" }).check();
   await page.getByLabel("Message to the parent").fill("Ali did well this week.");
   await form.getByRole("button", { name: "Save" }).click();
-  await expect(page.getByText("Saved", { exact: true })).toBeVisible();
+  await expect(page.getByText("Saved. The plan was updated.")).toBeVisible(); // Ali has a plan: a new level rebuilds it
 
   await loginAs(page, "Parent");
   await page.goto("/parent/child/ch_ali");
@@ -71,4 +71,37 @@ test("the parent sees the therapist's updates and message", async ({ page }, inf
   await expect(card.getByText("Updated by Dilnoza Karimova, Neurologist").first()).toBeVisible();
   await expect(card.getByText("Walks with a walker or with hands held")).toBeVisible();
   await expect(card.getByText("Ali did well this week.")).toBeVisible();
+});
+
+// B25: an exercise the therapist excludes never comes back into the plan.
+test("an excluded exercise leaves the plan", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop");
+  await setup(page);
+  await loginAs(page, "Parent");
+  await page.goto("/parent/child/ch_ali");
+  const exercises = page.locator("li li.text-sm");
+  const title = (await exercises.first().innerText()).split("\n")[0].trim();
+  expect(title).not.toBe("");
+
+  await loginAs(page, "Therapist");
+  await page.goto("/therapist");
+  await page.getByLabel("Your name").fill("Dilnoza Karimova");
+  await page.getByLabel("Profession").selectOption("neurologist");
+  await page.getByLabel("Workplace").fill("Clinic 1");
+  await page.getByRole("button", { name: "Save" }).click();
+  await page.goto("/therapist/child/ch_ali");
+  const form = page.locator("form:has([data-question])");
+  await page.getByLabel("Gross motor level (GMFCS)").selectOption("2");
+  await page.getByRole("checkbox", { name: "Nothing" }).check();
+  await page.getByRole("checkbox", { name: "Use hands better" }).check();
+  await form.getByRole("combobox", { name: title, exact: true }).selectOption("exclude");
+  await form.getByRole("button", { name: "Save" }).click();
+  await expect(page.getByText("Saved. The plan was updated.")).toBeVisible();
+
+  await loginAs(page, "Parent");
+  await page.goto("/parent/child/ch_ali");
+  for (const week of [1, 2, 3, 4]) {
+    await page.getByRole("button", { name: `Week ${week}` }).click();
+    await expect(exercises.filter({ hasText: title })).toHaveCount(0);
+  }
 });

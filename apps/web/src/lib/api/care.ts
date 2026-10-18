@@ -8,7 +8,9 @@ import { ApiError, id, iso, makeCode } from "./schema";
 import { sel } from "./selectors";
 import { normalizePhone } from "./auth";
 import type { CareLink } from "../types";
-import { FORM_IDS, type Profession, type TherapistAnswers } from "@/content/therapist";
+import { FORM_IDS, REBUILDS, type Profession, type TherapistAnswers } from "@/content/therapist";
+import { buildRoadmap } from "../roadmap";
+import { planInput } from "./intake";
 
 export const careApi = {
   // ------------------------------------------------------------ care links & classes (parent side)
@@ -84,7 +86,8 @@ export const careApi = {
     });
     return net(true);
   },
-  /** PUT /therapist/children/{id}/form — some answers; the others stay, an empty one is removed. */
+  /** PUT /therapist/children/{id}/form — some answers; the others stay, an empty one is removed. A change to
+   * restrictions, movement level, goals or exercises rebuilds the plan at once (A8.5). Returns planRebuilt. */
   async saveTherapistForm(childId: string, answers: TherapistAnswers) {
     const { user } = requireChildAccess(childId, ["therapist"]);
     if (!read().therapistProfiles.some((p) => p.userId === user.id)) throw new ApiError("profile_needed");
@@ -95,6 +98,24 @@ export const careApi = {
       if (row) Object.assign(row, { answers: merged, at: iso() });
       else db.therapistAnswers.push({ childId, therapistId: user.id, answers: merged, at: iso() });
       audit(db, user.id, "therapist.form_saved", childId);
+    });
+    // Same as the server: a sent T2, T5, T6, T7 or T8 builds a new plan from the last finished round.
+    const done = read().intakeRounds.filter((r) => r.childId === childId && r.completedAt).sort((a, b) => b.round - a.round)[0];
+    if (!done || !REBUILDS.some((k) => k in answers)) return net({ planRebuilt: false });
+    const plan = { ...buildRoadmap(planInput(read(), childId, done.round), read().videos), id: id(), createdAt: iso() };
+    write((db) => {
+      db.roadmaps.push(plan);
+      audit(db, user.id, "roadmap.build", childId, "therapist");
+    });
+    return net({ planRebuilt: true });
+  },
+  /** POST /therapist/children/{id}/clips/{clip_id}/replies — T9, a note on one of the parent's clips. */
+  async replyToClip(childId: string, clipId: string, text: string) {
+    const { user } = requireChildAccess(childId, ["therapist"]);
+    if (!sel.movementClips(read(), childId).includes(clipId)) throw new ApiError("not_found");
+    if (!text.trim()) throw new ApiError("invalid_answer");
+    write((db) => {
+      db.clipReplies.push({ id: id(), childId, clipId, therapistId: user.id, text: text.trim(), at: iso() });
     });
     return net(true);
   },

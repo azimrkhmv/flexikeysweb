@@ -9,11 +9,22 @@ import { buildRoadmap } from "../roadmap";
 import { getMedia, putMedia } from "../media";
 import { read, write, net } from "./db";
 import { audit, familyForNewChild, requireChildAccess, requireUser } from "./guards";
-import { ApiError, CONSENT_VERSION, id, iso, localDate } from "./schema";
+import { ApiError, CONSENT_VERSION, id, iso, localDate, type DB } from "./schema";
 import { sel } from "./selectors";
 import type { Child, Feeling, IntakeValue, Respondent, TaskDone, VideoStatus } from "../types";
 
 const today = () => localDate();
+
+/** The plan engine's input for one round: the answers in use (therapists' answers win) and what the therapists set. */
+export function planInput(db: DB, childId: string, round: number) {
+  const child = sel.child(db, childId)!;
+  return {
+    childId, round, birthDate: child.birthDate ?? `${child.birthYear}-01-01`, startDate: today(), lang: child.learningLang,
+    answers: sel.answersInUse(db, childId, sel.intakeAnswers(db, childId, round)),
+    healthConsent: sel.hasConsent(db, childId, "health"),
+    therapist: sel.therapistInput(db, childId),
+  };
+}
 
 export const intakeApi = {
   /** POST /children — from intake step 1 (P1–P5, P8). Basic consent was given at sign-up. */
@@ -74,12 +85,7 @@ export const intakeApi = {
   async finishIntake(childId: string, round: number) {
     const { user } = requireChildAccess(childId, ["owner"]);
     const db = read();
-    const child = sel.child(db, childId)!;
-    const input = {
-      childId, round, birthDate: child.birthDate ?? `${child.birthYear}-01-01`, startDate: today(), lang: child.learningLang,
-      answers: sel.intakeAnswers(db, childId, round), healthConsent: sel.hasConsent(db, childId, "health"),
-    };
-    const plan = { ...buildRoadmap(input, db.videos), id: id(), createdAt: iso() };
+    const plan = { ...buildRoadmap(planInput(db, childId, round), db.videos), id: id(), createdAt: iso() };
     write((d) => {
       d.roadmaps.push(plan);
       const r = d.intakeRounds.find((x) => x.childId === childId && x.round === round);

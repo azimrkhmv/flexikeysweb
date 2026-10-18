@@ -4,14 +4,14 @@ import { useState, type ReactNode } from "react";
 import { Button, Card, Checkbox, Chip, Field, Input, Select, Textarea, useAction } from "@/components/ui";
 import { SectionTitle, useMe } from "@/features/pro/shared";
 import {
-  CP_PARTS, CP_TYPES, GOALS, LEVELS, MAX_GOALS, MUST_NOT, PROFESSIONS, UPDATES,
+  CP_PARTS, CP_TYPES, FORM_IDS, GOALS, LEVELS, MAX_GOALS, MUST_NOT, PROFESSIONS, UPDATES,
   missing, requiredFor, type FormId, type Level, type Profession, type TherapistAnswers,
 } from "@/content/therapist";
 import { api, sel } from "@/lib/api";
-import { useT } from "@/lib/i18n";
+import { baseLang, useLang, useT } from "@/lib/i18n";
 
-// The therapist form (spec §6, B23). T1 is the therapist's profile; T2–T11 are about one child, and which ones are
-// required follows the profession. T8 (exercises) and T9 (notes on clips) come with B25.
+// The therapist form (spec §6, B23, B25). T1 is the therapist's profile; T2–T11 are about one child, and which ones
+// are required follows the profession. T9 (notes on clips) are the replies in Clips.tsx.
 
 const ROMAN = ["I", "II", "III", "IV", "V"];
 
@@ -115,14 +115,17 @@ function LevelSelect({ id, value, onChange }: { id: "T2" | "T3" | "T4"; value?: 
 export function TherapistForm({ childId }: { childId: string }) {
   const t = useT();
   const { db, me } = useMe();
+  const [lang] = useLang();
   const profile = sel.therapistProfile(db, me.id);
   const [a, setA] = useState<TherapistAnswers>(() => sel.therapistAnswers(db, childId, me.id));
+  const [sent, setSent] = useState<TherapistAnswers>(a); // what the server has, so a save sends only the changes
   const [tried, setTried] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [saved, setSaved] = useState<null | { planRebuilt: boolean }>(null);
+  const library = sel.usableVideos(db, baseLang(lang));
   const save = useAction(api.saveTherapistForm);
   const set = (patch: TherapistAnswers) => {
     setA((x) => ({ ...x, ...patch }));
-    setSaved(false);
+    setSaved(null);
   };
 
   if (!profile)
@@ -138,6 +141,8 @@ export function TherapistForm({ childId }: { childId: string }) {
   const q = (id: FormId) => ({ id, required: required.includes(id), missing: tried && open.includes(id) });
   const t6 = a.T6 ?? { items: [], text: "" };
   const t7 = a.T7 ?? { goals: [], own: [] };
+  const t8 = a.T8 ?? { assign: [], exclude: [] };
+  const choice = (ex: string) => (t8.assign.includes(ex) ? "assign" : t8.exclude.includes(ex) ? "exclude" : "");
   const goalCount = t7.goals.length + t7.own.filter((g) => g.trim()).length;
   const toggle = (list: string[], v: string, on: boolean) => (on ? [...list, v] : list.filter((x) => x !== v));
 
@@ -153,7 +158,12 @@ export function TherapistForm({ childId }: { childId: string }) {
           setTried(true);
           if (open.length) return;
           const clean: TherapistAnswers = { ...a, T7: a.T7 && { ...a.T7, own: a.T7.own.map((g) => g.trim()).filter(Boolean) } };
-          setSaved((await save.run(childId, clean)) !== undefined);
+          const changes = Object.fromEntries(FORM_IDS.filter((k) => JSON.stringify(clean[k]) !== JSON.stringify(sent[k])).map((k) => [k, clean[k]]));
+          const done = await save.run(childId, changes);
+          if (done !== undefined) {
+            setSent(clean);
+            setSaved(done);
+          }
         }}
       >
         <Q {...q("T2")}>
@@ -233,6 +243,32 @@ export function TherapistForm({ childId }: { childId: string }) {
             />
           ))}
         </Q>
+        <Q {...q("T8")}>
+          <p className="text-xs text-muted">{t("tform.T8.hint")}</p>
+          <ul className="divide-y divide-line">
+            {library.map((v) => (
+              <li key={v.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
+                <span className="text-sm font-semibold text-ink">{v.title[baseLang(lang)]}</span>
+                <Select
+                  aria-label={v.title[baseLang(lang)]}
+                  className="h-10 w-auto"
+                  value={choice(v.id)}
+                  onChange={(e) => {
+                    const assign = t8.assign.filter((x) => x !== v.id);
+                    const exclude = t8.exclude.filter((x) => x !== v.id);
+                    if (e.target.value === "assign") assign.push(v.id);
+                    if (e.target.value === "exclude") exclude.push(v.id);
+                    set({ T8: assign.length || exclude.length ? { assign, exclude } : undefined });
+                  }}
+                >
+                  <option value="">{t("tform.T8.plan")}</option>
+                  <option value="assign">{t("tform.T8.assign")}</option>
+                  <option value="exclude">{t("tform.T8.exclude")}</option>
+                </Select>
+              </li>
+            ))}
+          </ul>
+        </Q>
         <Q {...q("T10")}>
           <Select aria-label={t("tform.T10")} value={a.T10 ?? ""} onChange={(e) => set({ T10: (e.target.value || undefined) as TherapistAnswers["T10"] })}>
             <option value="">{t("tform.notGiven")}</option>
@@ -250,7 +286,7 @@ export function TherapistForm({ childId }: { childId: string }) {
           <Button type="submit" pending={save.pending}>
             {t("common.save")}
           </Button>
-          {saved && <span className="text-sm font-semibold text-teal">{t("tform.saved")}</span>}
+          {saved && <span className="text-sm font-semibold text-teal">{t(saved.planRebuilt ? "tform.rebuilt" : "tform.saved")}</span>}
           {tried && open.length > 0 && <span className="text-sm font-semibold text-[#8f3a2c]">{t("tform.fillRequired")}</span>}
         </div>
         {save.error && <p className="text-sm font-semibold text-[#8f3a2c]">{save.error}</p>}

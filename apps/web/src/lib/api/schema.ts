@@ -67,6 +67,8 @@ export interface DB {
   therapistProfiles: TherapistProfile[];
   /** T2–T11 per child and therapist (B23). */
   therapistAnswers: { childId: string; therapistId: string; answers: TherapistAnswers; at: string }[];
+  /** A therapist's replies to the parent's movement clips (T9, B25). `clipId` is the P40 media id. */
+  clipReplies: { id: string; childId: string; clipId: string; therapistId: string; text: string; at: string }[];
 }
 
 export class ApiError extends Error {
@@ -96,4 +98,4 @@ const CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"; // no 0/O/1/I/L (SEC-5)
 export const makeCode = (n = 6) => Array.from({ length: n }, () => CODE_ALPHABET[Math.floor(Math.random() * CODE_ALPHABET.length)]).join("");
 
 /** Bump when the DB shape changes: browsers holding an older shape are reseeded instead of crashing. */
-export const DB_VERSION = 11;
+export const DB_VERSION = 12;

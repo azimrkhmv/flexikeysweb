@@ -1,7 +1,8 @@
 // The therapist form (spec §6): T1 is the therapist's own profile, T2–T11 are answers about one shared child.
-// Same rules as the server (apps/api/app/modules/therapists/form.py). T8 (exercises) and T9 (notes on clips) come
-// with B25. Text: messages/pro.ts `tform.*`; the options reuse the parent questions' words (`intake.P10.*` …).
+// Same rules as the server (apps/api/app/modules/therapists/form.py). T9 (notes on clips) are the replies to the
+// parent's movement clips (B25). Text: messages/pro.ts `tform.*`; the options reuse the parent questions' words.
 
+import type { GoalKey, Restriction, TherapistInput } from "@/lib/types";
 import { STEPS } from "./intake";
 
 export const PROFESSIONS = ["physio", "speech", "defectologist_ot", "neurologist"] as const;
@@ -21,11 +22,14 @@ export interface TherapistAnswers {
   T5?: { type: string | null; parts: string | null };
   T6?: { items: string[]; text: string };
   T7?: { goals: string[]; own: string[] };
+  T8?: { assign: string[]; exclude: string[] }; // exercise ids from the approved library
   T10?: "weekly" | "every_2_weeks" | "monthly";
   T11?: string;
 }
 export type FormId = keyof TherapistAnswers;
-export const FORM_IDS: FormId[] = ["T2", "T3", "T4", "T5", "T6", "T7", "T10", "T11"];
+export const FORM_IDS: FormId[] = ["T2", "T3", "T4", "T5", "T6", "T7", "T8", "T10", "T11"];
+/** A change to these rebuilds the plan at once (restrictions, movement level, goals, exercises). */
+export const REBUILDS: FormId[] = ["T2", "T5", "T6", "T7", "T8"];
 export const LEVELS: Level[] = [1, 2, 3, 4, 5];
 export const UPDATES = ["weekly", "every_2_weeks", "monthly"] as const;
 export const MAX_GOALS = 3;
@@ -50,6 +54,7 @@ export function answered(a: TherapistAnswers, id: FormId): boolean {
   if (id === "T5") return !!(a.T5?.type || a.T5?.parts);
   if (id === "T6") return !!a.T6 && (a.T6.items.length > 0 || a.T6.text.trim() !== "");
   if (id === "T7") return !!a.T7 && a.T7.goals.length + a.T7.own.filter((g) => g.trim()).length > 0;
+  if (id === "T8") return !!a.T8 && a.T8.assign.length + a.T8.exclude.length > 0;
   if (id === "T11") return !!a.T11?.trim();
   return true;
 }
@@ -72,4 +77,24 @@ export function replaces(a: TherapistAnswers, healthConsent: boolean): Record<st
   if (a.T6 && allowed("T6")) out.P14 = [...a.T6.items, ...(a.T6.text.trim() && !a.T6.items.includes("other") ? ["other"] : [])];
   if (a.T7?.goals.length) out.P33 = a.T7.goals;
   return out;
+}
+
+const P14_TAGS: Restriction[] = ["jumping", "prone", "neck_flexion", "single_leg_weight"];
+
+/** What the child's therapists set, for the plan engine (lib/roadmap.ts). The newest T2 and T7 are used; the
+ * restrictions (T6) and the assigned and excluded exercises (T8) of every therapist count, and an exclusion beats an
+ * assignment. `rows` oldest first. */
+export function therapistInput(rows: TherapistAnswers[], healthConsent: boolean): TherapistInput | undefined {
+  if (!rows.length) return undefined;
+  const last = <K extends FormId>(k: K) => rows.map((r) => r[k]).filter((v) => v !== undefined).at(-1) as TherapistAnswers[K];
+  const exclude = [...new Set(rows.flatMap((r) => r.T8?.exclude ?? []))];
+  const t2 = healthConsent ? last("T2") : undefined;
+  return {
+    gmfcs: t2,
+    restrictions: healthConsent ? [...new Set(rows.flatMap((r) => (r.T6?.items ?? []).filter((x): x is Restriction => P14_TAGS.includes(x as Restriction))))] : [],
+    goals: (last("T7")?.goals ?? []) as GoalKey[],
+    assign: [...new Set(rows.flatMap((r) => r.T8?.assign ?? []))].filter((e) => !exclude.includes(e)),
+    exclude,
+    legBalanceApproved: false,
+  };
 }

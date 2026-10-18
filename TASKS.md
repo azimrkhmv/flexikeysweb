@@ -506,7 +506,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `B24` Parent side: "Updated by [therapist name]" and the therapist's message
   - Done when: the parent sees whose answer is in use
   - Needs: B23
-- [ ] **Azim** — `B25` Therapist assigns or excludes exercises; watches clips and replies
+- [x] **Azim** — `B25` Therapist assigns or excludes exercises; watches clips and replies
   - Done when: an excluded exercise never comes back into the plan
   - Needs: B23
 - [x] **Azim** — `A8.5` Server: rebuild the plan when a therapist changes restrictions, goals or exercises
@@ -524,6 +524,9 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `B28` Connect the helper screens to the server
   - Done when: a helper signs in with their own phone and sees the family's child
   - Needs: A8.4, B27
+- [ ] **Azim** — `B29` Today: the parent may film the child doing one exercise (optional feedback clip, spec §8), only with the movement-videos consent; the therapist sees it with the movement clips and replies
+  - Done when: a feedback clip filmed on Today shows on the therapist's child page with its exercise name
+  - Needs: B25
 
 ### M5 — Assistant
 

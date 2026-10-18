@@ -8,6 +8,7 @@ import { aacCard } from "@/content/aac";
 import { LEVELS } from "@/content/levels";
 import { Avatar, Button, Card, Chip, Empty, Field, Input, PageHeader, Select, Textarea, Toggle, useAction } from "@/components/ui";
 import { SupportCard } from "@/features/parent/support";
+import { Clips } from "@/features/therapist/Clips";
 import { TherapistForm } from "@/features/therapist/Form";
 import { AdaptationLog, MotorMetrics, LevelLabel, LevelOptions, LockNote, MasteryList, MinutesChart, NotFound, SectionTitle, SessionsList, useMe, useNow } from "@/features/pro/shared";
 import { fmtDate } from "@/lib/format";
@@ -42,8 +43,9 @@ export default function TherapistChild() {
         <PageHeader title={child.name} subtitle={t("common.years", { n: year - child.birthYear })} />
       </div>
       <p className="mb-6 text-xs text-muted">{t("therapist.child.audit")}</p>
-      <div className="mb-6">
+      <div className="mb-6 space-y-6">
         <TherapistForm childId={id} />
+        <Clips childId={id} />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">

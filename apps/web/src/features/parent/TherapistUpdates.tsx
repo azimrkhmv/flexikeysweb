@@ -6,8 +6,8 @@ import { fmtDate } from "@/lib/format";
 import { useLang, useT } from "@/lib/i18n";
 import type { Child } from "@/lib/types";
 
-// B24: what the child's therapist changed (their answers win, spec §6) and their messages. Nothing when no
-// therapist has answered.
+// B24: what the child's therapist changed (their answers win, spec §6), their messages and their replies to the
+// parent's movement clips (B25). Nothing when no therapist has answered.
 
 const ORDER = ["P12", "P10", "P11", "P14", "P33"];
 
@@ -17,7 +17,8 @@ export function TherapistUpdates({ child }: { child: Child }) {
   const db = useDb();
   const { updated, messages, mustNotText } = sel.therapistUpdates(db, child.id);
   const questions = ORDER.filter((q) => updated[q]);
-  if (!questions.length && !messages.length) return null;
+  const replies = sel.movementClips(db, child.id).flatMap((c, i) => sel.clipReplies(db, child.id, c).map((r) => ({ ...r, n: i + 1 })));
+  if (!questions.length && !messages.length && !replies.length) return null;
   const by = (name: string, profession?: string) => (profession ? `${name}, ${t(`tform.profession.${profession}`)}` : name);
   const words = (q: string, v: string | string[]) => (Array.isArray(v) ? v : [v]).map((o) => t(`intake.${q}.${o}`)).join(", ");
 
@@ -45,6 +46,15 @@ export function TherapistUpdates({ child }: { child: Child }) {
           <p className="whitespace-pre-line text-ink">{m.text}</p>
           <footer className="mt-1 text-xs text-muted">
             {by(m.name, m.profession)} · {fmtDate(m.at, lang, "date")}
+          </footer>
+        </blockquote>
+      ))}
+      {replies.map((r) => (
+        <blockquote key={r.id} className="rounded-2xl bg-surface-2 p-3">
+          <p className="text-xs font-bold text-muted">{t("parent.therapist.reply", { n: r.n })}</p>
+          <p className="whitespace-pre-line text-ink">{r.text}</p>
+          <footer className="mt-1 text-xs text-muted">
+            {r.name} · {fmtDate(r.at, lang, "date")}
           </footer>
         </blockquote>
       ))}

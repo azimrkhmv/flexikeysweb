@@ -7,7 +7,7 @@ import { computeMetrics, startingProfile, withFloors } from "../adaptive";
 import { levelAfter } from "../roadmap";
 import { AREAS, startingTheta, type Area } from "../skill";
 import type { Answers } from "@/content/intake";
-import { replaces, type Profession } from "@/content/therapist";
+import { replaces, therapistInput, type Profession } from "@/content/therapist";
 import { LANGS, type Lang } from "../i18n";
 import { DAY, iso, localDate, type DB } from "./schema";
 import type { AdaptiveProfile, Child, ClassRoom, ConsentScope, InputProfile, LevelProgress, Roadmap, Subscription, User, VideoStatus, Wallet } from "../types";
@@ -233,6 +233,26 @@ export const sel = {
     const mustNotText = rows.map((r) => r.answers.T6?.text.trim()).filter((x): x is string => !!x && health);
     return { updated, messages, mustNotText };
   },
+  /** The plan input from what the therapists set (the engine's TherapistInput), or undefined. */
+  therapistInput: (db: DB, childId: string) =>
+    therapistInput(
+      (db.therapistAnswers ?? []).filter((r) => r.childId === childId).sort((a, b) => a.at.localeCompare(b.at)).map((r) => r.answers),
+      sel.hasConsent(db, childId, "health"),
+    ),
+  /** The answers the plan is built from: the parent's, with the therapists' answers put in. */
+  answersInUse: (db: DB, childId: string, answers: Answers): Answers => {
+    const merged: Answers = { ...answers };
+    for (const [q, u] of Object.entries(sel.therapistUpdates(db, childId).updated)) merged[q] = u.value;
+    return merged;
+  },
+  /** The parent's movement clips (P40 media ids, latest round) when the movement-videos consent is given. */
+  movementClips(db: DB, childId: string): string[] {
+    const round = sel.intakeRound(db, childId);
+    const ids = round ? sel.intakeAnswers(db, childId, round.round).P40 : undefined;
+    return sel.hasConsent(db, childId, "movement_videos") && Array.isArray(ids) ? ids : [];
+  },
+  clipReplies: (db: DB, childId: string, clipId: string) =>
+    (db.clipReplies ?? []).filter((r) => r.childId === childId && r.clipId === clipId).map((r) => ({ ...r, name: db.users.find((u) => u.id === r.therapistId)?.name ?? "" })),
   careLinks: (db: DB, childId: string) => db.careLinks.filter((l) => l.childId === childId && l.status !== "revoked"),
   notifications: (db: DB, userId: string) => db.notifications.filter((n) => n.userId === userId).sort((a, b) => b.at.localeCompare(a.at)),
   aacStats(db: DB, childId: string) {
