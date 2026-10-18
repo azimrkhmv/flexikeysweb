@@ -10,7 +10,7 @@ import { read, write, net } from "./db";
 import { audit, familyForNewChild, requireChildAccess, requireUser } from "./guards";
 import { ApiError, CONSENT_VERSION, id, iso } from "./schema";
 import { sel } from "./selectors";
-import type { Child, IntakeValue, Respondent, VideoStatus } from "../types";
+import type { Child, Feeling, IntakeValue, Respondent, TaskDone, VideoStatus } from "../types";
 
 const today = () => iso().slice(0, 10);
 
@@ -99,6 +99,30 @@ export const intakeApi = {
     });
     await intakeApi.saveAnswers(childId, round, prev);
     return round;
+  },
+
+  // ------------------------------------------------------------ Today (spec §10)
+  /** POST /children/{id}/done {day, exerciseId} — one tap: this exercise of that plan day is done. Twice = once. */
+  async markDone(childId: string, day: number, videoId: string) {
+    requireChildAccess(childId, ["owner"]);
+    const plan = sel.roadmap(read(), childId);
+    if (!plan?.days[day]?.exercises.some((e) => e.videoId === videoId)) throw new ApiError("not_found");
+    const same = sel.tasksDone(read(), childId).find((t) => t.day === day && t.videoId === videoId);
+    if (same) return net(same);
+    const done: TaskDone = { id: id(), childId, roadmapId: plan.id, day, videoId, at: iso() };
+    write((db) => {
+      db.tasksDone.push(done);
+    });
+    return net(done);
+  },
+  /** PATCH /children/{id}/done/{doneId} {feeling} — the optional easy / OK / hard; can be changed. */
+  async rateDone(childId: string, doneId: string, feeling: Feeling) {
+    requireChildAccess(childId, ["owner"]);
+    if (!read().tasksDone.some((t) => t.id === doneId && t.childId === childId)) throw new ApiError("not_found");
+    write((db) => {
+      db.tasksDone.find((t) => t.id === doneId)!.feeling = feeling;
+    });
+    return net(undefined);
   },
 
   // ------------------------------------------------------------ video library (physio review)

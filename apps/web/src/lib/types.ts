@@ -473,6 +473,21 @@ export interface RoadmapReason {
   level: number;
 }
 
+/** The parent's optional answer after Done (spec §8). */
+export type Feeling = "easy" | "ok" | "hard";
+
+/** One exercise of a plan day marked done (spec §10). */
+export interface TaskDone {
+  id: string;
+  childId: string;
+  roadmapId: string;
+  /** 0 = the plan's first day. */
+  day: number;
+  videoId: string;
+  feeling?: Feeling;
+  at: string;
+}
+
 export interface Roadmap {
   id: string;
   childId: string;

@@ -4,6 +4,7 @@
 
 import { FREE_LEVELS, LEVEL_BY_ID, LEVELS, levelComplete } from "@/content/levels";
 import { computeMetrics, startingProfile, withFloors } from "../adaptive";
+import { levelAfter } from "../roadmap";
 import type { Answers } from "@/content/intake";
 import { LANGS, type Lang } from "../i18n";
 import { DAY, iso, type DB } from "./schema";
@@ -19,6 +20,16 @@ export const sel = {
   roadmap: (db: DB, childId: string): Roadmap | null => db.roadmaps.filter((r) => r.childId === childId).sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0] ?? null,
   video: (db: DB, videoId: string) => db.videos.find((v) => v.id === videoId) ?? null,
   videos: (db: DB) => db.videos,
+  /** Exercises of the child's current plan marked done, oldest first. */
+  tasksDone: (db: DB, childId: string) => {
+    const plan = sel.roadmap(db, childId);
+    return plan ? (db.tasksDone ?? []).filter((t) => t.roadmapId === plan.id).sort((a, b) => a.at.localeCompare(b.at)) : [];
+  },
+  /** An exercise's level now: the plan's level, moved by the parent's easy / hard ratings (spec §8). */
+  exerciseLevel: (db: DB, childId: string, videoId: string) => {
+    const start = sel.roadmap(db, childId)?.days.flatMap((d) => d.exercises).find((e) => e.videoId === videoId)?.level ?? 1;
+    return levelAfter(start, sel.tasksDone(db, childId).filter((t) => t.videoId === videoId).map((t) => t.feeling));
+  },
   /** Language versions with this review status, and how many there are of each status. */
   videosByStatus: (db: DB, status: VideoStatus) => db.videos.flatMap((video) => LANGS.filter((l) => video.versions[l]?.status === status).map((lang) => ({ video, lang }))),
   /** The single rule for "a family may see this video": a physio approved this language version (spec §8). */

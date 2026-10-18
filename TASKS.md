@@ -354,7 +354,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `B7` Today screen on demo data: today's exercises (with video and tool) and today's games
   - Done when: it is the first screen after sign-in
   - Needs: —
-- [ ] **Azim** — `B8` One-tap Done, then optional easy / OK / hard
+- [x] **Azim** — `B8` One-tap Done, then optional easy / OK / hard
   - Done when: two "hard" in a row lower that exercise's level, two "easy" raise it
   - Needs: B7
 - [ ] **Azim** — `B9` Pause today; week view with done, today and coming days
@@ -393,6 +393,9 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `B12` Video player on the Today screen; keep the next 7 days of videos for offline use on Wi-Fi
   - Done when: today's videos play with the internet off
   - Needs: C5, A5.7
+- [ ] **Azim** — `B49` Demo dates in Tashkent time: the demo plan's start date (lib/api/intake.ts) and the plan view's "today" (PlanTab) use the UTC date, so from midnight to 5 am they are one day behind the Today screen
+  - Done when: a demo plan made at 1 am Tashkent time starts that day, and the plan view marks the same day as Today
+  - Needs: —
 
 ### M3 — Child play
 

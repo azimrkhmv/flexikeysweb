@@ -123,6 +123,7 @@ export function seed(): DB {
     intakeRounds: [],
     videos: exerciseLibrary("u_physio", iso(now - 10 * DAY)),
     roadmaps: [],
+    tasksDone: [],
   };
 
   // ~2 weeks of play history so dashboards have something real to show.

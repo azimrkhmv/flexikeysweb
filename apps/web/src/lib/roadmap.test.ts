@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { exerciseLibrary } from "@/content/exercises";
 import type { Answers } from "@/content/intake";
-import { buildRoadmap, ROADMAP_DAYS, type PlanInput } from "./roadmap";
+import { buildRoadmap, levelAfter, ROADMAP_DAYS, type PlanInput } from "./roadmap";
 import type { ExerciseVideo, Restriction, TherapistInput } from "./types";
 
 // Spec §16 build #4: "nothing that conflicts with P13–P15 or restrictions can ever be selected (covered by
@@ -94,5 +94,23 @@ describe("roadmap engine", () => {
   it("therapist goals override the parent's (T7 over P33)", () => {
     const r = buildRoadmap(input(base, { therapist: { restrictions: [], goals: ["sit"], assign: [], exclude: [], legBalanceApproved: false } }), LIB);
     expect(r.reasons.filter((x) => x.slot === "exercise").every((x) => x.goal === "sit")).toBe(true);
+  });
+});
+
+describe("levelAfter (spec §8 feedback)", () => {
+  it("two hard in a row lower the level, two easy raise it", () => {
+    expect(levelAfter(2, ["hard", "hard"])).toBe(1);
+    expect(levelAfter(2, ["easy", "easy"])).toBe(3);
+  });
+  it("needs the two in a row: OK in between breaks it, a Done without a rating does not", () => {
+    expect(levelAfter(2, ["hard", "ok", "hard"])).toBe(2);
+    expect(levelAfter(2, ["hard", undefined, "hard"])).toBe(1);
+    expect(levelAfter(2, ["hard", "easy", "hard"])).toBe(2);
+  });
+  it("stays within 1–3 and starts a new row after each change", () => {
+    expect(levelAfter(1, ["hard", "hard"])).toBe(1);
+    expect(levelAfter(3, ["easy", "easy", "easy"])).toBe(3);
+    expect(levelAfter(1, ["easy", "easy", "easy"])).toBe(2);
+    expect(levelAfter(1, ["easy", "easy", "easy", "easy"])).toBe(3);
   });
 });

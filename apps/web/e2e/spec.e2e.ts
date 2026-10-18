@@ -154,6 +154,36 @@ test("Today is the first screen after sign-in: exercises with video and tool, an
   expect(top!.y).toBeLessThan(kids!.y);
 });
 
+test("one tap marks an exercise done; two \"hard\" in a row make it easier next time", async ({ page }) => {
+  await setup(page);
+  await loginAs(page, "Parent");
+  // today's first exercise, and the next day it comes back (the plan rotates exercises)
+  const { title, next } = await page.evaluate(() => {
+    const db = JSON.parse(localStorage.getItem("fk_db_v1")!);
+    const plan = db.roadmaps.find((r: { childId: string }) => r.childId === "ch_ali");
+    const today = plan.days.findIndex((d: { date: string }) => d.date === "2026-09-29");
+    const videoId = plan.days[today].exercises[0].videoId;
+    const later = plan.days.slice(today + 1).find((d: { exercises: { videoId: string }[] }) => d.exercises.some((e) => e.videoId === videoId));
+    return { title: db.videos.find((v: { id: string }) => v.id === videoId).title.en as string, next: later.date as string };
+  });
+  const first = page.getByRole("region", { name: "Today" }).getByRole("listitem").filter({ hasText: title });
+  await first.getByRole("button", { name: "Done" }).click();
+  await expect(first.getByText("Done", { exact: true })).toBeVisible();
+  await first.getByRole("button", { name: "Hard" }).click();
+  await expect(first.getByRole("button", { name: "Hard" })).toHaveAttribute("aria-pressed", "true");
+  await expect(first.getByText("Next time: an easier version.")).toHaveCount(0); // one "hard" is not enough
+
+  // the same exercise on a later day: the second "hard" in a row lowers its level
+  await page.clock.setFixedTime(new Date(`${next}T10:00:00+05:00`));
+  await page.reload();
+  const again = page.getByRole("region", { name: "Today" }).getByRole("listitem").filter({ hasText: title });
+  await again.getByRole("button", { name: "Done" }).click();
+  await again.getByRole("button", { name: "Hard" }).click();
+  await expect(again.getByText("Next time: an easier version.")).toBeVisible();
+  await page.reload();
+  await expect(again.getByRole("button", { name: "Hard" })).toHaveAttribute("aria-pressed", "true"); // saved
+});
+
 test("Uzbek Cyrillic is a full app language", async ({ page }) => {
   await setup(page);
   await page.goto("/signup");

@@ -4,7 +4,7 @@
 import type { Answers } from "@/content/intake";
 import { KIT_TOOLS } from "@/content/exercises";
 import type { Lang } from "./i18n";
-import type { ActivityKind, AgeBand, BodyArea, ExerciseVideo, FnLevel, GoalKey, Restriction, Roadmap, RoadmapDay, RoadmapReason, TherapistInput } from "./types";
+import type { ActivityKind, AgeBand, BodyArea, ExerciseVideo, Feeling, FnLevel, GoalKey, Restriction, Roadmap, RoadmapDay, RoadmapReason, TherapistInput } from "./types";
 
 export const ROADMAP_DAYS = 28;
 export const GAME_LIMIT_MIN = 20;
@@ -159,4 +159,24 @@ export function buildRoadmap(input: PlanInput, library: ExerciseVideo[]): Omit<R
     ...games.map((kind) => ({ slot: "game" as const, goal: f.goals.find((g) => GOAL_GAMES[g].includes(kind))!, ref: kind, level: 1 })),
   ];
   return { childId: input.childId, round: input.round, startDate: input.startDate, days, reasons, exercisesAllowed: f.exercisesAllowed };
+}
+
+/**
+ * An exercise's level after the parent's ratings, oldest first (spec §8): two "hard" in a row lower it, two "easy"
+ * raise it, within 1–3. "OK" breaks the row; a Done without a rating is skipped. A change starts a new row.
+ */
+export function levelAfter(start: number, feelings: (Feeling | undefined)[]): number {
+  let level = start;
+  let last: Feeling | undefined;
+  let row = 0;
+  for (const f of feelings) {
+    if (!f) continue;
+    row = f === last ? row + 1 : 1;
+    last = f;
+    if (row === 2 && f !== "ok") {
+      level = Math.max(1, Math.min(3, level + (f === "easy" ? 1 : -1)));
+      last = undefined;
+    }
+  }
+  return level;
 }

@@ -26,7 +26,7 @@ const empty = (): DB => ({
   v: 1, auth: { userId: null, child: null }, users: [], familyMembers: [], children: [], consents: [], profiles: [], changes: [], sessions: [],
   events: [], mastery: [], progress: [], wallets: [], classes: [], enrollments: [], assignments: [], careLinks: [], notes: [],
   goals: [], aacEvents: [], aacCards: [], notifications: [], subscriptions: [], orders: [], audit: [], flags: [], aiMessages: [],
-  otp: [], intakeAnswers: [], intakeRounds: [], videos: [], roadmaps: [],
+  otp: [], intakeAnswers: [], intakeRounds: [], videos: [], roadmaps: [], tasksDone: [],
 });
 
 /** A family child's data on the new server (apps/api); each round's answers are loaded after the round list. */
