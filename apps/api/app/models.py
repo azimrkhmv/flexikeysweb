@@ -3,6 +3,7 @@
 from app.modules.accounts.models import Family, FamilyMember, User
 from app.modules.audit.models import AuditEntry
 from app.modules.auth.models import RefreshToken
+from app.modules.billing.models import FamilyPlan
 from app.modules.children.consents import ChildConsent
 from app.modules.children.models import Child
 from app.modules.intake.models import IntakeAnswer, IntakeRound
@@ -29,6 +30,7 @@ __all__ = [
     "Exercise",
     "Family",
     "FamilyMember",
+    "FamilyPlan",
     "FixedLevel",
     "GamePlayed",
     "GameSession",

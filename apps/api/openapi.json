@@ -387,6 +387,49 @@
     }
    }
   },
+  "/api/v1/family/plan": {
+   "get": {
+    "tags": [
+     "plan"
+    ],
+    "summary": "Get Plan",
+    "operationId": "get_plan_api_v1_family_plan_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/PlanStatus"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/family/trial": {
+   "post": {
+    "tags": [
+     "plan"
+    ],
+    "summary": "Start Trial",
+    "description": "The owner chooses to try Pro: 7 days, once per family (409 trial_used; 403 owner_only for a helper).",
+    "operationId": "start_trial_api_v1_family_trial_post",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/PlanStatus"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/v1/admin/users": {
    "post": {
     "tags": [
@@ -3944,6 +3987,59 @@
      "paused"
     ],
     "title": "PlanOut"
+   },
+   "PlanStatus": {
+    "properties": {
+     "plan": {
+      "type": "string",
+      "enum": [
+       "free",
+       "pro"
+      ],
+      "title": "Plan"
+     },
+     "trial": {
+      "type": "boolean",
+      "title": "Trial"
+     },
+     "trialUsed": {
+      "type": "boolean",
+      "title": "Trialused"
+     },
+     "trialEndsAt": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Trialendsat"
+     },
+     "paidUntil": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Paiduntil"
+     }
+    },
+    "type": "object",
+    "required": [
+     "plan",
+     "trial",
+     "trialUsed",
+     "trialEndsAt",
+     "paidUntil"
+    ],
+    "title": "PlanStatus"
    },
    "ReasonOut": {
     "properties": {

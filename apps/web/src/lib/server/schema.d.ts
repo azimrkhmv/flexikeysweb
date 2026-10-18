@@ -205,6 +205,43 @@ export interface paths {
         patch: operations["signup_api_v1_me_signup_patch"];
         trace?: never;
     };
+    "/api/v1/family/plan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Plan */
+        get: operations["get_plan_api_v1_family_plan_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/family/trial": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start Trial
+         * @description The owner chooses to try Pro: 7 days, once per family (409 trial_used; 403 owner_only for a helper).
+         */
+        post: operations["start_trial_api_v1_family_trial_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/users": {
         parameters: {
             query?: never;
@@ -1406,6 +1443,22 @@ export interface components {
             /** Paused */
             paused: string[];
         };
+        /** PlanStatus */
+        PlanStatus: {
+            /**
+             * Plan
+             * @enum {string}
+             */
+            plan: "free" | "pro";
+            /** Trial */
+            trial: boolean;
+            /** Trialused */
+            trialUsed: boolean;
+            /** Trialendsat */
+            trialEndsAt: string | null;
+            /** Paiduntil */
+            paidUntil: string | null;
+        };
         /** ReasonOut */
         ReasonOut: {
             slot: components["schemas"]["ItemKind"];
@@ -2088,6 +2141,46 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_plan_api_v1_family_plan_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanStatus"];
+                };
+            };
+        };
+    };
+    start_trial_api_v1_family_trial_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanStatus"];
                 };
             };
         };

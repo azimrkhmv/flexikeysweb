@@ -470,7 +470,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 
 **Server — in this order**
 
-- [ ] **Azim** — `A7.1` Free and Pro per family; 7-day trial of Pro
+- [x] **Azim** — `A7.1` Free and Pro per family; 7-day trial of Pro
   - Done when: the trial ends on time; a helper gets the family's Pro access
   - Needs: A1.1
 - [ ] **Azim** — `A7.2` Free limits enforced by the server
