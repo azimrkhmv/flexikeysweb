@@ -50,7 +50,10 @@ describe("live ↔ web mappings", () => {
   });
 
   it("server errors → explained codes (consent gate, AI consent, locked level)", () => {
-    expect(errorCode(403, "consent_required", "/sessions")).toBe("consent_missing");
+    expect(errorCode(403, "child_consent_required", "/children/c/intake/1")).toBe("consent_missing");
+    expect(errorCode(403, "consent_required", "/children")).toBe("consent_required"); // the basic consent at sign-up
+    expect(errorCode(429, "code_too_soon", "/auth/phone/start")).toBe("code_too_soon"); // not the generic "rate_limited"
+    expect(errorCode(403, "csrf_failed", "/me")).toBe("unauthorized");
     expect(errorCode(403, "ai_consent_required", "/aac/compose-sentence")).toBe("ai_consent_required");
     expect(errorCode(422, "Core consent is required", "/children")).toBe("consent_required");
     expect(errorCode(403, "level_locked", "/activities/complete")).toBe("level_locked");
@@ -65,8 +68,12 @@ describe("live ↔ web mappings", () => {
     expect(taskFrom({ ...base, kind: "therapist", class_id: null, child_id: "c" })).toMatchObject({ kind: "therapist", childId: "c" });
     expect(taskFrom({ ...base, level_slug: null })).toBeNull(); // old curriculum-UUID assignments aren't shown
     expect(careLinkFrom({ id: "l", child_id: "c", email: "t@x.uz", kind: "therapist", status: "active", code: "ABCD2345", professional_user_id: "p", created_at: "", revoked_at: null })).toMatchObject({ professionalId: "p", status: "active" });
-    const u = { id: "u", email: "t@x.uz", display_name: "T", role: "teacher", locale: "uz", email_verified: true, created_at: "" };
-    expect(userFrom({ ...u, status: "pending" }).status).toBe("pending_verification");
-    expect(userFrom(u).status).toBe("active");
+    // The new server's person: phone sign-in, signed up once the basic consent is given.
+    const u = { id: "u", phone: "+998901234567", role: "physio", status: "active", lang: "ru", region: null, district: null } as const;
+    expect(userFrom(u)).toMatchObject({ role: "physio", uiLang: "ru", phone: "+998901234567", consentVersion: undefined, district: undefined });
+    expect(userFrom({ ...u, status: "disabled" }).status).toBe("disabled");
+    expect(userFrom({ ...u, role: "clinic" }).role).toBe("parent"); // no clinic screens until M6
+    const me = { ...u, role: "parent", name: "Dilnoza", consentVersion: "2026-09-v1", region: "tashkent_city", district: "Chilonzor" } as const;
+    expect(userFrom(me)).toMatchObject({ name: "Dilnoza", consentVersion: "2026-09-v1", district: { region: "tashkent_city", district: "Chilonzor" } });
   });
 });

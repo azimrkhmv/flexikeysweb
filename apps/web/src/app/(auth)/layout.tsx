@@ -5,7 +5,6 @@ import type { ReactNode } from "react";
 import { LangSwitch, Logo } from "@/components/brand";
 import { Mascot } from "@/components/Mascot";
 import { useT } from "@/lib/i18n";
-import { LiveProvider } from "@/lib/live/client";
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
   const t = useT();
@@ -23,7 +22,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
           <p className="mb-10 rounded-2xl rounded-bl-sm bg-surface px-3 py-2 text-sm font-bold text-ink shadow-soft">{t("auth.bubble")}</p>
         </div>
         <div className="rounded-fk-lg border border-line bg-surface p-6 shadow-lift sm:p-8">
-          <LiveProvider>{children}</LiveProvider>
+          {children}
         </div>
       </main>
     </div>

@@ -6,7 +6,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Bell, LogOut, type LucideIcon } from "lucide-react";
 import { api, LIVE, sel, useDb } from "@/lib/api";
-import { LiveProvider } from "@/lib/live/client";
 import { useT, useUiLang } from "@/lib/i18n";
 import { useMounted } from "@/lib/store";
 import { useDismiss } from "@/lib/useDismiss";
@@ -51,17 +50,15 @@ export function RequireRole({ role, children }: { role: Role | Role[]; children:
 
 export function AppShell({ role, nav, children }: { role: Role | Role[]; nav: NavItem[]; children: (me: User) => ReactNode }) {
   return (
-    <LiveProvider>
-      <RequireRole role={role}>
-        {(me) => (
-          <Shell me={me} nav={nav}>
-            {/* Live mode connects the parent area first; other dashboards come in later phases. */}
-            {children(me)}
-            {LIVE && role === "admin" && <ReauthDialog />}
-          </Shell>
-        )}
-      </RequireRole>
-    </LiveProvider>
+    <RequireRole role={role}>
+      {(me) => (
+        <Shell me={me} nav={nav}>
+          {/* Live mode connects the parent area first; other dashboards come in later phases. */}
+          {children(me)}
+          {LIVE && role === "admin" && <ReauthDialog />}
+        </Shell>
+      )}
+    </RequireRole>
   );
 }
 

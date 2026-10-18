@@ -5,7 +5,8 @@ import { ApiError } from "@/lib/api/schema";
 import { AAC_BY_ID, CUSTOM_PREFIX } from "@/content/aac";
 import { SHOP_BY_ID } from "@/content/shop";
 import { sessionStore } from "@/lib/session";
-import type { Lang } from "@/lib/translate";
+import type { PhoneStarted } from "@/lib/server/types";
+import type { Lang, UiLang } from "@/lib/translate";
 import type { AacCustomCard, Child, ChildSupport, ClassRoom, ConsentScope, InputProfile, InteractionEvent, Order, Role, User, UserStatus } from "@/lib/types";
 import { queryClient } from "./client";
 import { http, upload } from "./http";
@@ -45,7 +46,23 @@ async function signedIn(): Promise<User> {
 const sessionStart = new Map<string, number>();
 
 export const liveApi = {
-  // ------------------------------------------------------------ auth
+  // ------------------------------------------------------------ auth (phone + SMS code, spec §4)
+  /** POST /auth/phone/start — while SMS is simulated the server returns the code (shown on screen). */
+  async requestCode(rawPhone: string) {
+    const r = await http<PhoneStarted>("POST", "/auth/phone/start", { phone: rawPhone });
+    return { phone: r.phone, resendAfterMs: r.resendAfterMs, demoCode: r.demoCode ?? "" };
+  },
+  /** POST /auth/phone/verify — sets the session cookies; a new number becomes a parent with a new family. */
+  async verifyCode(rawPhone: string, code: string, uiLang: UiLang) {
+    const r = await http<{ isNew: boolean }>("POST", "/auth/phone/verify", { phone: rawPhone, code: code.trim(), lang: uiLang });
+    return { user: await signedIn(), isNew: r.isNew };
+  },
+  /** PATCH /me/signup — basic consent, city and district: required before anything else. */
+  async completeSignup(input: { name: string; region: string; district: string; consent: boolean }) {
+    await http("PATCH", "/me/signup", input);
+    await signedIn();
+    return true;
+  },
   async register(input: { email: string; password: string; name: string; role: Exclude<Role, "admin">; uiLang: Lang }) {
     if (input.password.length < 10) throw new ApiError("weak_password"); // PRD SEC-4 (server minimum is lower)
     await http("POST", "/auth/register", {
@@ -72,7 +89,7 @@ export const liveApi = {
     return true;
   },
   async logoutAll() {
-    await http("POST", "/me/logout-all", {}).catch(() => {});
+    await http("POST", "/auth/logout-all", {}).catch(() => {});
     return liveApi.logout();
   },
   async forgotPassword(email: string) {
@@ -104,7 +121,7 @@ export const liveApi = {
     return true;
   },
   async updateMe(patch: Partial<Pick<User, "name" | "uiLang">>) {
-    await http("PATCH", "/me", { display_name: patch.name, locale: patch.uiLang });
+    await http("PATCH", "/me", { name: patch.name, lang: patch.uiLang });
     await refetch();
     return true;
   },

@@ -3,6 +3,7 @@
 
 import { AAC_BY_ID, CUSTOM_PREFIX } from "@/content/aac";
 import { DEFAULT_PROFILE } from "@/lib/adaptive";
+import type { Me, UserOut } from "@/lib/server/types";
 import type { Lang } from "@/lib/translate";
 import type { ChildSupport,
   AacCustomCard, AacEvent, AccessMode, AuditLog, AdaptationChange, AdaptiveProfile, Assignment, CareLink, Child, ClassRoom, Consent, ConsentScope, Goal,
@@ -10,7 +11,8 @@ import type { ChildSupport,
 } from "@/lib/types";
 
 // ---------------------------------------------------------------- backend shapes (subset we read)
-export interface BUser { id: string; email: string | null; display_name: string | null; role: string; status?: string; locale: string; email_verified: boolean; created_at: string }
+/** GET /me on the new server; the admin list (UserOut) has no name or consent fields. */
+export type BUser = UserOut & Partial<Pick<Me, "name" | "consentVersion" | "needsSignup">>;
 export interface BChild {
   id: string; parent_id: string | null; display_name: string; learning_language: string; ui_language: string;
   birth_year: number | null; avatar_id: string | null; access_mode?: string; equipped?: Record<string, string>; created_at: string;
@@ -41,17 +43,22 @@ export interface BGoal { id: string; child_id: string; author_id: string; text: 
 const lang = (x: string | null | undefined, fallback: Lang = "uz"): Lang => (x === "uz" || x === "ru" || x === "en" ? x : fallback);
 
 // ---------------------------------------------------------------- accounts & children
+/** The new server's person (GET /me, apps/api). Phone sign-in: there is no email or password. */
 export function userFrom(u: BUser): User {
   return {
     id: u.id,
-    email: u.email ?? "",
-    name: u.display_name ?? u.email?.split("@")[0] ?? "",
-    role: (["parent", "teacher", "therapist", "admin"].includes(u.role) ? u.role : "parent") as Role,
-    status: ({ pending: "pending_verification", disabled: "disabled" }[u.status ?? ""] ?? "active") as UserStatus,
+    email: "",
+    name: u.name ?? "",
+    // ponytail: "clinic" has no screens until M6; it gets the parent area, where the server shows it nothing.
+    role: (["parent", "therapist", "physio", "admin"].includes(u.role) ? u.role : "parent") as Role,
+    status: u.status === "disabled" ? "disabled" : "active",
     password: "",
-    uiLang: lang(u.locale),
-    emailVerified: u.email_verified,
-    createdAt: u.created_at,
+    uiLang: u.lang,
+    emailVerified: true,
+    phone: u.phone,
+    district: u.region && u.district ? { region: u.region, district: u.district } : undefined,
+    consentVersion: u.consentVersion ?? undefined,
+    createdAt: "",
   };
 }
 

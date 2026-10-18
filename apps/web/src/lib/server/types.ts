@@ -5,6 +5,8 @@ import type { components, paths } from "./schema";
 
 type Schemas = components["schemas"];
 export type Me = Schemas["Me"];
+export type UserOut = Schemas["UserOut"];
+export type PhoneStarted = Schemas["PhoneStarted"];
 export type SignedIn = Schemas["SignedIn"];
 export type ChildIn = Schemas["ChildIn"];
 export type ChildOut = Schemas["ChildOut"];

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Nunito } from "next/font/google";
+import { LiveProvider } from "@/lib/live/client";
 import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
@@ -17,7 +18,10 @@ export const viewport: Viewport = { themeColor: "#f7f6f1", width: "device-width"
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="uz" className={`${nunito.variable} h-full antialiased`}>
-      <body className="min-h-full">{children}</body>
+      <body className="min-h-full">
+        {/* Live mode: one data cache for every page (a no-op in demo mode). */}
+        <LiveProvider>{children}</LiveProvider>
+      </body>
     </html>
   );
 }

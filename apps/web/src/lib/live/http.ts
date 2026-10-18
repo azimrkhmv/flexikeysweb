@@ -17,7 +17,16 @@ const BY_TITLE: Record<string, string> = {
     plan_required: "level_locked", // same gentle "not open yet" as the mastery gate (sel.lockReason)
     not_owned: "not_owned",
     already_owned: "already_owned",
-    "CSRF check failed": "unauthorized",
+    // The new server (apps/api): its codes are the web's own error codes.
+    csrf_failed: "unauthorized",
+    token_reused: "unauthorized",
+    invalid_phone: "invalid_phone",
+    code_too_soon: "code_too_soon",
+    too_many_codes: "too_many_codes",
+    invalid_code: "invalid_code",
+    code_expired: "code_expired",
+    too_many_tries: "too_many_tries",
+    invalid_district: "invalid_district",
     invalid_token: "invalid_token",
     token_used: "token_used",
     token_expired: "token_expired",
@@ -28,7 +37,8 @@ const BY_TITLE: Record<string, string> = {
     quota_exceeded: "quota_exceeded",
     file_too_large: "file_too_large",
     unsupported_file: "unsupported_file",
-    consent_required: "consent_missing", // the server stores nothing for a child without core consent
+    consent_required: "consent_required", // the basic consent at sign-up
+    child_consent_required: "consent_missing", // a child's health or video consent is missing
     ai_consent_required: "ai_consent_required",
 };
 
@@ -39,11 +49,12 @@ export const LIVE_ERROR_CODES = [
 
 /** Backend problem+json (status, title) → the web's localized error codes (messages/common.ts err.*). */
 export function errorCode(status: number, title: string, path: string): string {
+  if (BY_TITLE[title]) return BY_TITLE[title]; // a known code wins (e.g. 429 code_too_soon is not "rate_limited")
   if (status === 401) return path === "/auth/login" ? "invalid_credentials" : "unauthorized";
   if (status === 402) return "insufficient_coins";
   if (status === 404) return "not_found";
   if (status === 429) return "rate_limited";
-  return BY_TITLE[title] ?? (status === 403 ? "forbidden" : "generic");
+  return status === 403 ? "forbidden" : "generic";
 }
 
 async function send(method: string, path: string, body: unknown): Promise<Response> {

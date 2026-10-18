@@ -1,6 +1,5 @@
 "use client";
 
-import { LiveProvider } from "@/lib/live/client";
 import "@/messages/child";
 import Link from "next/link";
 import { LangSwitch, Logo } from "@/components/brand";
@@ -92,9 +91,5 @@ function PlayPage() {
 }
 
 export default function Page() {
-  return (
-    <LiveProvider>
-      <PlayPage />
-    </LiveProvider>
-  );
+  return <PlayPage />;
 }

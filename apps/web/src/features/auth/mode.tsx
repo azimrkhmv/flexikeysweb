@@ -8,19 +8,19 @@ import { useMounted } from "@/lib/store";
 
 /**
  * Pre-spec features (teacher/class, email sign-in) are hidden by the product spec of 2026-10-06. The `legacy`
- * flag (Admin → flags) brings them back; live mode keeps them until the backend has the spec's features.
+ * flag (Admin → flags) brings them back in demo mode. The new server (live mode) has none of them (Q7: deleted).
  */
 export function useLegacy() {
   const db = useDb();
-  return LIVE || sel.flag(db, "legacy");
+  return !LIVE && sel.flag(db, "legacy");
 }
 
-/** [email sign-in, legacy on]. Email sign-in: live mode, or /login?email=1 with the `legacy` flag. */
+/** [email sign-in, legacy on]. Email sign-in: /login?email=1 with the `legacy` flag (demo mode only). */
 export function useEmailMode(): [boolean, boolean] {
   const mounted = useMounted();
   const legacy = useLegacy();
   const asked = mounted && new URLSearchParams(window.location.search).has("email");
-  return [LIVE || (legacy && asked), legacy];
+  return [legacy && asked, legacy];
 }
 
 /** Renders a legacy area only while legacy features are on; otherwise goes home. */
