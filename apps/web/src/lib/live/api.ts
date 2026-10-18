@@ -6,9 +6,9 @@ import { AAC_BY_ID, CUSTOM_PREFIX } from "@/content/aac";
 import { SHOP_BY_ID } from "@/content/shop";
 import { sessionStore } from "@/lib/session";
 import { STEPS, type Answers } from "@/content/intake";
-import type { ChildOut, Consents, PhoneStarted, PlanOut, ReviewItem, RoundOut } from "@/lib/server/types";
+import type { ChildOut, Consents, DoneOut, PhoneStarted, PlanOut, ReviewItem, RoundOut } from "@/lib/server/types";
 import type { Lang, UiLang } from "@/lib/translate";
-import type { AacCustomCard, Child, ChildSupport, ClassRoom, ConsentScope, InputProfile, InteractionEvent, Order, Roadmap, Role, User, UserStatus, VideoStatus } from "@/lib/types";
+import type { AacCustomCard, Child, ChildSupport, ClassRoom, ConsentScope, Feeling, InputProfile, InteractionEvent, Order, Roadmap, Role, TaskDone, User, UserStatus, VideoStatus } from "@/lib/types";
 import { queryClient } from "./client";
 import { http, upload } from "./http";
 import {
@@ -183,6 +183,39 @@ export const liveApi = {
     await http("POST", `/review/videos/${file.id}`, { decision: status, note: note.trim() || null });
     await queryClient.invalidateQueries({ queryKey: ["review"] });
     return true;
+  },
+
+  // ------------------------------------------------------------ Today (spec §8, §10; A5.3–A5.5)
+  /** POST /children/{id}/done — one tap; twice = once. */
+  async markDone(childId: string, day: number, videoId: string): Promise<TaskDone> {
+    const d = await http<DoneOut>("POST", `/children/${childId}/done`, { day, exerciseId: videoId });
+    await queryClient.invalidateQueries({ queryKey: ["plan", childId] });
+    const roadmapId = queryClient.getQueryData<PlanOut>(["plan", childId])?.id ?? "";
+    return { id: d.id, childId, roadmapId, day: d.day, videoId: d.exerciseId, feeling: d.feeling ?? undefined, at: d.doneOn };
+  },
+  /** PATCH /children/{id}/done/{doneId} — the optional easy / OK / hard. */
+  async rateDone(childId: string, doneId: string, feeling: Feeling) {
+    await http("PATCH", `/children/${childId}/done/${doneId}`, { feeling });
+    await queryClient.invalidateQueries({ queryKey: ["plan", childId] });
+    return undefined;
+  },
+  /** POST /children/{id}/pause — the plan moves forward one day. */
+  async pauseToday(childId: string) {
+    await http("POST", `/children/${childId}/pause`);
+    await queryClient.invalidateQueries({ queryKey: ["plan", childId] });
+    return undefined;
+  },
+  /** DELETE /children/{id}/pause — undo today's pause. */
+  async resumeToday(childId: string) {
+    await http("DELETE", `/children/${childId}/pause`);
+    await queryClient.invalidateQueries({ queryKey: ["plan", childId] });
+    return undefined;
+  },
+  /** PUT /children/{id}/daily — today's question; can be changed today. */
+  async answerDaily(childId: string, questionId: string, value: 0 | 1 | 2) {
+    await http("PUT", `/children/${childId}/daily`, { questionId, value });
+    await queryClient.invalidateQueries({ queryKey: ["daily", childId] });
+    return undefined;
   },
 
   /** PUT /children/{id}/consents/{kind} — owner only. "core" is the basic consent every family gave at sign-up. */

@@ -6,9 +6,9 @@ import { ApiError, type ChildAuth, type DB } from "@/lib/api/schema";
 import { sessionStore } from "@/lib/session";
 import { useStore } from "@/lib/store";
 import { http } from "./http";
-import type { ChildOut, Consents, PlanOut, ReviewItem, RoundOut, RoundSummary } from "@/lib/server/types";
+import type { ChildOut, Consents, DailyOut, PlanOut, ReviewItem, RoundOut, RoundSummary } from "@/lib/server/types";
 import {
-  answersFrom, familyChildFrom, familyConsentsFrom, planFrom, planVideosFrom, reviewVideosFrom,
+  answersFrom, dailyFrom, doneFrom, familyChildFrom, familyConsentsFrom, pausedFrom, planFrom, planVideosFrom, reviewVideosFrom,
   aacCardFrom, auditFrom, careLinkFrom, orderFrom, subscriptionFrom, changeFrom, childFrom, notificationFrom, classFrom, goalFrom, levelsFrom, masteryFrom, noteFrom, profileFrom, rosterChildFrom,
   sessionsFrom, taskFrom, userFrom,
   type BAacCard, type BAdminSub, type BAudit, type BOrder, type BOverview, type BCareLink, type BNotification, type BChild, type BChildOverview, type BClass, type BGoal, type BLevel, type BNote,
@@ -30,10 +30,13 @@ const empty = (): DB => ({
 });
 
 /** A family child's data on the new server (apps/api); each round's answers are loaded after the round list. */
-const PER_CHILD = ["consents", "rounds", "plan"] as const;
+const PER_CHILD = ["consents", "rounds", "plan", "daily"] as const;
 const REVIEW_STATUSES = ["waiting_review", "changes_requested", "rejected", "approved"] as const;
 type PerChild = (typeof PER_CHILD)[number];
-const path = (kind: PerChild, id: string) => ({ consents: `/children/${id}/consents`, rounds: `/children/${id}/intake`, plan: `/children/${id}/plan` })[kind];
+const path = (kind: PerChild, id: string) =>
+  ({ consents: `/children/${id}/consents`, rounds: `/children/${id}/intake`, plan: `/children/${id}/plan`, daily: `/children/${id}/daily` })[kind];
+/** "No plan yet" and "no daily question list loaded" are answers, not errors to retry. */
+const MAY_BE_MISSING: PerChild[] = ["plan", "daily"];
 
 /** Child mode reads only the child's own endpoints (child token = the httpOnly fk_child cookie). */
 const OWN = ["me", "levels", "wallet", "profile", "tasks", "catalog", "aacCards"] as const;
@@ -95,8 +98,8 @@ export function useLiveDb(): DB {
     queries: ids.flatMap((id) =>
       PER_CHILD.map((kind) => ({
         queryKey: [kind, id],
-        // "No plan yet" (before the first round is finished) is an answer, not an error to retry.
-        queryFn: () => http<unknown>("GET", path(kind, id)).catch((e) => (kind === "plan" && e instanceof ApiError && e.code === "not_found" ? null : Promise.reject(e))),
+        queryFn: () =>
+          http<unknown>("GET", path(kind, id)).catch((e) => (MAY_BE_MISSING.includes(kind) && e instanceof ApiError && e.code === "not_found" ? null : Promise.reject(e))),
       })),
     ),
   });
@@ -223,10 +226,14 @@ export function useLiveDb(): DB {
         const rounds = (perChild(i, "rounds") as RoundSummary[] | undefined) ?? [];
         const plan = perChild(i, "plan") as PlanOut | null | undefined;
         if (consents) db.consents.push(...familyConsentsFrom(id, consents));
+        const daily = perChild(i, "daily") as DailyOut | null | undefined;
+        if (daily) db.dailyAnswers.push(...dailyFrom(id, daily));
         db.intakeRounds.push(...rounds.map((r) => ({ childId: id, round: r.number, startedAt: r.startedAt, completedAt: r.completedAt ?? undefined })));
         const finished = rounds.filter((r) => r.completedAt).at(-1);
         if (plan && finished) {
           db.roadmaps.push(planFrom(id, finished.number, plan));
+          db.tasksDone.push(...doneFrom(id, plan));
+          db.pausedDays.push(...pausedFrom(id, plan));
           for (const v of planVideosFrom(plan)) if (!db.videos.some((x) => x.id === v.id)) db.videos.push(v);
         }
       });

@@ -40,6 +40,10 @@ const BY_TITLE: Record<string, string> = {
     consent_required: "consent_required", // the basic consent at sign-up
     child_consent_required: "consent_missing", // a child's health or video consent is missing
     ai_consent_required: "ai_consent_required",
+    no_task_today: "no_task_today", // Today (A5.3–A5.5)
+    not_yet: "not_yet",
+    not_todays_question: "not_todays_question",
+    invalid_answer: "invalid_answer",
 };
 
 /** Every code errorCode() can return — each has an err.* message (checked by lib/i18n.test.ts). */

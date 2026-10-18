@@ -378,7 +378,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A5.7` Video links that the website and the future app can keep for 7 days offline
   - Done when: a saved video still plays offline after a week
   - Needs: A3.5
-- [ ] **Azim** — `B11` Connect the Today screen to the server
+- [x] **Azim** — `B11` Connect the Today screen to the server
   - Done when: Done, pause and the daily question work in the browser against the real server
   - Needs: A5.4, A5.5, B8, B9, B10
 - [ ] **Azim** — `C4` Make the first batch of videos: the exercises that first plans use most

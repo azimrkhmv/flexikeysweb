@@ -3,9 +3,9 @@
 
 import { AAC_BY_ID, CUSTOM_PREFIX } from "@/content/aac";
 import { DEFAULT_PROFILE } from "@/lib/adaptive";
-import type { ChildOut, ConsentKind, Consents, Me, PlanOut, ReviewItem, RoundOut, UserOut } from "@/lib/server/types";
+import type { ChildOut, ConsentKind, Consents, DailyOut, Me, PlanOut, ReviewItem, RoundOut, UserOut } from "@/lib/server/types";
 import type { Lang } from "@/lib/translate";
-import type { ChildSupport, ActivityKind, AgeBand, BodyArea, ExerciseVideo, FnLevel, GoalKey, IntakeAnswer, IntakeValue, L10n, Restriction, Roadmap,
+import type { ChildSupport, ActivityKind, AgeBand, BodyArea, DailyAnswer, ExerciseVideo, FnLevel, GoalKey, IntakeAnswer, IntakeValue, L10n, PausedDay, Restriction, Roadmap, TaskDone,
   AacCustomCard, AacEvent, AccessMode, AuditLog, AdaptationChange, AdaptiveProfile, Assignment, CareLink, Child, ClassRoom, Consent, ConsentScope, Goal,
   InteractionEvent, LearningSession, LevelProgress, Note, Notification, Order, ParamKey, Role, SkillMastery, Subscription, User, UserStatus,
 } from "@/lib/types";
@@ -87,16 +87,31 @@ export function answersFrom(childId: string, r: RoundOut): IntakeAnswer[] {
 
 /** The current plan (GET /children/{id}/plan) as the website's roadmap. */
 export function planFrom(childId: string, round: number, p: PlanOut): Roadmap {
+  // The level the plan was made with (the reasons keep it); the website moves it by the ratings itself
+  // (sel.exerciseLevel, the same rule as the server), so the server's level now would count them twice.
+  const made = new Map(p.reasons.filter((r) => r.slot === "exercise").map((r) => [r.ref, r.level]));
   return {
     id: p.id, childId, round, startDate: p.startDate, exercisesAllowed: p.exercisesAllowed, createdAt: "",
     days: p.days.map((d) => ({
       date: d.date,
-      exercises: d.exercises.map((e) => ({ videoId: e.exerciseId, level: Math.min(3, Math.max(1, e.level)) as 1 | 2 | 3 })),
+      exercises: d.exercises.map((e) => ({ videoId: e.exerciseId, level: Math.min(3, Math.max(1, made.get(e.exerciseId) ?? e.level)) as 1 | 2 | 3 })),
       games: d.games.map((g) => ({ kind: g.kind as ActivityKind, minutes: g.minutes })),
     })),
     reasons: p.reasons.map((r) => ({ slot: r.slot, goal: r.goal as GoalKey, ref: r.ref, level: r.level })),
   };
 }
+
+/** The plan's done marks (A5.3), oldest plan day first, the way the server orders the ratings. */
+export function doneFrom(childId: string, p: PlanOut): TaskDone[] {
+  return p.days.flatMap((d) =>
+    d.exercises.flatMap((e) => (e.done ? [{ id: e.done.id, childId, roadmapId: p.id, day: d.day, videoId: e.exerciseId, feeling: e.done.feeling ?? undefined, at: d.date }] : [])),
+  );
+}
+
+export const pausedFrom = (childId: string, p: PlanOut): PausedDay[] => p.paused.map((date) => ({ childId, roadmapId: p.id, date }));
+
+export const dailyFrom = (childId: string, d: DailyOut): DailyAnswer[] =>
+  d.answer === null || d.answer === undefined ? [] : [{ childId, questionId: d.questionId, date: d.date, value: d.answer as 0 | 1 | 2, at: "" }];
 
 /** The plan's exercises as library entries, so the plan screen can show each one's name and tool. Display only:
  *  the tags that keep a plan safe are applied by the server's engine, never from these entries. */
