@@ -3,10 +3,11 @@
 import uuid
 from datetime import UTC, date, datetime, timedelta
 from typing import Annotated, Literal
+from zoneinfo import ZoneInfo
 
 from fastapi import APIRouter, Depends
 from pydantic import Field
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -18,6 +19,7 @@ from app.modules.intake.models import IntakeAnswer, IntakeRound
 from app.modules.play import skill, tries
 from app.modules.play.models import (
     AccessProfile,
+    GamePlayed,
     GameSession,
     Hint,
     InputMode,
@@ -29,6 +31,8 @@ from app.modules.play.models import (
     Try,
 )
 from app.schemas import ApiModel
+
+TASHKENT = ZoneInfo("Asia/Tashkent")
 
 router = APIRouter(prefix="/children", tags=["play"])
 
@@ -203,7 +207,25 @@ async def save_tries(
     added = set(
         await db.scalars(insert(Try).values(rows).on_conflict_do_nothing(index_elements=["id", "ts"]).returning(Try.id))
     )
-    clean = [t for t in keep if t.id in added and not t.access_event and t.outcome != Outcome.skipped]
+    new = [t for t in keep if t.id in added]
+    for game in {t.game for t in new}:  # first played, highest level tried: kept for good
+        mine = [t for t in new if t.game == game]
+        stmt = insert(GamePlayed).values(
+            child_id=child_id,
+            game=game,
+            first_played=min(t.ts for t in mine).astimezone(TASHKENT).date(),
+            top_level=max(t.level for t in mine),
+        )
+        await db.execute(
+            stmt.on_conflict_do_update(
+                index_elements=[GamePlayed.child_id, GamePlayed.game],
+                set_={
+                    "first_played": func.least(GamePlayed.first_played, stmt.excluded.first_played),
+                    "top_level": func.greatest(GamePlayed.top_level, stmt.excluded.top_level),
+                },
+            )
+        )
+    clean = [t for t in new if not t.access_event and t.outcome != Outcome.skipped]
     await _move_skills(db, child_id, clean)
     await db.commit()
     return TriesStored(stored=len(added))
@@ -283,3 +305,110 @@ async def place(
         rows[area].theta = skill.corrected(rows[area].theta, bucket)
     await db.commit()
     return [SkillOut(area=a, theta=r.theta, n_trials=r.n_trials) for a, r in sorted(rows.items())]
+
+
+# ---------------------------------------------------------------- game sessions and game choice
+
+
+async def seconds_today(db: AsyncSession, child_id: uuid.UUID) -> int:
+    today = datetime.now(TASHKENT).date()
+    total = await db.scalar(
+        select(func.coalesce(func.sum(GameSession.seconds_played), 0)).where(
+            GameSession.child_id == child_id, GameSession.day == today
+        )
+    )
+    return int(total or 0)
+
+
+class SessionOut(ApiModel):
+    id: uuid.UUID
+    day: date
+    seconds_played: int
+    seconds_left_today: int  # of the 20-minute daily limit
+
+
+class SessionChange(ApiModel):
+    seconds_played: int = Field(ge=0)  # this session's game time so far
+
+
+async def _session_out(db: AsyncSession, s: GameSession) -> SessionOut:
+    left = max(0, skill.GAME_LIMIT_S - await seconds_today(db, s.child_id))
+    return SessionOut(id=s.id, day=s.day, seconds_played=s.seconds_played, seconds_left_today=left)
+
+
+@router.post("/{child_id}/game-sessions", status_code=201)
+async def start_session(
+    child_id: uuid.UUID, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]
+) -> SessionOut:
+    """A sitting of play. 409 daily_limit once today's 20 minutes are played: the games sleep until tomorrow."""
+    await get_visible_child(db, user, child_id)
+    if await seconds_today(db, child_id) >= skill.GAME_LIMIT_S:
+        raise AppError(409, "daily_limit")
+    s = GameSession(child_id=child_id, day=datetime.now(TASHKENT).date(), seconds_played=0)
+    db.add(s)
+    await db.commit()
+    await db.refresh(s)
+    return await _session_out(db, s)
+
+
+@router.patch("/{child_id}/game-sessions/{session_id}")
+async def update_session(
+    child_id: uuid.UUID,
+    session_id: uuid.UUID,
+    body: SessionChange,
+    user: CurrentUser,
+    db: Annotated[AsyncSession, Depends(get_session)],
+) -> SessionOut:
+    """The session's game time so far. It never goes back, and never beyond the time since the session started (plus
+    a minute for clocks), so a device cannot fake more or less play."""
+    await get_visible_child(db, user, child_id)
+    s = await db.get(GameSession, session_id)
+    if s is None or s.child_id != child_id:
+        raise AppError(404, "not_found")
+    elapsed = int((datetime.now(UTC) - s.created_at).total_seconds()) + 60
+    s.seconds_played = max(s.seconds_played, min(body.seconds_played, elapsed))
+    await db.commit()
+    return await _session_out(db, s)
+
+
+class GameOut(ApiModel):
+    activity_id: str
+    kind: str
+    level: int
+
+
+class SlotOut(ApiModel):
+    slot: Literal["easy_win", "growth", "choice"]
+    area: SkillArea | None
+    games: list[GameOut]
+
+
+class GamesOut(ApiModel):
+    seconds_left_today: int
+    slots: list[SlotOut]  # empty once today's 20 minutes are played
+
+
+@router.get("/{child_id}/games")
+async def choose(child_id: uuid.UUID, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]) -> GamesOut:
+    """Today's games: an easy win, a growth game and the child's choice (spec §13). Open games are the levels up to
+    one past the highest tried; at most one new kind of game a week; a game already played is never taken away."""
+    await get_visible_child(db, user, child_id)
+    left = max(0, skill.GAME_LIMIT_S - await seconds_today(db, child_id))
+    if not left:
+        return GamesOut(seconds_left_today=0, slots=[])
+    played = {p.game: p for p in await db.scalars(select(GamePlayed).where(GamePlayed.child_id == child_id))}
+    reach = max((p.top_level for p in played.values()), default=0) + 1
+    unlocked = [g for g in skill.GAMES if g["level"] <= reach or g["kind"] in played]
+    today = datetime.now(TASHKENT).date().isoformat()
+    games = skill.weekly_new(unlocked, {k: p.first_played.isoformat() for k, p in played.items()}, today)
+    theta = {a.value: r.theta for a, r in (await skill_rows(db, child_id)).items()}
+    await db.commit()
+    slots = [
+        SlotOut(
+            slot=s["slot"],
+            area=s["area"],
+            games=[GameOut(activity_id=g["activity_id"], kind=g["kind"], level=g["level"]) for g in s["games"]],
+        )
+        for s in skill.choose_games(theta, games)
+    ]
+    return GamesOut(seconds_left_today=left, slots=slots)

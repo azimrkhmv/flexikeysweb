@@ -2,7 +2,8 @@ import { createHash } from "node:crypto";
 import { readFileSync, writeFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { buildRoadmap, type PlanInput } from "@/lib/roadmap";
-import { AREA_OF, AREA_QUESTIONS, AREAS, corrected, difficulty, elo, pCorrect, startingTheta, type Bucket } from "@/lib/skill";
+import { AREA_OF, AREA_QUESTIONS, AREAS, chooseGames, corrected, difficulty, elo, pCorrect, startingTheta, weeklyNew, type Area, type Bucket, type Game } from "@/lib/skill";
+import { LEVELS } from "./levels";
 import type { TherapistInput } from "@/lib/types";
 import { intake as intakeText } from "@/messages/intake";
 import { DAILY_QUESTIONS } from "./daily";
@@ -24,6 +25,8 @@ function check(path: string, value: unknown) {
 }
 
 const LIB = exerciseLibrary("seed", "2026-10-01T00:00:00Z");
+/** Every game: its activity id, kind and world level. */
+const GAMES: Game[] = LEVELS.flatMap((l) => l.activities.map((a) => ({ activityId: a.id, kind: a.kind, level: l.n })));
 
 /** The roadmap in the backend's field names; key order is part of the contract (the hash covers it). */
 const canon = (r: ReturnType<typeof buildRoadmap>) =>
@@ -117,8 +120,27 @@ describe("backend content", () => {
       area_questions: AREA_QUESTIONS,
       starting: answers.flatMap((parent) => therapist.flatMap((th) => AREAS.map((area) => ({ area, parent, therapist: th, theta: startingTheta(area, parent, th) })))),
       corrected: [-2, -1.5, -0.4, 0, 0.7, 1.5, 3].flatMap((theta) => buckets.map((bucket) => ({ theta, bucket, out: corrected(theta, bucket) }))),
+      choose: [
+        { theta: { access: 1, attention: -0.5, memory: 0.2, flexibility: -1, literacy: 0, numeracy: -3 }, upTo: 6 },
+        { theta: { access: -1, attention: 2, memory: 0, flexibility: 0, literacy: 1.2, numeracy: 0 }, upTo: 20 },
+      ].map(({ theta, upTo }) => {
+        const unlocked = GAMES.filter((g) => g.level <= upTo);
+        return { theta, unlocked: unlocked.map((g) => g.activityId), out: chooseGames(theta as Record<Area, number>, unlocked).map((s) => ({ slot: s.slot, area: s.area ?? null, games: s.games.map((g) => g.activityId) })) };
+      }),
+      weekly: [
+        { played: { find_same: "2026-09-01" }, today: "2026-10-01" },
+        { played: { find_same: "2026-09-01", missing: "2026-09-28" }, today: "2026-10-01" },
+        { played: { find_same: "2026-09-01", missing: "2026-09-28" }, today: "2026-10-06" },
+      ].map(({ played, today }) => ({
+        played, today,
+        out: weeklyNew(GAMES.filter((g) => g.level <= 4), new Map(Object.entries(played)) as Map<Game["kind"], string>, today).map((g) => g.activityId),
+      })),
       elo: [-1, 0, 0.8].flatMap((theta) => [0, 7, 40].flatMap((n) => [1, 6, 15].flatMap((level) => [true, false].map((correct) => ({ theta, n, level, correct, d: difficulty(level), p: pCorrect(theta, difficulty(level)), out: elo(theta, n, difficulty(level), correct) }))))),
     });
+  });
+
+  it("games", () => {
+    check("games.json", GAMES.map((g) => ({ activity_id: g.activityId, kind: g.kind, level: g.level })));
   });
 
   it("regions and districts", () => {

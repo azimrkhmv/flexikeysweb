@@ -1978,6 +1978,158 @@
     }
    }
   },
+  "/api/v1/children/{child_id}/game-sessions": {
+   "post": {
+    "tags": [
+     "play"
+    ],
+    "summary": "Start Session",
+    "description": "A sitting of play. 409 daily_limit once today's 20 minutes are played: the games sleep until tomorrow.",
+    "operationId": "start_session_api_v1_children__child_id__game_sessions_post",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/SessionOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/children/{child_id}/game-sessions/{session_id}": {
+   "patch": {
+    "tags": [
+     "play"
+    ],
+    "summary": "Update Session",
+    "description": "The session's game time so far. It never goes back, and never beyond the time since the session started (plus\na minute for clocks), so a device cannot fake more or less play.",
+    "operationId": "update_session_api_v1_children__child_id__game_sessions__session_id__patch",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     },
+     {
+      "name": "session_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Session Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/SessionChange"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/SessionOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/children/{child_id}/games": {
+   "get": {
+    "tags": [
+     "play"
+    ],
+    "summary": "Choose",
+    "description": "Today's games: an easy win, a growth game and the child's choice (spec §13). Open games are the levels up to\none past the highest tried; at most one new kind of game a week; a game already played is never taken away.",
+    "operationId": "choose_api_v1_children__child_id__games_get",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/GamesOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/v1/admin/videos/upload-link": {
    "post": {
     "tags": [
@@ -2838,6 +2990,50 @@
      "minutes"
     ],
     "title": "GameItem"
+   },
+   "GameOut": {
+    "properties": {
+     "activityId": {
+      "type": "string",
+      "title": "Activityid"
+     },
+     "kind": {
+      "type": "string",
+      "title": "Kind"
+     },
+     "level": {
+      "type": "integer",
+      "title": "Level"
+     }
+    },
+    "type": "object",
+    "required": [
+     "activityId",
+     "kind",
+     "level"
+    ],
+    "title": "GameOut"
+   },
+   "GamesOut": {
+    "properties": {
+     "secondsLeftToday": {
+      "type": "integer",
+      "title": "Secondslefttoday"
+     },
+     "slots": {
+      "items": {
+       "$ref": "#/components/schemas/SlotOut"
+      },
+      "type": "array",
+      "title": "Slots"
+     }
+    },
+    "type": "object",
+    "required": [
+     "secondsLeftToday",
+     "slots"
+    ],
+    "title": "GamesOut"
    },
    "HTTPValidationError": {
     "properties": {
@@ -3700,6 +3896,50 @@
     ],
     "title": "RunStatus"
    },
+   "SessionChange": {
+    "properties": {
+     "secondsPlayed": {
+      "type": "integer",
+      "minimum": 0.0,
+      "title": "Secondsplayed"
+     }
+    },
+    "type": "object",
+    "required": [
+     "secondsPlayed"
+    ],
+    "title": "SessionChange"
+   },
+   "SessionOut": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "day": {
+      "type": "string",
+      "format": "date",
+      "title": "Day"
+     },
+     "secondsPlayed": {
+      "type": "integer",
+      "title": "Secondsplayed"
+     },
+     "secondsLeftToday": {
+      "type": "integer",
+      "title": "Secondslefttoday"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "day",
+     "secondsPlayed",
+     "secondsLeftToday"
+    ],
+    "title": "SessionOut"
+   },
    "Sex": {
     "type": "string",
     "enum": [
@@ -3809,6 +4049,43 @@
      "nTrials"
     ],
     "title": "SkillOut"
+   },
+   "SlotOut": {
+    "properties": {
+     "slot": {
+      "type": "string",
+      "enum": [
+       "easy_win",
+       "growth",
+       "choice"
+      ],
+      "title": "Slot"
+     },
+     "area": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/SkillArea"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "games": {
+      "items": {
+       "$ref": "#/components/schemas/GameOut"
+      },
+      "type": "array",
+      "title": "Games"
+     }
+    },
+    "type": "object",
+    "required": [
+     "slot",
+     "area",
+     "games"
+    ],
+    "title": "SlotOut"
    },
    "TodayOut": {
     "properties": {

@@ -161,3 +161,16 @@ class VoiceCard(IdTimeMixin, Base):
     photo_key: Mapped[str | None] = mapped_column(String(256))
     audio_key: Mapped[str | None] = mapped_column(String(256))
     made_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
+
+
+class GamePlayed(TimeMixin, Base):
+    """When the child first played each kind of game, and the highest level tried. Kept for good (tries go after 90
+    days), so a game played once is never "new" again and an open game is never taken away (spec §13)."""
+
+    __tablename__ = "games_played"
+    __table_args__ = (PrimaryKeyConstraint("child_id", "game"),)
+
+    child_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("children.id", ondelete="CASCADE"))
+    game: Mapped[str] = mapped_column(String(32))
+    first_played: Mapped[date] = mapped_column(Date)
+    top_level: Mapped[int] = mapped_column(SmallInteger)  # the highest world level tried: the next one is open too

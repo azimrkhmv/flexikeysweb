@@ -588,6 +588,276 @@
    "out": 1.5
   }
  ],
+ "choose": [
+  {
+   "theta": {
+    "access": 1,
+    "attention": -0.5,
+    "memory": 0.2,
+    "flexibility": -1,
+    "literacy": 0,
+    "numeracy": -3
+   },
+   "unlocked": [
+    "letters-type",
+    "letters-path",
+    "letters-light",
+    "letters-trace",
+    "numbers-count",
+    "numbers-listen",
+    "numbers-seq",
+    "numbers-trace",
+    "shapes-same",
+    "shapes-listen",
+    "shapes-path",
+    "shapes-dots",
+    "colors-seq",
+    "colors-listen",
+    "colors-same",
+    "colors-paint",
+    "family-listen",
+    "family-missing",
+    "family-type",
+    "animals-listen",
+    "animals-same",
+    "animals-puzzle",
+    "animals-type",
+    "animals-color"
+   ],
+   "out": [
+    {
+     "slot": "easy_win",
+     "area": "access",
+     "games": [
+      "colors-paint"
+     ]
+    },
+    {
+     "slot": "growth",
+     "area": "numeracy",
+     "games": [
+      "numbers-count"
+     ]
+    },
+    {
+     "slot": "choice",
+     "area": null,
+     "games": [
+      "letters-type",
+      "letters-path",
+      "letters-light",
+      "letters-trace",
+      "numbers-count",
+      "numbers-listen",
+      "numbers-seq",
+      "numbers-trace",
+      "shapes-same",
+      "shapes-listen",
+      "shapes-path",
+      "shapes-dots",
+      "colors-seq",
+      "colors-listen",
+      "colors-same",
+      "colors-paint",
+      "family-listen",
+      "family-missing",
+      "family-type",
+      "animals-listen",
+      "animals-same",
+      "animals-puzzle",
+      "animals-type",
+      "animals-color"
+     ]
+    }
+   ]
+  },
+  {
+   "theta": {
+    "access": -1,
+    "attention": 2,
+    "memory": 0,
+    "flexibility": 0,
+    "literacy": 1.2,
+    "numeracy": 0
+   },
+   "unlocked": [
+    "letters-type",
+    "letters-path",
+    "letters-light",
+    "letters-trace",
+    "numbers-count",
+    "numbers-listen",
+    "numbers-seq",
+    "numbers-trace",
+    "shapes-same",
+    "shapes-listen",
+    "shapes-path",
+    "shapes-dots",
+    "colors-seq",
+    "colors-listen",
+    "colors-same",
+    "colors-paint",
+    "family-listen",
+    "family-missing",
+    "family-type",
+    "animals-listen",
+    "animals-same",
+    "animals-puzzle",
+    "animals-type",
+    "animals-color",
+    "fruits-same",
+    "fruits-sort",
+    "fruits-type",
+    "fruits-color",
+    "veg-listen",
+    "veg-sort",
+    "veg-missing",
+    "toys-missing",
+    "toys-same",
+    "toys-puzzle",
+    "toys-maze",
+    "transport-listen",
+    "transport-sort",
+    "transport-type",
+    "transport-color",
+    "transport-maze",
+    "body-listen",
+    "body-scene",
+    "body-type",
+    "clothes-listen",
+    "clothes-scene",
+    "clothes-same",
+    "nature-scene",
+    "nature-light",
+    "nature-path",
+    "nature-listen",
+    "nature-color",
+    "words-type",
+    "words-listen",
+    "words-zigzag",
+    "sentences-build",
+    "sentences-seq",
+    "stories-cloud",
+    "stories-morning"
+   ],
+   "out": [
+    {
+     "slot": "easy_win",
+     "area": "attention",
+     "games": [
+      "fruits-same"
+     ]
+    },
+    {
+     "slot": "growth",
+     "area": "access",
+     "games": [
+      "letters-path"
+     ]
+    },
+    {
+     "slot": "choice",
+     "area": null,
+     "games": [
+      "letters-type",
+      "letters-path",
+      "letters-light",
+      "letters-trace",
+      "numbers-count",
+      "numbers-listen",
+      "numbers-seq",
+      "numbers-trace",
+      "shapes-same",
+      "shapes-listen",
+      "shapes-path",
+      "shapes-dots",
+      "colors-seq",
+      "colors-listen",
+      "colors-same",
+      "colors-paint",
+      "family-listen",
+      "family-missing",
+      "family-type",
+      "animals-listen",
+      "animals-same",
+      "animals-puzzle",
+      "animals-type",
+      "animals-color",
+      "fruits-same",
+      "fruits-sort",
+      "fruits-type",
+      "fruits-color",
+      "veg-listen",
+      "veg-sort",
+      "veg-missing",
+      "toys-missing",
+      "toys-same",
+      "toys-puzzle",
+      "toys-maze",
+      "transport-listen",
+      "transport-sort",
+      "transport-type",
+      "transport-color",
+      "transport-maze",
+      "body-listen",
+      "body-scene",
+      "body-type",
+      "clothes-listen",
+      "clothes-scene",
+      "clothes-same",
+      "nature-scene",
+      "nature-light",
+      "nature-path",
+      "nature-listen",
+      "nature-color",
+      "words-type",
+      "words-listen",
+      "words-zigzag",
+      "sentences-build",
+      "sentences-seq",
+      "stories-cloud",
+      "stories-morning"
+     ]
+    }
+   ]
+  }
+ ],
+ "weekly": [
+  {
+   "played": {
+    "find_same": "2026-09-01"
+   },
+   "today": "2026-10-01",
+   "out": [
+    "letters-type",
+    "shapes-same",
+    "colors-same"
+   ]
+  },
+  {
+   "played": {
+    "find_same": "2026-09-01",
+    "missing": "2026-09-28"
+   },
+   "today": "2026-10-01",
+   "out": [
+    "shapes-same",
+    "colors-same"
+   ]
+  },
+  {
+   "played": {
+    "find_same": "2026-09-01",
+    "missing": "2026-09-28"
+   },
+   "today": "2026-10-06",
+   "out": [
+    "letters-type",
+    "shapes-same",
+    "colors-same"
+   ]
+  }
+ ],
  "elo": [
   {
    "theta": -1,

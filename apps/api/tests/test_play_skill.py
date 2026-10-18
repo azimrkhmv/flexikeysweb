@@ -70,3 +70,15 @@ def test_first_guess_from_the_intake_then_the_play_check_wins_by_one_step(client
     after = {s["area"]: s["theta"] for s in placed.json()}
     assert after["access"] == pytest.approx(0)  # two steps apart: the play check moves it one
     assert title(client.get(f"{API}/children/{child}/skills", headers=parent(client))) == (404, "not_found")
+
+
+def test_game_choice_and_one_new_game_a_week() -> None:
+    by_id = {g["activity_id"]: g for g in skill.GAMES}
+    for c in CASES["choose"]:
+        got = skill.choose_games(c["theta"], [by_id[a] for a in c["unlocked"]])
+        assert [
+            {"slot": s["slot"], "area": s["area"], "games": [g["activity_id"] for g in s["games"]]} for s in got
+        ] == c["out"]
+    four = [g for g in skill.GAMES if g["level"] <= 4]
+    for c in CASES["weekly"]:
+        assert [g["activity_id"] for g in skill.weekly_new(four, c["played"], c["today"])] == c["out"]

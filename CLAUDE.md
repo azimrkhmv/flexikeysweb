@@ -28,7 +28,7 @@ and games, and does a short task each day.
   Errors: `raise AppError(409, "phone_taken")` (`app/errors.py`) — the website reads the code from `title`.
   Changed an address: `UPDATE_OPENAPI=1 uv run pytest tests/test_openapi.py` rewrites `apps/api/openapi.json`;
   `npm run typecheck` in `apps/web/` rebuilds the website's types from it (`src/lib/server/`).
-- `apps/web/src/content/backend/` — `intake.json`, `exercises.json`, `daily.json`, `roadmap_cases.json`, `skill_cases.json`: data the server must
+- `apps/web/src/content/backend/` — `intake.json`, `exercises.json`, `daily.json`, `games.json`, `roadmap_cases.json`, `skill_cases.json`: data the server must
   load and match. Kept in sync by `backend-content.test.ts`.
 
 ## How to work

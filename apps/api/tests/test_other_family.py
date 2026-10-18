@@ -20,6 +20,7 @@ BODIES = {
     "FeelingIn": {"feeling": "easy"},
     "DailyIn": {"questionId": "D1", "value": 2},
     "RunChange": {"stage": 2},
+    "SessionChange": {"secondsPlayed": 10},
     "Placement": {"buckets": {"memory": "yes"}},
     "TryIn": {
         "id": str(uuid.uuid4()),
@@ -42,7 +43,13 @@ BODIES = {
         "releaseOk": True,
     },
 }
-PARTS = {"kind": "health", "number": "1", "done_id": str(uuid.uuid4()), "run_id": str(uuid.uuid4())}
+PARTS = {
+    "kind": "health",
+    "number": "1",
+    "done_id": str(uuid.uuid4()),
+    "run_id": str(uuid.uuid4()),
+    "session_id": str(uuid.uuid4()),
+}
 
 
 def child_addresses() -> list[tuple[str, str, object]]:

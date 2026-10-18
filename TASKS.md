@@ -451,7 +451,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A6.6` Server: skill level — a starting guess from the questions, corrected by the play check by one step at most, updated after each clean try
   - Done when: unit tests match the spec's formula
   - Needs: A6.5
-- [ ] **Azim** — `A6.7` Server: game choice, and game sessions with the minutes played today
+- [x] **Azim** — `A6.7` Server: game choice, and game sessions with the minutes played today
   - Done when: the server enforces the 20-minute limit and "one new game a week"
   - Needs: A6.6
 - [ ] **Azim** — `B19` Connect the play check, tries, skill levels and game choice to the server

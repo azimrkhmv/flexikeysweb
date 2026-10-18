@@ -718,6 +718,68 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/children/{child_id}/game-sessions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start Session
+         * @description A sitting of play. 409 daily_limit once today's 20 minutes are played: the games sleep until tomorrow.
+         */
+        post: operations["start_session_api_v1_children__child_id__game_sessions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/children/{child_id}/game-sessions/{session_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update Session
+         * @description The session's game time so far. It never goes back, and never beyond the time since the session started (plus
+         *     a minute for clocks), so a device cannot fake more or less play.
+         */
+        patch: operations["update_session_api_v1_children__child_id__game_sessions__session_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/children/{child_id}/games": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Choose
+         * @description Today's games: an easy win, a growth game and the child's choice (spec §13). Open games are the levels up to
+         *     one past the highest tried; at most one new kind of game a week; a game already played is never taken away.
+         */
+        get: operations["choose_api_v1_children__child_id__games_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/videos/upload-link": {
         parameters: {
             query?: never;
@@ -1049,6 +1111,22 @@ export interface components {
             /** Minutes */
             minutes: number;
         };
+        /** GameOut */
+        GameOut: {
+            /** Activityid */
+            activityId: string;
+            /** Kind */
+            kind: string;
+            /** Level */
+            level: number;
+        };
+        /** GamesOut */
+        GamesOut: {
+            /** Secondslefttoday */
+            secondsLeftToday: number;
+            /** Slots */
+            slots: components["schemas"]["SlotOut"][];
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -1344,6 +1422,28 @@ export interface components {
          * @enum {string}
          */
         RunStatus: "open" | "finished" | "stopped";
+        /** SessionChange */
+        SessionChange: {
+            /** Secondsplayed */
+            secondsPlayed: number;
+        };
+        /** SessionOut */
+        SessionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Day
+             * Format: date
+             */
+            day: string;
+            /** Secondsplayed */
+            secondsPlayed: number;
+            /** Secondslefttoday */
+            secondsLeftToday: number;
+        };
         /**
          * Sex
          * @enum {string}
@@ -1385,6 +1485,17 @@ export interface components {
             theta: number;
             /** Ntrials */
             nTrials: number;
+        };
+        /** SlotOut */
+        SlotOut: {
+            /**
+             * Slot
+             * @enum {string}
+             */
+            slot: "easy_win" | "growth" | "choice";
+            area: components["schemas"]["SkillArea"] | null;
+            /** Games */
+            games: components["schemas"]["GameOut"][];
         };
         /** TodayOut */
         TodayOut: {
@@ -2903,6 +3014,104 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SkillOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    start_session_api_v1_children__child_id__game_sessions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_session_api_v1_children__child_id__game_sessions__session_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SessionChange"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    choose_api_v1_children__child_id__games_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GamesOut"];
                 };
             };
             /** @description Validation Error */

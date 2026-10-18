@@ -3,8 +3,11 @@
 θ and a game level's difficulty d share one scale: a child with θ = d gets that level right half the time.
 """
 
+import json
 import math
 from collections.abc import Mapping
+from datetime import date, timedelta
+from pathlib import Path
 from typing import Any
 
 AREAS = ("access", "attention", "memory", "flexibility", "literacy", "numeracy")
@@ -66,3 +69,46 @@ def starting_theta(area: str, parent: Mapping[str, Any], therapist: Mapping[str,
 def corrected(theta: float, bucket: str) -> float:
     """2. Corrected by the play check: the play check wins, but moves the guess by one step at most."""
     return theta + max(-STEP, min(STEP, BUCKET_THETA[bucket] - theta))
+
+
+# ---------------------------------------------------------------- choosing games
+
+GAMES: list[dict[str, Any]] = json.loads((Path(__file__).parents[2] / "content" / "games.json").read_text("utf-8"))
+GAME_LIMIT_S = 20 * 60  # the daily game limit (spec §13)
+
+
+def _level_for(theta: float, p: float, games: list[dict[str, Any]]) -> dict[str, Any]:
+    """The level where the child succeeds about `p` of the time: d = theta - ln(p / (1 - p)); a tie keeps the first."""
+    want = theta - math.log(p / (1 - p))
+    best = games[0]
+    for g in games[1:]:
+        if abs(difficulty(g["level"]) - want) < abs(difficulty(best["level"]) - want):
+            best = g
+    return best
+
+
+def weekly_new(unlocked: list[dict[str, Any]], first_played: Mapping[str, str], today: str) -> list[dict[str, Any]]:
+    """At most one new kind of game a week; a game already played is never taken away. Dates are YYYY-MM-DD."""
+    week_ago = (date.fromisoformat(today) - timedelta(days=7)).isoformat()
+    new_this_week = any(d > week_ago for d in first_played.values())
+    fresh = next((g["kind"] for g in unlocked if g["kind"] not in first_played), None)
+    return [g for g in unlocked if g["kind"] in first_played or (not new_this_week and g["kind"] == fresh)]
+
+
+def choose_games(theta: Mapping[str, float], unlocked: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Three slots: an easy win from the strongest area (~85%), growth from the weakest area that has a game (~75%),
+    and the child's own choice of any unlocked game."""
+    with_games = [a for a in AREAS if any(AREA_OF[g["kind"]] == a for g in unlocked)]
+    if not with_games:
+        return []
+    by_theta = sorted(with_games, key=lambda a: -theta[a])
+    strongest, weakest = by_theta[0], by_theta[-1]
+
+    def pick(area: str, p: float) -> dict[str, Any]:
+        return _level_for(theta[area], p, [g for g in unlocked if AREA_OF[g["kind"]] == area])
+
+    return [
+        {"slot": "easy_win", "area": strongest, "games": [pick(strongest, 0.85)]},
+        {"slot": "growth", "area": weakest, "games": [pick(weakest, 0.75)]},
+        {"slot": "choice", "area": None, "games": unlocked},
+    ]

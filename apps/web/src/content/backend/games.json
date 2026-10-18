@@ -1,0 +1,292 @@
+[
+ {
+  "activity_id": "letters-type",
+  "kind": "type",
+  "level": 1
+ },
+ {
+  "activity_id": "letters-path",
+  "kind": "path",
+  "level": 1
+ },
+ {
+  "activity_id": "letters-light",
+  "kind": "light_path",
+  "level": 1
+ },
+ {
+  "activity_id": "letters-trace",
+  "kind": "trace",
+  "level": 1
+ },
+ {
+  "activity_id": "numbers-count",
+  "kind": "count",
+  "level": 2
+ },
+ {
+  "activity_id": "numbers-listen",
+  "kind": "listen_pick",
+  "level": 2
+ },
+ {
+  "activity_id": "numbers-seq",
+  "kind": "sequence",
+  "level": 2
+ },
+ {
+  "activity_id": "numbers-trace",
+  "kind": "trace",
+  "level": 2
+ },
+ {
+  "activity_id": "shapes-same",
+  "kind": "find_same",
+  "level": 3
+ },
+ {
+  "activity_id": "shapes-listen",
+  "kind": "listen_pick",
+  "level": 3
+ },
+ {
+  "activity_id": "shapes-path",
+  "kind": "path",
+  "level": 3
+ },
+ {
+  "activity_id": "shapes-dots",
+  "kind": "dots",
+  "level": 3
+ },
+ {
+  "activity_id": "colors-seq",
+  "kind": "sequence",
+  "level": 4
+ },
+ {
+  "activity_id": "colors-listen",
+  "kind": "listen_pick",
+  "level": 4
+ },
+ {
+  "activity_id": "colors-same",
+  "kind": "find_same",
+  "level": 4
+ },
+ {
+  "activity_id": "colors-paint",
+  "kind": "paint",
+  "level": 4
+ },
+ {
+  "activity_id": "family-listen",
+  "kind": "listen_pick",
+  "level": 5
+ },
+ {
+  "activity_id": "family-missing",
+  "kind": "missing",
+  "level": 5
+ },
+ {
+  "activity_id": "family-type",
+  "kind": "type",
+  "level": 5
+ },
+ {
+  "activity_id": "animals-listen",
+  "kind": "listen_pick",
+  "level": 6
+ },
+ {
+  "activity_id": "animals-same",
+  "kind": "find_same",
+  "level": 6
+ },
+ {
+  "activity_id": "animals-puzzle",
+  "kind": "puzzle",
+  "level": 6
+ },
+ {
+  "activity_id": "animals-type",
+  "kind": "type",
+  "level": 6
+ },
+ {
+  "activity_id": "animals-color",
+  "kind": "color",
+  "level": 6
+ },
+ {
+  "activity_id": "fruits-same",
+  "kind": "find_same",
+  "level": 7
+ },
+ {
+  "activity_id": "fruits-sort",
+  "kind": "sort",
+  "level": 7
+ },
+ {
+  "activity_id": "fruits-type",
+  "kind": "type",
+  "level": 7
+ },
+ {
+  "activity_id": "fruits-color",
+  "kind": "color",
+  "level": 7
+ },
+ {
+  "activity_id": "veg-listen",
+  "kind": "listen_pick",
+  "level": 8
+ },
+ {
+  "activity_id": "veg-sort",
+  "kind": "sort",
+  "level": 8
+ },
+ {
+  "activity_id": "veg-missing",
+  "kind": "missing",
+  "level": 8
+ },
+ {
+  "activity_id": "toys-missing",
+  "kind": "missing",
+  "level": 9
+ },
+ {
+  "activity_id": "toys-same",
+  "kind": "find_same",
+  "level": 9
+ },
+ {
+  "activity_id": "toys-puzzle",
+  "kind": "puzzle",
+  "level": 9
+ },
+ {
+  "activity_id": "toys-maze",
+  "kind": "maze",
+  "level": 9
+ },
+ {
+  "activity_id": "transport-listen",
+  "kind": "listen_pick",
+  "level": 10
+ },
+ {
+  "activity_id": "transport-sort",
+  "kind": "sort",
+  "level": 10
+ },
+ {
+  "activity_id": "transport-type",
+  "kind": "type",
+  "level": 10
+ },
+ {
+  "activity_id": "transport-color",
+  "kind": "color",
+  "level": 10
+ },
+ {
+  "activity_id": "transport-maze",
+  "kind": "maze",
+  "level": 10
+ },
+ {
+  "activity_id": "body-listen",
+  "kind": "listen_pick",
+  "level": 11
+ },
+ {
+  "activity_id": "body-scene",
+  "kind": "scene",
+  "level": 11
+ },
+ {
+  "activity_id": "body-type",
+  "kind": "type",
+  "level": 11
+ },
+ {
+  "activity_id": "clothes-listen",
+  "kind": "listen_pick",
+  "level": 12
+ },
+ {
+  "activity_id": "clothes-scene",
+  "kind": "scene",
+  "level": 12
+ },
+ {
+  "activity_id": "clothes-same",
+  "kind": "find_same",
+  "level": 12
+ },
+ {
+  "activity_id": "nature-scene",
+  "kind": "scene",
+  "level": 13
+ },
+ {
+  "activity_id": "nature-light",
+  "kind": "light_path",
+  "level": 13
+ },
+ {
+  "activity_id": "nature-path",
+  "kind": "path",
+  "level": 13
+ },
+ {
+  "activity_id": "nature-listen",
+  "kind": "listen_pick",
+  "level": 13
+ },
+ {
+  "activity_id": "nature-color",
+  "kind": "color",
+  "level": 13
+ },
+ {
+  "activity_id": "words-type",
+  "kind": "type",
+  "level": 14
+ },
+ {
+  "activity_id": "words-listen",
+  "kind": "type",
+  "level": 14
+ },
+ {
+  "activity_id": "words-zigzag",
+  "kind": "path",
+  "level": 14
+ },
+ {
+  "activity_id": "sentences-build",
+  "kind": "sentence",
+  "level": 15
+ },
+ {
+  "activity_id": "sentences-seq",
+  "kind": "sequence",
+  "level": 15
+ },
+ {
+  "activity_id": "stories-cloud",
+  "kind": "story",
+  "level": 16
+ },
+ {
+  "activity_id": "stories-morning",
+  "kind": "story",
+  "level": 16
+ }
+]
