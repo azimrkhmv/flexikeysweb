@@ -13,6 +13,7 @@ import { useT, type Lang } from "@/lib/i18n";
 import { useFocusTrap } from "@/lib/useFocusTrap";
 import { createOutbox, retryable, type OutboxItem } from "@/lib/outbox";
 import { createTryLog, type TryRecord } from "@/lib/tries";
+import { GAME_LIMIT_MIN } from "@/lib/roadmap";
 import type { AdaptiveProfile, Child, InputProfile, InteractionEvent, MascotMood } from "@/lib/types";
 import { WarmUp } from "@/features/activities/warmup";
 import { Aac } from "./Aac";
@@ -117,6 +118,7 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
   const lastAccept = useRef<number | null>(null);
   const moodTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const breakStart = useRef(0);
+  const viewRef = useRef<View["v"]>("start");
   const here = useRef<{ levelId?: string; activityId?: string }>({});
 
   const levelId = "levelId" in view ? view.levelId : undefined;
@@ -176,6 +178,8 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
     const tick = setInterval(() => {
       flush();
       void outbox?.drain();
+      // Game time counts towards the 20-minute daily limit; kept by the server, so reopening doesn't reset it.
+      if (viewRef.current === "activity" && document.visibilityState === "visible") void api.addPlayTime(child.id, FLUSH_MS / 1000).catch(() => {});
     }, FLUSH_MS);
     const breakCheck = setInterval(() => {
       if (session.current && Date.now() - breakStart.current >= profile.breakAfterMin * 60_000) setBreakDue(true);
@@ -184,7 +188,7 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
       clearInterval(tick);
       clearInterval(breakCheck);
     };
-  }, [flush, profile.breakAfterMin]);
+  }, [flush, profile.breakAfterMin, child.id]);
 
   useEffect(() => {
     const onVis = () => document.visibilityState === "hidden" && flush();
@@ -332,12 +336,18 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
     router.replace(auth.grantedBy === "class" ? "/class" : "/parent");
   };
 
+  useEffect(() => {
+    viewRef.current = view.v;
+  }, [view.v]);
+  // The day's 20 minutes are played: the games sleep until tomorrow. A game already open is never cut short, and
+  // My Voice stays (a communication aid).
+  const restDay = sel.playedToday(db, child.id) >= GAME_LIMIT_MIN * 60 && !["activity", "aac", "bye"].includes(view.v) && overlay !== "aac";
   // My Voice is a communication aid: no break or offline screen ever covers it.
-  const showBreak = overlay === "break" || (breakDue && !overlay && !["activity", "warmup", "start", "bye", "aac"].includes(view.v));
+  const showBreak = !restDay && (overlay === "break" || (breakDue && !overlay && !["activity", "warmup", "start", "bye", "aac"].includes(view.v)));
   const offlineBlock = !online && view.v !== "aac" && overlay !== "aac";
   // Switch scanning covers the whole shell (nav included), or only the open overlay.
   const scan = child.support?.scan ?? SCAN_DEFAULT;
-  useScanning(child.access === "scan" && overlay !== "gate", overlay === "menu" || overlay === "aac" || showBreak || offlineBlock ? overlayRef : shellRef, {
+  useScanning(child.access === "scan" && overlay !== "gate", overlay === "menu" || overlay === "aac" || showBreak || restDay || offlineBlock ? overlayRef : shellRef, {
     stepMs: scan.stepMs,
     mode: scan.mode,
     speak: scan.speak,
@@ -580,6 +590,26 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
                 className={`${bigBtn} bg-teal text-white`}
               >
                 ▶ {t("play.menu.continue")}
+              </Target>
+              <Target label={t("play.break.finish")} onSelect={finishForToday} className={`${bigBtn} bg-surface text-ink`}>
+                🌙 {t("play.break.finish")}
+              </Target>
+            </div>
+          </div>
+        </div>
+      )}
+      {restDay && !offlineBlock && (
+        <div className="fixed inset-0 z-40 grid place-items-center bg-[#dfe8f8]/90 p-4 backdrop-blur" role="dialog" aria-modal="true" aria-label={t("play.rest.title")}>
+          <div ref={overlayRef} className="flex flex-col items-center gap-5 text-center">
+            <span className="text-8xl" aria-hidden>
+              ☁️
+            </span>
+            <Mascot mood="sleepy" size={180} hat={hat} tint={tint} />
+            <h2 className="text-3xl font-extrabold text-ink">{t("play.rest.title")}</h2>
+            <p className="text-xl text-ink-2">{t("play.rest.body")}</p>
+            <div className="flex flex-wrap justify-center gap-4">
+              <Target label={t("play.nav.aac")} onSelect={() => setOverlay("aac")} className={`${bigBtn} bg-teal text-white`}>
+                💬 {t("play.nav.aac")}
               </Target>
               <Target label={t("play.break.finish")} onSelect={finishForToday} className={`${bigBtn} bg-surface text-ink`}>
                 🌙 {t("play.break.finish")}

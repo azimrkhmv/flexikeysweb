@@ -60,6 +60,8 @@ export interface DB {
   accessProfiles: (AccessSettings & { childId: string; helpedByAdult: boolean; at: string })[];
   /** θ per skill area, moved by every clean try (B17). Areas without a row start from the intake (sel.skills). */
   skills: { childId: string; area: Area; theta: number; n: number }[];
+  /** Seconds of game time per child and day (YYYY-MM-DD), for the 20-minute daily limit (B18). */
+  playTime: { childId: string; date: string; seconds: number }[];
 }
 
 export class ApiError extends Error {
@@ -89,4 +91,4 @@ const CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"; // no 0/O/1/I/L (SEC-5)
 export const makeCode = (n = 6) => Array.from({ length: n }, () => CODE_ALPHABET[Math.floor(Math.random() * CODE_ALPHABET.length)]).join("");
 
 /** Bump when the DB shape changes: browsers holding an older shape are reseeded instead of crashing. */
-export const DB_VERSION = 9;
+export const DB_VERSION = 10;

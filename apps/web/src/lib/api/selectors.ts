@@ -8,7 +8,7 @@ import { levelAfter } from "../roadmap";
 import { AREAS, startingTheta, type Area } from "../skill";
 import type { Answers } from "@/content/intake";
 import { LANGS, type Lang } from "../i18n";
-import { DAY, iso, type DB } from "./schema";
+import { DAY, iso, localDate, type DB } from "./schema";
 import type { AdaptiveProfile, Child, ClassRoom, ConsentScope, InputProfile, LevelProgress, Roadmap, Subscription, User, VideoStatus, Wallet } from "../types";
 
 // ---------------------------------------------------------------- selectors (pure)
@@ -66,6 +66,8 @@ export const sel = {
       }),
     ) as Record<Area, { theta: number; n: number }>;
   },
+  /** Seconds of game time today (this device's date). */
+  playedToday: (db: DB, childId: string) => (db.playTime ?? []).find((p) => p.childId === childId && p.date === localDate())?.seconds ?? 0,
   /** The child's answer to the question of this day, if given. */
   dailyAnswer: (db: DB, childId: string, date: string) => (db.dailyAnswers ?? []).find((a) => a.childId === childId && a.date === date) ?? null,
   /** An exercise's level now: the plan's level, moved by the parent's easy / hard ratings (spec §8). */

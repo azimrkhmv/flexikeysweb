@@ -82,6 +82,17 @@ const levelFor = (theta: number, p: number, games: Game[]) => {
 };
 
 /**
+ * At most one new kind of game a week; a game already played is never taken away. `firstPlayed`: the date
+ * (YYYY-MM-DD) each kind was first played.
+ */
+export function weeklyNew(unlocked: Game[], firstPlayed: Map<ActivityKind, string>, today: string): Game[] {
+  const weekAgo = new Date(Date.parse(today) - 7 * 86_400_000).toISOString().slice(0, 10);
+  const newThisWeek = [...firstPlayed.values()].some((d) => d > weekAgo);
+  const fresh = unlocked.find((g) => !firstPlayed.has(g.kind));
+  return unlocked.filter((g) => firstPlayed.has(g.kind) || (!newThisWeek && g.kind === fresh?.kind));
+}
+
+/**
  * Three game slots for a session: an easy win from the strongest area (about 85% success), growth from the weakest
  * area that has a game (about 75%), and the child's own choice of any unlocked game.
  */

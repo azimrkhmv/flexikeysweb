@@ -10,7 +10,7 @@ import { applyPolicy, bkt, startingProfile } from "../adaptive";
 import type { Lang } from "../i18n";
 import { read, write, net } from "./db";
 import { requireChildAccess, requireChildToken, notify } from "./guards";
-import { ApiError, CHILD_TOKEN_MS, id, iso } from "./schema";
+import { ApiError, CHILD_TOKEN_MS, id, iso, localDate } from "./schema";
 import { sel } from "./selectors";
 import type { AacCustomCard, ActivityKind, AdaptationChange, InputProfile, InteractionEvent, LearningSession } from "../types";
 
@@ -67,6 +67,18 @@ export const playApi = {
     write((db) => {
       db.events.push(...events.map((e) => ({ ...e, sessionId })));
       if (db.events.length > 4000) db.events = db.events.slice(-4000); // ponytail: retention cap for localStorage
+    });
+    return net(true, 0);
+  },
+  /** PATCH /game-sessions/{id} {secondsPlayed} — game time of today, for the 20-minute daily limit (spec §13). */
+  async addPlayTime(childId: string, seconds: number) {
+    const c = requireChildToken();
+    if (c.childId !== childId || seconds <= 0 || seconds > 60) throw new ApiError("not_found");
+    const date = localDate();
+    write((db) => {
+      const row = db.playTime.find((p) => p.childId === childId && p.date === date);
+      if (row) row.seconds += seconds;
+      else db.playTime = [...db.playTime.filter((p) => p.childId !== childId), { childId, date, seconds }]; // only today is kept
     });
     return net(true, 0);
   },

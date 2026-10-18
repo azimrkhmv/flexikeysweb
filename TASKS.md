@@ -439,7 +439,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `C8` The physiotherapist checks the skill model's first guesses: which intake answers start each of the six areas, and how hard each world level is (`apps/web/src/lib/skill.ts`, `AREA_QUESTIONS` and `difficulty`)
   - Done when: the physiotherapist agreed or the numbers are changed, and the tests still pass
   - Needs: B17, Q3
-- [ ] **Azim** — `B18` 20-minute daily game limit with the sleeping cloud; at most one new game a week; an open game is never taken away
+- [x] **Azim** — `B18` 20-minute daily game limit with the sleeping cloud; at most one new game a week; an open game is never taken away
   - Done when: the limit still holds after closing and reopening the website
   - Needs: B17
 - [ ] **Azim** — `A6.4` Server: access settings (`input_mode`, `min_target_mm`, `dwell_ms`, `repeat_lock`, `release_ok`)

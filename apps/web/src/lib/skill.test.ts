@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { AREA_OF, AREAS, chooseGames, corrected, difficulty, elo, pCorrect, startingTheta, STEP, type Area, type Game } from "./skill";
+import { AREA_OF, AREAS, chooseGames, corrected, difficulty, elo, pCorrect, startingTheta, STEP, weeklyNew, type Area, type Game } from "./skill";
 
 describe("skill levels (spec §13)", () => {
   it("P(correct) = 1 / (1 + e^−(θ − d))", () => {
@@ -50,5 +50,19 @@ describe("skill levels (spec §13)", () => {
 
   it("every game kind trains one area", () => {
     for (const area of Object.values(AREA_OF)) expect(AREAS).toContain(area);
+  });
+});
+
+describe("at most one new game a week (spec §13)", () => {
+  const g = (activityId: string, kind: Game["kind"]): Game => ({ activityId, kind, level: 1 });
+  const unlocked = [g("f", "find_same"), g("m", "missing"), g("s", "sort"), g("s2", "sort")];
+  it("offers one new kind when none was new this week, and keeps every kind already played", () => {
+    const played = new Map<Game["kind"], string>([["find_same", "2026-09-01"]]);
+    expect(weeklyNew(unlocked, played, "2026-10-01").map((x) => x.activityId)).toEqual(["f", "m"]);
+  });
+  it("offers none while this week's new game is still new; the played ones stay", () => {
+    const played = new Map<Game["kind"], string>([["find_same", "2026-09-01"], ["missing", "2026-09-28"]]);
+    expect(weeklyNew(unlocked, played, "2026-10-01").map((x) => x.activityId)).toEqual(["f", "m"]);
+    expect(weeklyNew(unlocked, played, "2026-10-06").map((x) => x.activityId)).toEqual(["f", "m", "s", "s2"]); // a week later
   });
 });
