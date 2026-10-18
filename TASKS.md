@@ -261,6 +261,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `C1` Connect Higgsfield and test it on 3 exercises
   - Done when: we know the longest clip, the price per clip, and whether the same person stays the same across clips
   - Needs: T7
+  - BLOCKED: waits for Azim to test Higgsfield and buy it (HIGGSFIELD_API_KEY in apps/api/.env)
 - [x] **Azim** — `A0.5` GitHub Actions for the server: ruff, mypy, and tests with a PostgreSQL service
   - Done when: the checks run and are green on a pull request
   - Needs: A0.3
@@ -276,6 +277,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `A0.7` A test server on the internet with made-up data only, updated automatically from `main`
   - Done when: the server answers at a test address after a merge
   - Needs: A0.2, T7
+  - BLOCKED: needs a Contabo server bought by Azim (Q4), and its login kept outside git
 - [ ] **Azim** — `B3` Connect the website's sign-in and sign-up to the server
   - Done when: sign-up works in the browser against the real server, covered by a browser test
   - Needs: A1.6
