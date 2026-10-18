@@ -57,3 +57,24 @@ describe("api.saveTries", () => {
     await expect(api.saveTries("ch_madina", batch)).rejects.toMatchObject({ code: "not_found" }); // only the playing child
   });
 });
+
+// B17: clean tries move the skill level of their area; access events never do (product rule 5).
+describe("skill levels from tries", () => {
+  beforeEach(async () => {
+    api.resetDemo();
+    await api.classLoginChild("cl_sun", "ch_ali");
+  });
+
+  it("a right answer raises θ, an access event changes nothing", async () => {
+    const add = createTryLog({ childId: "ch_ali", sessionId: "s1", startedAt: Date.now(), access: "touch" });
+    const findSame = LEVEL_BY_ID.fruits.activities.find((a) => a.kind === "find_same")!;
+    const at = { levelId: "fruits", activityId: findSame.id };
+    const before = sel.skills(dbStore.get(), "ch_ali").attention;
+    await api.saveTries("ch_ali", [add({ ...at, t: 1, type: "accidental_tap" })!, add({ ...at, t: 2, type: "debounced" })!]);
+    expect(sel.skills(dbStore.get(), "ch_ali").attention).toEqual(before);
+    await api.saveTries("ch_ali", [add({ ...at, t: 3, type: "select", correct: true })!]);
+    const after = sel.skills(dbStore.get(), "ch_ali").attention;
+    expect(after.n).toBe(1);
+    expect(after.theta).toBeGreaterThan(before.theta);
+  });
+});

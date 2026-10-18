@@ -2,6 +2,7 @@
 
 // Child-token endpoints: child mode entry, sessions & events, rewards, AAC.
 
+import { AREA_OF, AREAS, difficulty, elo } from "../skill";
 import type { TryRecord } from "../tries";
 import { LEVEL_BY_ID, levelComplete } from "@/content/levels";
 import { SHOP_BY_ID } from "@/content/shop";
@@ -11,7 +12,7 @@ import { read, write, net } from "./db";
 import { requireChildAccess, requireChildToken, notify } from "./guards";
 import { ApiError, CHILD_TOKEN_MS, id, iso } from "./schema";
 import { sel } from "./selectors";
-import type { AacCustomCard, AdaptationChange, InputProfile, InteractionEvent, LearningSession } from "../types";
+import type { AacCustomCard, ActivityKind, AdaptationChange, InputProfile, InteractionEvent, LearningSession } from "../types";
 
 export const playApi = {
   // ------------------------------------------------------------ child mode (/children/{id}/session, /class-login/*)
@@ -75,7 +76,18 @@ export const playApi = {
     if (c.childId !== childId) throw new ApiError("not_found");
     write((db) => {
       const seen = new Set(db.tries.map((x) => x.id));
-      db.tries.push(...tries.filter((x) => x.childId === childId && !seen.has(x.id)));
+      const fresh = tries.filter((x) => x.childId === childId && !seen.has(x.id));
+      db.tries.push(...fresh);
+      // Every clean try moves θ of its area (spec §13). Access events never do (product rule 5).
+      const skills = sel.skills(db, childId);
+      for (const t of fresh) {
+        const area = AREA_OF[t.game as ActivityKind];
+        if (t.accessEvent || t.outcome === "skipped" || !area) continue;
+        const s = skills[area];
+        s.theta = elo(s.theta, s.n, difficulty(t.level), t.outcome === "correct");
+        s.n += 1;
+      }
+      db.skills = [...db.skills.filter((s) => s.childId !== childId), ...AREAS.filter((a) => skills[a].n > 0).map((area) => ({ childId, area, ...skills[area] }))];
       if (db.tries.length > 4000) db.tries = db.tries.slice(-4000); // ponytail: localStorage cap; the server keeps 90 days
     });
     return net(true, 0);

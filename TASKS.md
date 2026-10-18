@@ -433,9 +433,12 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `B16` Play check, stage 2 — four placement games (seeing, memory, letters, thinking); after 2 mistakes the right answer shimmers, after 4 the others fade
   - Done when: the whole play check takes under 10 minutes; a parent can stop and retry within 3 days
   - Needs: B15, G5
-- [ ] **Azim** — `B17` Skill level for each of the six areas, updated after every clean try with the spec's formula; three game slots: easy win, growth, child's choice
+- [x] **Azim** — `B17` Skill level for each of the six areas, updated after every clean try with the spec's formula; three game slots: easy win, growth, child's choice
   - Done when: unit tests match the spec's formula
   - Needs: B14
+- [ ] **Azim** — `C8` The physiotherapist checks the skill model's first guesses: which intake answers start each of the six areas, and how hard each world level is (`apps/web/src/lib/skill.ts`, `AREA_QUESTIONS` and `difficulty`)
+  - Done when: the physiotherapist agreed or the numbers are changed, and the tests still pass
+  - Needs: B17, Q3
 - [ ] **Azim** — `B18` 20-minute daily game limit with the sleeping cloud; at most one new game a week; an open game is never taken away
   - Done when: the limit still holds after closing and reopening the website
   - Needs: B17

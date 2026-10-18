@@ -128,6 +128,7 @@ export function seed(): DB {
     dailyAnswers: [],
     tries: [],
     accessProfiles: [],
+    skills: [],
   };
 
   // ~2 weeks of play history so dashboards have something real to show.

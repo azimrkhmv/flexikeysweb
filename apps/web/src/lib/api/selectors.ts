@@ -5,6 +5,7 @@
 import { FREE_LEVELS, LEVEL_BY_ID, LEVELS, levelComplete } from "@/content/levels";
 import { computeMetrics, startingProfile, withFloors } from "../adaptive";
 import { levelAfter } from "../roadmap";
+import { AREAS, startingTheta, type Area } from "../skill";
 import type { Answers } from "@/content/intake";
 import { LANGS, type Lang } from "../i18n";
 import { DAY, iso, type DB } from "./schema";
@@ -53,6 +54,17 @@ export const sel = {
     if (paused.includes(date)) return "paused";
     const i = Math.round((Date.parse(date) - Date.parse(plan.startDate)) / DAY) - paused.filter((p) => p < date).length;
     return i >= 0 && i < plan.days.length ? i : null;
+  },
+  /** θ of every skill area: what clean tries made of it, or the first guess from the latest finished intake. */
+  skills: (db: DB, childId: string): Record<Area, { theta: number; n: number }> => {
+    const round = db.intakeRounds.filter((r) => r.childId === childId && r.completedAt).sort((a, b) => b.round - a.round)[0];
+    const answers = round ? sel.intakeAnswers(db, childId, round.round) : {};
+    return Object.fromEntries(
+      AREAS.map((area) => {
+        const row = (db.skills ?? []).find((s) => s.childId === childId && s.area === area);
+        return [area, row ? { theta: row.theta, n: row.n } : { theta: startingTheta(area, answers), n: 0 }];
+      }),
+    ) as Record<Area, { theta: number; n: number }>;
   },
   /** The child's answer to the question of this day, if given. */
   dailyAnswer: (db: DB, childId: string, date: string) => (db.dailyAnswers ?? []).find((a) => a.childId === childId && a.date === date) ?? null,
