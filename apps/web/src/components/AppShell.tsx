@@ -34,14 +34,14 @@ export function RequireRole({ role, children }: { role: Role | Role[]; children:
   const router = useRouter();
   const path = usePathname();
   const roles = Array.isArray(role) ? role : [role];
-  const ok = !!me && roles.includes(me.role) && me.status !== "disabled" && !(me.phone && !me.consentVersion);
+  const ok = !!me && roles.includes(me.role) && me.status !== "disabled" && !sel.needsSignup(me);
 
   useEffect(() => {
     if (!mounted || sel.loading(db)) return; // live mode: wait for the server before deciding
     if (childMode) router.replace("/play");
     else if (!me) router.replace(`/login?next=${encodeURIComponent(path)}`);
     else if (!roles.includes(me.role)) router.replace(homeFor(me.role));
-    else if (me.phone && !me.consentVersion) router.replace("/signup"); // sign-up not finished (consent, district)
+    else if (sel.needsSignup(me)) router.replace("/signup"); // sign-up not finished (consent, district)
   });
 
   if (!mounted || sel.loading(db) || !ok || childMode) return <Spinner />;

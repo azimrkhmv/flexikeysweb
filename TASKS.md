@@ -314,7 +314,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `B48` Admin screen to upload a finished video file for an exercise and language (live mode: upload link, file straight to storage, register)
   - Done when: an admin uploads a file in the browser and it appears in the physiotherapist's queue
   - Needs: B5
-- [ ] **Azim** — `A1.9` Staff (physiotherapist, clinic, admin) sign in without the parent's basic consent and district step
+- [x] **Azim** — `A1.9` Staff (physiotherapist, clinic, admin) sign in without the parent's basic consent and district step
   - Done when: a new physiotherapist goes straight to the review queue after the SMS code
   - Needs: B5
 - [ ] **Azim** — `B6` Connect the plan screen to the server

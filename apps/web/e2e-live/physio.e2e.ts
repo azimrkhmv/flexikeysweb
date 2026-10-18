@@ -20,12 +20,9 @@ test("a physiotherapist watches a real video file and approves it", async ({ pag
   const families = () => fetch(`${API}/api/v1/videos/finger_walk?lang=en`, { headers: admin }).then((r) => r.status);
   expect(await families()).toBe(404); // waiting for review: no family can get it
 
-  // The physiotherapist signs in (staff give the basic consent once too) and reviews in the browser.
+  // The physiotherapist signs in and lands straight on the review queue (staff skip the parent's sign-up step, A1.9).
   await signIn(page, physioPhone);
-  await page.getByLabel("District").selectOption({ index: 1 });
-  await page.getByText("I agree to FlexiKeys storing").click();
-  await page.getByRole("button", { name: "Continue" }).click();
-  await page.goto("/physio");
+  await expect(page).toHaveURL(/\/physio$/);
   const card = page.getByRole("listitem").filter({ has: page.getByRole("heading", { name: "Finger walk" }) }).filter({ hasText: "English" });
   const video = card.locator("video");
   await expect(video).toHaveAttribute("src", /^https?:\/\/.+finger_walk/);

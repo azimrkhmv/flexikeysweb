@@ -17,7 +17,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db import get_session
 from app.errors import AppError
-from app.modules.accounts.models import User, UserStatus
+from app.modules.accounts.models import Role, User, UserStatus
 from app.modules.auth import tokens
 from app.settings import settings
 
@@ -102,8 +102,9 @@ def _ms(t: datetime) -> int:
 
 
 async def current_user(user: Annotated[User, Depends(signed_in_user)]) -> User:
-    """FastAPI dependency for every normal address: signed in AND has given the basic consent (A1.6)."""
-    if user.consent_version is None:
+    """FastAPI dependency for every normal address: signed in AND, for a parent, has given the basic consent (A1.6).
+    Staff accounts are made by an admin for work and hold no family's data of their own (A1.9)."""
+    if user.role == Role.parent and user.consent_version is None:
         raise AppError(403, "consent_required")
     return user
 

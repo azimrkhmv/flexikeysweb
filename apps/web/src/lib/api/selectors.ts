@@ -7,7 +7,7 @@ import { computeMetrics, startingProfile, withFloors } from "../adaptive";
 import type { Answers } from "@/content/intake";
 import { LANGS, type Lang } from "../i18n";
 import { DAY, iso, type DB } from "./schema";
-import type { AdaptiveProfile, Child, ClassRoom, ConsentScope, InputProfile, LevelProgress, Roadmap, Subscription, VideoStatus, Wallet } from "../types";
+import type { AdaptiveProfile, Child, ClassRoom, ConsentScope, InputProfile, LevelProgress, Roadmap, Subscription, User, VideoStatus, Wallet } from "../types";
 
 // ---------------------------------------------------------------- selectors (pure)
 export const sel = {
@@ -25,6 +25,8 @@ export const sel = {
   usableVideos: (db: DB, lang: Lang) => db.videos.filter((v) => v.versions[lang]?.status === "approved"),
 
   me: (db: DB) => db.users.find((u) => u.id === db.auth.userId) ?? null,
+  /** A parent who signed in by phone but has not given the basic consent and district yet. Staff skip it (A1.9). */
+  needsSignup: (u: Pick<User, "role" | "phone" | "consentVersion">) => u.role === "parent" && !!u.phone && !u.consentVersion,
   /** Live mode: server data not loaded yet — show a spinner, don't conclude "signed out". */
   loading: (db: DB) => !!db.loading,
   childAuth: (db: DB) => (db.auth.child && db.auth.child.exp > Date.now() ? db.auth.child : null),

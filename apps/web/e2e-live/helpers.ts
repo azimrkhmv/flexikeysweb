@@ -79,16 +79,15 @@ const SERVER_DIR = path.resolve(__dirname, "../../api");
 /** Runs a server command (apps/api app/cli.py), e.g. create-admin; what an operator does on the server. */
 export const serverCommand = (...args: string[]) => execFileSync("uv", ["run", "python", "-m", "app.cli", ...args], { cwd: SERVER_DIR, stdio: "pipe" }).toString();
 
-/** Signs a number in through the server's own addresses (app-style Bearer token) and gives the basic consent. */
+/** Signs a staff number in through the server's own addresses (app-style Bearer token). */
 export async function bearerFor(phone: string) {
   const call = (path: string, body: unknown, token?: string) =>
     fetch(`${API}/api/v1${path}`, {
-      method: path === "/me/signup" ? "PATCH" : "POST",
+      method: "POST",
       headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
       body: JSON.stringify(body),
     }).then((r) => r.json());
   const { demoCode } = await call("/auth/phone/start", { phone });
   const { accessToken } = await call("/auth/phone/verify", { phone, code: demoCode });
-  await call("/me/signup", { region: "tashkent_city", district: "Chilonzor", consent: true }, accessToken);
   return { Authorization: `Bearer ${accessToken}` };
 }

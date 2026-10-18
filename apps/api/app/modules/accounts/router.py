@@ -12,7 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db import get_session
 from app.errors import AppError
 from app.modules.accounts import consent
-from app.modules.accounts.models import Lang, User
+from app.modules.accounts.models import Lang, Role, User
 from app.modules.auth.router import UserOut
 from app.modules.auth.session import CurrentUser, SignedInUser
 from app.schemas import ApiModel
@@ -41,7 +41,12 @@ class Me(UserOut):
 
 def _me(user: User) -> Me:
     out = UserOut.model_validate(user, from_attributes=True).model_dump()
-    return Me(**out, name=user.name, consent_version=user.consent_version, needs_signup=user.consent_version is None)
+    return Me(
+        **out,
+        name=user.name,
+        consent_version=user.consent_version,
+        needs_signup=user.role == Role.parent and user.consent_version is None,
+    )
 
 
 class ConsentText(ApiModel):

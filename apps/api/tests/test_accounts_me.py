@@ -8,8 +8,11 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
+from app.db import SessionLocal
 from app.main import app
-from app.modules.accounts.models import Lang
+from app.modules.accounts.models import Lang, Role
+from app.modules.auth import tokens
+from tests.test_access import person
 
 API = "/api/v1"
 TASHKENT = {"region": "tashkent_city", "district": "Chilonzor"}
@@ -102,3 +105,19 @@ def test_district_list_matches_the_website() -> None:
         pytest.skip("website files not present")
     server = Path(__file__).parents[1] / "app/content/districts.json"
     assert json.loads(server.read_text("utf-8")) == json.loads(web.read_text("utf-8")), "copy the website's file"
+
+
+@pytest.mark.parametrize("role", [Role.physio, Role.clinic, Role.admin])
+def test_staff_work_without_the_parents_consent(client: TestClient, role: Role) -> None:
+    """A1.9: an admin makes staff accounts for work; they hold no family's data, so no basic consent step."""
+
+    async def staff() -> str:
+        async with SessionLocal() as db:
+            user = await person(db, role, consent=False)
+            pair = await tokens.issue(db, user)
+            await db.commit()
+            return pair.access_token
+
+    auth = {"Authorization": f"Bearer {client.portal.call(staff)}"}  # type: ignore[union-attr]
+    assert client.get(f"{API}/me", headers=auth).json()["needsSignup"] is False
+    assert client.get(f"{API}/children", headers=auth).status_code == 200  # signed in like anyone else: sees no child

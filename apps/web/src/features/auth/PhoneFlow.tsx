@@ -36,7 +36,7 @@ export function PhoneFlow({ showDemos }: { showDemos?: boolean }) {
   const mounted = useMounted();
   // Derived until the person moves on, so the saved language (read after hydration) decides the first screen.
   const [picked, setStep] = useState<Step | null>(null);
-  const step: Step = picked ?? (me?.phone && !me.consentVersion ? "details" : chosen ? "phone" : "lang");
+  const step: Step = picked ?? (me && sel.needsSignup(me) ? "details" : chosen ? "phone" : "lang");
   const [phone, setPhone] = useState("+998 ");
   const [code, setCode] = useState("");
   const [demoCode, setDemoCode] = useState<string | null>(null);
@@ -63,7 +63,7 @@ export function PhoneFlow({ showDemos }: { showDemos?: boolean }) {
 
   const go = (u: User) => {
     applyAccountLang(u.uiLang);
-    if (u.phone && !u.consentVersion) return setStep("details");
+    if (sel.needsSignup(u)) return setStep("details");
     router.replace(safeNext(new URLSearchParams(window.location.search).get("next")) ?? homeFor(u.role));
   };
   const requestCode = async (p = phone) => {
