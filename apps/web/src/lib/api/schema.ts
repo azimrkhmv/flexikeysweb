@@ -72,6 +72,8 @@ export interface DB {
   /** Live mode: the clips on the server (P40 movement clips), with a short-lived link to watch each. */
   clips?: { id: string; childId: string; url: string }[];
   /** Live mode, parent: what the server says the therapists changed (GET /children/{id}/answers-in-use). */
+  /** The owner's invites to a second adult (A8.4); accepted ones become a helper family member. */
+  helperInvites: { id: string; familyId: string; phone: string; at: string }[];
   answersInUse?: Record<string, { updated: Record<string, { value: string | string[]; name: string; profession?: Profession; at: string }>; messages: { text: string; name: string; profession?: Profession; at: string }[] }>;
 }
 
@@ -102,4 +104,6 @@ const CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"; // no 0/O/1/I/L (SEC-5)
 export const makeCode = (n = 6) => Array.from({ length: n }, () => CODE_ALPHABET[Math.floor(Math.random() * CODE_ALPHABET.length)]).join("");
 
 /** Bump when the DB shape changes: browsers holding an older shape are reseeded instead of crashing. */
-export const DB_VERSION = 12;
+export const DB_VERSION = 13;
+/** Same limit as the server (MAX_HELPERS_PER_FAMILY). */
+export const MAX_HELPERS = 1;

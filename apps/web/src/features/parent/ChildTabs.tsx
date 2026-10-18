@@ -17,6 +17,8 @@ import { SupportCard } from "./support";
 
 export const TABS = ["plan", "progress", "changes", "aac", "sharing", "settings", "privacy"] as const;
 export type Tab = (typeof TABS)[number];
+/** Tabs only the family's owner sees (consents, sharing, the child's settings, export and delete). */
+export const OWNER_TABS: Tab[] = ["sharing", "settings", "privacy"];
 
 const H2 = ({ children }: { children: React.ReactNode }) => <h2 className="mb-3 text-lg font-extrabold">{children}</h2>;
 

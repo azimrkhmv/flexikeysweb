@@ -43,7 +43,7 @@ describe("families (B2)", () => {
     const db = seed();
     db.familyMembers.push({ familyId: "fam_1", userId: "u_parent2", role: "helper" });
     expect(sel.childrenOf(db, "u_parent2").map((c) => c.id).sort()).toEqual(["ch_ali", "ch_madina", "ch_other"]);
-    expect(sel.access(db, "u_parent2", "ch_ali")).toBeNull(); // a helper is not the owner
+    expect(sel.access(db, "u_parent2", "ch_ali")).toBe("helper"); // daily use only, never the owner (B27)
     expect(sel.familyOwner(db, "fam_1")).toBe("u_parent");
 
     expect(familyForNewChild(db, "u_parent")).toBe("fam_1"); // 2 children: a 3rd is fine

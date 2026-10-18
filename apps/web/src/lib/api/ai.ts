@@ -5,7 +5,7 @@
 import { LEVEL_BY_ID } from "@/content/levels";
 import { translate, type Lang } from "../i18n";
 import { read, write, net } from "./db";
-import { requireUser, requireChildAccess } from "./guards";
+import { requireUser, requireChildAccess, FAMILY } from "./guards";
 import { ApiError, AI_DAILY_QUOTA, id, iso, type DB } from "./schema";
 import { sel } from "./selectors";
 
@@ -28,7 +28,7 @@ export const aiApi = {
   // ------------------------------------------------------------ AI (/ai-assistant/*, /teacher/ai/summary)
   /** POST /ai-assistant/chat — pseudonymized context, consent-gated, quota-limited (PRD §16). */
   async askAssistant(childId: string, text: string, lang: Lang) {
-    const { user } = requireChildAccess(childId, ["owner"]);
+    const { user } = requireChildAccess(childId, FAMILY);
     const db = read();
     if (!sel.hasConsent(db, childId, "ai_processing")) throw new ApiError("consent_required");
     const today = iso().slice(0, 10);
@@ -41,7 +41,7 @@ export const aiApi = {
     return net(answer, 700);
   },
   async clearAssistant(childId: string) {
-    const { user } = requireChildAccess(childId, ["owner"]);
+    const { user } = requireChildAccess(childId, FAMILY);
     write((db) => {
       db.aiMessages = db.aiMessages.filter((m) => !(m.userId === user.id && m.childId === childId));
     });

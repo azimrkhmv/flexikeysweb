@@ -6,7 +6,7 @@ import { useState } from "react";
 import { ArrowLeft, Play } from "lucide-react";
 import { Avatar, Button, Empty, useAction } from "@/components/ui";
 import { PlanTab } from "@/features/intake/PlanTab";
-import { AacTab, ChangesTab, PrivacyTab, ProgressTab, SettingsTab, SharingTab, TABS, type Tab } from "@/features/parent/ChildTabs";
+import { AacTab, ChangesTab, PrivacyTab, ProgressTab, SettingsTab, SharingTab, OWNER_TABS, TABS, type Tab } from "@/features/parent/ChildTabs";
 import { age } from "@/features/parent/lib";
 import { api, sel, useDb } from "@/lib/api";
 import { useT } from "@/lib/i18n";
@@ -24,8 +24,11 @@ export default function ChildPage() {
   });
   const start = useAction(api.startChildMode);
   const child = sel.child(db, id);
+  const rel = me ? sel.access(db, me.id, id) : null;
+  // A helper does daily use only (TASKS.md section 3): no sharing, settings or privacy (consents, export, delete).
+  const tabs = rel === "owner" ? TABS : TABS.filter((k) => !OWNER_TABS.includes(k));
 
-  if (!me || !child || sel.access(db, me.id, id) !== "owner")
+  if (!me || !child || (rel !== "owner" && rel !== "helper"))
     return (
       <div className="space-y-4">
         <Empty>{t("err.not_found")}</Empty>
@@ -72,7 +75,7 @@ export default function ChildPage() {
         // No consent recorded (e.g. a profile from the mobile app): nothing is saved until the parent gives it.
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-sun-soft px-4 py-3">
           <p className="text-sm font-semibold text-[#7a5a0c]">{t("parent.privacy.coreMissing")}</p>
-          {tab !== "privacy" && (
+          {tab !== "privacy" && rel === "owner" && (
             <Button size="sm" variant="outline" onClick={() => go("privacy")}>
               {t("common.openPrivacy")}
             </Button>
@@ -86,16 +89,16 @@ export default function ChildPage() {
         className="mb-6 flex gap-1 overflow-x-auto rounded-full bg-surface-2 p-1"
         onKeyDown={(e) => {
           // WAI-ARIA tabs: arrows / Home / End move between tabs (roving tabindex).
-          const i = TABS.indexOf(tab);
-          const next = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: TABS.length - 1 }[e.key];
+          const i = tabs.indexOf(tab);
+          const next = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 }[e.key];
           if (next === undefined) return;
           e.preventDefault();
-          const k = TABS[(next + TABS.length) % TABS.length];
+          const k = tabs[(next + tabs.length) % tabs.length];
           go(k);
           document.getElementById(`tab-${k}`)?.focus();
         }}
       >
-        {TABS.map((k) => (
+        {tabs.map((k) => (
           <button
             key={k}
             id={`tab-${k}`}
@@ -117,9 +120,9 @@ export default function ChildPage() {
         {tab === "progress" && <ProgressTab childId={child.id} />}
         {tab === "changes" && <ChangesTab childId={child.id} />}
         {tab === "aac" && <AacTab childId={child.id} />}
-        {tab === "sharing" && <SharingTab childId={child.id} goTab={go} />}
-        {tab === "settings" && <SettingsTab child={child} />}
-        {tab === "privacy" && <PrivacyTab child={child} />}
+        {rel === "owner" && tab === "sharing" && <SharingTab childId={child.id} goTab={go} />}
+        {rel === "owner" && tab === "settings" && <SettingsTab child={child} />}
+        {rel === "owner" && tab === "privacy" && <PrivacyTab child={child} />}
       </div>
     </>
   );

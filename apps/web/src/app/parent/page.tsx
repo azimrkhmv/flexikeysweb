@@ -7,6 +7,7 @@ import { Avatar, Card, Chip, LinkButton, Meter, PageHeader, Stat } from "@/compo
 import { LEVEL_BY_ID } from "@/content/levels";
 import { age } from "@/features/parent/lib";
 import { fmtDate } from "@/lib/format";
+import { Helpers } from "@/features/parent/Helpers";
 import { Today } from "@/features/parent/Today";
 import { LockNote } from "@/features/pro/shared";
 import { MAX_CHILDREN, sel, useDb } from "@/lib/api";
@@ -174,6 +175,7 @@ export default function ParentHome() {
           </div>
         </>
       )}
+      <Helpers />
     </>
   );
 }

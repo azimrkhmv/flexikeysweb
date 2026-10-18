@@ -8,7 +8,7 @@ import { baseLang, type Lang, type UiLang } from "../i18n";
 import { buildRoadmap } from "../roadmap";
 import { deleteMedia, getMedia, putMedia } from "../media";
 import { read, write, net } from "./db";
-import { audit, familyForNewChild, requireChildAccess, requireUser } from "./guards";
+import { audit, familyForNewChild, requireChildAccess, requireUser, FAMILY } from "./guards";
 import { ApiError, CONSENT_VERSION, id, iso, localDate, type DB } from "./schema";
 import { sel } from "./selectors";
 import type { Child, Feeling, IntakeValue, Respondent, TaskDone, VideoStatus } from "../types";
@@ -56,7 +56,7 @@ export const intakeApi = {
 
   /** PUT /children/{id}/intake/{round} — saves as the parent goes, so they can finish later. */
   async saveAnswers(childId: string, round: number, answers: Answers, respondent: Respondent = "parent") {
-    requireChildAccess(childId, ["owner"]);
+    requireChildAccess(childId, FAMILY);
     const health = sel.hasConsent(read(), childId, "health");
     write((db) => {
       for (const [questionId, value] of Object.entries(answers)) {
@@ -91,7 +91,7 @@ export const intakeApi = {
 
   /** POST /children/{id}/intake/{round}/complete — builds the 4-week roadmap from the answers. */
   async finishIntake(childId: string, round: number) {
-    const { user } = requireChildAccess(childId, ["owner"]);
+    const { user } = requireChildAccess(childId, FAMILY);
     const db = read();
     const plan = { ...buildRoadmap(planInput(db, childId, round), db.videos), id: id(), createdAt: iso() };
     write((d) => {
@@ -105,7 +105,7 @@ export const intakeApi = {
 
   /** POST /children/{id}/intake — the 3-month re-intake: a new round, pre-filled from the last one. */
   async startReintake(childId: string) {
-    requireChildAccess(childId, ["owner"]);
+    requireChildAccess(childId, FAMILY);
     const last = sel.intakeRound(read(), childId);
     const round = (last?.round ?? 0) + 1;
     const prev = last ? sel.intakeAnswers(read(), childId, last.round) : {};
@@ -119,7 +119,7 @@ export const intakeApi = {
   // ------------------------------------------------------------ Today (spec §10)
   /** POST /children/{id}/done {day, exerciseId} — one tap: this exercise of that plan day is done. Twice = once. */
   async markDone(childId: string, day: number, videoId: string) {
-    requireChildAccess(childId, ["owner"]);
+    requireChildAccess(childId, FAMILY);
     const plan = sel.roadmap(read(), childId);
     if (!plan?.days[day]?.exercises.some((e) => e.videoId === videoId)) throw new ApiError("not_found");
     const same = sel.tasksDone(read(), childId).find((t) => t.day === day && t.videoId === videoId);
@@ -132,7 +132,7 @@ export const intakeApi = {
   },
   /** PATCH /children/{id}/done/{doneId} {feeling} — the optional easy / OK / hard; can be changed. */
   async rateDone(childId: string, doneId: string, feeling: Feeling) {
-    requireChildAccess(childId, ["owner"]);
+    requireChildAccess(childId, FAMILY);
     if (!read().tasksDone.some((t) => t.id === doneId && t.childId === childId)) throw new ApiError("not_found");
     write((db) => {
       db.tasksDone.find((t) => t.id === doneId)!.feeling = feeling;
@@ -142,7 +142,7 @@ export const intakeApi = {
 
   /** POST /children/{id}/pause — pause today: nothing to do, the plan moves forward one day. Twice = once. */
   async pauseToday(childId: string) {
-    requireChildAccess(childId, ["owner"]);
+    requireChildAccess(childId, FAMILY);
     const date = localDate();
     const on = sel.planDayOn(read(), childId, date);
     if (on === "paused") return net(undefined);
@@ -155,7 +155,7 @@ export const intakeApi = {
   },
   /** DELETE /children/{id}/pause — undo today's pause. */
   async resumeToday(childId: string) {
-    requireChildAccess(childId, ["owner"]);
+    requireChildAccess(childId, FAMILY);
     const roadmapId = sel.roadmap(read(), childId)?.id;
     const date = localDate();
     write((db) => {
@@ -166,7 +166,7 @@ export const intakeApi = {
 
   /** PUT /children/{id}/daily {questionId, value: 0|1|2} — the answer to today's question; can be changed today. */
   async answerDaily(childId: string, questionId: string, value: 0 | 1 | 2) {
-    requireChildAccess(childId, ["owner"]);
+    requireChildAccess(childId, FAMILY);
     const date = localDate();
     if (dailyQuestionOn(date).id !== questionId) throw new ApiError("not_todays_question");
     if (![0, 1, 2].includes(value)) throw new ApiError("invalid_answer");

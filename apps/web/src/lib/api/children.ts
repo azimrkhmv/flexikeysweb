@@ -3,13 +3,73 @@
 // /children/* — consent-first creation, edit, export, delete, consent changes.
 
 import { read, write, net } from "./db";
-import { requireUser, requireChildAccess, audit, purgeChild, familyForNewChild } from "./guards";
-import { ApiError, CONSENT_VERSION, id, iso } from "./schema";
+import { requireUser, requireChildAccess, audit, purgeChild, familyForNewChild, FAMILY } from "./guards";
+import { ApiError, CONSENT_VERSION, DAY, id, iso, MAX_HELPERS } from "./schema";
+import { normalizePhone } from "./auth";
 import { sel } from "./selectors";
 import { REPEAT_MS, type AccessSettings } from "../playcheck";
 import type { Child, ChildSupport, ConsentScope } from "../types";
 
+/** The family this person owns; 403 owner_only for anyone else (a helper too). */
+function ownFamilyOrThrow(userId: string) {
+  const familyId = sel.ownFamily(read(), userId);
+  if (!familyId) throw new ApiError("owner_only");
+  return familyId;
+}
+
 export const childrenApi = {
+  // ------------------------------------------------------------ helpers (A8.4): one second adult per family
+  /** POST /family/helpers — the owner invites a second adult by phone. */
+  async inviteHelper(contact: string) {
+    const user = requireUser(["parent"]);
+    const familyId = ownFamilyOrThrow(user.id);
+    const phone = normalizePhone(contact);
+    if (!phone) throw new ApiError("invalid_phone");
+    const db = read();
+    if (sel.helpers(db, familyId).helpers.length >= MAX_HELPERS) throw new ApiError("too_many_helpers");
+    const person = db.users.find((u) => u.phone === phone);
+    if (person && person.role !== "parent") throw new ApiError("not_a_parent");
+    if (person && db.familyMembers.some((m) => m.familyId === familyId && m.userId === person.id)) throw new ApiError("already_member");
+    if (sel.helpers(db, familyId).invites.some((i) => i.phone === phone)) throw new ApiError("already_invited");
+    const invite = { id: id(), familyId, phone, at: iso(Date.now() + 7 * DAY) };
+    write((d) => {
+      d.helperInvites.push(invite);
+      audit(d, user.id, "family.helper_invited", familyId);
+    });
+    return net(invite);
+  },
+  /** DELETE /family/helpers/{user_id} — access to the family's children ends at once. */
+  async removeHelper(userId: string) {
+    const user = requireUser(["parent"]);
+    const familyId = ownFamilyOrThrow(user.id);
+    write((d) => {
+      d.familyMembers = d.familyMembers.filter((m) => !(m.familyId === familyId && m.userId === userId && m.role === "helper"));
+      audit(d, user.id, "family.helper_removed", familyId);
+    });
+    return net(true);
+  },
+  async cancelHelperInvite(inviteId: string) {
+    const user = requireUser(["parent"]);
+    const familyId = ownFamilyOrThrow(user.id);
+    write((d) => {
+      d.helperInvites = d.helperInvites.filter((i) => !(i.id === inviteId && i.familyId === familyId));
+    });
+    return net(true);
+  },
+  /** POST /me/helper-invites/{id}/accept — join the family as its helper. */
+  async acceptHelperInvite(inviteId: string) {
+    const user = requireUser(["parent"]);
+    const invite = read().helperInvites.find((i) => i.id === inviteId && i.phone === user.phone);
+    if (!invite) throw new ApiError("invite_invalid");
+    if (sel.helpers(read(), invite.familyId).helpers.length >= MAX_HELPERS) throw new ApiError("too_many_helpers");
+    write((d) => {
+      d.familyMembers.push({ familyId: invite.familyId, userId: user.id, role: "helper" });
+      d.helperInvites = d.helperInvites.filter((i) => i.id !== inviteId);
+      audit(d, user.id, "family.helper_joined", invite.familyId);
+    });
+    return net(true);
+  },
+
   // ------------------------------------------------------------ children (/children/*)
   /** POST /children — consent + child in one transaction; core consent is mandatory (FR-CHILD-1). */
   async createChild(input: Pick<Child, "name" | "birthYear" | "learningLang" | "uiLang" | "avatar" | "access" | "support">, scopes: ConsentScope[]) {
@@ -47,7 +107,7 @@ export const childrenApi = {
    * button size (adaptive.ts withFloors), so the games never go below what the check found.
    */
   async saveAccessSettings(childId: string, s: AccessSettings, helpedByAdult: boolean) {
-    requireChildAccess(childId, ["owner"]);
+    requireChildAccess(childId, FAMILY);
     if (s.minTargetMm < 12 || s.dwellMs < 500 || s.dwellMs > 3000) throw new ApiError("invalid_answer"); // spec ranges
     write((db) => {
       db.accessProfiles = [...db.accessProfiles.filter((a) => a.childId !== childId), { childId, ...s, helpedByAdult, at: iso() }];

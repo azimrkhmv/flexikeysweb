@@ -9,7 +9,7 @@ import { SHOP_BY_ID } from "@/content/shop";
 import { applyPolicy, bkt, startingProfile } from "../adaptive";
 import type { Lang } from "../i18n";
 import { read, write, net } from "./db";
-import { requireChildAccess, requireChildToken, notify } from "./guards";
+import { requireChildAccess, requireChildToken, notify, FAMILY } from "./guards";
 import { ApiError, CHILD_TOKEN_MS, id, iso, localDate } from "./schema";
 import { sel } from "./selectors";
 import type { AacCustomCard, ActivityKind, AdaptationChange, InputProfile, InteractionEvent, LearningSession } from "../types";
@@ -18,7 +18,7 @@ export const playApi = {
   // ------------------------------------------------------------ child mode (/children/{id}/session, /class-login/*)
   /** POST /children/{id}/session — parent path. */
   async startChildMode(childId: string) {
-    requireChildAccess(childId, ["owner"]);
+    requireChildAccess(childId, FAMILY);
     // Same rule as the server: no core consent recorded = nothing may be stored for this child.
     if (!sel.hasConsent(read(), childId, "core")) throw await net(new ApiError("consent_missing"), 403);
     write((db) => {
@@ -214,7 +214,7 @@ export const playApi = {
   },
   /** POST /aac/cards (parent only) — with the parent's own photo / voice (voice: voice-recording consent). */
   async aacAddCard(childId: string, card: Pick<AacCustomCard, "category" | "emoji" | "label">, media: { photo?: Blob | null; voice?: Blob | null } = {}) {
-    requireChildAccess(childId, ["owner"]);
+    requireChildAccess(childId, FAMILY);
     if (media.voice && !sel.hasConsent(read(), childId, "voice_recording")) throw new ApiError("consent_required");
     if (media.photo && media.photo.size > 1024 * 1024) throw new ApiError("file_too_large"); // demo: stored in this browser
     const photo = media.photo ? await dataUrl(media.photo) : undefined;
@@ -229,7 +229,7 @@ export const playApi = {
   async aacDeleteCard(cardId: string) {
     const card = read().aacCards.find((x) => x.id === cardId);
     if (!card) throw new ApiError("not_found");
-    requireChildAccess(card.childId, ["owner"]);
+    requireChildAccess(card.childId, FAMILY);
     write((db) => {
       db.aacCards = db.aacCards.filter((x) => x.id !== cardId);
     });

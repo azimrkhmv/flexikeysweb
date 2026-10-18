@@ -100,12 +100,13 @@ export const sel = {
   hasConsent: (db: DB, childId: string, scope: ConsentScope) => db.consents.some((c) => c.childId === childId && c.scope === scope && !c.withdrawnAt),
 
   /** PRD §15.4 — the single authorization rule. Returns the relation or null (→ 404). */
-  access(db: DB, userId: string | null, childId: string): "owner" | "admin" | "therapist" | "teacher" | null {
+  access(db: DB, userId: string | null, childId: string): "owner" | "helper" | "admin" | "therapist" | "teacher" | null {
     const u = db.users.find((x) => x.id === userId);
     const c = db.children.find((x) => x.id === childId);
     if (!u || !c || u.status === "disabled") return null;
     if (u.role === "admin") return "admin";
     if (u.role === "parent" && c.familyId !== null && sel.ownFamily(db, u.id) === c.familyId) return "owner";
+    if (u.role === "parent" && db.familyMembers.some((m) => m.userId === u.id && m.familyId === c.familyId && m.role === "helper")) return "helper";
     if (u.role === "therapist" && db.careLinks.some((l) => l.childId === childId && l.professionalId === u.id && l.status === "active" && l.kind === "therapist")) return "therapist";
     if (u.role === "teacher") {
       const mine = db.classes.filter((k) => k.teacherId === u.id).map((k) => k.id);
@@ -258,6 +259,14 @@ export const sel = {
   clipUrl: (db: DB, clipId: string) => db.clips?.find((c) => c.id === clipId)?.url,
   clipReplies: (db: DB, childId: string, clipId: string) =>
     (db.clipReplies ?? []).filter((r) => r.childId === childId && r.clipId === clipId).map((r) => ({ ...r, name: r.name ?? db.users.find((u) => u.id === r.therapistId)?.name ?? "" })),
+  /** The helpers of a family and the invites still open (A8.4). */
+  helpers: (db: DB, familyId: string | null) => ({
+    helpers: db.familyMembers.filter((m) => m.familyId === familyId && m.role === "helper").map((m) => db.users.find((u) => u.id === m.userId)).filter((u): u is User => !!u),
+    invites: (db.helperInvites ?? []).filter((i) => i.familyId === familyId),
+  }),
+  /** Invites to help in another family, for this person's number. */
+  helperInvitesFor: (db: DB, phone?: string) =>
+    (db.helperInvites ?? []).filter((i) => !!phone && i.phone === phone).map((i) => ({ ...i, ownerName: db.users.find((u) => u.id === sel.familyOwner(db, i.familyId))?.name ?? "" })),
   careLinks: (db: DB, childId: string) => db.careLinks.filter((l) => l.childId === childId && l.status !== "revoked"),
   notifications: (db: DB, userId: string) => db.notifications.filter((n) => n.userId === userId).sort((a, b) => b.at.localeCompare(a.at)),
   aacStats(db: DB, childId: string) {

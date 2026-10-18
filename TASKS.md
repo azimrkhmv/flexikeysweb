@@ -518,7 +518,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `B26` Connect the therapist invite, form, exercise choice and clips to the server
   - Done when: a therapist changes a restriction in the browser and the parent's plan changes
   - Needs: A8.3, A8.5, B24, B25
-- [ ] **Azim** — `B27` Helper screens: invite, accept, remove; hide owner-only buttons from a helper
+- [x] **Azim** — `B27` Helper screens: invite, accept, remove; hide owner-only buttons from a helper
   - Done when: a helper never sees the consent, sharing, delete or pay buttons
   - Needs: B2
 - [ ] **Azim** — `B28` Connect the helper screens to the server

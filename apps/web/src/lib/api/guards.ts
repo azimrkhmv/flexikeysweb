@@ -15,6 +15,8 @@ export function requireUser(roles?: Role[]): User {
   if (roles && !roles.includes(u.role)) throw new ApiError("forbidden");
   return u;
 }
+/** Daily use (TASKS.md section 3): the owner and the helper. Everything else about a child is the owner's alone. */
+export const FAMILY: ReturnType<typeof sel.access>[] = ["owner", "helper"];
 export function requireChildAccess(childId: string, allow: ReturnType<typeof sel.access>[]) {
   const u = requireUser();
   const rel = sel.access(read(), u.id, childId);
