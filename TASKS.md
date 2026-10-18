@@ -485,7 +485,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A8.2` Tables and addresses for the therapist form T1–T11; a therapist's answer wins over the parent's
   - Done when: the answer in use carries the therapist's name, so the parent side can show "Updated by …"
   - Needs: A8.1
-- [ ] **Azim** — `A8.3` Movement and feedback clips, allowed only with the movement-videos consent; the therapist replies
+- [x] **Azim** — `A8.3` Movement and feedback clips, allowed only with the movement-videos consent; the therapist replies
   - Done when: only the shared therapist can watch; the parent can delete any clip
   - Needs: A8.1, A3.2
 - [ ] **Azim** — `A8.4` Helpers: the owner invites one second adult by phone; the helper accepts; the owner removes them
@@ -512,6 +512,9 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `A8.5` Server: rebuild the plan when a therapist changes restrictions, goals or exercises
   - Done when: a test proves a therapist's restriction never appears in the new plan
   - Needs: A8.2, A4.4
+- [ ] **Azim** — `A8.6` Movement and feedback clips encrypted at rest in storage (spec §15 "encrypted storage"), for example MinIO server-side encryption with a key kept like the health key
+  - Done when: a clip file read straight from the storage disk is not watchable
+  - Needs: A8.3, A2.6
 - [ ] **Azim** — `B26` Connect the therapist invite, form, exercise choice and clips to the server
   - Done when: a therapist changes a restriction in the browser and the parent's plan changes
   - Needs: A8.3, A8.5, B24, B25

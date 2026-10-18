@@ -13,6 +13,7 @@ from app.modules.auth import router as auth
 from app.modules.billing import router as billing
 from app.modules.children import consents
 from app.modules.children import router as children
+from app.modules.clips import router as clips
 from app.modules.health import router as health
 from app.modules.intake import router as intake
 from app.modules.plans import router as plans
@@ -56,6 +57,8 @@ app.include_router(therapists.router, prefix="/api/v1")
 app.include_router(therapists.therapist_router, prefix="/api/v1")
 app.include_router(therapist_form.router, prefix="/api/v1")
 app.include_router(therapist_form.therapist_router, prefix="/api/v1")
+app.include_router(clips.router, prefix="/api/v1")
+app.include_router(clips.therapist_router, prefix="/api/v1")
 app.include_router(play.router, prefix="/api/v1")
 app.include_router(cards.router, prefix="/api/v1")
 app.include_router(videos.router, prefix="/api/v1")

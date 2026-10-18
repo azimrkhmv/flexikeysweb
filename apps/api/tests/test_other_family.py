@@ -25,6 +25,8 @@ BODIES = {
     "CardChange": {"label": "X"},
     "TherapistInvite": {},
     "FormIn": {"answers": {}},
+    "ClipIn": {"kind": "movement", "storageKey": "x"},
+    "ReplyIn": {"text": "x"},
     "SessionChange": {"secondsPlayed": 10},
     "Placement": {"buckets": {"memory": "yes"}},
     "TryIn": {
@@ -52,6 +54,7 @@ PARTS = {
     "kind": "health",
     "number": "1",
     "card_id": str(uuid.uuid4()),
+    "clip_id": str(uuid.uuid4()),
     "done_id": str(uuid.uuid4()),
     "link_id": str(uuid.uuid4()),
     "run_id": str(uuid.uuid4()),

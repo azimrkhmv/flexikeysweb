@@ -2235,6 +2235,306 @@
     }
    }
   },
+  "/api/v1/children/{child_id}/clips/upload-link": {
+   "post": {
+    "tags": [
+     "clips"
+    ],
+    "summary": "Upload Link",
+    "operationId": "upload_link_api_v1_children__child_id__clips_upload_link_post",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ClipUpload"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/children/{child_id}/clips": {
+   "post": {
+    "tags": [
+     "clips"
+    ],
+    "summary": "Add Clip",
+    "description": "Add an uploaded clip. 409 too_many_clips beyond 3 movement or 30 feedback clips.",
+    "operationId": "add_clip_api_v1_children__child_id__clips_post",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ClipIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ClipOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "get": {
+    "tags": [
+     "clips"
+    ],
+    "summary": "Family Clips",
+    "description": "The family's own clips with the therapists' replies, oldest first.",
+    "operationId": "family_clips_api_v1_children__child_id__clips_get",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/ClipOut"
+         },
+         "title": "Response Family Clips Api V1 Children  Child Id  Clips Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/children/{child_id}/clips/{clip_id}": {
+   "delete": {
+    "tags": [
+     "clips"
+    ],
+    "summary": "Delete Clip",
+    "description": "The clip, its replies and its file are gone.",
+    "operationId": "delete_clip_api_v1_children__child_id__clips__clip_id__delete",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     },
+     {
+      "name": "clip_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Clip Id"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/therapist/children/{child_id}/clips": {
+   "get": {
+    "tags": [
+     "clips"
+    ],
+    "summary": "Therapist Clips",
+    "operationId": "therapist_clips_api_v1_therapist_children__child_id__clips_get",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/ClipOut"
+         },
+         "title": "Response Therapist Clips Api V1 Therapist Children  Child Id  Clips Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/therapist/children/{child_id}/clips/{clip_id}/replies": {
+   "post": {
+    "tags": [
+     "clips"
+    ],
+    "summary": "Reply",
+    "operationId": "reply_api_v1_therapist_children__child_id__clips__clip_id__replies_post",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     },
+     {
+      "name": "clip_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Clip Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ReplyIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ReplyOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/v1/children/{child_id}/access": {
    "get": {
     "tags": [
@@ -3724,6 +4024,109 @@
     ],
     "title": "ChildOut"
    },
+   "ClipIn": {
+    "properties": {
+     "kind": {
+      "$ref": "#/components/schemas/ClipKind"
+     },
+     "storageKey": {
+      "type": "string",
+      "title": "Storagekey"
+     },
+     "exerciseId": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Exerciseid"
+     }
+    },
+    "type": "object",
+    "required": [
+     "kind",
+     "storageKey"
+    ],
+    "title": "ClipIn"
+   },
+   "ClipKind": {
+    "type": "string",
+    "enum": [
+     "movement",
+     "feedback"
+    ],
+    "title": "ClipKind"
+   },
+   "ClipOut": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "kind": {
+      "$ref": "#/components/schemas/ClipKind"
+     },
+     "exerciseId": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Exerciseid"
+     },
+     "url": {
+      "type": "string",
+      "title": "Url"
+     },
+     "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Createdat"
+     },
+     "replies": {
+      "items": {
+       "$ref": "#/components/schemas/ReplyOut"
+      },
+      "type": "array",
+      "title": "Replies"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "kind",
+     "exerciseId",
+     "url",
+     "createdAt",
+     "replies"
+    ],
+    "title": "ClipOut"
+   },
+   "ClipUpload": {
+    "properties": {
+     "storageKey": {
+      "type": "string",
+      "title": "Storagekey"
+     },
+     "uploadUrl": {
+      "type": "string",
+      "title": "Uploadurl"
+     }
+    },
+    "type": "object",
+    "required": [
+     "storageKey",
+     "uploadUrl"
+    ],
+    "title": "ClipUpload"
+   },
    "ConsentChange": {
     "properties": {
      "granted": {
@@ -4964,6 +5367,52 @@
     },
     "type": "object",
     "title": "RefreshBody"
+   },
+   "ReplyIn": {
+    "properties": {
+     "text": {
+      "type": "string",
+      "maxLength": 1000,
+      "minLength": 1,
+      "title": "Text"
+     }
+    },
+    "type": "object",
+    "required": [
+     "text"
+    ],
+    "title": "ReplyIn"
+   },
+   "ReplyOut": {
+    "properties": {
+     "therapistName": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Therapistname"
+     },
+     "text": {
+      "type": "string",
+      "title": "Text"
+     },
+     "at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "At"
+     }
+    },
+    "type": "object",
+    "required": [
+     "therapistName",
+     "text",
+     "at"
+    ],
+    "title": "ReplyOut"
    },
    "ReviewDecision": {
     "type": "string",

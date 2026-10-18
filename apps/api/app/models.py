@@ -6,6 +6,7 @@ from app.modules.auth.models import RefreshToken
 from app.modules.billing.models import FamilyPlan
 from app.modules.children.consents import ChildConsent
 from app.modules.children.models import Child
+from app.modules.clips.models import Clip, ClipReply
 from app.modules.intake.models import IntakeAnswer, IntakeRound
 from app.modules.plans.models import FixedLevel, Plan, PlanItem, PlanReason
 from app.modules.play.models import (
@@ -27,6 +28,8 @@ __all__ = [
     "CareLink",
     "Child",
     "ChildConsent",
+    "Clip",
+    "ClipReply",
     "DailyAnswer",
     "DailyQuestion",
     "Exercise",
