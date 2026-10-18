@@ -146,3 +146,18 @@ class Try(Base):
     helped_by_adult: Mapped[bool]
     response_ms: Mapped[int | None] = mapped_column(Integer)
     received_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class VoiceCard(IdTimeMixin, Base):
+    """A My Voice card the parent made: a label, an emoji or the parent's own photo, and their recorded voice. Kept on
+    the server so the cards are the same on every device of the family (Q2). The files are in storage (A3.2)."""
+
+    __tablename__ = "voice_cards"
+
+    child_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("children.id", ondelete="CASCADE"), index=True)
+    category: Mapped[str] = mapped_column(String(24))
+    label: Mapped[str] = mapped_column(String(60))
+    emoji: Mapped[str] = mapped_column(String(16))
+    photo_key: Mapped[str | None] = mapped_column(String(256))
+    audio_key: Mapped[str | None] = mapped_column(String(256))
+    made_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))

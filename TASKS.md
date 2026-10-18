@@ -412,7 +412,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A6.2` Nightly job that deletes try records older than 90 days
   - Done when: old months are gone after the job runs
   - Needs: A6.1, A5.2
-- [ ] **Azim** — `A6.3` Table for the parent's own My Voice cards
+- [x] **Azim** — `A6.3` Table for the parent's own My Voice cards
   - Done when: the database change applies and rolls back
   - Needs: A2.1, Q2
 - [ ] **Azim** — `V4` Make all fixed audio in Uzbek, Russian and English: letters, words, game instructions
