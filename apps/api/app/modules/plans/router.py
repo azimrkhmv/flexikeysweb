@@ -18,7 +18,7 @@ from app.modules.children.router import get_visible_child
 from app.modules.plans import engine
 from app.modules.plans.models import FixedLevel, ItemKind, Plan, PlanItem, PlanReason
 from app.modules.plans.safety import LibraryExercise
-from app.modules.today.models import TaskDone
+from app.modules.today.models import Feeling, PausedDay, TaskDone
 from app.modules.videos.models import Exercise, Video, VideoStatus
 from app.schemas import ApiModel
 
@@ -88,11 +88,17 @@ async def create_plan(
     return plan
 
 
+class DoneMark(ApiModel):
+    id: uuid.UUID  # for PATCH /children/{id}/done/{done_id}
+    feeling: Feeling | None
+
+
 class ExerciseItem(ApiModel):
     exercise_id: str
     title: dict[str, str]  # uz, ru, en
     tool: str | None  # the Home Kit tool it needs, if any
     level: int
+    done: DoneMark | None  # marked done (A5.3), or not yet
 
 
 class GameItem(ApiModel):
@@ -102,9 +108,13 @@ class GameItem(ApiModel):
 
 class DayOut(ApiModel):
     day: int  # 0 = the first day, 27 = the last
-    date: date
+    date: date  # moved one day later by each paused day before it
     exercises: list[ExerciseItem]
     games: list[GameItem]
+
+
+class TodayOut(DayOut):
+    paused: bool  # today is paused: nothing to do, `day` waits for tomorrow
 
 
 class ReasonOut(ApiModel):
@@ -121,6 +131,7 @@ class PlanOut(ApiModel):
     exercises_allowed: bool
     days: list[DayOut]
     reasons: list[ReasonOut]
+    paused: list[date]  # the paused days; with `days` and their `done` marks this is the week view
 
 
 async def current_plan_of(db: AsyncSession, user: User, child_id: uuid.UUID) -> Plan:
@@ -158,6 +169,21 @@ async def exercise_levels(db: AsyncSession, plan: Plan) -> dict[str, int]:
     return {ref: fixed.get(ref) or engine.level_after(lvl, feelings.get(ref, [])) for ref, lvl in start.items()}
 
 
+async def paused_dates(db: AsyncSession, plan: Plan) -> list[date]:
+    return list(await db.scalars(select(PausedDay.paused_on).where(PausedDay.plan_id == plan.id).order_by("paused_on")))
+
+
+def day_dates(start: date, paused: list[date]) -> list[date]:
+    """The date of each plan day. A paused day is not missed: it moves the rest of the plan one day later (spec §10)."""
+    skip, d = set(paused), start
+    dates: list[date] = []
+    while len(dates) < engine.DAYS:
+        if d not in skip:
+            dates.append(d)
+        d += timedelta(days=1)
+    return dates
+
+
 async def _days(db: AsyncSession, plan: Plan, only: int | None = None) -> list[DayOut]:
     query = select(PlanItem).where(PlanItem.plan_id == plan.id).order_by(PlanItem.day, PlanItem.position)
     if only is not None:
@@ -168,14 +194,25 @@ async def _days(db: AsyncSession, plan: Plan, only: int | None = None) -> list[D
     )
     info: dict[str, tuple[dict[str, str], str | None]] = {eid: (title, tool) for eid, title, tool in rows}
     levels = await exercise_levels(db, plan)
+    done = {
+        item_id: DoneMark(id=done_id, feeling=feeling)
+        for item_id, done_id, feeling in await db.execute(
+            select(TaskDone.plan_item_id, TaskDone.id, TaskDone.feeling).where(
+                TaskDone.plan_item_id.in_({i.id for i in items})
+            )
+        )
+    }
+    dates = day_dates(plan.start_date, await paused_dates(db, plan))
     days = {
-        d: DayOut(day=d, date=plan.start_date + timedelta(days=d), exercises=[], games=[])
+        d: DayOut(day=d, date=dates[d], exercises=[], games=[])
         for d in sorted({i.day for i in items} | ({only} if only is not None else set()))
     }
     for i in items:
         if i.kind == ItemKind.exercise:
             title, tool = info[i.ref]
-            days[i.day].exercises.append(ExerciseItem(exercise_id=i.ref, title=title, tool=tool, level=levels[i.ref]))
+            days[i.day].exercises.append(
+                ExerciseItem(exercise_id=i.ref, title=title, tool=tool, level=levels[i.ref], done=done.get(i.id))
+            )
         else:
             days[i.day].games.append(GameItem(kind=i.ref, minutes=i.minutes or 0))
     return list(days.values())
@@ -195,14 +232,29 @@ async def current_plan(
         exercises_allowed=plan.exercises_allowed,
         days=await _days(db, plan),
         reasons=[ReasonOut(slot=r.slot, goal=r.goal, ref=r.ref, level=r.level) for r in reasons],
+        paused=await paused_dates(db, plan),
     )
 
 
+async def plan_day_today(db: AsyncSession, plan: Plan) -> tuple[int | None, bool]:
+    """Today's plan day (Tashkent date) and whether today is paused. None when the plan has not started or is over;
+    on a paused day, the plan day that waits for tomorrow."""
+    today = datetime.now(TASHKENT).date()
+    paused = await paused_dates(db, plan)
+    if today in paused:
+        return (today - plan.start_date).days - sum(p < today for p in paused), True
+    dates = day_dates(plan.start_date, paused)
+    return (dates.index(today) if today in dates else None), False
+
+
 @router.get("/{child_id}/today")
-async def today(child_id: uuid.UUID, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]) -> DayOut:
-    """Today's exercises and games (Tashkent date). 404 no_task_today before the plan starts or after its 28 days."""
+async def today(child_id: uuid.UUID, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]) -> TodayOut:
+    """Today's exercises and games (Tashkent date), after paused days moved the plan. On a paused day: paused, and
+    nothing to do. 404 no_task_today before the plan starts or after it ends."""
     plan = await current_plan_of(db, user, child_id)
-    day = (datetime.now(TASHKENT).date() - plan.start_date).days
-    if not 0 <= day < engine.DAYS:
+    day, paused = await plan_day_today(db, plan)
+    if day is None:
         raise AppError(404, "no_task_today")
-    return (await _days(db, plan, only=day))[0]
+    if paused:
+        return TodayOut(day=day, date=datetime.now(TASHKENT).date(), exercises=[], games=[], paused=True)
+    return TodayOut(**(await _days(db, plan, only=day))[0].model_dump(), paused=False)

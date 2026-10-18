@@ -51,7 +51,7 @@ def test_owner_and_helper_read_the_plan_and_today(client: TestClient, approved_p
         plan = client.get(f"{API}/children/{child}/plan", headers=who).json()
         assert len(plan["days"]) == 28 and plan["exercisesAllowed"] is True and plan["reasons"]
         today = client.get(f"{API}/children/{child}/today", headers=who).json()
-        assert today == plan["days"][0]
+        assert today == {**plan["days"][0], "paused": False}
     putty = [e for d in plan["days"] for e in d["exercises"] if e["exerciseId"] == "putty_squeeze"]
     assert putty and (putty[0]["title"]["en"], putty[0]["tool"]) == ("Squeeze the putty", "putty")
 

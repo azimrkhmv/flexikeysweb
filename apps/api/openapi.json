@@ -1186,7 +1186,7 @@
      "plans"
     ],
     "summary": "Today",
-    "description": "Today's exercises and games (Tashkent date). 404 no_task_today before the plan starts or after its 28 days.",
+    "description": "Today's exercises and games (Tashkent date), after paused days moved the plan. On a paused day: paused, and\nnothing to do. 404 no_task_today before the plan starts or after it ends.",
     "operationId": "today_api_v1_children__child_id__today_get",
     "parameters": [
      {
@@ -1206,7 +1206,7 @@
       "content": {
        "application/json": {
         "schema": {
-         "$ref": "#/components/schemas/DayOut"
+         "$ref": "#/components/schemas/TodayOut"
         }
        }
       }
@@ -1328,6 +1328,78 @@
         }
        }
       }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/children/{child_id}/pause": {
+   "post": {
+    "tags": [
+     "today"
+    ],
+    "summary": "Pause Today",
+    "description": "Pause today (Tashkent date): nothing to do, not missed; the rest of the plan moves one day later. Twice = once.\n404 no_task_today before the plan starts or after it ends.",
+    "operationId": "pause_today_api_v1_children__child_id__pause_post",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "delete": {
+    "tags": [
+     "today"
+    ],
+    "summary": "Resume Today",
+    "description": "Undo today's pause. Nothing happens when today is not paused.",
+    "operationId": "resume_today_api_v1_children__child_id__pause_delete",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "Successful Response"
      },
      "422": {
       "description": "Validation Error",
@@ -1906,6 +1978,31 @@
     ],
     "title": "DoneIn"
    },
+   "DoneMark": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "feeling": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Feeling"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "feeling"
+    ],
+    "title": "DoneMark"
+   },
    "DoneOut": {
     "properties": {
      "id": {
@@ -1979,6 +2076,16 @@
      "level": {
       "type": "integer",
       "title": "Level"
+     },
+     "done": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/DoneMark"
+       },
+       {
+        "type": "null"
+       }
+      ]
      }
     },
     "type": "object",
@@ -1986,7 +2093,8 @@
      "exerciseId",
      "title",
      "tool",
-     "level"
+     "level",
+     "done"
     ],
     "title": "ExerciseItem"
    },
@@ -2398,6 +2506,14 @@
       },
       "type": "array",
       "title": "Reasons"
+     },
+     "paused": {
+      "items": {
+       "type": "string",
+       "format": "date"
+      },
+      "type": "array",
+      "title": "Paused"
      }
     },
     "type": "object",
@@ -2407,7 +2523,8 @@
      "engineVersion",
      "exercisesAllowed",
      "days",
-     "reasons"
+     "reasons",
+     "paused"
     ],
     "title": "PlanOut"
    },
@@ -2797,6 +2914,46 @@
      "consent"
     ],
     "title": "Signup"
+   },
+   "TodayOut": {
+    "properties": {
+     "day": {
+      "type": "integer",
+      "title": "Day"
+     },
+     "date": {
+      "type": "string",
+      "format": "date",
+      "title": "Date"
+     },
+     "exercises": {
+      "items": {
+       "$ref": "#/components/schemas/ExerciseItem"
+      },
+      "type": "array",
+      "title": "Exercises"
+     },
+     "games": {
+      "items": {
+       "$ref": "#/components/schemas/GameItem"
+      },
+      "type": "array",
+      "title": "Games"
+     },
+     "paused": {
+      "type": "boolean",
+      "title": "Paused"
+     }
+    },
+    "type": "object",
+    "required": [
+     "day",
+     "date",
+     "exercises",
+     "games",
+     "paused"
+    ],
+    "title": "TodayOut"
    },
    "Tokens": {
     "properties": {

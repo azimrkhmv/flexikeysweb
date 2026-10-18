@@ -462,7 +462,8 @@ export interface paths {
         };
         /**
          * Today
-         * @description Today's exercises and games (Tashkent date). 404 no_task_today before the plan starts or after its 28 days.
+         * @description Today's exercises and games (Tashkent date), after paused days moved the plan. On a paused day: paused, and
+         *     nothing to do. 404 no_task_today before the plan starts or after it ends.
          */
         get: operations["today_api_v1_children__child_id__today_get"];
         put?: never;
@@ -513,6 +514,31 @@ export interface paths {
          *     "easy" raise it, unless a therapist fixed it.
          */
         patch: operations["rate_done_api_v1_children__child_id__done__done_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/children/{child_id}/pause": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Pause Today
+         * @description Pause today (Tashkent date): nothing to do, not missed; the rest of the plan moves one day later. Twice = once.
+         *     404 no_task_today before the plan starts or after it ends.
+         */
+        post: operations["pause_today_api_v1_children__child_id__pause_post"];
+        /**
+         * Resume Today
+         * @description Undo today's pause. Nothing happens when today is not paused.
+         */
+        delete: operations["resume_today_api_v1_children__child_id__pause_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/v1/admin/videos/upload-link": {
@@ -734,6 +760,15 @@ export interface components {
             /** Exerciseid */
             exerciseId: string;
         };
+        /** DoneMark */
+        DoneMark: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            feeling: components["schemas"]["Feeling"] | null;
+        };
         /** DoneOut */
         DoneOut: {
             /**
@@ -766,6 +801,7 @@ export interface components {
             tool: string | null;
             /** Level */
             level: number;
+            done: components["schemas"]["DoneMark"] | null;
         };
         /** FamilyVideo */
         FamilyVideo: {
@@ -910,6 +946,8 @@ export interface components {
             days: components["schemas"]["DayOut"][];
             /** Reasons */
             reasons: components["schemas"]["ReasonOut"][];
+            /** Paused */
+            paused: string[];
         };
         /** ReasonOut */
         ReasonOut: {
@@ -1040,6 +1078,22 @@ export interface components {
             district: string;
             /** Consent */
             consent: boolean;
+        };
+        /** TodayOut */
+        TodayOut: {
+            /** Day */
+            day: number;
+            /**
+             * Date
+             * Format: date
+             */
+            date: string;
+            /** Exercises */
+            exercises: components["schemas"]["ExerciseItem"][];
+            /** Games */
+            games: components["schemas"]["GameItem"][];
+            /** Paused */
+            paused: boolean;
         };
         /** Tokens */
         Tokens: {
@@ -2010,7 +2064,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["DayOut"];
+                    "application/json": components["schemas"]["TodayOut"];
                 };
             };
             /** @description Validation Error */
@@ -2083,6 +2137,64 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["DoneOut"];
                 };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    pause_today_api_v1_children__child_id__pause_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    resume_today_api_v1_children__child_id__pause_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {

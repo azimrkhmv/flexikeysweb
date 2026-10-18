@@ -366,7 +366,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A5.3` Server: Done with easy / OK / hard
   - Done when: two "hard" lower the level and two "easy" raise it, unless a therapist fixed the level
   - Needs: A5.1, A4.5
-- [ ] **Azim** — `A5.4` Server: pause today; week view
+- [x] **Azim** — `A5.4` Server: pause today; week view
   - Done when: a paused day shifts the plan and is not counted as missed
   - Needs: A5.3
 - [ ] **Azim** — `A5.5` Server: daily question
