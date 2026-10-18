@@ -184,6 +184,24 @@ test("one tap marks an exercise done; two \"hard\" in a row make it easier next 
   await expect(again.getByRole("button", { name: "Hard" })).toHaveAttribute("aria-pressed", "true"); // saved
 });
 
+test("pause today: the day is not missed and the plan moves forward one day", async ({ page }) => {
+  await setup(page);
+  await loginAs(page, "Parent");
+  const ali = page.getByRole("region", { name: "Today" }).getByRole("article").filter({ hasText: "Ali" });
+  const todays = await ali.getByRole("listitem").filter({ has: page.getByRole("button", { name: "Done" }) }).locator("p.font-extrabold").allInnerTexts();
+  await ali.getByRole("button", { name: "Pause today" }).click();
+  await expect(ali.getByText("Paused today. Rest well: the plan continues tomorrow.")).toBeVisible();
+  const week = ali.getByRole("list", { name: "This week" });
+  await expect(week.getByRole("listitem").filter({ hasText: "Paused" })).toHaveCount(1);
+  await expect(week).not.toContainText(/missed/i);
+
+  // tomorrow brings today's exercises
+  await page.clock.setFixedTime(new Date("2026-09-30T10:00:00+05:00"));
+  await page.reload();
+  await expect(ali.getByRole("listitem").filter({ has: page.getByRole("button", { name: "Done" }) }).locator("p.font-extrabold")).toHaveText(todays);
+  await expect(week.getByRole("listitem").filter({ hasText: "Paused" })).toHaveCount(1); // yesterday stays a pause
+});
+
 test("Uzbek Cyrillic is a full app language", async ({ page }) => {
   await setup(page);
   await page.goto("/signup");

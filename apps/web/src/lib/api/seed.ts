@@ -124,6 +124,7 @@ export function seed(): DB {
     videos: exerciseLibrary("u_physio", iso(now - 10 * DAY)),
     roadmaps: [],
     tasksDone: [],
+    pausedDays: [],
   };
 
   // ~2 weeks of play history so dashboards have something real to show.

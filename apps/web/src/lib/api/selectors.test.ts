@@ -52,3 +52,20 @@ describe("families (B2)", () => {
     expect(familyForNewChild(db, "u_therapist")).not.toBe("fam_1"); // no family yet: one is made
   });
 });
+
+describe("sel.planDayOn", () => {
+  it("a paused day is not missed: the plan moves forward one day", () => {
+    const db = seed();
+    const plan = sel.roadmap(db, "ch_ali")!;
+    const start = Date.parse(plan.startDate);
+    const date = (n: number) => new Date(start + n * 86_400_000).toISOString().slice(0, 10);
+    expect(sel.planDayOn(db, "ch_ali", date(2))).toBe(2);
+    db.pausedDays.push({ childId: "ch_ali", roadmapId: plan.id, date: date(2) });
+    expect(sel.planDayOn(db, "ch_ali", date(1))).toBe(1);
+    expect(sel.planDayOn(db, "ch_ali", date(2))).toBe("paused");
+    expect(sel.planDayOn(db, "ch_ali", date(3))).toBe(2); // yesterday's plan day comes today
+    expect(sel.planDayOn(db, "ch_ali", date(28))).toBe(27); // the plan ends one day later
+    expect(sel.planDayOn(db, "ch_ali", date(29))).toBeNull();
+    expect(sel.planDayOn(db, "ch_ali", date(-1))).toBeNull();
+  });
+});

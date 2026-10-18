@@ -25,6 +25,23 @@ export const sel = {
     const plan = sel.roadmap(db, childId);
     return plan ? (db.tasksDone ?? []).filter((t) => t.roadmapId === plan.id).sort((a, b) => a.at.localeCompare(b.at)) : [];
   },
+  /** Paused dates of the child's current plan. */
+  pausedDays: (db: DB, childId: string) => {
+    const plan = sel.roadmap(db, childId);
+    return plan ? (db.pausedDays ?? []).filter((p) => p.roadmapId === plan.id).map((p) => p.date) : [];
+  },
+  /**
+   * Which plan day falls on this date (YYYY-MM-DD): each paused day before it moves the plan forward one day, so a
+   * paused day is never missed (spec §10). "paused" on a paused date, null before the plan starts or after it ends.
+   */
+  planDayOn: (db: DB, childId: string, date: string): number | "paused" | null => {
+    const plan = sel.roadmap(db, childId);
+    if (!plan) return null;
+    const paused = sel.pausedDays(db, childId);
+    if (paused.includes(date)) return "paused";
+    const i = Math.round((Date.parse(date) - Date.parse(plan.startDate)) / DAY) - paused.filter((p) => p < date).length;
+    return i >= 0 && i < plan.days.length ? i : null;
+  },
   /** An exercise's level now: the plan's level, moved by the parent's easy / hard ratings (spec §8). */
   exerciseLevel: (db: DB, childId: string, videoId: string) => {
     const start = sel.roadmap(db, childId)?.days.flatMap((d) => d.exercises).find((e) => e.videoId === videoId)?.level ?? 1;

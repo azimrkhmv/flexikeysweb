@@ -8,7 +8,7 @@ import { buildRoadmap } from "../roadmap";
 import { getMedia, putMedia } from "../media";
 import { read, write, net } from "./db";
 import { audit, familyForNewChild, requireChildAccess, requireUser } from "./guards";
-import { ApiError, CONSENT_VERSION, id, iso } from "./schema";
+import { ApiError, CONSENT_VERSION, id, iso, localDate } from "./schema";
 import { sel } from "./selectors";
 import type { Child, Feeling, IntakeValue, Respondent, TaskDone, VideoStatus } from "../types";
 
@@ -121,6 +121,30 @@ export const intakeApi = {
     if (!read().tasksDone.some((t) => t.id === doneId && t.childId === childId)) throw new ApiError("not_found");
     write((db) => {
       db.tasksDone.find((t) => t.id === doneId)!.feeling = feeling;
+    });
+    return net(undefined);
+  },
+
+  /** POST /children/{id}/pause — pause today: nothing to do, the plan moves forward one day. Twice = once. */
+  async pauseToday(childId: string) {
+    requireChildAccess(childId, ["owner"]);
+    const date = localDate();
+    const on = sel.planDayOn(read(), childId, date);
+    if (on === "paused") return net(undefined);
+    if (on === null) throw new ApiError("no_task_today");
+    const roadmapId = sel.roadmap(read(), childId)!.id;
+    write((db) => {
+      db.pausedDays.push({ childId, roadmapId, date });
+    });
+    return net(undefined);
+  },
+  /** DELETE /children/{id}/pause — undo today's pause. */
+  async resumeToday(childId: string) {
+    requireChildAccess(childId, ["owner"]);
+    const roadmapId = sel.roadmap(read(), childId)?.id;
+    const date = localDate();
+    write((db) => {
+      db.pausedDays = db.pausedDays.filter((p) => !(p.roadmapId === roadmapId && p.date === date));
     });
     return net(undefined);
   },

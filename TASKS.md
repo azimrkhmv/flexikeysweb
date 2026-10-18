@@ -357,7 +357,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `B8` One-tap Done, then optional easy / OK / hard
   - Done when: two "hard" in a row lower that exercise's level, two "easy" raise it
   - Needs: B7
-- [ ] **Azim** — `B9` Pause today; week view with done, today and coming days
+- [x] **Azim** — `B9` Pause today; week view with done, today and coming days
   - Done when: a paused day is not shown as missed and the plan moves forward one day
   - Needs: B7
 - [ ] **Azim** — `B10` Daily question
@@ -396,6 +396,9 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `B49` Demo dates in Tashkent time: the demo plan's start date (lib/api/intake.ts) and the plan view's "today" (PlanTab) use the UTC date, so from midnight to 5 am they are one day behind the Today screen
   - Done when: a demo plan made at 1 am Tashkent time starts that day, and the plan view marks the same day as Today
   - Needs: —
+- [ ] **Azim** — `B50` The 4-week plan view moves its dates with paused days, like the Today screen does (`sel.planDayOn`)
+  - Done when: after a pause, the plan view and the Today screen show the same plan day for each date
+  - Needs: B9
 
 ### M3 — Child play
 

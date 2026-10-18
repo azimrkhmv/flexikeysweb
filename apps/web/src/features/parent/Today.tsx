@@ -1,52 +1,61 @@
 "use client";
 
-import { Check, Gamepad2, Play, Video } from "lucide-react";
+import { Check, Gamepad2, Pause, Play, Video } from "lucide-react";
 import { Avatar, Button, Card, Chip, LinkButton, useAction } from "@/components/ui";
 import { fmtDate } from "@/lib/format";
 import { api, sel, useDb } from "@/lib/api";
+import { localDate } from "@/lib/api/schema";
 import { useLang, useT } from "@/lib/i18n";
 import type { Child, ExerciseVideo, Feeling } from "@/lib/types";
 
 // Today (spec §10): the first thing a parent sees. Each child's exercises for today, with the video and the Home Kit
-// tool, and today's games. One tap marks an exercise done, then an optional easy / OK / hard (spec §8). Pause and
-// the week view come next (B9). No scores, no percentages (rule 1).
+// tool, and today's games. One tap marks an exercise done, then an optional easy / OK / hard (spec §8). A sick or
+// very tired child: pause today, and the plan moves forward one day. The week view shows done, today and coming
+// days; a day not done is never called "missed". No scores, no percentages (rule 1).
 
-/** Today's date on this device, YYYY-MM-DD. */
-const localIso = () => new Date().toLocaleDateString("en-CA");
+const DAY_MS = 86_400_000;
+const addDays = (date: string, n: number) => new Date(Date.parse(date) + n * DAY_MS).toISOString().slice(0, 10);
 
 export function Today({ kids }: { kids: Child[] }) {
   const t = useT();
   const db = useDb();
-  const withPlan = kids.flatMap((child) => {
-    const plan = sel.roadmap(db, child.id);
-    return plan ? [{ child, plan }] : [];
-  });
+  const withPlan = kids.filter((child) => sel.roadmap(db, child.id));
   if (withPlan.length === 0) return null;
   return (
     <section aria-labelledby="today-title" className="mb-6 space-y-4">
       <h2 id="today-title" className="text-lg font-extrabold text-ink">
         {t("plan.today")}
       </h2>
-      {withPlan.map(({ child, plan }) => (
-        <ChildToday key={child.id} child={child} plan={plan} />
+      {withPlan.map((child) => (
+        <ChildToday key={child.id} child={child} />
       ))}
     </section>
   );
 }
 
-function ChildToday({ child, plan }: { child: Child; plan: NonNullable<ReturnType<typeof sel.roadmap>> }) {
+function ChildToday({ child }: { child: Child }) {
   const t = useT();
   const db = useDb();
   const [lang] = useLang();
-  const today = localIso();
-  const dayIndex = plan.days.findIndex((d) => d.date === today);
-  const day = plan.days[dayIndex];
+  const plan = sel.roadmap(db, child.id)!;
+  const today = localDate();
+  const on = sel.planDayOn(db, child.id, today);
+  const day = typeof on === "number" ? plan.days[on] : undefined;
+  const pause = useAction(api.pauseToday);
+  const resume = useAction(api.resumeToday);
   return (
     <Card as="article" className="space-y-4">
       <h3 className="flex items-center gap-3 text-xl font-extrabold">
         <Avatar emoji={child.avatar} size={40} tone="lavender" /> {child.name}
       </h3>
-      {!day ? (
+      {on === "paused" ? (
+        <div className="space-y-3 rounded-2xl bg-sky-soft p-4">
+          <p className="font-bold text-ink">{t("today.paused")}</p>
+          <Button variant="outline" size="sm" pending={resume.pending} onClick={() => resume.run(child.id)}>
+            {t("today.resume")}
+          </Button>
+        </div>
+      ) : !day ? (
         <p className="text-ink-2">
           {today < plan.startDate ? t("today.notYet", { date: fmtDate(plan.startDate, lang) }) : t("today.finished")}
         </p>
@@ -58,7 +67,7 @@ function ChildToday({ child, plan }: { child: Child; plan: NonNullable<ReturnTyp
               <ul className="grid gap-3 md:grid-cols-2">
                 {day.exercises.map((e) => {
                   const v = sel.video(db, e.videoId);
-                  return v && <ExerciseItem key={e.videoId} child={child} day={dayIndex} video={v} />;
+                  return v && <ExerciseItem key={e.videoId} child={child} day={on as number} video={v} />;
                 })}
               </ul>
             </div>
@@ -74,13 +83,53 @@ function ChildToday({ child, plan }: { child: Child; plan: NonNullable<ReturnTyp
                 </li>
               ))}
             </ul>
-            <LinkButton href="/play" size="md" className="mt-3">
-              <Play className="size-4" aria-hidden /> {t("parent.home.play")}
-            </LinkButton>
+            <div className="mt-3 flex flex-wrap items-center gap-3">
+              <LinkButton href="/play" size="md">
+                <Play className="size-4" aria-hidden /> {t("parent.home.play")}
+              </LinkButton>
+              <Button variant="ghost" pending={pause.pending} onClick={() => pause.run(child.id)}>
+                <Pause className="size-4" aria-hidden /> {t("today.pause")}
+              </Button>
+            </div>
+            <p className="mt-1 text-xs text-muted">{t("today.pause.d")}</p>
           </div>
         </>
       )}
+      {(pause.error ?? resume.error) && <p role="alert" className="text-sm font-semibold text-[#8f3a2c]">{pause.error ?? resume.error}</p>}
+      <Week child={child} today={today} />
     </Card>
+  );
+}
+
+/** Monday to Sunday of this week: done, paused, today and coming days. Past days not done get no label. */
+function Week({ child, today }: { child: Child; today: string }) {
+  const t = useT();
+  const db = useDb();
+  const [lang] = useLang();
+  const monday = addDays(today, -((new Date(Date.parse(today)).getUTCDay() + 6) % 7));
+  const done = new Set(sel.tasksDone(db, child.id).map((d) => d.day));
+  const fmt = (d: string) => new Date(`${d}T00:00:00`).toLocaleDateString(lang === "uz" ? "uz-Latn" : lang, { weekday: "short", day: "numeric" });
+  return (
+    <ol aria-label={t("today.week")} className="grid grid-cols-7 gap-1.5">
+      {Array.from({ length: 7 }, (_, k) => {
+        const date = addDays(monday, k);
+        const on = sel.planDayOn(db, child.id, date);
+        const status =
+          on === "paused" ? "paused" : on === null ? null : done.has(on) ? "done" : date === today ? "today" : date > today ? "coming" : null;
+        return (
+          <li
+            key={date}
+            className={`flex flex-col items-center gap-1 rounded-xl border p-2 text-center text-xs ${date === today ? "border-teal ring-2 ring-teal" : "border-line"} ${status === "done" ? "bg-leaf-soft" : status === "paused" ? "bg-sky-soft" : ""}`}
+          >
+            <span className="font-bold text-ink">{fmt(date)}</span>
+            <span className="text-muted">
+              {status === "done" && <Check className="mx-auto size-4 text-ink" aria-hidden />}
+              {status && t(`today.week.${status}`)}
+            </span>
+          </li>
+        );
+      })}
+    </ol>
   );
 }
 

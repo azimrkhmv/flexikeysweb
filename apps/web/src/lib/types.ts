@@ -488,6 +488,14 @@ export interface TaskDone {
   at: string;
 }
 
+/** A day the parent paused (sick or very tired child): not missed, the plan moves forward one day (spec §10). */
+export interface PausedDay {
+  childId: string;
+  roadmapId: string;
+  /** YYYY-MM-DD. */
+  date: string;
+}
+
 export interface Roadmap {
   id: string;
   childId: string;
