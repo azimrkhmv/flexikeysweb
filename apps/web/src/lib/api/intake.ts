@@ -13,7 +13,7 @@ import { ApiError, CONSENT_VERSION, id, iso, localDate } from "./schema";
 import { sel } from "./selectors";
 import type { Child, Feeling, IntakeValue, Respondent, TaskDone, VideoStatus } from "../types";
 
-const today = () => iso().slice(0, 10);
+const today = () => localDate();
 
 export const intakeApi = {
   /** POST /children — from intake step 1 (P1–P5, P8). Basic consent was given at sign-up. */

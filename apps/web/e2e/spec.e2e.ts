@@ -228,6 +228,20 @@ test("one daily question a day; the answer is saved", async ({ page }) => {
   await expect(daily.getByRole("button", { name: "Sometimes or with help" })).toHaveAttribute("aria-pressed", "false");
 });
 
+test("at 1 am Tashkent time the plan and the plan view use that day, like the Today screen", async ({ page }) => {
+  await setup(page);
+  await page.clock.setFixedTime(new Date("2026-09-29T01:00:00+05:00")); // still the 28th in UTC
+  await loginAs(page, "Parent");
+  const week = page.getByRole("region", { name: "Today" }).getByRole("list", { name: "This week" });
+  await expect(week.getByRole("listitem").filter({ hasText: "Today" })).toContainText("29");
+  await page.goto("/parent/child/ch_ali");
+  await page.getByRole("tab", { name: "Plan" }).click();
+  await page.getByRole("button", { name: "Week 1" }).click(); // Ali's plan started 3 days ago, on the 26th
+  const days = page.locator("li").filter({ has: page.getByText("Games", { exact: true }) });
+  await expect(days.first()).toContainText("26");
+  await expect(days.filter({ has: page.getByText("Today", { exact: true }) })).toContainText("29");
+});
+
 test("Uzbek Cyrillic is a full app language", async ({ page }) => {
   await setup(page);
   await page.goto("/signup");

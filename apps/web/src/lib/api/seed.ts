@@ -7,7 +7,7 @@ import { LEVEL_BY_ID } from "@/content/levels";
 import { DEFAULT_PROFILE } from "../adaptive";
 import { buildRoadmap } from "../roadmap";
 import type { Lang } from "../i18n";
-import { CONSENT_VERSION, DEMO_PASSWORD, DEMO_PHONES, DAY, DB_VERSION, id, iso, type DB } from "./schema";
+import { CONSENT_VERSION, DEMO_PASSWORD, DEMO_PHONES, DAY, DB_VERSION, id, iso, localDate, type DB } from "./schema";
 import type { AdaptationChange, Child, Consent, ConsentScope, IntakeValue, ProfileRecord, Role, User, UserStatus } from "../types";
 
 // ---------------------------------------------------------------- seed
@@ -190,7 +190,7 @@ export function seed(): DB {
   db.intakeRounds.push({ childId: "ch_ali", round: 1, startedAt: doneAt, completedAt: doneAt });
   db.intakeAnswers = Object.entries(aliAnswers).map(([questionId, value]) => ({ childId: "ch_ali", round: 1, questionId, value, answeredAt: doneAt, respondent: "parent" }));
   db.roadmaps.push({
-    ...buildRoadmap({ childId: "ch_ali", round: 1, birthDate: "2019-04-12", startDate: doneAt.slice(0, 10), lang: "uz", answers: aliAnswers, healthConsent: true }, db.videos),
+    ...buildRoadmap({ childId: "ch_ali", round: 1, birthDate: "2019-04-12", startDate: localDate(now - 3 * DAY), lang: "uz", answers: aliAnswers, healthConsent: true }, db.videos),
     id: "rm_ali", createdAt: doneAt,
   });
   Object.assign(db.children.find((c) => c.id === "ch_ali")!, { birthDate: "2019-04-12", sex: "boy", relationship: "mother" });

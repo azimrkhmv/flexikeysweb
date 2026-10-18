@@ -74,8 +74,8 @@ export const DAY = 86_400_000;
 
 export const id = () => (typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2));
 export const iso = (t = Date.now()) => new Date(t).toISOString();
-/** Today on this device, YYYY-MM-DD (the server uses the Tashkent date). */
-export const localDate = () => new Date().toLocaleDateString("en-CA");
+/** The date on this device, YYYY-MM-DD: today, or the day of `t` (the server uses the Tashkent date). */
+export const localDate = (t = Date.now()) => new Date(t).toLocaleDateString("en-CA");
 const CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"; // no 0/O/1/I/L (SEC-5)
 export const makeCode = (n = 6) => Array.from({ length: n }, () => CODE_ALPHABET[Math.floor(Math.random() * CODE_ALPHABET.length)]).join("");
 

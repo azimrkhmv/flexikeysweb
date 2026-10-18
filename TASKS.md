@@ -393,7 +393,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `B12` Video player on the Today screen; keep the next 7 days of videos for offline use on Wi-Fi
   - Done when: today's videos play with the internet off
   - Needs: C5, A5.7
-- [ ] **Azim** — `B49` Demo dates in Tashkent time: the demo plan's start date (lib/api/intake.ts) and the plan view's "today" (PlanTab) use the UTC date, so from midnight to 5 am they are one day behind the Today screen
+- [x] **Azim** — `B49` Demo dates in Tashkent time: the demo plan's start date (lib/api/intake.ts) and the plan view's "today" (PlanTab) use the UTC date, so from midnight to 5 am they are one day behind the Today screen
   - Done when: a demo plan made at 1 am Tashkent time starts that day, and the plan view marks the same day as Today
   - Needs: —
 - [ ] **Azim** — `B50` The 4-week plan view moves its dates with paused days, like the Today screen does (`sel.planDayOn`)

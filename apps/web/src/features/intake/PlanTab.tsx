@@ -4,12 +4,12 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button, Card, Chip, Empty, LinkButton, useAction } from "@/components/ui";
 import { api, sel, useDb } from "@/lib/api";
+import { localDate } from "@/lib/api/schema";
 import { useLang, useT } from "@/lib/i18n";
 import type { Child, Roadmap } from "@/lib/types";
 
 // The 4-week roadmap, read-only (Today with one-tap Done is build #5). No scores, no percentages (spec rule 1).
 
-const iso = () => new Date().toISOString().slice(0, 10);
 
 export function PlanTab({ child }: { child: Child }) {
   const t = useT();
@@ -74,7 +74,7 @@ function Weeks({ plan }: { plan: Roadmap }) {
   const t = useT();
   const db = useDb();
   const [lang] = useLang();
-  const today = iso();
+  const today = localDate();
   const current = Math.max(0, Math.min(3, Math.floor(plan.days.findIndex((d) => d.date === today) / 7)));
   const [week, setWeek] = useState(current);
   const fmt = (d: string) => new Date(`${d}T00:00:00`).toLocaleDateString(lang === "uz" ? "uz-Latn" : lang, { weekday: "short", day: "numeric", month: "short" });
