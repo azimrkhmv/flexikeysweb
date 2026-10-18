@@ -15,6 +15,7 @@ from typing import Any
 
 from app.modules.plans.safety import LibraryExercise, Therapist, exclusion_reason, plan_facts
 
+ENGINE_VERSION = "py-1"  # stored with every plan; change it whenever the rules change
 DAYS = 28
 GAME_LIMIT_MIN = 20
 GAME_SLOT_MIN = 5

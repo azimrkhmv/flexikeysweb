@@ -21,6 +21,7 @@ from app.modules.children.consents import ConsentKind, has_consent, require_cons
 from app.modules.children.router import get_visible_child
 from app.modules.intake.models import IntakeAnswer, IntakeRound
 from app.modules.intake.rules import QUESTIONS, check_answer, missing_answers
+from app.modules.plans.router import create_plan
 from app.schemas import ApiModel
 from app.settings import settings
 
@@ -124,15 +125,17 @@ async def list_rounds(
 async def finish_round(
     child_id: uuid.UUID, number: int, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]
 ) -> RoundOut:
-    """Close the round once every required question has an answer ("Not sure" counts)."""
-    await get_visible_child(db, user, child_id)
+    """Close the round once every required question has an answer ("Not sure" counts), and build the plan (A4.4)."""
+    child = await get_visible_child(db, user, child_id)
     r = await _round(db, child_id, number)
     if r.completed_at is not None:
         raise AppError(409, "round_finished")
     answers = (await _out(db, r)).answers
-    if missing := missing_answers(answers, await has_consent(db, child_id, ConsentKind.health)):
+    health = await has_consent(db, child_id, ConsentKind.health)
+    if missing := missing_answers(answers, health):
         raise AppError(422, "round_incomplete", missing=missing)
     r.completed_at = datetime.now(UTC)
+    await create_plan(db, child, r.id, answers, health)  # in the same transaction: no finished round without a plan
     await db.commit()
     return await _out(db, r)
 
