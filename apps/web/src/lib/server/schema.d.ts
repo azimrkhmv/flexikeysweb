@@ -384,7 +384,7 @@ export interface paths {
         put?: never;
         /**
          * Finish Round
-         * @description Close the round once every required question has an answer ("Not sure" counts).
+         * @description Close the round once every required question has an answer ("Not sure" counts), and build the plan (A4.4).
          */
         post: operations["finish_round_api_v1_children__child_id__intake__number__finish_post"];
         delete?: never;

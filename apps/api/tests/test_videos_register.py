@@ -92,9 +92,12 @@ def test_a_new_video_waits_for_review(client: TestClient) -> None:
         "waiting_review",
         90,
     )
-    assert audit_for(client, uuid.UUID(video["id"])) == [
-        ("video.registered", admin_id, {"exercise": "putty_squeeze", "lang": "uz"})
-    ]
+    # The last entry: other tests also use this exercise's Uzbek video (one video per exercise and language).
+    assert audit_for(client, uuid.UUID(video["id"]))[-1] == (
+        "video.registered",
+        admin_id,
+        {"exercise": "putty_squeeze", "lang": "uz"},
+    )
 
 
 def test_a_new_file_replaces_an_approved_one_and_waits_again(client: TestClient) -> None:
