@@ -5,6 +5,7 @@ import { Avatar, Button, Card, Chip, LinkButton, useAction } from "@/components/
 import { fmtDate } from "@/lib/format";
 import { api, sel, useDb } from "@/lib/api";
 import { localDate } from "@/lib/api/schema";
+import { dailyQuestionOn } from "@/content/daily";
 import { useLang, useT } from "@/lib/i18n";
 import type { Child, ExerciseVideo, Feeling } from "@/lib/types";
 
@@ -96,8 +97,35 @@ function ChildToday({ child }: { child: Child }) {
         </>
       )}
       {(pause.error ?? resume.error) && <p role="alert" className="text-sm font-semibold text-[#8f3a2c]">{pause.error ?? resume.error}</p>}
+      {on !== null && <DailyQuestion child={child} today={today} />}
       <Week child={child} today={today} />
     </Card>
+  );
+}
+
+/** One short question a day (spec §10); the parent may skip it or change the answer today. */
+function DailyQuestion({ child, today }: { child: Child; today: string }) {
+  const t = useT();
+  const db = useDb();
+  const q = dailyQuestionOn(today);
+  const answer = sel.dailyAnswer(db, child.id, today);
+  const save = useAction(api.answerDaily);
+  return (
+    <div role="group" aria-labelledby={`daily-${child.id}`} className="space-y-2 rounded-2xl border border-line p-4">
+      <p className="text-xs font-bold uppercase text-muted">{t("daily.title")}</p>
+      <p id={`daily-${child.id}`} className="font-bold text-ink">
+        {t(`daily.${q.id}`)}
+      </p>
+      <div className="flex flex-wrap gap-2">
+        {([2, 1, 0] as const).map((v) => (
+          <Button key={v} size="sm" variant={answer?.value === v ? "soft" : "outline"} aria-pressed={answer?.value === v} onClick={() => save.run(child.id, q.id, v)}>
+            {t(`intake.ability.${v}`)}
+          </Button>
+        ))}
+      </div>
+      {answer && <p className="text-sm text-ink-2">{t("daily.thanks")}</p>}
+      {save.error && <p role="alert" className="text-sm font-semibold text-[#8f3a2c]">{save.error}</p>}
+    </div>
   );
 }
 

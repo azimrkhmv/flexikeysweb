@@ -202,6 +202,24 @@ test("pause today: the day is not missed and the plan moves forward one day", as
   await expect(week.getByRole("listitem").filter({ hasText: "Paused" })).toHaveCount(1); // yesterday stays a pause
 });
 
+test("one daily question a day; the answer is saved", async ({ page }) => {
+  await setup(page);
+  await loginAs(page, "Parent");
+  const ali = page.getByRole("region", { name: "Today" }).getByRole("article").filter({ hasText: "Ali" });
+  const daily = ali.getByRole("group").filter({ hasText: "Question of the day" });
+  await expect(daily).toHaveCount(1);
+  const question = await daily.locator("p[id^=daily-]").innerText();
+  await daily.getByRole("button", { name: "Sometimes or with help" }).click();
+  await expect(daily.getByText("Thank you.", { exact: false })).toBeVisible();
+  await page.reload();
+  await expect(daily.getByRole("button", { name: "Sometimes or with help" })).toHaveAttribute("aria-pressed", "true");
+
+  await page.clock.setFixedTime(new Date("2026-09-30T10:00:00+05:00"));
+  await page.reload();
+  await expect(daily.locator("p[id^=daily-]")).not.toHaveText(question); // a new question tomorrow
+  await expect(daily.getByRole("button", { name: "Sometimes or with help" })).toHaveAttribute("aria-pressed", "false");
+});
+
 test("Uzbek Cyrillic is a full app language", async ({ page }) => {
   await setup(page);
   await page.goto("/signup");

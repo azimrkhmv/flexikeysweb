@@ -125,6 +125,7 @@ export function seed(): DB {
     roadmaps: [],
     tasksDone: [],
     pausedDays: [],
+    dailyAnswers: [],
   };
 
   // ~2 weeks of play history so dashboards have something real to show.

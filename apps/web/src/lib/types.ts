@@ -496,6 +496,16 @@ export interface PausedDay {
   date: string;
 }
 
+/** The answer to one day's question (spec §10): 2 = yes, 1 = sometimes or with help, 0 = not yet. */
+export interface DailyAnswer {
+  childId: string;
+  questionId: string;
+  /** YYYY-MM-DD: one answer per child per day. */
+  date: string;
+  value: 0 | 1 | 2;
+  at: string;
+}
+
 export interface Roadmap {
   id: string;
   childId: string;

@@ -42,6 +42,8 @@ export const sel = {
     const i = Math.round((Date.parse(date) - Date.parse(plan.startDate)) / DAY) - paused.filter((p) => p < date).length;
     return i >= 0 && i < plan.days.length ? i : null;
   },
+  /** The child's answer to the question of this day, if given. */
+  dailyAnswer: (db: DB, childId: string, date: string) => (db.dailyAnswers ?? []).find((a) => a.childId === childId && a.date === date) ?? null,
   /** An exercise's level now: the plan's level, moved by the parent's easy / hard ratings (spec §8). */
   exerciseLevel: (db: DB, childId: string, videoId: string) => {
     const start = sel.roadmap(db, childId)?.days.flatMap((d) => d.exercises).find((e) => e.videoId === videoId)?.level ?? 1;

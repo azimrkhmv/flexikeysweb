@@ -360,7 +360,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `B9` Pause today; week view with done, today and coming days
   - Done when: a paused day is not shown as missed and the plan moves forward one day
   - Needs: B7
-- [ ] **Azim** — `B10` Daily question
+- [x] **Azim** — `B10` Daily question
   - Done when: one question a day is asked and the answer is saved
   - Needs: B7
 - [ ] **Azim** — `A5.3` Server: Done with easy / OK / hard

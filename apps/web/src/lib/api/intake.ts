@@ -2,6 +2,7 @@
 
 // Parent intake (spec §5), roadmap (spec §8/§13) and the physio review queue (spec §8).
 
+import { dailyQuestionOn } from "@/content/daily";
 import type { Answers } from "@/content/intake";
 import { baseLang, type Lang, type UiLang } from "../i18n";
 import { buildRoadmap } from "../roadmap";
@@ -145,6 +146,19 @@ export const intakeApi = {
     const date = localDate();
     write((db) => {
       db.pausedDays = db.pausedDays.filter((p) => !(p.roadmapId === roadmapId && p.date === date));
+    });
+    return net(undefined);
+  },
+
+  /** PUT /children/{id}/daily {questionId, value: 0|1|2} — the answer to today's question; can be changed today. */
+  async answerDaily(childId: string, questionId: string, value: 0 | 1 | 2) {
+    requireChildAccess(childId, ["owner"]);
+    const date = localDate();
+    if (dailyQuestionOn(date).id !== questionId) throw new ApiError("not_todays_question");
+    if (![0, 1, 2].includes(value)) throw new ApiError("invalid_answer");
+    write((db) => {
+      db.dailyAnswers = db.dailyAnswers.filter((a) => !(a.childId === childId && a.date === date));
+      db.dailyAnswers.push({ childId, questionId, date, value, at: iso() });
     });
     return net(undefined);
   },
