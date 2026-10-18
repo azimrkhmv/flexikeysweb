@@ -7,21 +7,26 @@ from app.modules.children.consents import ChildConsent
 from app.modules.children.models import Child
 from app.modules.intake.models import IntakeAnswer, IntakeRound
 from app.modules.plans.models import Plan, PlanItem, PlanReason
+from app.modules.today.models import DailyAnswer, DailyQuestion, PausedDay, TaskDone
 from app.modules.videos.models import Exercise, Video, VideoReview
 
 __all__ = [
     "AuditEntry",
     "Child",
     "ChildConsent",
+    "DailyAnswer",
+    "DailyQuestion",
     "Exercise",
     "Family",
     "FamilyMember",
     "IntakeAnswer",
     "IntakeRound",
+    "PausedDay",
     "Plan",
     "PlanItem",
     "PlanReason",
     "RefreshToken",
+    "TaskDone",
     "User",
     "Video",
     "VideoReview",

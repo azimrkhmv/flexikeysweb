@@ -327,7 +327,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 
 **Server — in this order**
 
-- [ ] **Azim** — `A5.1` Tables for finished tasks, paused days, daily questions and their answers
+- [x] **Azim** — `A5.1` Tables for finished tasks, paused days, daily questions and their answers
   - Done when: the database change applies and rolls back
   - Needs: A4.1
 - [ ] **Azim** — `A5.2` Background worker process (ARQ) in Docker Compose
