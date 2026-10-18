@@ -9,7 +9,7 @@ name of the developer who does it.
 - **What we are building** is described in the founders' spec: `docs/product-spec-2026-10-06.pdf`. Where this file
   and the spec disagree, the spec wins — except for the three points listed in section 3.
 - `PRD.md` is the older product document. The spec replaced the parts where they disagree.
-- **Last updated:** 2026-10-15.
+- **Last updated:** 2026-10-18.
 
 **Contents:** 1. How we work · 2. Rules of the product · 3. Decisions already made · 4. Who does what ·
 5. Tasks (M0–M7) · 6. Ask and collect · 7. Accounts
@@ -53,8 +53,9 @@ Task numbers: **T** team setup · **A** server · **B** website · **C** videos 
 
 ### Keeping Claude sessions small
 
-One task per Claude session, then a fresh session. Point Claude at this file instead of explaining the project
-again.
+Claude works through this file in a `/loop`: one task at a time, a plain-language report after each, compacting the
+conversation when it gets long. It skips tasks that wait for Azim (keys, people, content, decisions) and stops when
+only those are left. Point Claude at this file instead of explaining the project again.
 
 ---
 
@@ -82,15 +83,21 @@ Every task must keep these. They come from the spec.
 | Other server parts | Redis (limits, sign-in codes, background jobs), S3-style file storage (MinIO on our computers) |
 | Running it | Docker Compose: one command starts the server, the database, Redis and file storage |
 | Website | Next.js 16 + React 19 + TypeScript, in `apps/web/` (already built) |
-| Mobile app | Paused. When it starts it will be React Native + Expo, not Flutter. The server is built ready for it |
+| Mobile app | Starts after launch (Q9). React Native + Expo, not Flutter. The server is built ready for it |
 | Old data | Not moved. The new database starts empty |
-| Sign-in | Phone number + SMS code for every role. Only parents sign themselves up. The SMS is simulated for now |
-| Payments | Simulated for now. Telegram, Payme and Click later |
+| Sign-in | Phone number + SMS code for every role. Only parents sign themselves up. The SMS is simulated until launch (Q6) |
+| Payments | Simulated until after the pilot (Q8). Telegram, Payme and Click later |
 | Exercise videos | Made with Higgsfield from one prompt per exercise, all in one fixed style. No child's name in a video. One video per exercise per language |
 | AI model for the assistant | Chosen by our own blind test of several providers. No provider is fixed in advance |
 | Uzbek voice | An AI voice, chosen by a listening test |
 | Records of each try in a game | Sent to the server and deleted after 90 days |
-| Old features (teachers, classes, email sign-in) | Hidden. Not part of the new server |
+| Old features (teachers, classes, email sign-in) | Deleted (Q7, task B45). Not part of the new server |
+| Hosting | Contabo (Q4). A lawyer must still confirm before the pilot that children's health data may be stored in Germany (G7) |
+| Reminders | None on the website (Q5). They come with the mobile app, after launch |
+| Child games and My Voice | Saved on the server too (Q2), so progress is the same on every device |
+| AI | Through OpenRouter: one key (`OPENROUTER_API_KEY`), models compared by the blind test E2. **AI never builds the plan**: the plan comes from fixed rules (spec §13). AI explains, summarises and answers, and drafts text a person checks |
+| Videos and voice | Higgsfield (videos) and ElevenLabs (voice), bought after Azim tests them; ElevenLabs' Uzbek is checked by native speakers first (V1, V2). Until then every video and audio spot holds a placeholder (C7) |
+| Research library | Open research about cerebral palsy, free to use. The assistant answers from it and names the source (A9.8) |
 
 **Families**
 
@@ -102,7 +109,7 @@ Every task must keep these. They come from the spec.
 - Limits: 3 children and 1 helper per family. Both numbers are settings.
 - Free and Pro belong to the family.
 
-**Where we differ from the spec** (the founders must agree — task Q1)
+**Where we differ from the spec** (agreed by the founders, Q1)
 
 | The spec says | We do | Why |
 |---|---|---|
@@ -161,7 +168,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `T6` Write one `CLAUDE.md` at the top of the repository: the rules of section 2, the working rules of section 1, and where things live
   - Done when: a new Claude session follows the rules without being told
   - Needs: T4
-- [ ] **Azim** — `T7` Fill in the accounts table (section 7)
+- [x] **Azim** — `T7` Fill in the accounts table (section 7)
   - Done when: every account has one owner
   - Needs: —
 
@@ -312,7 +319,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `A5.2` Background worker process (ARQ) in Docker Compose
   - Done when: a test job runs on schedule
   - Needs: A0.2
-- [ ] **Azim** — `V1` Listening test: the same 20 Uzbek sentences from 3–4 voice providers (Azure Speech, Yandex SpeechKit, Muxlisa AI, Aisha)
+- [ ] **Azim** — `V1` Listening test: the same 20 Uzbek sentences from ElevenLabs (main candidate) and 1–2 others (Azure Speech, Muxlisa AI or Aisha)
   - Done when: native speakers chose one without knowing which was which; the price is written here
   - Needs: —
 - [ ] **Azim** — `V2` Check the letter sounds that matter for children: oʻ, gʻ, q, x, h
@@ -353,7 +360,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
   - Needs: A5.1
 - [ ] **Azim** — `A5.6` Server: reminder at the parent's preferred time of day
   - Done when: a reminder job runs at the right time in tests
-  - Needs: A5.2, Q5
+  - Needs: A5.2, the mobile app (Q5: no reminders on the website)
 - [ ] **Azim** — `A5.7` Video links that the website and the future app can keep for 7 days offline
   - Done when: a saved video still plays offline after a week
   - Needs: A3.5
@@ -366,6 +373,9 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `C5` The physiotherapist reviews the first batch
   - Done when: approved videos appear in real plans
   - Needs: C4, V3, A3.4, Q3
+- [ ] **Azim** — `C7` Placeholder video for every exercise: a short silent clip with the exercise name and steps, in uz, ru and en; on test servers only, never in production
+  - Done when: every exercise in a demo plan plays its placeholder; production refuses placeholder files
+  - Needs: A3.5
 - [ ] **Azim** — `B12` Video player on the Today screen; keep the next 7 days of videos for offline use on Wi-Fi
   - Done when: today's videos play with the internet off
   - Needs: C5, A5.7
@@ -500,7 +510,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
   - Needs: —
 - [ ] **Azim** — `E2` Blind test of the low-cost model from at least 3 AI providers on those questions
   - Done when: a native speaker rated the answers without seeing the provider; the winner and its price are written in section 3
-  - Needs: E1
+  - Needs: E1 (all providers through OpenRouter)
 - [ ] **Azim** — `V5` Choose speech-to-text for Uzbek and Russian
   - Done when: a test with real parent voices is good enough to use; the choice is written in section 3
   - Needs: —
@@ -527,6 +537,9 @@ Milestones are done in order. Inside a milestone, each developer works down thei
   - Needs: A9.2, A5.3
 - [ ] **Azim** — `A9.6` Server: a monthly spending limit for AI
   - Done when: the assistant falls back to fixed answers when the limit is reached
+  - Needs: A9.2
+- [ ] **Azim** — `A9.8` Research library: load the open research files, search them, and give the assistant only the matching passages with their source
+  - Done when: an answer names the book or paper it came from; with no matching passage the assistant says it does not know
   - Needs: A9.2
 - [ ] **Azim** — `B30` Assistant knows the child's plan, finished tasks and restrictions
   - Done when: it never suggests a forbidden exercise
@@ -678,21 +691,23 @@ These are not programming. The named developer asks the right person and writes 
 
 **Azim**
 
-- [ ] **Azim** — `Q1` Send the founders the three differences from the spec (section 3) and get their answer in writing
+- [x] **Azim** — `Q1` Send the founders the three differences from the spec (section 3) and get their answer in writing
   - Needed for: A6.1, C2
-- [ ] **Azim** — `Q2` Ask the founders: do the child games and My Voice get server support in the first version? Recommended: yes
+- [x] **Azim** — `Q2` Ask the founders: do the child games and My Voice get server support in the first version? Recommended: yes
   - Needed for: A6.3
 - [ ] **Azim** — `Q3` Ask the founders: who is the reviewing physiotherapist, and how many videos a week can they review?
+  - Found; still needed: their name, phone number (for their account) and videos per week
   - Needed for: C5
-- [ ] **Azim** — `Q4` Ask the founders and the lawyer: hosting at Contabo, or on a server in Uzbekistan?
+- [x] **Azim** — `Q4` Ask the founders and the lawyer: hosting at Contabo, or on a server in Uzbekistan?
+  - Answer: Contabo. The lawyer's check is G7, before the pilot
   - Needed for: A13.3, F1, F5
-- [ ] **Azim** — `Q5` Ask the founders: reminders by browser notification, Telegram or SMS? Recommended: Telegram first
+- [x] **Azim** — `Q5` Ask the founders: reminders by browser notification, Telegram or SMS? Recommended: Telegram first
   - Needed for: A5.6
-- [ ] **Azim** — `Q7` Ask the founders: delete the old features (teachers, classes, email sign-in), or keep them hidden?
+- [x] **Azim** — `Q7` Ask the founders: delete the old features (teachers, classes, email sign-in), or keep them hidden?
   - Needed for: B45
-- [ ] **Azim** — `Q8` Ask the founders: which Telegram payment flow, and when Payme and Click?
+- [x] **Azim** — `Q8` Ask the founders: which Telegram payment flow, and when Payme and Click?
   - Needed for: real payments after the pilot
-- [ ] **Azim** — `Q9` Ask the founders: when does the mobile app start? Recommended: after M2
+- [x] **Azim** — `Q9` Ask the founders: when does the mobile app start? Recommended: after M2
   - Needed for: planning only
 - [ ] **Azim** — `Q10` Ask Shoxjahon once whether the `web-backend` server branch exists anywhere. If it is not found in a few days, stop looking
   - Needed for: nothing; it could save work
@@ -713,6 +728,7 @@ These are not programming. The named developer asks the right person and writes 
 
 - [ ] **Azim** — `Q6` Compare SMS providers (Eskiz.uz and others): price and how to connect
   - Needed for: A13.2
+  - For now: sign-in stays simulated (the code shows on screen) until launch
 
 ---
 
@@ -723,10 +739,10 @@ One owner for each. The owner keeps the password and the keys. Nothing from this
 | Account | Owner |
 |---|---|
 | GitHub repository | Azim |
-| Test server | ___ |
-| Production hosting | ___ |
-| Domain name | ___ |
-| Higgsfield | ___ |
-| AI provider key | ___ |
-| Voice provider key | ___ |
-| SMS provider | ___ |
+| Test server | Azim |
+| Production hosting | Azim (Contabo) |
+| Domain name | Azim |
+| Higgsfield | Azim |
+| AI provider key | Azim (OpenRouter) |
+| Voice provider key | Azim (ElevenLabs) |
+| SMS provider | Azim |

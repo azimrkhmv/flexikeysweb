@@ -46,7 +46,7 @@ Solo phase: Azim does every open task alone, until he hands the project to Bekzo
 - Write the shape of each new server address (input and output) in its commit message.
 - Keys and passwords never go into git or chat. This repository is public.
 - Commit messages start with `feat:`, `fix:`, `docs:`, `chore:` or `test:`.
-- One task per Claude session, then a fresh session.
+- Work in a `/loop`: one task at a time, a short plain-language report after each. Skip tasks waiting for Azim.
 
 ## Rules of the product (never break these)
 
