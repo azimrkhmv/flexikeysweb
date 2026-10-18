@@ -6,13 +6,14 @@ import { AAC_BY_ID, CUSTOM_PREFIX } from "@/content/aac";
 import { SHOP_BY_ID } from "@/content/shop";
 import { sessionStore } from "@/lib/session";
 import { STEPS, type Answers } from "@/content/intake";
-import type { CardOut, ChildOut, Consents, DoneOut, PhoneStarted, PlanOut, ReviewItem, RoundOut } from "@/lib/server/types";
+import type { CardOut, ChildOut, ClipOut, ClipUpload, Consents, DoneOut, FormOut, PhoneStarted, PlanOut, ReviewItem, RoundOut, ShareOut } from "@/lib/server/types";
+import type { Profession, TherapistAnswers } from "@/content/therapist";
 import type { Lang, UiLang } from "@/lib/translate";
 import type { AacCustomCard, Child, ChildSupport, ClassRoom, ConsentScope, Feeling, InputProfile, InteractionEvent, Order, Roadmap, Role, TaskDone, User, UserStatus, VideoStatus } from "@/lib/types";
 import { queryClient } from "./client";
 import { http, upload } from "./http";
 import {
-  CONSENT_KIND, familyChildFrom, planFrom,
+  CONSENT_KIND, familyChildFrom, planFrom, shareFrom,
   careLinkFrom, childFrom, childTo, classFrom, eventTo, rosterChildFrom, scopeTo, userFrom,
   type BCareLink, type BChild, type BClass, type BConsent, type BGoal, type BRosterChild, type BUser,
 } from "./map";
@@ -383,14 +384,19 @@ export const liveApi = {
     return true;
   },
 
-  // ------------------------------------------------------------ sharing (parent side)
-  async inviteCare(childId: string, email: string) {
-    const l = await http<BCareLink>("POST", `/children/${childId}/care-links`, { email: email.trim().toLowerCase() });
+  // ------------------------------------------------------------ sharing (parent side, apps/api therapists/)
+  /** POST /children/{id}/therapists — by phone, or a one-time link when no phone is given (its code comes once). */
+  async inviteCare(childId: string, contact: string) {
+    const phone = contact.trim();
+    const l = await http<ShareOut>("POST", `/children/${childId}/therapists`, phone ? { phone } : {});
     await refetch();
-    return careLinkFrom(l);
+    return shareFrom(childId, l);
   },
   async revokeCare(linkId: string) {
-    await http("DELETE", `/care-links/${linkId}`);
+    const shares = queryClient.getQueriesData<ShareOut[]>({ queryKey: ["shares"] });
+    const childId = shares.find(([, list]) => list?.some((l) => l.id === linkId))?.[0][1] as string | undefined;
+    if (!childId) throw new ApiError("not_found");
+    await http("DELETE", `/children/${childId}/therapists/${linkId}`);
     await refetch();
     return true;
   },
@@ -406,8 +412,42 @@ export const liveApi = {
   },
 
   // ------------------------------------------------------------ therapist (/therapist/*)
+  /** A phone invite is accepted by its id (the therapist's invite list), a link by its code. */
   async acceptInvite(code: string) {
-    await http("POST", "/therapist/invites/accept", { code: code.trim().toUpperCase() });
+    const c = code.trim();
+    if (/^[0-9a-f-]{36}$/.test(c)) await http("POST", `/therapist/invites/${c}/accept`, {});
+    else await http("POST", "/therapist/invites/accept", { code: c });
+    await refetch();
+    return true;
+  },
+  async saveTherapistProfile(name: string, profession: Profession, workplace: string) {
+    await http("PUT", "/therapist/profile", { name: name.trim(), profession, workplace: workplace.trim() });
+    await refetch();
+    return true;
+  },
+  /** PUT /therapist/children/{id}/form — only the changed answers; an emptied one is sent as null (removed). */
+  async saveTherapistForm(childId: string, answers: TherapistAnswers) {
+    const body = Object.fromEntries(Object.entries(answers).map(([k, v]) => [k, v ?? null]));
+    const r = await http<FormOut>("PUT", `/therapist/children/${childId}/form`, { answers: body });
+    await refetch();
+    return { planRebuilt: !!r.planRebuilt };
+  },
+  async replyToClip(childId: string, clipId: string, text: string) {
+    await http("POST", `/therapist/children/${childId}/clips/${clipId}/replies`, { text: text.trim() });
+    await refetch();
+    return true;
+  },
+  /** P40: straight to storage, then added as the child's movement clip (needs the movement-videos consent). */
+  async addMovementClip(childId: string, file: Blob) {
+    const link = await http<ClipUpload>("POST", `/children/${childId}/clips/upload-link`, {});
+    const put = await fetch(link.uploadUrl, { method: "PUT", body: file, headers: { "Content-Type": file.type || "video/mp4" } });
+    if (!put.ok) throw new ApiError("generic");
+    const clip = await http<ClipOut>("POST", `/children/${childId}/clips`, { kind: "movement", storageKey: link.storageKey });
+    await refetch();
+    return clip.id;
+  },
+  async removeMovementClip(childId: string, clipId: string) {
+    await http("DELETE", `/children/${childId}/clips/${clipId}`);
     await refetch();
     return true;
   },

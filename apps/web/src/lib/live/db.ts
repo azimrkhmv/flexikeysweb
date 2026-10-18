@@ -6,12 +6,12 @@ import { ApiError, type ChildAuth, type DB } from "@/lib/api/schema";
 import { sessionStore } from "@/lib/session";
 import { useStore } from "@/lib/store";
 import { http } from "./http";
-import type { CardOut, ChildOut, Consents, DailyOut, PlanOut, ReviewItem, RoundOut, RoundSummary } from "@/lib/server/types";
+import type { CardOut, ChildOut, ClipOut, Consents, DailyOut, FormOut, InUse, InviteOut, PlanOut, ProfileOut, ReviewItem, RoundOut, RoundSummary, ShareOut, SharedChild } from "@/lib/server/types";
 import {
-  answersFrom, dailyFrom, doneFrom, familyChildFrom, familyConsentsFrom, pausedFrom, planFrom, planVideosFrom, reviewVideosFrom, voiceCardFrom,
-  aacCardFrom, auditFrom, careLinkFrom, orderFrom, subscriptionFrom, changeFrom, childFrom, notificationFrom, classFrom, goalFrom, levelsFrom, masteryFrom, noteFrom, profileFrom, rosterChildFrom,
+  answersFrom, clipsFrom, dailyFrom, doneFrom, familyChildFrom, familyConsentsFrom, inUseFrom, pausedFrom, planFrom, planVideosFrom, reviewVideosFrom, shareFrom, sharedChildFrom, voiceCardFrom,
+  aacCardFrom, auditFrom, orderFrom, subscriptionFrom, changeFrom, childFrom, notificationFrom, classFrom, levelsFrom, masteryFrom, profileFrom, rosterChildFrom,
   sessionsFrom, taskFrom, userFrom,
-  type BAacCard, type BAdminSub, type BAudit, type BOrder, type BOverview, type BCareLink, type BNotification, type BChild, type BChildOverview, type BClass, type BGoal, type BLevel, type BNote,
+  type BAacCard, type BAdminSub, type BAudit, type BOrder, type BOverview, type BNotification, type BChild, type BChildOverview, type BClass, type BLevel,
   type BProfile, type BTask, type BUser,
 } from "./map";
 import { liveChild } from "./state";
@@ -30,11 +30,14 @@ const empty = (): DB => ({
 });
 
 /** A family child's data on the new server (apps/api); each round's answers are loaded after the round list. */
-const PER_CHILD = ["consents", "rounds", "plan", "daily", "cards"] as const;
+const PER_CHILD = ["consents", "rounds", "plan", "daily", "cards", "shares", "inUse", "clips"] as const;
 const REVIEW_STATUSES = ["waiting_review", "changes_requested", "rejected", "approved"] as const;
 type PerChild = (typeof PER_CHILD)[number];
 const path = (kind: PerChild, id: string) =>
-  ({ consents: `/children/${id}/consents`, rounds: `/children/${id}/intake`, plan: `/children/${id}/plan`, daily: `/children/${id}/daily`, cards: `/children/${id}/voice-cards` })[kind];
+  ({
+    consents: `/children/${id}/consents`, rounds: `/children/${id}/intake`, plan: `/children/${id}/plan`, daily: `/children/${id}/daily`,
+    cards: `/children/${id}/voice-cards`, shares: `/children/${id}/therapists`, inUse: `/children/${id}/answers-in-use`, clips: `/children/${id}/clips`,
+  })[kind];
 /** "No plan yet" and "no daily question list loaded" are answers, not errors to retry. */
 const MAY_BE_MISSING: PerChild[] = ["plan", "daily"];
 
@@ -50,9 +53,7 @@ const OWN_PATH: Record<(typeof OWN)[number], string> = {
   aacCards: "/aac/cards",
 };
 
-interface BTherapistChild { overview: BChildOverview; notes: BNote[]; goals: BGoal[]; recommendations: BTask[] }
 interface BClassOverview { klass: BClass; children: BChildOverview[]; assignments: BTask[] }
-interface BLinked { id: string }
 
 /** The child-mode marker while it's valid (the server's child token lasts 8 h). */
 const activeChild = (c: ChildAuth | null) => (c && c.exp > Date.now() ? c : null);
@@ -151,14 +152,23 @@ export function useLiveDb(): DB {
     })),
   });
 
-  // ---- therapist
-  const linked = useQuery({ queryKey: ["therapist-children"], enabled: role === "therapist", queryFn: () => http<BLinked[]>("GET", "/therapist/children") });
-  const invites = useQuery({ queryKey: ["therapist-invites"], enabled: role === "therapist", queryFn: () => http<BCareLink[]>("GET", "/therapist/invites") });
+  // ---- therapist (apps/api therapists/): shared children, invites, the profile, and per child the form and clips
+  const linked = useQuery({ queryKey: ["therapist-children"], enabled: role === "therapist", queryFn: () => http<SharedChild[]>("GET", "/therapist/children") });
+  const invites = useQuery({ queryKey: ["therapist-invites"], enabled: role === "therapist", queryFn: () => http<InviteOut[]>("GET", "/therapist/invites") });
+  const tprofile = useQuery({
+    queryKey: ["therapist-profile"],
+    enabled: role === "therapist",
+    queryFn: () => http<ProfileOut>("GET", "/therapist/profile").catch((e) => (e instanceof ApiError && e.code === "no_profile" ? null : Promise.reject(e))),
+  });
+  const shared = role === "therapist" ? (linked.data ?? []) : [];
   const views = useQueries({
-    queries: (role === "therapist" ? (linked.data ?? []) : []).map((c) => ({
-      queryKey: ["therapist-child", c.id],
-      queryFn: () => http<BTherapistChild>("GET", `/therapist/children/${c.id}`),
-    })),
+    queries: shared.flatMap((c) => [
+      { queryKey: ["therapist-form", c.id], enabled: !!tprofile.data, queryFn: () => http<unknown>("GET", `/therapist/children/${c.id}/form`) },
+      {
+        queryKey: ["therapist-clips", c.id],
+        queryFn: () => http<unknown>("GET", `/therapist/children/${c.id}/clips`).catch((e) => (e instanceof ApiError && e.code === "not_found" ? [] : Promise.reject(e))),
+      },
+    ]),
   });
 
   // ---- every adult: feature flags and the notification bell
@@ -175,7 +185,7 @@ export function useLiveDb(): DB {
     if (signedIn !== undefined && sessionStore.get().role !== signedIn) sessionStore.set({ role: signedIn });
   }, [signedIn]);
 
-  const all = [me, kids, classes, linked, invites, notifications, flags, subscription, orders, ...own, ...per, ...answers, ...review, ...overviews, ...views, ...admin];
+  const all = [me, kids, classes, linked, invites, tprofile, notifications, flags, subscription, orders, ...own, ...per, ...answers, ...review, ...overviews, ...views, ...admin];
   const stamp = all.map((q) => q.dataUpdatedAt).join();
   const loading =
     me.isPending ||
@@ -184,7 +194,7 @@ export function useLiveDb(): DB {
     (role === "parent" && (kids.isPending || per.some((q) => q.isPending) || answers.some((q) => q.isPending))) ||
     (role === "physio" && review.some((q) => q.isPending)) ||
     (role === "teacher" && (classes.isPending || overviews.some((q) => q.isPending))) ||
-    (role === "therapist" && (linked.isPending || views.some((q) => q.isPending)));
+    (role === "therapist" && (linked.isPending || tprofile.isPending || views.some((q) => q.isPending && q.fetchStatus !== "idle")));
 
   return useMemo(() => {
     const db: DB = { ...empty(), loading, auth: { userId: user?.id ?? null, child } };
@@ -227,6 +237,12 @@ export function useLiveDb(): DB {
         const plan = perChild(i, "plan") as PlanOut | null | undefined;
         if (consents) db.consents.push(...familyConsentsFrom(id, consents));
         db.aacCards.push(...((perChild(i, "cards") as CardOut[] | undefined) ?? []).map((c) => voiceCardFrom(id, c)));
+        db.careLinks.push(...((perChild(i, "shares") as ShareOut[] | undefined) ?? []).map((l) => shareFrom(id, l)));
+        const inUse = perChild(i, "inUse") as InUse | undefined;
+        if (inUse) (db.answersInUse ??= {})[id] = inUseFrom(inUse);
+        const clips = clipsFrom(id, (perChild(i, "clips") as ClipOut[] | undefined) ?? []);
+        (db.clips ??= []).push(...clips.clips);
+        db.clipReplies.push(...clips.replies);
         const daily = perChild(i, "daily") as DailyOut | null | undefined;
         if (daily) db.dailyAnswers.push(...dailyFrom(id, daily));
         db.intakeRounds.push(...rounds.map((r) => ({ childId: id, round: r.number, startedAt: r.startedAt, completedAt: r.completedAt ?? undefined })));
@@ -281,21 +297,25 @@ export function useLiveDb(): DB {
     }
 
     if (role === "therapist" && user) {
-      db.careLinks.push(...(invites.data ?? []).map(careLinkFrom));
-      for (const q of views) {
-        const v = q.data;
-        if (!v) continue;
-        const id = v.overview.child.id;
-        addOverview(db, v.overview);
-        db.careLinks.push({ id: `link-${id}`, childId: id, kind: "therapist", email: user.email, professionalId: user.id, status: "active", code: "", createdAt: "" });
-        db.consents.push({ id: `therapist-${id}`, childId: id, scope: "therapist_sharing", version: "", grantedBy: "", grantedAt: "" });
-        db.notes.push(...v.notes.map(noteFrom));
-        db.goals.push(...v.goals.map(goalFrom));
-        for (const t of v.recommendations) {
-          const a = taskFrom(t, id);
-          if (a) db.assignments.push(a);
-        }
+      for (const i of invites.data ?? [])
+        db.careLinks.push({ id: i.id, childId: "", childName: i.childName, kind: "therapist", email: "", phone: user.phone, status: "invited", code: i.id, createdAt: i.expiresAt });
+      if (tprofile.data) {
+        db.therapistProfiles.push({ userId: user.id, profession: tprofile.data.profession, workplace: tprofile.data.workplace });
+        user.name = tprofile.data.name;
       }
+      db.clips = [];
+      shared.forEach((c, k) => {
+        db.children.push(sharedChildFrom(c));
+        db.careLinks.push({ id: `link-${c.id}`, childId: c.id, kind: "therapist", email: "", professionalId: user.id, status: "active", code: "", createdAt: c.sharedSince });
+        db.consents.push({ id: `therapist-${c.id}`, childId: c.id, scope: "therapist_sharing", version: "", grantedBy: "", grantedAt: "" });
+        const form = views[k * 2]?.data as FormOut | undefined;
+        if (form) db.therapistAnswers.push({ childId: c.id, therapistId: user.id, answers: form.answers, at: "" });
+        const clips = clipsFrom(c.id, (views[k * 2 + 1]?.data as ClipOut[] | undefined) ?? []);
+        db.clips!.push(...clips.clips);
+        db.clipReplies.push(...clips.replies);
+        // The server lists clips only with the movement-videos consent.
+        if (clips.clips.length) db.consents.push({ id: `videos-${c.id}`, childId: c.id, scope: "movement_videos", version: "", grantedBy: "", grantedAt: "" });
+      });
     }
     return db;
     // `stamp` changes exactly when any query's data changes.

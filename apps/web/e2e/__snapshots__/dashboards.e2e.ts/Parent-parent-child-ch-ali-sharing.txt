@@ -22,7 +22,8 @@ therapist@demo.uz · Sep 9, 2026
 
 Has access
 Stop access
-Specialist's email
+Specialist's phone number
+Or leave it empty to get a code to send them, for example by Telegram.
 Invite
 Classes
 

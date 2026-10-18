@@ -3,7 +3,8 @@
 
 import { AAC_BY_ID, CUSTOM_PREFIX } from "@/content/aac";
 import { DEFAULT_PROFILE } from "@/lib/adaptive";
-import type { CardOut, ChildOut, ConsentKind, Consents, DailyOut, Me, PlanOut, ReviewItem, RoundOut, UserOut } from "@/lib/server/types";
+import type { CardOut, ChildOut, ClipOut, ConsentKind, Consents, DailyOut, InUse, Me, PlanOut, ReviewItem, RoundOut, ShareOut, SharedChild, UserOut } from "@/lib/server/types";
+import type { DB } from "@/lib/api/schema";
 import type { Lang } from "@/lib/translate";
 import type { ChildSupport, ActivityKind, AgeBand, BodyArea, DailyAnswer, ExerciseVideo, FnLevel, GoalKey, IntakeAnswer, IntakeValue, L10n, PausedDay, Restriction, Roadmap, TaskDone,
   AacCustomCard, AacEvent, AccessMode, AuditLog, AdaptationChange, AdaptiveProfile, Assignment, CareLink, Child, ClassRoom, Consent, ConsentScope, Goal,
@@ -352,3 +353,29 @@ export const auditFrom = (a: BAudit): AuditLog => ({
   at: a.created_at,
 });
 
+
+// ---------------------------------------------------------------- therapists (apps/api therapists/, clips/)
+export const sharedChildFrom = (c: SharedChild): Child => familyChildFrom({ ...c, familyId: "", color: null });
+
+/** A share or invite of one child, as the parent's Sharing tab lists it. `code` is a link invite's code (once). */
+export const shareFrom = (childId: string, l: ShareOut): CareLink => ({
+  id: l.id, childId, kind: "therapist", email: "", phone: l.phone ?? undefined, therapistName: l.therapistName ?? undefined,
+  professionalId: l.status === "active" ? `therapist-${l.id}` : undefined, status: l.status === "active" ? "active" : "invited",
+  code: l.code ?? "", createdAt: l.invitedAt,
+});
+
+export const inUseFrom = (u: InUse): NonNullable<DB["answersInUse"]>[string] => ({
+  updated: Object.fromEntries(
+    Object.entries(u.updatedBy).map(([q, by]) => [q, { value: u.answers[q] as string | string[], name: by.therapistName ?? "", profession: by.profession ?? undefined, at: by.at }]),
+  ),
+  messages: u.messages.map((m) => ({ text: m.text, name: m.therapistName ?? "", profession: m.profession ?? undefined, at: m.at })),
+});
+
+/** Movement clips (P40) with their links and the therapists' replies. Feedback clips come with B29. */
+export function clipsFrom(childId: string, list: ClipOut[]) {
+  const movement = list.filter((c) => c.kind === "movement");
+  return {
+    clips: movement.map((c) => ({ id: c.id, childId, url: c.url })),
+    replies: movement.flatMap((c) => c.replies.map((r, i) => ({ id: `${c.id}-${i}`, childId, clipId: c.id, therapistId: "", name: r.therapistName ?? "", text: r.text, at: r.at }))),
+  };
+}

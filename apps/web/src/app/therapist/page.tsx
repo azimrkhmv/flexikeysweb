@@ -88,7 +88,7 @@ export default function TherapistHome() {
                 <li key={l.id} className="flex items-center gap-3 rounded-2xl bg-teal-soft/50 p-3">
                   <Mail className="size-5 shrink-0 text-teal" aria-hidden />
                   <div className="min-w-0 flex-1 text-sm">
-                    <div className="font-bold text-ink">{sel.child(db, l.childId)?.name}</div>
+                    <div className="font-bold text-ink">{l.childName ?? sel.child(db, l.childId)?.name}</div>
                     <div className="text-muted">{fmtDate(l.createdAt, lang, "dayMonth")}</div>
                   </div>
                   <Button size="sm" pending={accept.pending} onClick={() => accept.run(l.code)}>
@@ -109,8 +109,8 @@ export default function TherapistHome() {
               <Input
                 required
                 value={code}
-                onChange={(e) => setCode(e.target.value.toUpperCase())}
-                maxLength={8}
+                onChange={(e) => setCode(e.target.value.trim())}
+                maxLength={64}
                 autoCapitalize="characters"
                 className="font-mono tracking-widest"
                 placeholder="ABC234"

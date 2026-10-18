@@ -221,6 +221,9 @@ export interface CareLink {
   /** Invites by phone (spec P41); email stays for older invites. */
   phone?: string;
   professionalId?: string;
+  /** Live mode: the child's name on a therapist's invite, and the therapist's name on the parent's list. */
+  childName?: string;
+  therapistName?: string;
   status: "invited" | "active" | "revoked";
   code: string;
   createdAt: string;

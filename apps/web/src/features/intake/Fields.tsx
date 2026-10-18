@@ -2,10 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Mic, Square, Trash2, Video } from "lucide-react";
-import { Button, Checkbox, Field, Input, Textarea } from "@/components/ui";
+import { Button, Checkbox, Field, Input, Textarea, useAction } from "@/components/ui";
 import { allowsNotSure, P39_MAX, P40_MAX_CLIPS, type Answers, type Question } from "@/content/intake";
 import { api, sel, useDb } from "@/lib/api";
-import { deleteMedia, putMedia } from "@/lib/media";
+import { putMedia } from "@/lib/media";
 import { useT } from "@/lib/i18n";
 import type { IntakeValue } from "@/lib/types";
 
@@ -39,7 +39,7 @@ export function QuestionField({ q, answers, set, childId, previous }: { q: Quest
     return <Field label={label}><Input type="date" max={today} value={String(v ?? "")} onChange={(e) => set(q.id, e.target.value)} /></Field>;
   }
   if (q.kind === "longtext") return <OwnWords q={q} label={label} answers={answers} set={set} childId={childId} />;
-  if (q.kind === "media") return <Clips q={q} answers={answers} set={set} />;
+  if (q.kind === "media") return <Clips q={q} answers={answers} set={set} childId={childId} />;
   if (q.kind === "phone") return <Invite q={q} answers={answers} set={set} childId={childId} />;
 
   if (q.kind === "ability")
@@ -183,22 +183,31 @@ function OwnWords({ q, label, answers, set, childId }: { q: Question; label: str
 }
 
 /** P40: up to 3 short clips; needs the movement-video consent. Never analysed by AI. */
-function Clips({ q, answers, set }: { q: Question; answers: Answers; set: Set }) {
+function Clips({ q, answers, set, childId }: { q: Question; answers: Answers; set: Set; childId: string | null }) {
   const t = useT();
+  const add = useAction(api.addMovementClip);
   const ids = (answers[q.id] as string[] | undefined) ?? [];
   const consent = answers.P40_consent === "yes";
   return (
     <div className="space-y-3">
       <p className="font-bold text-ink">{t("intake.P40")}</p>
       <p className="text-sm text-ink-2">{t("intake.P40.d")}</p>
-      <Checkbox checked={consent} onChange={(on) => set("P40_consent", on ? "yes" : undefined)} label={t("intake.P40.consent")} />
+      <Checkbox
+        checked={consent}
+        onChange={(on) => {
+          set("P40_consent", on ? "yes" : undefined);
+          // Given when ticked: the clips go to the server for the shared therapist (movement-videos consent).
+          if (on && childId) api.setConsent(childId, "movement_videos", true).catch(() => {});
+        }}
+        label={t("intake.P40.consent")}
+      />
       {consent && (
         <>
           <ul className="space-y-2">
             {ids.map((id, i) => (
               <li key={id} className="flex items-center justify-between rounded-2xl bg-surface-2 px-3 py-2 text-sm font-bold text-ink">
                 <span className="inline-flex items-center gap-2"><Video className="size-4" aria-hidden /> {i + 1}</span>
-                <Button size="sm" variant="ghost" onClick={async () => { await deleteMedia(id); set(q.id, ids.filter((x) => x !== id)); }}>
+                <Button size="sm" variant="ghost" onClick={async () => { if (childId) await api.removeMovementClip(childId, id).catch(() => {}); set(q.id, ids.filter((x) => x !== id)); }}>
                   <Trash2 className="size-4" aria-hidden /> {t("intake.P40.remove")}
                 </Button>
               </li>
@@ -215,12 +224,14 @@ function Clips({ q, answers, set }: { q: Question; answers: Answers; set: Set })
                 onChange={async (e) => {
                   const f = e.target.files?.[0];
                   e.target.value = "";
-                  if (f) set(q.id, [...ids, await putMedia(f)]);
+                  const clip = f && childId ? await add.run(childId, f) : undefined;
+                  if (clip) set(q.id, [...ids, clip]);
                 }}
               />
               <Video className="mr-2 size-4" aria-hidden /> {t("intake.P40.add")}
             </label>
           )}
+          {add.error && <p role="alert" className="text-sm font-semibold text-[#8f3a2c]">{add.error}</p>}
         </>
       )}
     </div>

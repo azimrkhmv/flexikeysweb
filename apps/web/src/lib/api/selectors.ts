@@ -220,6 +220,8 @@ export const sel = {
     (db.therapistAnswers ?? []).find((r) => r.childId === childId && r.therapistId === therapistId)?.answers ?? {},
   /** The parent's answers the therapists replaced, and by whom (newest wins), plus their messages (T11), newest first. */
   therapistUpdates(db: DB, childId: string) {
+    const live = db.answersInUse?.[childId];
+    if (live) return { ...live, mustNotText: [] as string[] };
     const health = sel.hasConsent(db, childId, "health");
     const rows = (db.therapistAnswers ?? []).filter((r) => r.childId === childId).sort((a, b) => a.at.localeCompare(b.at));
     const who = (r: (typeof rows)[number]) => ({
@@ -247,12 +249,15 @@ export const sel = {
   },
   /** The parent's movement clips (P40 media ids, latest round) when the movement-videos consent is given. */
   movementClips(db: DB, childId: string): string[] {
+    if (db.clips) return db.clips.filter((c) => c.childId === childId).map((c) => c.id);
     const round = sel.intakeRound(db, childId);
     const ids = round ? sel.intakeAnswers(db, childId, round.round).P40 : undefined;
     return sel.hasConsent(db, childId, "movement_videos") && Array.isArray(ids) ? ids : [];
   },
+  /** Live: the server's short-lived link to watch a clip (demo clips are on this device). */
+  clipUrl: (db: DB, clipId: string) => db.clips?.find((c) => c.id === clipId)?.url,
   clipReplies: (db: DB, childId: string, clipId: string) =>
-    (db.clipReplies ?? []).filter((r) => r.childId === childId && r.clipId === clipId).map((r) => ({ ...r, name: db.users.find((u) => u.id === r.therapistId)?.name ?? "" })),
+    (db.clipReplies ?? []).filter((r) => r.childId === childId && r.clipId === clipId).map((r) => ({ ...r, name: r.name ?? db.users.find((u) => u.id === r.therapistId)?.name ?? "" })),
   careLinks: (db: DB, childId: string) => db.careLinks.filter((l) => l.childId === childId && l.status !== "revoked"),
   notifications: (db: DB, userId: string) => db.notifications.filter((n) => n.userId === userId).sort((a, b) => b.at.localeCompare(a.at)),
   aacStats(db: DB, childId: string) {

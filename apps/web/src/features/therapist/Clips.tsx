@@ -11,9 +11,11 @@ import { getMedia } from "@/lib/media";
 // B25: the parent's movement clips (P40), for a shared therapist only, with the movement-videos consent. The
 // therapist watches and replies (T9: notes per clip). AI never analyses them.
 
-function ClipVideo({ clipId, label }: { clipId: string; label: string }) {
-  const [url, setUrl] = useState<string | null>(null);
+function ClipVideo({ clipId, label, link }: { clipId: string; label: string; link?: string }) {
+  const [local, setUrl] = useState<string | null>(null);
+  const url = link ?? local; // live: a link from the server; demo: the file kept on this device
   useEffect(() => {
+    if (link) return;
     let made: string | null = null;
     getMedia(clipId).then((blob) => {
       if (!blob) return;
@@ -23,7 +25,7 @@ function ClipVideo({ clipId, label }: { clipId: string; label: string }) {
     return () => {
       if (made) URL.revokeObjectURL(made);
     };
-  }, [clipId]);
+  }, [clipId, link]);
   return url ? <video src={url} controls aria-label={label} className="w-full rounded-2xl bg-ink" /> : <div className="aspect-video w-full rounded-2xl bg-surface-2" aria-label={label} />;
 }
 
@@ -44,7 +46,7 @@ export function Clips({ childId }: { childId: string }) {
         <ul className="space-y-5">
           {clips.map((c, i) => (
             <li key={c} className="space-y-2">
-              <ClipVideo clipId={c} label={t("tclips.clip", { n: i + 1 })} />
+              <ClipVideo clipId={c} label={t("tclips.clip", { n: i + 1 })} link={sel.clipUrl(db, c)} />
               {sel.clipReplies(db, childId, c).map((r) => (
                 <p key={r.id} className="rounded-2xl bg-surface-2 p-3 text-sm text-ink">
                   {r.text} <span className="text-xs text-muted">· {fmtDate(r.at, lang, "dayMonth")}</span>

@@ -515,7 +515,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `A8.6` Movement and feedback clips encrypted at rest in storage (spec §15 "encrypted storage"), for example MinIO server-side encryption with a key kept like the health key
   - Done when: a clip file read straight from the storage disk is not watchable
   - Needs: A8.3, A2.6
-- [ ] **Azim** — `B26` Connect the therapist invite, form, exercise choice and clips to the server
+- [x] **Azim** — `B26` Connect the therapist invite, form, exercise choice and clips to the server
   - Done when: a therapist changes a restriction in the browser and the parent's plan changes
   - Needs: A8.3, A8.5, B24, B25
 - [ ] **Azim** — `B27` Helper screens: invite, accept, remove; hide owner-only buttons from a helper
@@ -527,6 +527,9 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `B29` Today: the parent may film the child doing one exercise (optional feedback clip, spec §8), only with the movement-videos consent; the therapist sees it with the movement clips and replies
   - Done when: a feedback clip filmed on Today shows on the therapist's child page with its exercise name
   - Needs: B25
+- [ ] **Azim** — `B30` Invite link for a therapist: the parent gets a link (not only a code) to send by Telegram; a therapist with a new number who opens it signs in straight into a therapist account (the server takes `inviteCode` at sign-in) and accepts in one step
+  - Done when: a new number opens the link, signs in, and sees the child without typing a code
+  - Needs: B26
 
 ### M5 — Assistant
 

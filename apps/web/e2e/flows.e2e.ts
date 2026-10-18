@@ -79,7 +79,7 @@ test("therapist link: parent invites → therapist accepts → parent revokes �
   await page.reload();
   await page.getByRole("switch", { name: "Specialists: allow sharing with a therapist that I invite" }).click();
   await page.getByRole("tab", { name: "Sharing" }).click();
-  await page.getByLabel("Specialist's email").fill("therapist@demo.uz");
+  await page.getByLabel("Specialist's phone number").fill("+998900000002"); // the demo therapist
   await page.getByRole("button", { name: "Invite" }).click();
   const code = (await page.getByRole("status").locator(".font-mono").innerText()).trim();
   expect(code).toMatch(/^[A-Z2-9]{6}$/);

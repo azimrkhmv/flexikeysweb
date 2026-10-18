@@ -184,7 +184,8 @@ export const parent = {
 
     "parent.sharing.specialists": "Specialists",
     "parent.sharing.specialistsHint": "Invite a therapist to see progress, adaptations and My Voice use. They can't change settings or see your other children. You can stop access at any time.",
-    "parent.sharing.email": "Specialist's email",
+    "parent.sharing.email": "Specialist's phone number",
+    "parent.sharing.phoneHint": "Or leave it empty to get a code to send them, for example by Telegram.",
     "parent.sharing.invite": "Invite",
     "parent.sharing.code": "code",
     "parent.sharing.codeHint": "Share this one-time code with the specialist. They enter it in their FlexiKeys account.",
@@ -493,7 +494,8 @@ export const parent = {
 
     "parent.sharing.specialists": "Mutaxassislar",
     "parent.sharing.specialistsHint": "Terapevtni natijalar, moslashuvlar va “Mening ovozim”dan foydalanishni koʻrishga taklif qiling. U sozlamalarni oʻzgartira olmaydi va boshqa farzandlaringizni koʻrmaydi. Ruxsatni istalgan vaqtda toʻxtatishingiz mumkin.",
-    "parent.sharing.email": "Mutaxassis emaili",
+    "parent.sharing.email": "Mutaxassis telefon raqami",
+    "parent.sharing.phoneHint": "Yoki boʻsh qoldiring: unga yuborish uchun kod olasiz, masalan Telegram orqali.",
     "parent.sharing.invite": "Taklif qilish",
     "parent.sharing.code": "kod",
     "parent.sharing.codeHint": "Bu bir martalik kodni mutaxassisga yuboring. U kodni FlexiKeys hisobiga kiritadi.",
@@ -802,7 +804,8 @@ export const parent = {
 
     "parent.sharing.specialists": "Специалисты",
     "parent.sharing.specialistsHint": "Пригласите специалиста видеть прогресс, подстройки и использование «Моего голоса». Он не может менять настройки и не видит других ваших детей. Доступ можно закрыть в любой момент.",
-    "parent.sharing.email": "Email специалиста",
+    "parent.sharing.email": "Номер телефона специалиста",
+    "parent.sharing.phoneHint": "Или оставьте пустым — получите код, чтобы отправить ему, например в Telegram.",
     "parent.sharing.invite": "Пригласить",
     "parent.sharing.code": "код",
     "parent.sharing.codeHint": "Передайте этот одноразовый код специалисту. Он введёт его в своём аккаунте FlexiKeys.",

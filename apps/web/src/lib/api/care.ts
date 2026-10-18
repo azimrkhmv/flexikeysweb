@@ -18,8 +18,8 @@ export const careApi = {
   async inviteCare(childId: string, contact: string, kind: "therapist" | "teacher" = "therapist") {
     const { user } = requireChildAccess(childId, ["owner"]);
     if (!sel.hasConsent(read(), childId, "therapist_sharing")) throw new ApiError("consent_required");
-    const phone = normalizePhone(contact); // spec P41: invite by phone number
-    if (!phone && !contact.includes("@")) throw new ApiError("invalid_phone");
+    const phone = normalizePhone(contact); // spec P41: invite by phone number, or a link (no contact) to send
+    if (!phone && contact.trim() && !contact.includes("@")) throw new ApiError("invalid_phone");
     const link: CareLink = { id: id(), childId, kind, email: phone ? "" : contact.trim().toLowerCase(), phone: phone ?? undefined, status: "invited", code: makeCode(), createdAt: iso() };
     write((db) => {
       db.careLinks.push(link);

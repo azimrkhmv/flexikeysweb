@@ -19,6 +19,14 @@ export type RoundOut = Schemas["RoundOut"];
 export type DailyOut = Schemas["DailyOut"];
 export type DoneOut = Schemas["DoneOut"];
 export type CardOut = Schemas["CardOut"];
+export type ShareOut = Schemas["ShareOut"];
+export type InUse = Schemas["InUse"];
+export type ClipOut = Schemas["ClipOut"];
+export type ClipUpload = Schemas["ClipUpload"];
+export type SharedChild = Schemas["SharedChild"];
+export type InviteOut = Schemas["app__modules__therapists__router__InviteOut"];
+export type FormOut = Schemas["FormOut"];
+export type ProfileOut = Schemas["ProfileOut"];
 
 /** Every address the website calls (under /api/v1, which the website proxies). */
 export const ADDRESSES = [
@@ -45,6 +53,20 @@ export const ADDRESSES = [
   "/api/v1/children/{child_id}/voice-cards",
   "/api/v1/children/{child_id}/voice-cards/upload-link",
   "/api/v1/children/{child_id}/voice-cards/{card_id}",
+  "/api/v1/children/{child_id}/therapists",
+  "/api/v1/children/{child_id}/therapists/{link_id}",
+  "/api/v1/children/{child_id}/answers-in-use",
+  "/api/v1/children/{child_id}/clips",
+  "/api/v1/children/{child_id}/clips/upload-link",
+  "/api/v1/children/{child_id}/clips/{clip_id}",
+  "/api/v1/therapist/invites",
+  "/api/v1/therapist/invites/accept",
+  "/api/v1/therapist/invites/{link_id}/accept",
+  "/api/v1/therapist/children",
+  "/api/v1/therapist/profile",
+  "/api/v1/therapist/children/{child_id}/form",
+  "/api/v1/therapist/children/{child_id}/clips",
+  "/api/v1/therapist/children/{child_id}/clips/{clip_id}/replies",
   "/api/v1/admin/users",
   "/api/v1/admin/users/{user_id}",
 ] as const satisfies readonly (keyof paths)[];

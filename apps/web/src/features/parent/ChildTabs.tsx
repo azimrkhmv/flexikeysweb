@@ -384,9 +384,9 @@ export function SharingTab({ childId, goTab }: { childId: string; goTab: (t: Tab
           {links.map((l) => (
             <li key={l.id} className="flex flex-wrap items-center gap-2 rounded-2xl bg-surface-2 p-3">
               <div className="min-w-0 flex-1">
-                <p className="truncate font-bold">{l.professionalId ? user(l.professionalId) : l.email}</p>
+                <p className="truncate font-bold">{l.therapistName || (l.professionalId && user(l.professionalId)) || l.phone || l.email}</p>
                 <p className="text-xs text-muted">
-                  {l.email} · {fmtDate(l.createdAt, lang)}
+                  {l.phone || l.email} · {fmtDate(l.createdAt, lang)}
                   {l.status === "invited" && ` · ${t("parent.sharing.code")}: `}
                   {l.status === "invited" && <span className="font-mono font-bold text-ink">{l.code}</span>}
                 </p>
@@ -408,14 +408,14 @@ export function SharingTab({ childId, goTab }: { childId: string; goTab: (t: Tab
               e.preventDefault();
               const link = await invite.run(childId, email, "therapist");
               if (link) {
-                setNewCode(link.code);
+                setNewCode(link.code || null); // a phone invite waits in the therapist's own list instead
                 setEmail("");
               }
             }}
           >
             <div className="min-w-48 flex-1">
-              <Field label={t("parent.sharing.email")}>
-                <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+              <Field label={t("parent.sharing.email")} hint={t("parent.sharing.phoneHint")}>
+                <Input type="tel" inputMode="tel" placeholder="+998" value={email} onChange={(e) => setEmail(e.target.value)} />
               </Field>
             </div>
             <Button type="submit" pending={invite.pending}>
@@ -427,7 +427,7 @@ export function SharingTab({ childId, goTab }: { childId: string; goTab: (t: Tab
         {newCode && (
           <div role="status" className="flex flex-wrap items-center gap-3 rounded-2xl border border-teal bg-teal-soft/60 p-4">
             <p className="flex-1 text-sm text-ink-2">{t("parent.sharing.codeHint")}</p>
-            <span className="font-mono text-2xl font-extrabold tracking-widest">{newCode}</span>
+            <span className="font-mono text-2xl font-extrabold tracking-widest break-all">{newCode}</span>
             <Button
               size="sm"
               variant="outline"

@@ -12,7 +12,7 @@ import { Clips } from "@/features/therapist/Clips";
 import { TherapistForm } from "@/features/therapist/Form";
 import { AdaptationLog, MotorMetrics, LevelLabel, LevelOptions, LockNote, MasteryList, MinutesChart, NotFound, SectionTitle, SessionsList, useMe, useNow } from "@/features/pro/shared";
 import { fmtDate } from "@/lib/format";
-import { api, sel } from "@/lib/api";
+import { api, LIVE, sel } from "@/lib/api";
 import { useLang, useT } from "@/lib/i18n";
 
 /** Therapist view of one linked child (PRD §9.16). Read-only for adaptation; every open is audit-logged. */
@@ -48,7 +48,8 @@ export default function TherapistChild() {
         <Clips childId={id} />
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      {/* ponytail: the older cards below read the earlier server's addresses; the new server has none of them yet. */}
+      {!LIVE && <div className="grid gap-6 lg:grid-cols-2">
         <Notes childId={id} />
         <Goals childId={id} />
         <MasteryList childId={id} />
@@ -61,7 +62,7 @@ export default function TherapistChild() {
         <SupportCard child={child} />
         <SessionsList childId={id} />
         <MotorMetrics childId={id} />
-      </div>
+      </div>}
     </>
   );
 }

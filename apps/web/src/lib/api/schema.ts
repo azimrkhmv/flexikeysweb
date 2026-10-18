@@ -2,7 +2,7 @@
 
 // Shape of the mock database, shared constants and id/time helpers.
 
-import type { TherapistAnswers, TherapistProfile } from "@/content/therapist";
+import type { Profession, TherapistAnswers, TherapistProfile } from "@/content/therapist";
 import type { AccessSettings } from "../playcheck";
 import type { Area } from "../skill";
 import type { TryRecord } from "../tries";
@@ -68,7 +68,11 @@ export interface DB {
   /** T2–T11 per child and therapist (B23). */
   therapistAnswers: { childId: string; therapistId: string; answers: TherapistAnswers; at: string }[];
   /** A therapist's replies to the parent's movement clips (T9, B25). `clipId` is the P40 media id. */
-  clipReplies: { id: string; childId: string; clipId: string; therapistId: string; text: string; at: string }[];
+  clipReplies: { id: string; childId: string; clipId: string; therapistId: string; text: string; at: string; name?: string }[];
+  /** Live mode: the clips on the server (P40 movement clips), with a short-lived link to watch each. */
+  clips?: { id: string; childId: string; url: string }[];
+  /** Live mode, parent: what the server says the therapists changed (GET /children/{id}/answers-in-use). */
+  answersInUse?: Record<string, { updated: Record<string, { value: string | string[]; name: string; profession?: Profession; at: string }>; messages: { text: string; name: string; profession?: Profession; at: string }[] }>;
 }
 
 export class ApiError extends Error {

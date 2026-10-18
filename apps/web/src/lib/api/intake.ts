@@ -6,7 +6,7 @@ import { dailyQuestionOn } from "@/content/daily";
 import type { Answers } from "@/content/intake";
 import { baseLang, type Lang, type UiLang } from "../i18n";
 import { buildRoadmap } from "../roadmap";
-import { getMedia, putMedia } from "../media";
+import { deleteMedia, getMedia, putMedia } from "../media";
 import { read, write, net } from "./db";
 import { audit, familyForNewChild, requireChildAccess, requireUser } from "./guards";
 import { ApiError, CONSENT_VERSION, id, iso, localDate, type DB } from "./schema";
@@ -74,6 +74,14 @@ export const intakeApi = {
   /** POST /children/{id}/intake/voice-link + upload — the P39 voice note; the answer keeps only its key. */
   async saveVoiceNote(_childId: string, blob: Blob) {
     return putMedia(blob);
+  },
+  /** P40: a movement clip; the answer keeps its id (live: on the server, for the shared therapist). */
+  async addMovementClip(_childId: string, file: Blob) {
+    return putMedia(file);
+  },
+  async removeMovementClip(_childId: string, clipId: string) {
+    await deleteMedia(clipId);
+    return net(true);
   },
   /** GET /children/{id}/intake/{round}/voice — a link to listen to the voice note again. */
   async voiceNoteUrl(_childId: string, _round: number, key: string) {
