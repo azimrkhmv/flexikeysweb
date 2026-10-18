@@ -91,3 +91,20 @@ export async function bearerFor(phone: string) {
   const { accessToken } = await call("/auth/phone/verify", { phone, code: demoCode });
   return { Authorization: `Bearer ${accessToken}` };
 }
+
+/** Test setup: a fresh admin and physiotherapist, an uploaded file for this exercise and language, approved. */
+export async function approvedVideo(exerciseId: string, lang: "uz" | "ru" | "en") {
+  const adminPhone = `+99890${String(Date.now()).slice(-7)}`;
+  serverCommand("load-exercises");
+  serverCommand("create-admin", adminPhone);
+  const admin = { ...(await bearerFor(adminPhone)), "Content-Type": "application/json" };
+  const physioPhone = `+99897${String(Date.now() + 1).slice(-7)}`;
+  await fetch(`${API}/api/v1/admin/users`, { method: "POST", headers: admin, body: JSON.stringify({ phone: physioPhone, role: "physio" }) });
+  const file = { exerciseId, lang };
+  const link = await (await fetch(`${API}/api/v1/admin/videos/upload-link`, { method: "POST", headers: admin, body: JSON.stringify(file) })).json();
+  await fetch(link.uploadUrl, { method: "PUT", body: new Uint8Array(1024), headers: { "Content-Type": "video/mp4" } });
+  const video = await (await fetch(`${API}/api/v1/admin/videos`, { method: "POST", headers: admin, body: JSON.stringify({ ...file, storageKey: link.storageKey }) })).json();
+  const physio = { ...(await bearerFor(physioPhone)), "Content-Type": "application/json" };
+  const r = await fetch(`${API}/api/v1/review/videos/${video.id}`, { method: "POST", headers: physio, body: JSON.stringify({ decision: "approved" }) });
+  if (!r.ok) throw new Error(`approve failed: ${r.status}`);
+}

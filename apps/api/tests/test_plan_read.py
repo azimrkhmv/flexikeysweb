@@ -53,7 +53,7 @@ def test_owner_and_helper_read_the_plan_and_today(client: TestClient, approved_p
         today = client.get(f"{API}/children/{child}/today", headers=who).json()
         assert today == plan["days"][0]
     putty = [e for d in plan["days"] for e in d["exercises"] if e["exerciseId"] == "putty_squeeze"]
-    assert putty and putty[0]["title"]["en"] == "Squeeze the putty"
+    assert putty and (putty[0]["title"]["en"], putty[0]["tool"]) == ("Squeeze the putty", "putty")
 
 
 def test_today_follows_the_calendar(client: TestClient) -> None:

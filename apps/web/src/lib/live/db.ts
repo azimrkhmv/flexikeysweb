@@ -8,7 +8,7 @@ import { useStore } from "@/lib/store";
 import { http } from "./http";
 import type { ChildOut, Consents, PlanOut, ReviewItem, RoundOut, RoundSummary } from "@/lib/server/types";
 import {
-  answersFrom, familyChildFrom, familyConsentsFrom, planFrom, reviewVideosFrom,
+  answersFrom, familyChildFrom, familyConsentsFrom, planFrom, planVideosFrom, reviewVideosFrom,
   aacCardFrom, auditFrom, careLinkFrom, orderFrom, subscriptionFrom, changeFrom, childFrom, notificationFrom, classFrom, goalFrom, levelsFrom, masteryFrom, noteFrom, profileFrom, rosterChildFrom,
   sessionsFrom, taskFrom, userFrom,
   type BAacCard, type BAdminSub, type BAudit, type BOrder, type BOverview, type BCareLink, type BNotification, type BChild, type BChildOverview, type BClass, type BGoal, type BLevel, type BNote,
@@ -225,7 +225,10 @@ export function useLiveDb(): DB {
         if (consents) db.consents.push(...familyConsentsFrom(id, consents));
         db.intakeRounds.push(...rounds.map((r) => ({ childId: id, round: r.number, startedAt: r.startedAt, completedAt: r.completedAt ?? undefined })));
         const finished = rounds.filter((r) => r.completedAt).at(-1);
-        if (plan && finished) db.roadmaps.push(planFrom(id, finished.number, plan));
+        if (plan && finished) {
+          db.roadmaps.push(planFrom(id, finished.number, plan));
+          for (const v of planVideosFrom(plan)) if (!db.videos.some((x) => x.id === v.id)) db.videos.push(v);
+        }
       });
       roundsOf.forEach(({ id }, k) => {
         const r = answers[k]?.data;

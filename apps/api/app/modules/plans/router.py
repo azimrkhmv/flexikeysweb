@@ -90,6 +90,7 @@ async def create_plan(
 class ExerciseItem(ApiModel):
     exercise_id: str
     title: dict[str, str]  # uz, ru, en
+    tool: str | None  # the Home Kit tool it needs, if any
     level: int
 
 
@@ -134,15 +135,18 @@ async def _days(db: AsyncSession, plan: Plan, only: int | None = None) -> list[D
     if only is not None:
         query = query.where(PlanItem.day == only)
     items = list(await db.scalars(query))
-    rows = await db.execute(select(Exercise.id, Exercise.title).where(Exercise.id.in_({i.ref for i in items})))
-    titles: dict[str, dict[str, str]] = {exercise_id: title for exercise_id, title in rows}
+    rows = await db.execute(
+        select(Exercise.id, Exercise.title, Exercise.tool).where(Exercise.id.in_({i.ref for i in items}))
+    )
+    info: dict[str, tuple[dict[str, str], str | None]] = {eid: (title, tool) for eid, title, tool in rows}
     days = {
         d: DayOut(day=d, date=plan.start_date + timedelta(days=d), exercises=[], games=[])
         for d in sorted({i.day for i in items} | ({only} if only is not None else set()))
     }
     for i in items:
         if i.kind == ItemKind.exercise:
-            days[i.day].exercises.append(ExerciseItem(exercise_id=i.ref, title=titles[i.ref], level=i.level or 1))
+            title, tool = info[i.ref]
+            days[i.day].exercises.append(ExerciseItem(exercise_id=i.ref, title=title, tool=tool, level=i.level or 1))
         else:
             days[i.day].games.append(GameItem(kind=i.ref, minutes=i.minutes or 0))
     return list(days.values())

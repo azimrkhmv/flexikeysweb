@@ -693,6 +693,8 @@ export interface components {
             title: {
                 [key: string]: string;
             };
+            /** Tool */
+            tool: string | null;
             /** Level */
             level: number;
         };

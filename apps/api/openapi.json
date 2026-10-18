@@ -1783,6 +1783,17 @@
       "type": "object",
       "title": "Title"
      },
+     "tool": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Tool"
+     },
      "level": {
       "type": "integer",
       "title": "Level"
@@ -1792,6 +1803,7 @@
     "required": [
      "exerciseId",
      "title",
+     "tool",
      "level"
     ],
     "title": "ExerciseItem"

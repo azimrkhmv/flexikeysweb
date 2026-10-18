@@ -317,7 +317,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A1.9` Staff (physiotherapist, clinic, admin) sign in without the parent's basic consent and district step
   - Done when: a new physiotherapist goes straight to the review queue after the SMS code
   - Needs: B5
-- [ ] **Azim** — `B6` Connect the plan screen to the server
+- [x] **Azim** — `B6` Connect the plan screen to the server
   - Done when: a parent sees their real 4-week plan in the browser
   - Needs: A4.5
 

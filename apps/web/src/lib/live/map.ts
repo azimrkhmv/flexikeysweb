@@ -98,6 +98,16 @@ export function planFrom(childId: string, round: number, p: PlanOut): Roadmap {
   };
 }
 
+/** The plan's exercises as library entries, so the plan screen can show each one's name and tool. Display only:
+ *  the tags that keep a plan safe are applied by the server's engine, never from these entries. */
+export function planVideosFrom(p: PlanOut): ExerciseVideo[] {
+  const seen = new Map<string, ExerciseVideo>();
+  for (const e of p.days.flatMap((d) => d.exercises))
+    if (!seen.has(e.exerciseId))
+      seen.set(e.exerciseId, { id: e.exerciseId, title: e.title as L10n, tool: e.tool ?? null, bodyArea: "hands", goals: [], gmfcs: [], ages: [], difficulty: 1, conflicts: [], versions: {} });
+  return [...seen.values()];
+}
+
 /** The physiotherapist's review queue: one ExerciseVideo per exercise, one version per language file. */
 export function reviewVideosFrom(items: ReviewItem[]): ExerciseVideo[] {
   const byExercise = new Map<string, ExerciseVideo>();
