@@ -6,6 +6,7 @@ import { Activity, ChevronRight, Mail, Target, Users } from "lucide-react";
 import { Avatar, Button, Card, Chip, Empty, Field, Input, Meter, PageHeader, Stat, useAction } from "@/components/ui";
 import { DAY } from "@/lib/api/schema";
 import { avgMastery, pct, SectionTitle, useMe, useNow } from "@/features/pro/shared";
+import { ProfileCard } from "@/features/therapist/Form";
 import { fmtDate } from "@/lib/format";
 import { api, sel } from "@/lib/api";
 import { useLang, useT } from "@/lib/i18n";
@@ -75,6 +76,8 @@ export default function TherapistHome() {
           )}
         </section>
 
+        <div className="space-y-6">
+        <ProfileCard />
         <Card>
           <SectionTitle>{t("therapist.invites.title")}</SectionTitle>
           {invites.length === 0 ? (
@@ -123,6 +126,7 @@ export default function TherapistHome() {
             </p>
           )}
         </Card>
+        </div>
       </div>
     </>
   );

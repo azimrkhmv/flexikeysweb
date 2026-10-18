@@ -8,6 +8,7 @@ import { ApiError, id, iso, makeCode } from "./schema";
 import { sel } from "./selectors";
 import { normalizePhone } from "./auth";
 import type { CareLink } from "../types";
+import { FORM_IDS, type Profession, type TherapistAnswers } from "@/content/therapist";
 
 export const careApi = {
   // ------------------------------------------------------------ care links & classes (parent side)
@@ -69,6 +70,31 @@ export const careApi = {
       Object.assign(db.careLinks.find((l) => l.id === link.id)!, { status: "active", professionalId: u.id });
       const child = sel.child(db, link.childId);
       notify(db, sel.familyOwner(db, child?.familyId ?? null), "notif.care_accepted", { name: child?.name ?? "" });
+    });
+    return net(true);
+  },
+  /** PUT /therapist/profile — T1: name, profession, workplace. */
+  async saveTherapistProfile(name: string, profession: Profession, workplace: string) {
+    const u = requireUser(["therapist"]);
+    if (!name.trim() || !workplace.trim()) throw new ApiError("invalid_answer");
+    write((db) => {
+      db.users.find((x) => x.id === u.id)!.name = name.trim();
+      db.therapistProfiles = db.therapistProfiles.filter((p) => p.userId !== u.id);
+      db.therapistProfiles.push({ userId: u.id, profession, workplace: workplace.trim() });
+    });
+    return net(true);
+  },
+  /** PUT /therapist/children/{id}/form — some answers; the others stay, an empty one is removed. */
+  async saveTherapistForm(childId: string, answers: TherapistAnswers) {
+    const { user } = requireChildAccess(childId, ["therapist"]);
+    if (!read().therapistProfiles.some((p) => p.userId === user.id)) throw new ApiError("profile_needed");
+    write((db) => {
+      const row = db.therapistAnswers.find((r) => r.childId === childId && r.therapistId === user.id);
+      const merged: TherapistAnswers = { ...row?.answers, ...answers };
+      for (const k of FORM_IDS) if (merged[k] === undefined) delete merged[k];
+      if (row) Object.assign(row, { answers: merged, at: iso() });
+      else db.therapistAnswers.push({ childId, therapistId: user.id, answers: merged, at: iso() });
+      audit(db, user.id, "therapist.form_saved", childId);
     });
     return net(true);
   },

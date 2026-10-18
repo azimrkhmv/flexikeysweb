@@ -500,7 +500,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `B22` Connect Free and Pro to the server
   - Done when: a simulated payment upgrades the family in the browser
   - Needs: A7.2, A7.3, B21
-- [ ] **Azim** — `B23` Therapist form T1–T11
+- [x] **Azim** — `B23` Therapist form T1–T11
   - Done when: the required fields follow the therapist's profession, as the spec lists them
   - Needs: —
 - [ ] **Azim** — `B24` Parent side: "Updated by [therapist name]" and the therapist's message

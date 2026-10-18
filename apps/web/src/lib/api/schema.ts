@@ -2,6 +2,7 @@
 
 // Shape of the mock database, shared constants and id/time helpers.
 
+import type { TherapistAnswers, TherapistProfile } from "@/content/therapist";
 import type { AccessSettings } from "../playcheck";
 import type { Area } from "../skill";
 import type { TryRecord } from "../tries";
@@ -62,6 +63,10 @@ export interface DB {
   skills: { childId: string; area: Area; theta: number; n: number }[];
   /** Seconds of game time per child and day (YYYY-MM-DD), for the 20-minute daily limit (B18). */
   playTime: { childId: string; date: string; seconds: number }[];
+  /** T1 of the therapist form, once per therapist (B23); the name is the user's. */
+  therapistProfiles: TherapistProfile[];
+  /** T2–T11 per child and therapist (B23). */
+  therapistAnswers: { childId: string; therapistId: string; answers: TherapistAnswers; at: string }[];
 }
 
 export class ApiError extends Error {
@@ -91,4 +96,4 @@ const CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"; // no 0/O/1/I/L (SEC-5)
 export const makeCode = (n = 6) => Array.from({ length: n }, () => CODE_ALPHABET[Math.floor(Math.random() * CODE_ALPHABET.length)]).join("");
 
 /** Bump when the DB shape changes: browsers holding an older shape are reseeded instead of crashing. */
-export const DB_VERSION = 10;
+export const DB_VERSION = 11;

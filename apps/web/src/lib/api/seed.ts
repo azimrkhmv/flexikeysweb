@@ -130,6 +130,8 @@ export function seed(): DB {
     accessProfiles: [],
     skills: [],
     playTime: [],
+    therapistProfiles: [],
+    therapistAnswers: [],
   };
 
   // ~2 weeks of play history so dashboards have something real to show.

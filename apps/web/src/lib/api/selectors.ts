@@ -214,6 +214,9 @@ export const sel = {
     db.careLinks.filter((l) => l.professionalId === userId && l.status === "active").map((l) => sel.child(db, l.childId)).filter((c): c is Child => !!c),
   invitesFor: (db: DB, email: string, phone?: string) =>
     db.careLinks.filter((l) => l.status === "invited" && ((!!l.email && l.email.toLowerCase() === email.toLowerCase()) || (!!phone && l.phone === phone))),
+  therapistProfile: (db: DB, userId: string) => (db.therapistProfiles ?? []).find((p) => p.userId === userId) ?? null,
+  therapistAnswers: (db: DB, childId: string, therapistId: string) =>
+    (db.therapistAnswers ?? []).find((r) => r.childId === childId && r.therapistId === therapistId)?.answers ?? {},
   careLinks: (db: DB, childId: string) => db.careLinks.filter((l) => l.childId === childId && l.status !== "revoked"),
   notifications: (db: DB, userId: string) => db.notifications.filter((n) => n.userId === userId).sort((a, b) => b.at.localeCompare(a.at)),
   aacStats(db: DB, childId: string) {
