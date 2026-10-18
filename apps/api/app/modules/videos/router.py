@@ -24,8 +24,18 @@ from app.modules.accounts.access import Admin, require_role
 from app.modules.accounts.models import Lang, Role, User
 from app.modules.audit import models as audit
 from app.modules.auth.session import CurrentUser
-from app.modules.videos.models import Exercise, ReviewDecision, Video, VideoLang, VideoReview, VideoStatus
+from app.modules.videos.models import (
+    PLACEHOLDERS,
+    Exercise,
+    ReviewDecision,
+    Video,
+    VideoLang,
+    VideoReview,
+    VideoStatus,
+    servable,
+)
 from app.schemas import ApiModel
+from app.settings import settings
 
 router = APIRouter(prefix="/admin/videos", tags=["videos"])
 review_router = APIRouter(prefix="/review/videos", tags=["videos"])
@@ -51,6 +61,40 @@ async def load_exercises(db: AsyncSession) -> int:
     )
     await db.commit()
     return len(rows)
+
+
+# The placeholder clips (C7): apps/web/scripts/placeholder-videos.py makes them, the demo plays them from here.
+PLACEHOLDER_FILES = Path(__file__).parents[4] / "web" / "public" / "placeholder-videos"
+
+
+async def load_placeholders(db: AsyncSession, folder: Path = PLACEHOLDER_FILES) -> int:
+    """Test servers only: a placeholder video for every exercise and language that has no video yet, approved, so
+    plans hold exercises before the real videos exist. A real video is never replaced. Refused in production."""
+    if settings.env == "prod":
+        raise AppError(403, "placeholders_not_in_production")
+    await load_exercises(db)
+    added = 0
+    for file in sorted(folder.glob("*.mp4")):  # noqa: ASYNC240 (a command run by hand, not a request)
+        exercise_id, lang = file.stem.rsplit(".", 1)
+        key = f"{PLACEHOLDERS}{exercise_id}/{lang}.mp4"
+        storage.internal().fput_object(settings.s3_bucket, key, str(file), content_type="video/mp4")
+        new = await db.scalar(
+            insert(Video)
+            .values(
+                id=uuid.uuid4(),
+                exercise_id=exercise_id,
+                lang=VideoLang(lang),
+                storage_key=key,
+                duration_s=4,
+                status=VideoStatus.approved,
+                approved_at=datetime.now(UTC),
+            )
+            .on_conflict_do_nothing(index_elements=["exercise_id", "lang"])
+            .returning(Video.id)
+        )
+        added += new is not None
+    await db.commit()
+    return added
 
 
 class VideoFile(ApiModel):
@@ -227,11 +271,7 @@ async def watch(
     """The exercise's video in this language, only once a physiotherapist approved it (product rule 3). Anything
     else, even a video waiting for review, answers "not found". Uzbek Cyrillic gets the Uzbek video."""
     video_lang = VideoLang.uz if lang == Lang.uz_cyrl else VideoLang(lang.value)
-    video = await db.scalar(
-        select(Video).where(
-            Video.exercise_id == exercise_id, Video.lang == video_lang, Video.status == VideoStatus.approved
-        )
-    )
+    video = await db.scalar(select(Video).where(Video.exercise_id == exercise_id, Video.lang == video_lang, servable()))
     if video is None:
         raise AppError(404, "not_found")
     return FamilyVideo(

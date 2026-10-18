@@ -28,7 +28,7 @@ from app.modules.plans.router import (
     plan_day_today,
 )
 from app.modules.today.models import DailyAnswer, DailyQuestion, Feeling, PausedDay, TaskDone
-from app.modules.videos.models import Video, VideoLang, VideoStatus
+from app.modules.videos.models import Video, VideoLang, servable
 from app.schemas import ApiModel
 
 router = APIRouter(prefix="/children", tags=["today"])
@@ -275,7 +275,7 @@ async def offline_videos(
     video_lang = VideoLang.uz if lang == Lang.uz_cyrl else VideoLang(lang.value)
     videos = await db.scalars(
         select(Video)
-        .where(Video.exercise_id.in_(exercises), Video.lang == video_lang, Video.status == VideoStatus.approved)
+        .where(Video.exercise_id.in_(exercises), Video.lang == video_lang, servable())
         .order_by(Video.exercise_id)
     )
     expires = datetime.now(UTC) + storage.OFFLINE_TTL

@@ -387,7 +387,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `C5` The physiotherapist reviews the first batch
   - Done when: approved videos appear in real plans
   - Needs: C4, V3, A3.4, Q3
-- [ ] **Azim** — `C7` Placeholder video for every exercise: a short silent clip with the exercise name and steps, in uz, ru and en; on test servers only, never in production
+- [x] **Azim** — `C7` Placeholder video for every exercise: a short silent clip with the exercise name and steps, in uz, ru and en; on test servers only, never in production
   - Done when: every exercise in a demo plan plays its placeholder; production refuses placeholder files
   - Needs: A3.5
 - [ ] **Azim** — `B12` Video player on the Today screen; keep the next 7 days of videos for offline use on Wi-Fi

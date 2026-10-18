@@ -9,7 +9,6 @@ Rejected (0)
 Approved (87)
 Sort by colour with tongs
 Oʻzbekcha (Lotin)
-Demo: no video file yet. The AI pipeline adds it.
 Hands
 Use hands better
 Understand more
@@ -24,7 +23,6 @@ Request changes
 Reject
 Sort by colour with tongs
 Русский
-Demo: no video file yet. The AI pipeline adds it.
 Hands
 Use hands better
 Understand more
@@ -39,7 +37,6 @@ Request changes
 Reject
 Sort by colour with tongs
 English
-Demo: no video file yet. The AI pipeline adds it.
 Hands
 Use hands better
 Understand more
@@ -54,7 +51,6 @@ Request changes
 Reject
 Copy a peg pattern
 Oʻzbekcha (Lotin)
-Demo: no video file yet. The AI pipeline adds it.
 Hands
 Use hands better
 Understand more
@@ -70,7 +66,6 @@ Request changes
 Reject
 Copy a peg pattern
 Русский
-Demo: no video file yet. The AI pipeline adds it.
 Hands
 Use hands better
 Understand more
@@ -86,7 +81,6 @@ Request changes
 Reject
 Copy a peg pattern
 English
-Demo: no video file yet. The AI pipeline adds it.
 Hands
 Use hands better
 Understand more
@@ -102,7 +96,6 @@ Request changes
 Reject
 Catch the soft ball
 Oʻzbekcha (Lotin)
-Demo: no video file yet. The AI pipeline adds it.
 Arms
 Play with others
 Use hands better
@@ -118,7 +111,6 @@ Request changes
 Reject
 Catch the soft ball
 Русский
-Demo: no video file yet. The AI pipeline adds it.
 Arms
 Play with others
 Use hands better
@@ -134,7 +126,6 @@ Request changes
 Reject
 Catch the soft ball
 English
-Demo: no video file yet. The AI pipeline adds it.
 Arms
 Play with others
 Use hands better
@@ -150,7 +141,6 @@ Request changes
 Reject
 Funny faces in the mirror
 Oʻzbekcha (Lotin)
-Demo: no video file yet. The AI pipeline adds it.
 Mouth and face
 Talk or communicate
 Level 1
@@ -164,7 +154,6 @@ Request changes
 Reject
 Funny faces in the mirror
 Русский
-Demo: no video file yet. The AI pipeline adds it.
 Mouth and face
 Talk or communicate
 Level 1
@@ -178,7 +167,6 @@ Request changes
 Reject
 Funny faces in the mirror
 English
-Demo: no video file yet. The AI pipeline adds it.
 Mouth and face
 Talk or communicate
 Level 1

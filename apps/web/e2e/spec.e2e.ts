@@ -146,7 +146,15 @@ test("Today is the first screen after sign-in: exercises with video and tool, an
   await expect(today).toBeVisible();
   const ali = today.getByRole("article").filter({ hasText: "Ali" });
   await expect(ali.getByText("Exercises", { exact: true })).toBeVisible();
-  await expect(ali.getByText("Video coming soon").first()).toBeVisible(); // demo files are empty placeholders
+  // each exercise plays its placeholder clip (C7) until the real video is approved
+  const videos = ali.locator("video");
+  expect(await videos.count()).toBeGreaterThan(0);
+  for (const src of await videos.evaluateAll((v) => v.map((x) => (x as HTMLVideoElement).getAttribute("src")))) {
+    expect(src).toMatch(/^\/placeholder-videos\/\w+\.en\.mp4$/);
+    // the file is there (the test browser has no H.264 decoder; Chrome, Safari and phones play it)
+    const file = await page.request.get(src!);
+    expect([file.status(), file.headers()["content-type"]]).toEqual([200, "video/mp4"]);
+  }
   await expect(ali.getByText("Games", { exact: true })).toBeVisible();
   // it comes before everything else on the page
   const top = await today.boundingBox();

@@ -4,6 +4,7 @@
     uv run python -m app.cli check-health-key              can this key read every stored health answer?
     uv run python -m app.cli load-exercises                the exercise library from app/content/exercises.json
     uv run python -m app.cli load-daily-questions          the daily question list from app/content/daily.json
+    uv run python -m app.cli load-placeholder-videos       test servers only: a placeholder for every missing video
 
 In Docker: `docker compose exec api python -m app.cli ...`
 """
@@ -20,7 +21,7 @@ from app.modules.accounts.admin import create_staff
 from app.modules.accounts.models import Role
 from app.modules.intake.models import IntakeAnswer
 from app.modules.today.router import load_daily_questions
-from app.modules.videos.router import load_exercises
+from app.modules.videos.router import load_exercises, load_placeholders
 
 
 async def create_admin(phone: str) -> None:
@@ -63,6 +64,15 @@ async def load_daily() -> None:
     await engine.dispose()
 
 
+async def placeholder_videos() -> None:
+    async with SessionLocal() as db:
+        try:
+            print(f"{await load_placeholders(db)} placeholder videos added.")
+        except AppError as e:
+            sys.exit(f"Not loaded: {e.code}")
+    await engine.dispose()
+
+
 if __name__ == "__main__":
     match sys.argv[1:]:
         case ["create-admin", phone]:
@@ -73,5 +83,7 @@ if __name__ == "__main__":
             asyncio.run(load_library())
         case ["load-daily-questions"]:
             asyncio.run(load_daily())
+        case ["load-placeholder-videos"]:
+            asyncio.run(placeholder_videos())
         case _:
             sys.exit(__doc__)

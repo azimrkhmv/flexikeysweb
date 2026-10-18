@@ -19,7 +19,7 @@ from app.modules.plans import engine
 from app.modules.plans.models import FixedLevel, ItemKind, Plan, PlanItem, PlanReason
 from app.modules.plans.safety import LibraryExercise
 from app.modules.today.models import Feeling, PausedDay, TaskDone
-from app.modules.videos.models import Exercise, Video, VideoStatus
+from app.modules.videos.models import Exercise, Video, servable
 from app.schemas import ApiModel
 
 TASHKENT = ZoneInfo("Asia/Tashkent")
@@ -29,9 +29,7 @@ router = APIRouter(prefix="/children", tags=["plans"])
 async def library(db: AsyncSession) -> list[LibraryExercise]:
     """Every active exercise, with the languages its video is approved in (no approved video = never in a plan)."""
     approved: dict[str, set[str]] = {}
-    for exercise_id, lang in await db.execute(
-        select(Video.exercise_id, Video.lang).where(Video.status == VideoStatus.approved)
-    ):
+    for exercise_id, lang in await db.execute(select(Video.exercise_id, Video.lang).where(servable())):
         approved.setdefault(exercise_id, set()).add(lang.value)
     return [
         LibraryExercise(

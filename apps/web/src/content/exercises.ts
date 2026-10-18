@@ -1,5 +1,6 @@
 // Exercise video library seed (spec §8). Real videos come from the AI generation pipeline and are registered by
-// an admin; here every exercise has its tags and empty demo files. Only physio-approved versions reach a roadmap.
+// an admin; here every exercise has its tags and a placeholder clip per language (C7, scripts/placeholder-videos.py).
+// Only physio-approved versions reach a roadmap.
 
 import type { AgeBand, BodyArea, ExerciseVideo, FnLevel, GoalKey, L10n, Restriction } from "@/lib/types";
 
@@ -64,8 +65,10 @@ const QUEUED = new Set(["tongs_sort", "pegboard_pattern", "funny_faces", "catch_
 export function exerciseLibrary(approvedBy: string, at: string): ExerciseVideo[] {
   return ROWS.map(([id, [en, uz, ru], bodyArea, goals, gmfcs, ages, tool, difficulty, conflicts]) => {
     const title: L10n = { en, uz, ru };
-    const v = () =>
-      QUEUED.has(id) ? { url: "", durationS: 90, status: "generated" as const, notes: [] } : { url: "", durationS: 90, status: "approved" as const, approvedBy, approvedAt: at, notes: [] };
-    return { id, title, bodyArea, goals, gmfcs, ages, tool, difficulty, conflicts, versions: { uz: v(), ru: v(), en: v() } };
+    const v = (lang: keyof L10n) => {
+      const url = `/placeholder-videos/${id}.${lang}.mp4`;
+      return QUEUED.has(id) ? { url, durationS: 4, status: "generated" as const, notes: [] } : { url, durationS: 4, status: "approved" as const, approvedBy, approvedAt: at, notes: [] };
+    };
+    return { id, title, bodyArea, goals, gmfcs, ages, tool, difficulty, conflicts, versions: { uz: v("uz"), ru: v("ru"), en: v("en") } };
   });
 }

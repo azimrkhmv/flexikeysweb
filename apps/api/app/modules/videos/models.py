@@ -6,12 +6,23 @@ from datetime import datetime
 from enum import StrEnum
 from typing import Any
 
-from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint
+from sqlalchemy import (
+    CheckConstraint,
+    ColumnElement,
+    DateTime,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+    and_,
+)
 from sqlalchemy.dialects.postgresql import ARRAY, JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db import Base, IdTimeMixin, TimeMixin
 from app.modules.accounts.models import enum_column
+from app.settings import settings
 
 
 class Exercise(TimeMixin, Base):
@@ -80,3 +91,13 @@ class VideoReview(IdTimeMixin, Base):
     decision: Mapped[ReviewDecision] = mapped_column(enum_column(ReviewDecision))
     note: Mapped[str | None] = mapped_column(Text)
     storage_key: Mapped[str] = mapped_column(String(256))  # which file was reviewed
+
+
+PLACEHOLDERS = "placeholders/"  # storage keys of the placeholder videos (C7): test servers only
+
+
+def servable() -> ColumnElement[bool]:
+    """A video a family may get: approved by a physiotherapist (product rule 3), and in production never a
+    placeholder (C7)."""
+    approved = Video.status == VideoStatus.approved
+    return and_(approved, Video.storage_key.not_like(f"{PLACEHOLDERS}%")) if settings.env == "prod" else approved
