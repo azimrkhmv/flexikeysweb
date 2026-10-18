@@ -12,6 +12,7 @@ import { sfx, speak, unlockAudio } from "@/lib/audio";
 import { useT, type Lang } from "@/lib/i18n";
 import { useFocusTrap } from "@/lib/useFocusTrap";
 import { createOutbox, retryable, type OutboxItem } from "@/lib/outbox";
+import { createTryLog, type TryRecord } from "@/lib/tries";
 import type { AdaptiveProfile, Child, InputProfile, InteractionEvent, MascotMood } from "@/lib/types";
 import { WarmUp } from "@/features/activities/warmup";
 import { Aac } from "./Aac";
@@ -37,7 +38,13 @@ const FLUSH_EVERY = 10;
 const FLUSH_MS = 5000;
 
 const send = (i: OutboxItem) =>
-  i.kind === "events" ? api.postEvents(i.sessionId, i.events, i.id, i.startedAt) : i.kind === "complete" ? api.completeActivity(i.sessionId, i.levelId, i.activityId) : api.endSession(i.sessionId);
+  i.kind === "events"
+    ? api.postEvents(i.sessionId, i.events, i.id, i.startedAt)
+    : i.kind === "tries"
+      ? api.saveTries(i.childId, i.tries)
+      : i.kind === "complete"
+        ? api.completeActivity(i.sessionId, i.levelId, i.activityId)
+        : api.endSession(i.sessionId);
 /** One queue per page: telemetry, completions and session ends are sent in order and retried until delivered. */
 const outbox = typeof window === "undefined" ? null : createOutbox(send);
 
@@ -104,6 +111,9 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
   const inputRef = useRef<InputProfile>("touch");
   const startTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const buffer = useRef<Omit<InteractionEvent, "sessionId">[]>([]);
+  // The spec's try records, built from the same events (B14); sent with them, kept offline the same way.
+  const tries = useRef<TryRecord[]>([]);
+  const tryLog = useRef<{ sessionId: string; add: ReturnType<typeof createTryLog> } | null>(null);
   const lastAccept = useRef<number | null>(null);
   const moodTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const breakStart = useRef(0);
@@ -126,9 +136,10 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
   // Nothing is dropped on a bad connection: batches go through the outbox and are retried when it returns.
   const flush = useCallback(() => {
     const s = session.current;
+    if (tries.current.length) void outbox?.add({ kind: "tries", childId: child.id, tries: tries.current.splice(0) });
     if (!s || !buffer.current.length) return;
     void outbox?.add({ kind: "events", sessionId: s.id, startedAt: s.wall, events: buffer.current.splice(0) });
-  }, []);
+  }, [child.id]);
 
   const endSession = useCallback(() => {
     flush();
@@ -150,10 +161,15 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
     (e: PlayEvent) => {
       const s = session.current;
       if (!s) return;
-      buffer.current.push({ ...here.current, ...e, t: Math.round(performance.now() - s.start) });
+      const event = { ...here.current, ...e, t: Math.round(performance.now() - s.start) };
+      buffer.current.push(event);
+      if (tryLog.current?.sessionId !== s.id)
+        tryLog.current = { sessionId: s.id, add: createTryLog({ childId: child.id, sessionId: s.id, startedAt: s.wall, access: child.access }) };
+      const record = tryLog.current.add(event);
+      if (record) tries.current.push(record);
       if (buffer.current.length >= FLUSH_EVERY) flush();
     },
-    [flush],
+    [flush, child.id, child.access],
   );
 
   useEffect(() => {

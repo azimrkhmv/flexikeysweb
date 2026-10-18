@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { LEVEL_BY_ID } from "@/content/levels";
+import { createTryLog } from "../tries";
 import { api, DEMO_PASSWORD, dbStore, sel } from "./index";
 
 // The mock server enforces the level gate itself — a client (or an assignment) can't play a sleeping level.
@@ -34,5 +35,25 @@ describe("api.startChildMode without a core consent record", () => {
     expect(sel.childAuth(dbStore.get())).toBeNull();
     await api.setConsent("ch_ali", "core", true);
     await expect(api.startChildMode("ch_ali")).resolves.toBe(true);
+  });
+});
+
+// B14: tries come in batches through the offline queue; a batch sent again (a retry) is stored once.
+describe("api.saveTries", () => {
+  beforeEach(async () => {
+    api.resetDemo();
+    await api.classLoginChild("cl_sun", "ch_ali");
+  });
+
+  it("stores each try once, access events included as access events", async () => {
+    const add = createTryLog({ childId: "ch_ali", sessionId: "s1", startedAt: Date.now(), access: "touch" });
+    const at = { levelId: "animals", activityId: LEVEL_BY_ID.animals.activities[0].id };
+    const batch = [add({ ...at, t: 1, type: "accidental_tap" })!, add({ ...at, t: 2, type: "select", correct: true })!];
+    await api.saveTries("ch_ali", batch);
+    await api.saveTries("ch_ali", batch); // the retry
+    const saved = dbStore.get().tries;
+    expect(saved).toHaveLength(2);
+    expect(saved.map((x) => [x.accessEvent, x.outcome])).toEqual([[true, "skipped"], [false, "correct"]]);
+    await expect(api.saveTries("ch_madina", batch)).rejects.toMatchObject({ code: "not_found" }); // only the playing child
   });
 });

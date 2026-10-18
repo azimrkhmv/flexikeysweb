@@ -424,7 +424,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `B13` Input layer: every game receives "select, move, hold" and never a raw tap
   - Done when: hold-to-choose and switch scanning work in every game
   - Needs: —
-- [ ] **Azim** — `B14` Save every try with its access events; keep tries when the internet drops and send them later in batches
+- [x] **Azim** — `B14` Save every try with its access events; keep tries when the internet drops and send them later in batches
   - Done when: a missed tap, a double tap or an early release is saved as an access event, never as a wrong answer
   - Needs: B13
 - [ ] **Azim** — `B15` Play check, stage 1 — hands and touch: find the input mode, the smallest button that works, the hold time, accidental repeats, clean release

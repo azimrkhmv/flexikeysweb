@@ -1,13 +1,15 @@
+import type { TryRecord } from "./tries";
 import type { InteractionEvent } from "./types";
 
-// Child telemetry and activity completions survive a dropped connection: each one is queued (in memory and in
+// Child telemetry, try records and activity completions survive a dropped connection: each one is queued (in memory and in
 // localStorage), sent in order, and retried until the server answers. Every item keeps one id, so a retry of a
 // batch the server already stored is ignored there (idempotent batch_id, PRD §14).
 
 export type OutboxItem =
   | { kind: "events"; id: string; sessionId: string; startedAt: number; events: Omit<InteractionEvent, "sessionId">[] }
   | { kind: "complete"; id: string; sessionId: string; levelId: string; activityId: string }
-  | { kind: "end"; id: string; sessionId: string };
+  | { kind: "end"; id: string; sessionId: string }
+  | { kind: "tries"; id: string; childId: string; tries: TryRecord[] };
 
 type Dist<T> = T extends unknown ? Omit<T, "id"> : never;
 

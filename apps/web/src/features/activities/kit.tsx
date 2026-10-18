@@ -76,8 +76,15 @@ export function useHint(onRespeak?: () => void) {
     const id = setTimeout(() => setIdle(true), ctx.access === "touch" ? 4000 : 8000);
     return () => clearTimeout(id);
   }, [ctx.profile.hintLevel, ctx.access]);
+  const show = (missed && ctx.profile.hintLevel >= 1) || idle;
+  const told = useRef(false);
+  useEffect(() => {
+    if (!show || told.current) return;
+    told.current = true;
+    ctx.emit({ type: "hint_shown", levelId: ctx.levelId, activityId: ctx.activityId }); // the try records it
+  }, [show, ctx]);
   return {
-    show: (missed && ctx.profile.hintLevel >= 1) || idle,
+    show,
     miss() {
       setMissed(true);
       if (ctx.profile.hintLevel >= 3) onRespeak?.();

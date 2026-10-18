@@ -2,6 +2,7 @@
 
 // Child-token endpoints: child mode entry, sessions & events, rewards, AAC.
 
+import type { TryRecord } from "../tries";
 import { LEVEL_BY_ID, levelComplete } from "@/content/levels";
 import { SHOP_BY_ID } from "@/content/shop";
 import { applyPolicy, bkt, startingProfile } from "../adaptive";
@@ -65,6 +66,17 @@ export const playApi = {
     write((db) => {
       db.events.push(...events.map((e) => ({ ...e, sessionId })));
       if (db.events.length > 4000) db.events = db.events.slice(-4000); // ponytail: retention cap for localStorage
+    });
+    return net(true, 0);
+  },
+  /** POST /children/{id}/tries — a batch of try records (spec §7). A try already stored (same id) is kept once. */
+  async saveTries(childId: string, tries: TryRecord[]) {
+    const c = requireChildToken();
+    if (c.childId !== childId) throw new ApiError("not_found");
+    write((db) => {
+      const seen = new Set(db.tries.map((x) => x.id));
+      db.tries.push(...tries.filter((x) => x.childId === childId && !seen.has(x.id)));
+      if (db.tries.length > 4000) db.tries = db.tries.slice(-4000); // ponytail: localStorage cap; the server keeps 90 days
     });
     return net(true, 0);
   },
