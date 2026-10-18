@@ -393,6 +393,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/children/{child_id}/plan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Current Plan
+         * @description The child's current (newest) 4-week plan, every day, and the reasons behind it.
+         */
+        get: operations["current_plan_api_v1_children__child_id__plan_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/children/{child_id}/today": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Today
+         * @description Today's exercises and games (Tashkent date). 404 no_task_today before the plan starts or after its 28 days.
+         */
+        get: operations["today_api_v1_children__child_id__today_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/videos/upload-link": {
         parameters: {
             query?: never;
@@ -585,11 +625,36 @@ export interface components {
             /** Therapistshare */
             therapistShare: boolean;
         };
+        /** DayOut */
+        DayOut: {
+            /** Day */
+            day: number;
+            /**
+             * Date
+             * Format: date
+             */
+            date: string;
+            /** Exercises */
+            exercises: components["schemas"]["ExerciseItem"][];
+            /** Games */
+            games: components["schemas"]["GameItem"][];
+        };
         /** Decision */
         Decision: {
             decision: components["schemas"]["ReviewDecision"];
             /** Note */
             note?: string | null;
+        };
+        /** ExerciseItem */
+        ExerciseItem: {
+            /** Exerciseid */
+            exerciseId: string;
+            /** Title */
+            title: {
+                [key: string]: string;
+            };
+            /** Level */
+            level: number;
         };
         /** FamilyVideo */
         FamilyVideo: {
@@ -601,11 +666,23 @@ export interface components {
             /** Watchurl */
             watchUrl: string;
         };
+        /** GameItem */
+        GameItem: {
+            /** Kind */
+            kind: string;
+            /** Minutes */
+            minutes: number;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
         };
+        /**
+         * ItemKind
+         * @enum {string}
+         */
+        ItemKind: "exercise" | "game";
         /**
          * Lang
          * @description The website's interface languages (apps/web/src/lib/translate.ts UiLang).
@@ -691,6 +768,37 @@ export interface components {
             code: string;
             /** @default uz */
             lang: components["schemas"]["Lang"];
+        };
+        /** PlanOut */
+        PlanOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Startdate
+             * Format: date
+             */
+            startDate: string;
+            /** Engineversion */
+            engineVersion: string;
+            /** Exercisesallowed */
+            exercisesAllowed: boolean;
+            /** Days */
+            days: components["schemas"]["DayOut"][];
+            /** Reasons */
+            reasons: components["schemas"]["ReasonOut"][];
+        };
+        /** ReasonOut */
+        ReasonOut: {
+            slot: components["schemas"]["ItemKind"];
+            /** Goal */
+            goal: string;
+            /** Ref */
+            ref: string;
+            /** Level */
+            level: number;
         };
         /** RefreshBody */
         RefreshBody: {
@@ -1612,6 +1720,68 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RoundOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    current_plan_api_v1_children__child_id__plan_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    today_api_v1_children__child_id__today_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DayOut"];
                 };
             };
             /** @description Validation Error */

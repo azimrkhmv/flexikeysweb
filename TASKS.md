@@ -300,7 +300,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A4.4` Build a plan when a question round is finished; store its reasons
   - Done when: finishing a round creates a plan; the same answers always give the same plan
   - Needs: A4.3, A4.1, A2.7, A3.4
-- [ ] **Azim** — `A4.5` Server address for the current plan and for today's task
+- [x] **Azim** — `A4.5` Server address for the current plan and for today's task
   - Done when: the plan can be read by any member of the family and by nobody else
   - Needs: A4.4
 - [ ] **Azim** — `B6` Connect the plan screen to the server

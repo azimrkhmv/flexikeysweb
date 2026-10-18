@@ -1039,6 +1039,94 @@
     }
    }
   },
+  "/api/v1/children/{child_id}/plan": {
+   "get": {
+    "tags": [
+     "plans"
+    ],
+    "summary": "Current Plan",
+    "description": "The child's current (newest) 4-week plan, every day, and the reasons behind it.",
+    "operationId": "current_plan_api_v1_children__child_id__plan_get",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/PlanOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/children/{child_id}/today": {
+   "get": {
+    "tags": [
+     "plans"
+    ],
+    "summary": "Today",
+    "description": "Today's exercises and games (Tashkent date). 404 no_task_today before the plan starts or after its 28 days.",
+    "operationId": "today_api_v1_children__child_id__today_get",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/DayOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/v1/admin/videos/upload-link": {
    "post": {
     "tags": [
@@ -1527,6 +1615,41 @@
     ],
     "title": "Consents"
    },
+   "DayOut": {
+    "properties": {
+     "day": {
+      "type": "integer",
+      "title": "Day"
+     },
+     "date": {
+      "type": "string",
+      "format": "date",
+      "title": "Date"
+     },
+     "exercises": {
+      "items": {
+       "$ref": "#/components/schemas/ExerciseItem"
+      },
+      "type": "array",
+      "title": "Exercises"
+     },
+     "games": {
+      "items": {
+       "$ref": "#/components/schemas/GameItem"
+      },
+      "type": "array",
+      "title": "Games"
+     }
+    },
+    "type": "object",
+    "required": [
+     "day",
+     "date",
+     "exercises",
+     "games"
+    ],
+    "title": "DayOut"
+   },
    "Decision": {
     "properties": {
      "decision": {
@@ -1549,6 +1672,32 @@
      "decision"
     ],
     "title": "Decision"
+   },
+   "ExerciseItem": {
+    "properties": {
+     "exerciseId": {
+      "type": "string",
+      "title": "Exerciseid"
+     },
+     "title": {
+      "additionalProperties": {
+       "type": "string"
+      },
+      "type": "object",
+      "title": "Title"
+     },
+     "level": {
+      "type": "integer",
+      "title": "Level"
+     }
+    },
+    "type": "object",
+    "required": [
+     "exerciseId",
+     "title",
+     "level"
+    ],
+    "title": "ExerciseItem"
    },
    "FamilyVideo": {
     "properties": {
@@ -1584,6 +1733,24 @@
     ],
     "title": "FamilyVideo"
    },
+   "GameItem": {
+    "properties": {
+     "kind": {
+      "type": "string",
+      "title": "Kind"
+     },
+     "minutes": {
+      "type": "integer",
+      "title": "Minutes"
+     }
+    },
+    "type": "object",
+    "required": [
+     "kind",
+     "minutes"
+    ],
+    "title": "GameItem"
+   },
    "HTTPValidationError": {
     "properties": {
      "detail": {
@@ -1596,6 +1763,14 @@
     },
     "type": "object",
     "title": "HTTPValidationError"
+   },
+   "ItemKind": {
+    "type": "string",
+    "enum": [
+     "exercise",
+     "game"
+    ],
+    "title": "ItemKind"
    },
    "Lang": {
     "type": "string",
@@ -1876,6 +2051,79 @@
      "code"
     ],
     "title": "PhoneVerify"
+   },
+   "PlanOut": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "startDate": {
+      "type": "string",
+      "format": "date",
+      "title": "Startdate"
+     },
+     "engineVersion": {
+      "type": "string",
+      "title": "Engineversion"
+     },
+     "exercisesAllowed": {
+      "type": "boolean",
+      "title": "Exercisesallowed"
+     },
+     "days": {
+      "items": {
+       "$ref": "#/components/schemas/DayOut"
+      },
+      "type": "array",
+      "title": "Days"
+     },
+     "reasons": {
+      "items": {
+       "$ref": "#/components/schemas/ReasonOut"
+      },
+      "type": "array",
+      "title": "Reasons"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "startDate",
+     "engineVersion",
+     "exercisesAllowed",
+     "days",
+     "reasons"
+    ],
+    "title": "PlanOut"
+   },
+   "ReasonOut": {
+    "properties": {
+     "slot": {
+      "$ref": "#/components/schemas/ItemKind"
+     },
+     "goal": {
+      "type": "string",
+      "title": "Goal"
+     },
+     "ref": {
+      "type": "string",
+      "title": "Ref"
+     },
+     "level": {
+      "type": "integer",
+      "title": "Level"
+     }
+    },
+    "type": "object",
+    "required": [
+     "slot",
+     "goal",
+     "ref",
+     "level"
+    ],
+    "title": "ReasonOut"
    },
    "RefreshBody": {
     "properties": {

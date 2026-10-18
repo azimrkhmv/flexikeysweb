@@ -1,21 +1,28 @@
 """Plans (spec §7, §13): made by the engine from a finished question round, stored with their reasons."""
 
 import uuid
-from datetime import datetime
-from typing import Any
+from datetime import date, datetime, timedelta
+from typing import Annotated, Any
 from zoneinfo import ZoneInfo
 
+from fastapi import APIRouter, Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.modules.accounts.models import Lang
+from app.db import get_session
+from app.errors import AppError
+from app.modules.accounts.models import Lang, User
+from app.modules.auth.session import CurrentUser
 from app.modules.children.models import Child
+from app.modules.children.router import get_visible_child
 from app.modules.plans import engine
 from app.modules.plans.models import ItemKind, Plan, PlanItem, PlanReason
 from app.modules.plans.safety import LibraryExercise
 from app.modules.videos.models import Exercise, Video, VideoStatus
+from app.schemas import ApiModel
 
 TASHKENT = ZoneInfo("Asia/Tashkent")
+router = APIRouter(prefix="/children", tags=["plans"])
 
 
 async def library(db: AsyncSession) -> list[LibraryExercise]:
@@ -78,3 +85,91 @@ async def create_plan(
         for i, r in enumerate(built.reasons)
     )
     return plan
+
+
+class ExerciseItem(ApiModel):
+    exercise_id: str
+    title: dict[str, str]  # uz, ru, en
+    level: int
+
+
+class GameItem(ApiModel):
+    kind: str
+    minutes: int
+
+
+class DayOut(ApiModel):
+    day: int  # 0 = the first day, 27 = the last
+    date: date
+    exercises: list[ExerciseItem]
+    games: list[GameItem]
+
+
+class ReasonOut(ApiModel):
+    slot: ItemKind
+    goal: str
+    ref: str
+    level: int
+
+
+class PlanOut(ApiModel):
+    id: uuid.UUID
+    start_date: date
+    engine_version: str
+    exercises_allowed: bool
+    days: list[DayOut]
+    reasons: list[ReasonOut]
+
+
+async def _current(db: AsyncSession, user: User, child_id: uuid.UUID) -> Plan:
+    await get_visible_child(db, user, child_id)  # any member of the family; 404 for everyone else
+    plan = await db.scalar(select(Plan).where(Plan.child_id == child_id).order_by(Plan.created_at.desc()).limit(1))
+    if plan is None:
+        raise AppError(404, "no_plan")  # the first question round is not finished yet
+    return plan
+
+
+async def _days(db: AsyncSession, plan: Plan, only: int | None = None) -> list[DayOut]:
+    query = select(PlanItem).where(PlanItem.plan_id == plan.id).order_by(PlanItem.day, PlanItem.position)
+    if only is not None:
+        query = query.where(PlanItem.day == only)
+    items = list(await db.scalars(query))
+    rows = await db.execute(select(Exercise.id, Exercise.title).where(Exercise.id.in_({i.ref for i in items})))
+    titles: dict[str, dict[str, str]] = {exercise_id: title for exercise_id, title in rows}
+    days = {
+        d: DayOut(day=d, date=plan.start_date + timedelta(days=d), exercises=[], games=[])
+        for d in sorted({i.day for i in items} | ({only} if only is not None else set()))
+    }
+    for i in items:
+        if i.kind == ItemKind.exercise:
+            days[i.day].exercises.append(ExerciseItem(exercise_id=i.ref, title=titles[i.ref], level=i.level or 1))
+        else:
+            days[i.day].games.append(GameItem(kind=i.ref, minutes=i.minutes or 0))
+    return list(days.values())
+
+
+@router.get("/{child_id}/plan")
+async def current_plan(
+    child_id: uuid.UUID, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]
+) -> PlanOut:
+    """The child's current (newest) 4-week plan, every day, and the reasons behind it."""
+    plan = await _current(db, user, child_id)
+    reasons = await db.scalars(select(PlanReason).where(PlanReason.plan_id == plan.id).order_by(PlanReason.position))
+    return PlanOut(
+        id=plan.id,
+        start_date=plan.start_date,
+        engine_version=plan.engine_version,
+        exercises_allowed=plan.exercises_allowed,
+        days=await _days(db, plan),
+        reasons=[ReasonOut(slot=r.slot, goal=r.goal, ref=r.ref, level=r.level) for r in reasons],
+    )
+
+
+@router.get("/{child_id}/today")
+async def today(child_id: uuid.UUID, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]) -> DayOut:
+    """Today's exercises and games (Tashkent date). 404 no_task_today before the plan starts or after its 28 days."""
+    plan = await _current(db, user, child_id)
+    day = (datetime.now(TASHKENT).date() - plan.start_date).days
+    if not 0 <= day < engine.DAYS:
+        raise AppError(404, "no_task_today")
+    return (await _days(db, plan, only=day))[0]
