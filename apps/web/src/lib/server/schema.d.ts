@@ -678,6 +678,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/children/{child_id}/skills": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Skills
+         * @description θ of the six areas, for choosing games. Never shown to parents as a score (product rule 1).
+         */
+        get: operations["get_skills_api_v1_children__child_id__skills_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/children/{child_id}/skills/placement": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Place
+         * @description Correct the first guess with the play check: it wins over the intake by one step at most (spec §13, step 2).
+         */
+        post: operations["place_api_v1_children__child_id__skills_placement_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/videos/upload-link": {
         parameters: {
             query?: never;
@@ -1137,6 +1177,16 @@ export interface components {
             /** @default uz */
             lang: components["schemas"]["Lang"];
         };
+        /**
+         * Placement
+         * @description The play check's stage 2: for each area played, can the child do it now (spec §7).
+         */
+        Placement: {
+            /** Buckets */
+            buckets: {
+                [key: string]: "not_yet" | "with_help" | "yes";
+            };
+        };
         /** PlanOut */
         PlanOut: {
             /**
@@ -1322,6 +1372,19 @@ export interface components {
             district: string;
             /** Consent */
             consent: boolean;
+        };
+        /**
+         * SkillArea
+         * @enum {string}
+         */
+        SkillArea: "access" | "attention" | "memory" | "flexibility" | "literacy" | "numeracy";
+        /** SkillOut */
+        SkillOut: {
+            area: components["schemas"]["SkillArea"];
+            /** Theta */
+            theta: number;
+            /** Ntrials */
+            nTrials: number;
         };
         /** TodayOut */
         TodayOut: {
@@ -2774,6 +2837,72 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TriesStored"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_skills_api_v1_children__child_id__skills_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SkillOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    place_api_v1_children__child_id__skills_placement_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Placement"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SkillOut"][];
                 };
             };
             /** @description Validation Error */

@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { readFileSync, writeFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { buildRoadmap, type PlanInput } from "@/lib/roadmap";
+import { AREA_OF, AREA_QUESTIONS, AREAS, corrected, difficulty, elo, pCorrect, startingTheta, type Bucket } from "@/lib/skill";
 import type { TherapistInput } from "@/lib/types";
 import { intake as intakeText } from "@/messages/intake";
 import { DAILY_QUESTIONS } from "./daily";
@@ -9,7 +10,7 @@ import { REGIONS } from "./districts";
 import { exerciseLibrary, KIT_TOOLS } from "./exercises";
 import { STEPS, type Answers } from "./intake";
 
-// Files for the Python backend (TASKS.md, tasks A1.6, A2.3, A3.3, A4.3, A5.5), kept next to the code they come from, like
+// Files for the Python backend (TASKS.md, tasks A1.6, A2.3, A3.3, A4.3, A5.5, A6.6), kept next to the code they come from, like
 // levels.manifest.json: the backend validates intake answers with intake.json, seeds the exercise library from
 // exercises.json, and its roadmap engine must produce exactly the plans in roadmap_cases.json — so the server
 // and the app can never disagree. Regenerate with UPDATE_BACKEND=1 npm test, then copy them to the backend.
@@ -105,6 +106,19 @@ describe("backend content", () => {
     const text = (key: string) => ({ uz: intakeText.uz[key as keyof typeof intakeText.uz], ru: intakeText.ru[key as keyof typeof intakeText.ru], en: intakeText.en[key as keyof typeof intakeText.en] });
     const options = [2, 1, 0].map((value) => ({ value, label: text(`intake.ability.${value}`) }));
     check("daily.json", DAILY_QUESTIONS.map((q) => ({ id: q.id, updates: q.updates, text: text(`daily.${q.id}`), options })));
+  });
+
+  it("skill model parity cases", () => {
+    const answers = [{}, { P23: 2, P24: 1, P26: 0, P19: 2, P30: 0, P32: 1, P18: 2, P20: 1, P21: 0 }, { P23: 0, P19: 1, P20: 2 }];
+    const therapist = [{}, { P19: 0, P23: 2 }];
+    const buckets: Bucket[] = ["not_yet", "with_help", "yes"];
+    check("skill_cases.json", {
+      area_of: AREA_OF,
+      area_questions: AREA_QUESTIONS,
+      starting: answers.flatMap((parent) => therapist.flatMap((th) => AREAS.map((area) => ({ area, parent, therapist: th, theta: startingTheta(area, parent, th) })))),
+      corrected: [-2, -1.5, -0.4, 0, 0.7, 1.5, 3].flatMap((theta) => buckets.map((bucket) => ({ theta, bucket, out: corrected(theta, bucket) }))),
+      elo: [-1, 0, 0.8].flatMap((theta) => [0, 7, 40].flatMap((n) => [1, 6, 15].flatMap((level) => [true, false].map((correct) => ({ theta, n, level, correct, d: difficulty(level), p: pCorrect(theta, difficulty(level)), out: elo(theta, n, difficulty(level), correct) }))))),
+    });
   });
 
   it("regions and districts", () => {

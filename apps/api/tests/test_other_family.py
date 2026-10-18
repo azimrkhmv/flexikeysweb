@@ -20,6 +20,7 @@ BODIES = {
     "FeelingIn": {"feeling": "easy"},
     "DailyIn": {"questionId": "D1", "value": 2},
     "RunChange": {"stage": 2},
+    "Placement": {"buckets": {"memory": "yes"}},
     "TryIn": {
         "id": str(uuid.uuid4()),
         "ts": "2026-10-18T10:00:00Z",

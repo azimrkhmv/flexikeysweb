@@ -1872,6 +1872,112 @@
     }
    }
   },
+  "/api/v1/children/{child_id}/skills": {
+   "get": {
+    "tags": [
+     "play"
+    ],
+    "summary": "Get Skills",
+    "description": "θ of the six areas, for choosing games. Never shown to parents as a score (product rule 1).",
+    "operationId": "get_skills_api_v1_children__child_id__skills_get",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/SkillOut"
+         },
+         "title": "Response Get Skills Api V1 Children  Child Id  Skills Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/children/{child_id}/skills/placement": {
+   "post": {
+    "tags": [
+     "play"
+    ],
+    "summary": "Place",
+    "description": "Correct the first guess with the play check: it wins over the intake by one step at most (spec §13, step 2).",
+    "operationId": "place_api_v1_children__child_id__skills_placement_post",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/Placement"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/SkillOut"
+         },
+         "title": "Response Place Api V1 Children  Child Id  Skills Placement Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/v1/admin/videos/upload-link": {
    "post": {
     "tags": [
@@ -3107,6 +3213,31 @@
     ],
     "title": "PhoneVerify"
    },
+   "Placement": {
+    "properties": {
+     "buckets": {
+      "additionalProperties": {
+       "type": "string",
+       "enum": [
+        "not_yet",
+        "with_help",
+        "yes"
+       ]
+      },
+      "propertyNames": {
+       "$ref": "#/components/schemas/SkillArea"
+      },
+      "type": "object",
+      "title": "Buckets"
+     }
+    },
+    "type": "object",
+    "required": [
+     "buckets"
+    ],
+    "title": "Placement",
+    "description": "The play check's stage 2: for each area played, can the child do it now (spec §7)."
+   },
    "PlanOut": {
     "properties": {
      "id": {
@@ -3644,6 +3775,40 @@
      "consent"
     ],
     "title": "Signup"
+   },
+   "SkillArea": {
+    "type": "string",
+    "enum": [
+     "access",
+     "attention",
+     "memory",
+     "flexibility",
+     "literacy",
+     "numeracy"
+    ],
+    "title": "SkillArea"
+   },
+   "SkillOut": {
+    "properties": {
+     "area": {
+      "$ref": "#/components/schemas/SkillArea"
+     },
+     "theta": {
+      "type": "number",
+      "title": "Theta"
+     },
+     "nTrials": {
+      "type": "integer",
+      "title": "Ntrials"
+     }
+    },
+    "type": "object",
+    "required": [
+     "area",
+     "theta",
+     "nTrials"
+    ],
+    "title": "SkillOut"
    },
    "TodayOut": {
     "properties": {

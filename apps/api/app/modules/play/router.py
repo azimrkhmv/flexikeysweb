@@ -2,7 +2,7 @@
 
 import uuid
 from datetime import UTC, date, datetime, timedelta
-from typing import Annotated
+from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends
 from pydantic import Field
@@ -14,6 +14,7 @@ from app.db import get_session
 from app.errors import AppError
 from app.modules.auth.session import CurrentUser
 from app.modules.children.router import get_visible_child
+from app.modules.intake.models import IntakeAnswer, IntakeRound
 from app.modules.play import skill, tries
 from app.modules.play.models import (
     AccessProfile,
@@ -208,15 +209,77 @@ async def save_tries(
     return TriesStored(stored=len(added))
 
 
+async def skill_rows(db: AsyncSession, child_id: uuid.UUID) -> dict[SkillArea, SkillLevel]:
+    """All six areas. A missing one starts from the first guess: the ability answers of the latest finished intake
+    round (spec §13, step 1). ponytail: a therapist's answers join here with A8.2 (they count twice)."""
+    rows = {s.area: s for s in await db.scalars(select(SkillLevel).where(SkillLevel.child_id == child_id))}
+    if len(rows) < len(skill.AREAS):
+        round_id = await db.scalar(
+            select(IntakeRound.id)
+            .where(IntakeRound.child_id == child_id, IntakeRound.completed_at.is_not(None))
+            .order_by(IntakeRound.number.desc())
+            .limit(1)
+        )
+        answers = {
+            q: v
+            for q, v in await db.execute(
+                select(IntakeAnswer.question_id, IntakeAnswer.value).where(IntakeAnswer.round_id == round_id)
+            )
+        }
+        for area in skill.AREAS:
+            if SkillArea(area) not in rows:
+                row = SkillLevel(child_id=child_id, area=SkillArea(area), theta=skill.starting_theta(area, answers))
+                row.n_trials = 0
+                rows[SkillArea(area)] = row
+                db.add(row)
+    return rows
+
+
 async def _move_skills(db: AsyncSession, child_id: uuid.UUID, clean: list[TryIn]) -> None:
-    levels = {s.area: s for s in await db.scalars(select(SkillLevel).where(SkillLevel.child_id == child_id))}
+    levels = await skill_rows(db, child_id)
     for t in sorted(clean, key=lambda x: x.ts):
         area = skill.AREA_OF.get(t.game)
         if area is None:
             continue
-        row = levels.get(SkillArea(area))
-        if row is None:
-            row = levels[SkillArea(area)] = SkillLevel(child_id=child_id, area=SkillArea(area), theta=0.0, n_trials=0)
-            db.add(row)
+        row = levels[SkillArea(area)]
         row.theta = skill.elo(row.theta, row.n_trials, skill.difficulty(t.level), t.outcome == Outcome.correct)
         row.n_trials += 1
+
+
+# ---------------------------------------------------------------- skill levels
+
+
+class SkillOut(ApiModel):
+    area: SkillArea
+    theta: float
+    n_trials: int
+
+
+class Placement(ApiModel):
+    """The play check's stage 2: for each area played, can the child do it now (spec §7)."""
+
+    buckets: dict[SkillArea, Literal["not_yet", "with_help", "yes"]]
+
+
+@router.get("/{child_id}/skills")
+async def get_skills(
+    child_id: uuid.UUID, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]
+) -> list[SkillOut]:
+    """θ of the six areas, for choosing games. Never shown to parents as a score (product rule 1)."""
+    await get_visible_child(db, user, child_id)
+    rows = await skill_rows(db, child_id)
+    await db.commit()
+    return [SkillOut(area=a, theta=r.theta, n_trials=r.n_trials) for a, r in sorted(rows.items())]
+
+
+@router.post("/{child_id}/skills/placement")
+async def place(
+    child_id: uuid.UUID, body: Placement, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]
+) -> list[SkillOut]:
+    """Correct the first guess with the play check: it wins over the intake by one step at most (spec §13, step 2)."""
+    await get_visible_child(db, user, child_id)
+    rows = await skill_rows(db, child_id)
+    for area, bucket in body.buckets.items():
+        rows[area].theta = skill.corrected(rows[area].theta, bucket)
+    await db.commit()
+    return [SkillOut(area=a, theta=r.theta, n_trials=r.n_trials) for a, r in sorted(rows.items())]
