@@ -7,6 +7,7 @@ import { computeMetrics, startingProfile, withFloors } from "../adaptive";
 import { levelAfter } from "../roadmap";
 import { AREAS, startingTheta, type Area } from "../skill";
 import type { Answers } from "@/content/intake";
+import { replaces, type Profession } from "@/content/therapist";
 import { LANGS, type Lang } from "../i18n";
 import { DAY, iso, localDate, type DB } from "./schema";
 import type { AdaptiveProfile, Child, ClassRoom, ConsentScope, InputProfile, LevelProgress, Roadmap, Subscription, User, VideoStatus, Wallet } from "../types";
@@ -217,6 +218,21 @@ export const sel = {
   therapistProfile: (db: DB, userId: string) => (db.therapistProfiles ?? []).find((p) => p.userId === userId) ?? null,
   therapistAnswers: (db: DB, childId: string, therapistId: string) =>
     (db.therapistAnswers ?? []).find((r) => r.childId === childId && r.therapistId === therapistId)?.answers ?? {},
+  /** The parent's answers the therapists replaced, and by whom (newest wins), plus their messages (T11), newest first. */
+  therapistUpdates(db: DB, childId: string) {
+    const health = sel.hasConsent(db, childId, "health");
+    const rows = (db.therapistAnswers ?? []).filter((r) => r.childId === childId).sort((a, b) => a.at.localeCompare(b.at));
+    const who = (r: (typeof rows)[number]) => ({
+      name: db.users.find((u) => u.id === r.therapistId)?.name ?? "",
+      profession: sel.therapistProfile(db, r.therapistId)?.profession,
+      at: r.at,
+    });
+    const updated: Record<string, { value: string | string[]; name: string; profession?: Profession; at: string }> = {};
+    for (const r of rows) for (const [q, value] of Object.entries(replaces(r.answers, health))) updated[q] = { value, ...who(r) };
+    const messages = rows.filter((r) => r.answers.T11).map((r) => ({ text: r.answers.T11!, ...who(r) })).reverse();
+    const mustNotText = rows.map((r) => r.answers.T6?.text.trim()).filter((x): x is string => !!x && health);
+    return { updated, messages, mustNotText };
+  },
   careLinks: (db: DB, childId: string) => db.careLinks.filter((l) => l.childId === childId && l.status !== "revoked"),
   notifications: (db: DB, userId: string) => db.notifications.filter((n) => n.userId === userId).sort((a, b) => b.at.localeCompare(a.at)),
   aacStats(db: DB, childId: string) {

@@ -503,7 +503,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `B23` Therapist form T1–T11
   - Done when: the required fields follow the therapist's profession, as the spec lists them
   - Needs: —
-- [ ] **Azim** — `B24` Parent side: "Updated by [therapist name]" and the therapist's message
+- [x] **Azim** — `B24` Parent side: "Updated by [therapist name]" and the therapist's message
   - Done when: the parent sees whose answer is in use
   - Needs: B23
 - [ ] **Azim** — `B25` Therapist assigns or excludes exercises; watches clips and replies

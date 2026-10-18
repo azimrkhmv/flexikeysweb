@@ -55,3 +55,21 @@ export function answered(a: TherapistAnswers, id: FormId): boolean {
 }
 
 export const missing = (a: TherapistAnswers, p: Profession) => requiredFor(p).filter((id) => !answered(a, id));
+
+// ponytail: GMFCS level to the parent's P12 words, a first mapping; to be checked with the physiotherapist (C8).
+export const GMFCS_TO_P12 = ["walks", "walks_help", "walker", "wheelchair", "needs_help_sit"] as const;
+const HEALTH: FormId[] = ["T2", "T3", "T4", "T5", "T6"];
+
+/** The parent answers a therapist's answers replace (spec §6): T2 → P12, T5 → P10/P11, T6 → P14, T7 → P33. */
+export function replaces(a: TherapistAnswers, healthConsent: boolean): Record<string, string | string[]> {
+  const out: Record<string, string | string[]> = {};
+  const allowed = (id: FormId) => healthConsent || !HEALTH.includes(id);
+  if (a.T2 && allowed("T2")) out.P12 = GMFCS_TO_P12[a.T2 - 1];
+  if (a.T5 && allowed("T5")) {
+    if (a.T5.type) out.P10 = a.T5.type;
+    if (a.T5.parts) out.P11 = a.T5.parts;
+  }
+  if (a.T6 && allowed("T6")) out.P14 = [...a.T6.items, ...(a.T6.text.trim() && !a.T6.items.includes("other") ? ["other"] : [])];
+  if (a.T7?.goals.length) out.P33 = a.T7.goals;
+  return out;
+}

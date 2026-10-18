@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { TherapistUpdates } from "@/features/parent/TherapistUpdates";
 import { useState } from "react";
 import { Button, Card, Chip, Empty, LinkButton, useAction } from "@/components/ui";
 import { api, sel, useDb } from "@/lib/api";
@@ -21,16 +22,20 @@ export function PlanTab({ child }: { child: Child }) {
 
   if (!plan)
     return (
+      <div className="space-y-6">
+      <TherapistUpdates child={child} />
       <Empty>
         <span className="block">{round && !round.completedAt ? t("intake.unfinished", { name: child.name }) : t("plan.none")}</span>
         <LinkButton href={`/parent/children/new?child=${child.id}`} className="mt-4">
           {round ? t("intake.continue") : t("plan.start")}
         </LinkButton>
       </Empty>
+      </div>
     );
 
   return (
     <div className="space-y-6">
+      <TherapistUpdates child={child} />
       <Why plan={plan} />
       <Weeks plan={plan} />
       <Card className="flex flex-wrap items-center justify-between gap-3 p-5">
