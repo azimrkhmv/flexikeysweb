@@ -812,6 +812,69 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/children/{child_id}/answers-in-use": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * In Use
+         * @description For the parent: the latest intake answers as the plan uses them, which ones a therapist updated, and the
+         *     therapists' messages.
+         */
+        get: operations["in_use_api_v1_children__child_id__answers_in_use_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/therapist/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Profile
+         * @description T1. 404 no_profile until the therapist fills it in.
+         */
+        get: operations["get_profile_api_v1_therapist_profile_get"];
+        /** Set Profile */
+        put: operations["set_profile_api_v1_therapist_profile_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/therapist/children/{child_id}/form": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Form */
+        get: operations["get_form_api_v1_therapist_children__child_id__form_get"];
+        /**
+         * Save Form
+         * @description Save some answers; the others stay. All valid, or nothing is saved. The answers are used at once.
+         */
+        put: operations["save_form_api_v1_therapist_children__child_id__form_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/children/{child_id}/access": {
         parameters: {
             query?: never;
@@ -1450,6 +1513,26 @@ export interface components {
         FeelingIn: {
             feeling: components["schemas"]["Feeling"];
         };
+        /** FormIn */
+        FormIn: {
+            /** Answers */
+            answers: {
+                [key: string]: unknown;
+            };
+        };
+        /** FormOut */
+        FormOut: {
+            /** Answers */
+            answers: {
+                [key: string]: unknown;
+            };
+            /** Missing */
+            missing: string[];
+            /** Parentanswers */
+            parentAnswers: {
+                [key: string]: unknown;
+            };
+        };
         /** GameItem */
         GameItem: {
             /** Kind */
@@ -1483,6 +1566,19 @@ export interface components {
          * @enum {string}
          */
         Hint: "none" | "shimmer" | "fade";
+        /** InUse */
+        InUse: {
+            /** Answers */
+            answers: {
+                [key: string]: unknown;
+            };
+            /** Updatedby */
+            updatedBy: {
+                [key: string]: components["schemas"]["UpdatedBy"];
+            };
+            /** Messages */
+            messages: components["schemas"]["Message"][];
+        };
         /**
          * InputMode
          * @enum {string}
@@ -1546,6 +1642,19 @@ export interface components {
             region?: string | null;
             /** District */
             district?: string | null;
+        };
+        /** Message */
+        Message: {
+            /** Therapistname */
+            therapistName: string | null;
+            profession: components["schemas"]["Profession"] | null;
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+            /** Text */
+            text: string;
         };
         /** NewStaff */
         NewStaff: {
@@ -1676,6 +1785,30 @@ export interface components {
             trialEndsAt: string | null;
             /** Paiduntil */
             paidUntil: string | null;
+        };
+        /**
+         * Profession
+         * @description Who can join (spec §6). The profession decides which form answers are required.
+         * @enum {string}
+         */
+        Profession: "physio" | "speech" | "defectologist_ot" | "neurologist";
+        /** ProfileIn */
+        ProfileIn: {
+            /** Name */
+            name: string;
+            profession: components["schemas"]["Profession"];
+            /** Workplace */
+            workplace: string;
+        };
+        /** ProfileOut */
+        ProfileOut: {
+            /** Name */
+            name: string;
+            profession: components["schemas"]["Profession"];
+            /** Workplace */
+            workplace: string;
+            /** Required */
+            required: string[];
         };
         /** ReasonOut */
         ReasonOut: {
@@ -2007,6 +2140,17 @@ export interface components {
             helpedByAdult: boolean;
             /** Responsems */
             responseMs?: number | null;
+        };
+        /** UpdatedBy */
+        UpdatedBy: {
+            /** Therapistname */
+            therapistName: string | null;
+            profession: components["schemas"]["Profession"] | null;
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
         };
         /** Upgrade */
         Upgrade: {
@@ -3549,6 +3693,156 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SharedChild"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    in_use_api_v1_children__child_id__answers_in_use_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InUse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_profile_api_v1_therapist_profile_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileOut"];
+                };
+            };
+        };
+    };
+    set_profile_api_v1_therapist_profile_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProfileIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_form_api_v1_therapist_children__child_id__form_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    save_form_api_v1_therapist_children__child_id__form_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FormIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormOut"];
                 };
             };
             /** @description Validation Error */

@@ -2035,6 +2035,206 @@
     }
    }
   },
+  "/api/v1/children/{child_id}/answers-in-use": {
+   "get": {
+    "tags": [
+     "therapists"
+    ],
+    "summary": "In Use",
+    "description": "For the parent: the latest intake answers as the plan uses them, which ones a therapist updated, and the\ntherapists' messages.",
+    "operationId": "in_use_api_v1_children__child_id__answers_in_use_get",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/InUse"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/therapist/profile": {
+   "get": {
+    "tags": [
+     "therapists"
+    ],
+    "summary": "Get Profile",
+    "description": "T1. 404 no_profile until the therapist fills it in.",
+    "operationId": "get_profile_api_v1_therapist_profile_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ProfileOut"
+        }
+       }
+      }
+     }
+    }
+   },
+   "put": {
+    "tags": [
+     "therapists"
+    ],
+    "summary": "Set Profile",
+    "operationId": "set_profile_api_v1_therapist_profile_put",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ProfileIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ProfileOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/therapist/children/{child_id}/form": {
+   "get": {
+    "tags": [
+     "therapists"
+    ],
+    "summary": "Get Form",
+    "operationId": "get_form_api_v1_therapist_children__child_id__form_get",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/FormOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "put": {
+    "tags": [
+     "therapists"
+    ],
+    "summary": "Save Form",
+    "description": "Save some answers; the others stay. All valid, or nothing is saved. The answers are used at once.",
+    "operationId": "save_form_api_v1_therapist_children__child_id__form_put",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/FormIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/FormOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/v1/children/{child_id}/access": {
    "get": {
     "tags": [
@@ -3910,6 +4110,48 @@
     ],
     "title": "FeelingIn"
    },
+   "FormIn": {
+    "properties": {
+     "answers": {
+      "additionalProperties": true,
+      "type": "object",
+      "title": "Answers"
+     }
+    },
+    "type": "object",
+    "required": [
+     "answers"
+    ],
+    "title": "FormIn"
+   },
+   "FormOut": {
+    "properties": {
+     "answers": {
+      "additionalProperties": true,
+      "type": "object",
+      "title": "Answers"
+     },
+     "missing": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Missing"
+     },
+     "parentAnswers": {
+      "additionalProperties": true,
+      "type": "object",
+      "title": "Parentanswers"
+     }
+    },
+    "type": "object",
+    "required": [
+     "answers",
+     "missing",
+     "parentAnswers"
+    ],
+    "title": "FormOut"
+   },
    "GameItem": {
     "properties": {
      "kind": {
@@ -3993,6 +4235,36 @@
      "fade"
     ],
     "title": "Hint"
+   },
+   "InUse": {
+    "properties": {
+     "answers": {
+      "additionalProperties": true,
+      "type": "object",
+      "title": "Answers"
+     },
+     "updatedBy": {
+      "additionalProperties": {
+       "$ref": "#/components/schemas/UpdatedBy"
+      },
+      "type": "object",
+      "title": "Updatedby"
+     },
+     "messages": {
+      "items": {
+       "$ref": "#/components/schemas/Message"
+      },
+      "type": "array",
+      "title": "Messages"
+     }
+    },
+    "type": "object",
+    "required": [
+     "answers",
+     "updatedBy",
+     "messages"
+    ],
+    "title": "InUse"
    },
    "InputMode": {
     "type": "string",
@@ -4181,6 +4453,48 @@
     },
     "type": "object",
     "title": "MeChange"
+   },
+   "Message": {
+    "properties": {
+     "therapistName": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Therapistname"
+     },
+     "profession": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Profession"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "At"
+     },
+     "text": {
+      "type": "string",
+      "title": "Text"
+     }
+    },
+    "type": "object",
+    "required": [
+     "therapistName",
+     "profession",
+     "at",
+     "text"
+    ],
+    "title": "Message"
    },
    "NewStaff": {
     "properties": {
@@ -4535,6 +4849,77 @@
      "paidUntil"
     ],
     "title": "PlanStatus"
+   },
+   "Profession": {
+    "type": "string",
+    "enum": [
+     "physio",
+     "speech",
+     "defectologist_ot",
+     "neurologist"
+    ],
+    "title": "Profession",
+    "description": "Who can join (spec §6). The profession decides which form answers are required."
+   },
+   "ProfileIn": {
+    "properties": {
+     "name": {
+      "type": "string",
+      "maxLength": 80,
+      "minLength": 1,
+      "title": "Name"
+     },
+     "profession": {
+      "$ref": "#/components/schemas/Profession"
+     },
+     "workplace": {
+      "type": "string",
+      "maxLength": 120,
+      "minLength": 1,
+      "title": "Workplace"
+     }
+    },
+    "type": "object",
+    "required": [
+     "name",
+     "profession",
+     "workplace"
+    ],
+    "title": "ProfileIn"
+   },
+   "ProfileOut": {
+    "properties": {
+     "name": {
+      "type": "string",
+      "maxLength": 80,
+      "minLength": 1,
+      "title": "Name"
+     },
+     "profession": {
+      "$ref": "#/components/schemas/Profession"
+     },
+     "workplace": {
+      "type": "string",
+      "maxLength": 120,
+      "minLength": 1,
+      "title": "Workplace"
+     },
+     "required": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Required"
+     }
+    },
+    "type": "object",
+    "required": [
+     "name",
+     "profession",
+     "workplace",
+     "required"
+    ],
+    "title": "ProfileOut"
    },
    "ReasonOut": {
     "properties": {
@@ -5449,6 +5834,43 @@
     ],
     "title": "TryIn",
     "description": "One try, as the website records it (lib/tries.ts, spec §7)."
+   },
+   "UpdatedBy": {
+    "properties": {
+     "therapistName": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Therapistname"
+     },
+     "profession": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Profession"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "At"
+     }
+    },
+    "type": "object",
+    "required": [
+     "therapistName",
+     "profession",
+     "at"
+    ],
+    "title": "UpdatedBy"
    },
    "Upgrade": {
     "properties": {

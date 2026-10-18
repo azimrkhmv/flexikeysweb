@@ -24,6 +24,7 @@ BODIES = {
     "CardIn": {"category": "food", "label": "Non", "emoji": "x"},
     "CardChange": {"label": "X"},
     "TherapistInvite": {},
+    "FormIn": {"answers": {}},
     "SessionChange": {"secondsPlayed": 10},
     "Placement": {"buckets": {"memory": "yes"}},
     "TryIn": {

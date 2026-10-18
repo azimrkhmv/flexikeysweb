@@ -5,12 +5,14 @@ import hashlib
 import uuid
 from datetime import datetime
 from enum import StrEnum
+from typing import Any
 
-from sqlalchemy import DateTime, ForeignKey, String, func, select, update
+from sqlalchemy import DateTime, ForeignKey, String, Text, UniqueConstraint, func, select, update
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.db import Base, IdTimeMixin
+from app.db import Base, IdTimeMixin, TimeMixin
 from app.modules.accounts.models import enum_column
 
 
@@ -33,6 +35,39 @@ class CareLink(IdTimeMixin, Base):
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))  # an invite not accepted by then is void
     accepted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     stopped_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class Profession(StrEnum):
+    """Who can join (spec §6). The profession decides which form answers are required."""
+
+    physio = "physio"  # physiotherapist or LFK specialist
+    speech = "speech"  # speech therapist (logoped)
+    defectologist_ot = "defectologist_ot"  # defectologist or occupational therapist
+    neurologist = "neurologist"
+
+
+class TherapistProfile(TimeMixin, Base):
+    """T1: name (on the user), profession, workplace. Once per therapist, the same for every child."""
+
+    __tablename__ = "therapist_profiles"
+
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
+    profession: Mapped[Profession] = mapped_column(enum_column(Profession))
+    workplace: Mapped[str] = mapped_column(String(120))
+
+
+class TherapistAnswer(IdTimeMixin, Base):
+    """One answer of the therapist form (T2-T11) for one child. Health answers are encrypted in `secret`, like the
+    parent's (A2.5); the others are in `value`."""
+
+    __tablename__ = "therapist_answers"
+    __table_args__ = (UniqueConstraint("child_id", "therapist_id", "question_id"),)
+
+    child_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("children.id", ondelete="CASCADE"), index=True)
+    therapist_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    question_id: Mapped[str] = mapped_column(String(8))
+    value: Mapped[Any] = mapped_column(JSONB(none_as_null=True), nullable=True)
+    secret: Mapped[str | None] = mapped_column(Text)
 
 
 def code_hash(code: str) -> str:

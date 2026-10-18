@@ -436,7 +436,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `B17` Skill level for each of the six areas, updated after every clean try with the spec's formula; three game slots: easy win, growth, child's choice
   - Done when: unit tests match the spec's formula
   - Needs: B14
-- [ ] **Azim** — `C8` The physiotherapist checks the skill model's first guesses: which intake answers start each of the six areas, and how hard each world level is (`apps/web/src/lib/skill.ts`, `AREA_QUESTIONS` and `difficulty`)
+- [ ] **Azim** — `C8` The physiotherapist checks the skill model's first guesses: which intake answers start each of the six areas, and how hard each world level is (`apps/web/src/lib/skill.ts`, `AREA_QUESTIONS` and `difficulty`), and how a therapist's GMFCS level maps to the parent's walking answer P12 (`apps/api/app/modules/therapists/form.py`, `GMFCS_TO_P12`)
   - Done when: the physiotherapist agreed or the numbers are changed, and the tests still pass
   - Needs: B17, Q3
 - [x] **Azim** — `B18` 20-minute daily game limit with the sleeping cloud; at most one new game a week; an open game is never taken away
@@ -482,7 +482,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A8.1` Invite a therapist by phone or link; the therapist accepts; the owner stops the share
   - Done when: stopping the share cuts the therapist's access at once
   - Needs: A2.2
-- [ ] **Azim** — `A8.2` Tables and addresses for the therapist form T1–T11; a therapist's answer wins over the parent's
+- [x] **Azim** — `A8.2` Tables and addresses for the therapist form T1–T11; a therapist's answer wins over the parent's
   - Done when: the answer in use carries the therapist's name, so the parent side can show "Updated by …"
   - Needs: A8.1
 - [ ] **Azim** — `A8.3` Movement and feedback clips, allowed only with the movement-videos consent; the therapist replies
