@@ -7,10 +7,12 @@ from app.modules.children.consents import ChildConsent
 from app.modules.children.models import Child
 from app.modules.intake.models import IntakeAnswer, IntakeRound
 from app.modules.plans.models import FixedLevel, Plan, PlanItem, PlanReason
+from app.modules.play.models import AccessProfile, GameSession, PlayCheckRun, SkillLevel, Try
 from app.modules.today.models import DailyAnswer, DailyQuestion, PausedDay, TaskDone
 from app.modules.videos.models import Exercise, Video, VideoReview
 
 __all__ = [
+    "AccessProfile",
     "AuditEntry",
     "Child",
     "ChildConsent",
@@ -20,14 +22,18 @@ __all__ = [
     "Family",
     "FamilyMember",
     "FixedLevel",
+    "GameSession",
     "IntakeAnswer",
     "IntakeRound",
     "PausedDay",
     "Plan",
     "PlanItem",
     "PlanReason",
+    "PlayCheckRun",
     "RefreshToken",
+    "SkillLevel",
     "TaskDone",
+    "Try",
     "User",
     "Video",
     "VideoReview",
