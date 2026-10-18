@@ -164,7 +164,17 @@ export const liveApi = {
   async exportChild(childId: string): Promise<MockExport> {
     return http<MockExport>("GET", `/parent/children/${childId}/export`);
   },
-  // ------------------------------------------------------------ physiotherapist review (spec §8, product rule 3)
+  // ------------------------------------------------------------ video files (admin) and their review (spec §8, rule 3)
+  /** POST /admin/videos/upload-link, the file straight to storage, then POST /admin/videos: it waits for review. */
+  async uploadVideo(exerciseId: string, lang: Lang, file: Blob) {
+    const which = { exerciseId, lang };
+    const link = await http<{ storageKey: string; uploadUrl: string }>("POST", "/admin/videos/upload-link", which);
+    const put = await fetch(link.uploadUrl, { method: "PUT", body: file, headers: { "Content-Type": file.type || "video/mp4" } });
+    if (!put.ok) throw new ApiError("generic");
+    await http("POST", "/admin/videos", { ...which, storageKey: link.storageKey });
+    await queryClient.invalidateQueries({ queryKey: ["review"] });
+    return true;
+  },
   /** POST /review/videos/{id} — the server's id of this language file comes from the review queue. */
   async reviewVideo(exerciseId: string, lang: Lang, status: Exclude<VideoStatus, "generated">, note: string) {
     const items = queryClient.getQueriesData<ReviewItem[]>({ queryKey: ["review"] }).flatMap(([, d]) => d ?? []);

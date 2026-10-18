@@ -311,7 +311,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A4.5` Server address for the current plan and for today's task
   - Done when: the plan can be read by any member of the family and by nobody else
   - Needs: A4.4
-- [ ] **Azim** — `B48` Admin screen to upload a finished video file for an exercise and language (live mode: upload link, file straight to storage, register)
+- [x] **Azim** — `B48` Admin screen to upload a finished video file for an exercise and language (live mode: upload link, file straight to storage, register)
   - Done when: an admin uploads a file in the browser and it appears in the physiotherapist's queue
   - Needs: B5
 - [x] **Azim** — `A1.9` Staff (physiotherapist, clinic, admin) sign in without the parent's basic consent and district step

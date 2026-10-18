@@ -117,15 +117,16 @@ export const intakeApi = {
     });
     return net(true);
   },
-  /** POST /admin/videos/{id}/versions/{lang} — a newly generated file; it waits for physio review again. */
-  async registerVideo(videoId: string, lang: Lang, url: string, durationS: number) {
+  /** POST /admin/videos — a finished file for one exercise and language; it waits for physio review again.
+   *  Demo: the file plays from this browser only, until the page is closed. */
+  async uploadVideo(exerciseId: string, lang: Lang, file: Blob) {
     const u = requireUser(["admin"]);
-    if (!/^(https:\/\/|\/)/.test(url)) throw new ApiError("invalid_url");
+    const url = URL.createObjectURL(file);
     write((db) => {
-      const v = db.videos.find((x) => x.id === videoId);
+      const v = db.videos.find((x) => x.id === exerciseId);
       if (!v) throw new ApiError("not_found");
-      v.versions[lang] = { url, durationS, status: "generated", notes: v.versions[lang]?.notes ?? [] };
-      audit(db, u.id, "video.register", `${videoId}/${lang}`);
+      v.versions[lang] = { url, durationS: 0, status: "generated", notes: v.versions[lang]?.notes ?? [] };
+      audit(db, u.id, "video.register", `${exerciseId}/${lang}`);
     });
     return net(true);
   },
