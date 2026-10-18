@@ -1663,6 +1663,215 @@
     }
    }
   },
+  "/api/v1/children/{child_id}/play-check": {
+   "post": {
+    "tags": [
+     "play"
+    ],
+    "summary": "Start Run",
+    "description": "Start a play check (again: a stopped one may be retried, spec §7).",
+    "operationId": "start_run_api_v1_children__child_id__play_check_post",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/RunOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "get": {
+    "tags": [
+     "play"
+    ],
+    "summary": "Latest Run",
+    "description": "The latest play check; 404 no_play_check before the first one.",
+    "operationId": "latest_run_api_v1_children__child_id__play_check_get",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/RunOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/children/{child_id}/play-check/{run_id}": {
+   "patch": {
+    "tags": [
+     "play"
+    ],
+    "summary": "Change Run",
+    "description": "Next stage, the parent helped, stopped (upset or tired) or finished. A closed run cannot be opened again.",
+    "operationId": "change_run_api_v1_children__child_id__play_check__run_id__patch",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     },
+     {
+      "name": "run_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Run Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/RunChange"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/RunOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/children/{child_id}/tries": {
+   "post": {
+    "tags": [
+     "play"
+    ],
+    "summary": "Save Tries",
+    "description": "A batch of tries, sent when the device is online. Tries older than 90 days are not kept. Every new clean try\nmoves θ of its area (Elo, spec §13); an access event never does (product rule 5).",
+    "operationId": "save_tries_api_v1_children__child_id__tries_post",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "array",
+        "items": {
+         "$ref": "#/components/schemas/TryIn"
+        },
+        "maxItems": 500,
+        "title": "Body"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/TriesStored"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/v1/admin/videos/upload-link": {
    "post": {
     "tags": [
@@ -2537,6 +2746,15 @@
     "type": "object",
     "title": "HTTPValidationError"
    },
+   "Hint": {
+    "type": "string",
+    "enum": [
+     "none",
+     "shimmer",
+     "fade"
+    ],
+    "title": "Hint"
+   },
    "InputMode": {
     "type": "string",
     "enum": [
@@ -2815,6 +3033,15 @@
      "expiresAt"
     ],
     "title": "OfflineVideo"
+   },
+   "Outcome": {
+    "type": "string",
+    "enum": [
+     "correct",
+     "wrong",
+     "skipped"
+    ],
+    "title": "Outcome"
    },
    "PhoneStart": {
     "properties": {
@@ -3246,6 +3473,102 @@
     ],
     "title": "RoundSummary"
    },
+   "RunChange": {
+    "properties": {
+     "status": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/RunStatus"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "stage": {
+      "anyOf": [
+       {
+        "type": "integer",
+        "maximum": 2.0,
+        "minimum": 1.0
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Stage"
+     },
+     "helpedByAdult": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Helpedbyadult"
+     }
+    },
+    "type": "object",
+    "title": "RunChange"
+   },
+   "RunOut": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "status": {
+      "$ref": "#/components/schemas/RunStatus"
+     },
+     "stage": {
+      "type": "integer",
+      "title": "Stage"
+     },
+     "helpedByAdult": {
+      "type": "boolean",
+      "title": "Helpedbyadult"
+     },
+     "startedAt": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Startedat"
+     },
+     "finishedAt": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Finishedat"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "status",
+     "stage",
+     "helpedByAdult",
+     "startedAt",
+     "finishedAt"
+    ],
+    "title": "RunOut"
+   },
+   "RunStatus": {
+    "type": "string",
+    "enum": [
+     "open",
+     "finished",
+     "stopped"
+    ],
+    "title": "RunStatus"
+   },
    "Sex": {
     "type": "string",
     "enum": [
@@ -3389,6 +3712,111 @@
     },
     "type": "object",
     "title": "Tokens"
+   },
+   "TriesStored": {
+    "properties": {
+     "stored": {
+      "type": "integer",
+      "title": "Stored"
+     }
+    },
+    "type": "object",
+    "required": [
+     "stored"
+    ],
+    "title": "TriesStored"
+   },
+   "TryIn": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "ts": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Ts"
+     },
+     "sessionId": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Sessionid"
+     },
+     "game": {
+      "type": "string",
+      "maxLength": 32,
+      "title": "Game"
+     },
+     "level": {
+      "type": "integer",
+      "maximum": 100.0,
+      "minimum": 0.0,
+      "title": "Level"
+     },
+     "itemId": {
+      "type": "string",
+      "maxLength": 64,
+      "title": "Itemid"
+     },
+     "inputMode": {
+      "$ref": "#/components/schemas/InputMode"
+     },
+     "outcome": {
+      "$ref": "#/components/schemas/Outcome"
+     },
+     "attempts": {
+      "type": "integer",
+      "maximum": 100.0,
+      "minimum": 1.0,
+      "title": "Attempts"
+     },
+     "hintShown": {
+      "$ref": "#/components/schemas/Hint"
+     },
+     "accessEvent": {
+      "type": "boolean",
+      "title": "Accessevent"
+     },
+     "helpedByAdult": {
+      "type": "boolean",
+      "title": "Helpedbyadult"
+     },
+     "responseMs": {
+      "anyOf": [
+       {
+        "type": "integer",
+        "minimum": 0.0
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Responsems"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "ts",
+     "game",
+     "level",
+     "itemId",
+     "inputMode",
+     "outcome",
+     "attempts",
+     "hintShown",
+     "accessEvent",
+     "helpedByAdult"
+    ],
+    "title": "TryIn",
+    "description": "One try, as the website records it (lib/tries.ts, spec §7)."
    },
    "UploadLink": {
     "properties": {

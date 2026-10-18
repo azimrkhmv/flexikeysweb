@@ -19,6 +19,20 @@ BODIES = {
     "DoneIn": {"day": 0, "exerciseId": "putty_squeeze"},
     "FeelingIn": {"feeling": "easy"},
     "DailyIn": {"questionId": "D1", "value": 2},
+    "RunChange": {"stage": 2},
+    "TryIn": {
+        "id": str(uuid.uuid4()),
+        "ts": "2026-10-18T10:00:00Z",
+        "game": "find_same",
+        "level": 1,
+        "itemId": "x",
+        "inputMode": "touch",
+        "outcome": "correct",
+        "attempts": 1,
+        "hintShown": "none",
+        "accessEvent": False,
+        "helpedByAdult": False,
+    },
     "AccessSettings": {
         "inputMode": "touch",
         "minTargetMm": 20,
@@ -27,7 +41,7 @@ BODIES = {
         "releaseOk": True,
     },
 }
-PARTS = {"kind": "health", "number": "1", "done_id": str(uuid.uuid4())}
+PARTS = {"kind": "health", "number": "1", "done_id": str(uuid.uuid4()), "run_id": str(uuid.uuid4())}
 
 
 def child_addresses() -> list[tuple[str, str, object]]:
@@ -36,8 +50,10 @@ def child_addresses() -> list[tuple[str, str, object]]:
         if "{child_id}" not in path:
             continue
         for method, op in methods.items():
-            ref = op.get("requestBody", {}).get("content", {}).get("application/json", {}).get("schema", {}).get("$ref")
-            found.append((method.upper(), path, BODIES[ref.rsplit("/", 1)[1]] if ref else None))
+            schema = op.get("requestBody", {}).get("content", {}).get("application/json", {}).get("schema", {})
+            ref = schema.get("$ref") or schema.get("items", {}).get("$ref")
+            body = BODIES[ref.rsplit("/", 1)[1]] if ref else None
+            found.append((method.upper(), path, [body] if "items" in schema else body))
     return found
 
 

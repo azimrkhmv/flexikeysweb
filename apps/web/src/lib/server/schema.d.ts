@@ -613,6 +613,71 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/children/{child_id}/play-check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Latest Run
+         * @description The latest play check; 404 no_play_check before the first one.
+         */
+        get: operations["latest_run_api_v1_children__child_id__play_check_get"];
+        put?: never;
+        /**
+         * Start Run
+         * @description Start a play check (again: a stopped one may be retried, spec §7).
+         */
+        post: operations["start_run_api_v1_children__child_id__play_check_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/children/{child_id}/play-check/{run_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Change Run
+         * @description Next stage, the parent helped, stopped (upset or tired) or finished. A closed run cannot be opened again.
+         */
+        patch: operations["change_run_api_v1_children__child_id__play_check__run_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/children/{child_id}/tries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Save Tries
+         * @description A batch of tries, sent when the device is online. Tries older than 90 days are not kept. Every new clean try
+         *     moves θ of its area (Elo, spec §13); an access event never does (product rule 5).
+         */
+        post: operations["save_tries_api_v1_children__child_id__tries_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/videos/upload-link": {
         parameters: {
             query?: never;
@@ -950,6 +1015,11 @@ export interface components {
             detail?: components["schemas"]["ValidationError"][];
         };
         /**
+         * Hint
+         * @enum {string}
+         */
+        Hint: "none" | "shimmer" | "fade";
+        /**
          * InputMode
          * @enum {string}
          */
@@ -1039,6 +1109,11 @@ export interface components {
              */
             expiresAt: string;
         };
+        /**
+         * Outcome
+         * @enum {string}
+         */
+        Outcome: "correct" | "wrong" | "skipped";
         /** PhoneStart */
         PhoneStart: {
             /** Phone */
@@ -1186,6 +1261,39 @@ export interface components {
             /** Completedat */
             completedAt: string | null;
         };
+        /** RunChange */
+        RunChange: {
+            status?: components["schemas"]["RunStatus"] | null;
+            /** Stage */
+            stage?: number | null;
+            /** Helpedbyadult */
+            helpedByAdult?: boolean | null;
+        };
+        /** RunOut */
+        RunOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            status: components["schemas"]["RunStatus"];
+            /** Stage */
+            stage: number;
+            /** Helpedbyadult */
+            helpedByAdult: boolean;
+            /**
+             * Startedat
+             * Format: date-time
+             */
+            startedAt: string;
+            /** Finishedat */
+            finishedAt: string | null;
+        };
+        /**
+         * RunStatus
+         * @enum {string}
+         */
+        RunStatus: "open" | "finished" | "stopped";
         /**
          * Sex
          * @enum {string}
@@ -1237,6 +1345,46 @@ export interface components {
             accessToken?: string | null;
             /** Refreshtoken */
             refreshToken?: string | null;
+        };
+        /** TriesStored */
+        TriesStored: {
+            /** Stored */
+            stored: number;
+        };
+        /**
+         * TryIn
+         * @description One try, as the website records it (lib/tries.ts, spec §7).
+         */
+        TryIn: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Ts
+             * Format: date-time
+             */
+            ts: string;
+            /** Sessionid */
+            sessionId?: string | null;
+            /** Game */
+            game: string;
+            /** Level */
+            level: number;
+            /** Itemid */
+            itemId: string;
+            inputMode: components["schemas"]["InputMode"];
+            outcome: components["schemas"]["Outcome"];
+            /** Attempts */
+            attempts: number;
+            hintShown: components["schemas"]["Hint"];
+            /** Accessevent */
+            accessEvent: boolean;
+            /** Helpedbyadult */
+            helpedByAdult: boolean;
+            /** Responsems */
+            responseMs?: number | null;
         };
         /** UploadLink */
         UploadLink: {
@@ -2493,6 +2641,139 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AccessSettings"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    latest_run_api_v1_children__child_id__play_check_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RunOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    start_run_api_v1_children__child_id__play_check_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RunOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    change_run_api_v1_children__child_id__play_check__run_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RunChange"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RunOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    save_tries_api_v1_children__child_id__tries_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TryIn"][];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TriesStored"];
                 };
             };
             /** @description Validation Error */
