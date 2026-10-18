@@ -242,6 +242,47 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/family/pay": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Pay
+         * @description A simulated payment: the family is Pro for 30 days per month paid. Payments stay simulated until after the
+         *     pilot (TASKS.md section 3); the production server refuses this (403 payments_not_available).
+         */
+        post: operations["pay_api_v1_family_pay_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/users/{user_id}/pro": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upgrade
+         * @description An admin makes the family this parent owns Pro for some days (for example after a payment by hand).
+         */
+        post: operations["upgrade_api_v1_admin_users__user_id__pro_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/users": {
         parameters: {
             query?: never;
@@ -1387,6 +1428,16 @@ export interface components {
          * @enum {string}
          */
         Outcome: "correct" | "wrong" | "skipped";
+        /** PaymentIn */
+        PaymentIn: {
+            /**
+             * Paymentid
+             * Format: uuid
+             */
+            paymentId: string;
+            /** Months */
+            months: number;
+        };
         /** PhoneStart */
         PhoneStart: {
             /** Phone */
@@ -1730,6 +1781,11 @@ export interface components {
             helpedByAdult: boolean;
             /** Responsems */
             responseMs?: number | null;
+        };
+        /** Upgrade */
+        Upgrade: {
+            /** Days */
+            days: number;
         };
         /** UploadKind */
         UploadKind: {
@@ -2181,6 +2237,74 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PlanStatus"];
+                };
+            };
+        };
+    };
+    pay_api_v1_family_pay_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PaymentIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanStatus"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    upgrade_api_v1_admin_users__user_id__pro_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Upgrade"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanStatus"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

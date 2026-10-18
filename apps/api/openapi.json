@@ -430,6 +430,102 @@
     }
    }
   },
+  "/api/v1/family/pay": {
+   "post": {
+    "tags": [
+     "plan"
+    ],
+    "summary": "Pay",
+    "description": "A simulated payment: the family is Pro for 30 days per month paid. Payments stay simulated until after the\npilot (TASKS.md section 3); the production server refuses this (403 payments_not_available).",
+    "operationId": "pay_api_v1_family_pay_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PaymentIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/PlanStatus"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/admin/users/{user_id}/pro": {
+   "post": {
+    "tags": [
+     "admin"
+    ],
+    "summary": "Upgrade",
+    "description": "An admin makes the family this parent owns Pro for some days (for example after a payment by hand).",
+    "operationId": "upgrade_api_v1_admin_users__user_id__pro_post",
+    "parameters": [
+     {
+      "name": "user_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "User Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/Upgrade"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/PlanStatus"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/v1/admin/users": {
    "post": {
     "tags": [
@@ -3844,6 +3940,27 @@
     ],
     "title": "Outcome"
    },
+   "PaymentIn": {
+    "properties": {
+     "paymentId": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Paymentid"
+     },
+     "months": {
+      "type": "integer",
+      "maximum": 12.0,
+      "minimum": 1.0,
+      "title": "Months"
+     }
+    },
+    "type": "object",
+    "required": [
+     "paymentId",
+     "months"
+    ],
+    "title": "PaymentIn"
+   },
    "PhoneStart": {
     "properties": {
      "phone": {
@@ -4811,6 +4928,21 @@
     ],
     "title": "TryIn",
     "description": "One try, as the website records it (lib/tries.ts, spec §7)."
+   },
+   "Upgrade": {
+    "properties": {
+     "days": {
+      "type": "integer",
+      "maximum": 400.0,
+      "minimum": 1.0,
+      "title": "Days"
+     }
+    },
+    "type": "object",
+    "required": [
+     "days"
+    ],
+    "title": "Upgrade"
    },
    "UploadKind": {
     "properties": {

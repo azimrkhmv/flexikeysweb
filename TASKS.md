@@ -476,7 +476,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `A7.2` Free limits enforced by the server
   - Done when: a Free family meets every limit the founders listed
   - Needs: A7.1, G3
-- [ ] **Azim** — `A7.3` A simulated payment turns a family to Pro; an admin can upgrade a family by hand
+- [x] **Azim** — `A7.3` A simulated payment turns a family to Pro; an admin can upgrade a family by hand
   - Done when: a repeated payment message never upgrades twice; only the owner can pay
   - Needs: A7.1
 - [ ] **Azim** — `A8.1` Invite a therapist by phone or link; the therapist accepts; the owner stops the share

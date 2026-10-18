@@ -19,3 +19,13 @@ class FamilyPlan(TimeMixin, Base):
     trial_started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     # Pro until this moment: a payment (A7.3) or an admin's upgrade.
     paid_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class Payment(TimeMixin, Base):
+    """One payment message, kept so the same message never makes a family Pro twice."""
+
+    __tablename__ = "payments"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)  # the payment's own id, sent with the message
+    family_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("families.id", ondelete="CASCADE"), index=True)
+    months: Mapped[int]

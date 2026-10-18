@@ -1,4 +1,4 @@
-"""A7.1: Free and Pro per family; the 7-day trial of Pro, once per family."""
+"""A7.1: Free and Pro per family; the 7-day trial of Pro, once per family. A7.3: paying; an admin upgrades."""
 
 import uuid
 from collections.abc import Iterator
@@ -14,6 +14,7 @@ from app.modules.accounts.models import Role
 from app.modules.billing.models import FamilyPlan
 from app.modules.billing.router import status_of
 from app.modules.children.models import Child
+from app.settings import settings
 from tests.test_admin_changes import make
 from tests.test_children import API, add_child, add_helper, parent
 from tests.test_videos_register import run, title
@@ -69,3 +70,40 @@ def test_the_owner_starts_the_trial_once(client: TestClient) -> None:
 def test_staff_have_no_family_plan(client: TestClient) -> None:
     _, admin, _ = make(client, Role.admin)
     assert title(plan(client, admin)) == (404, "no_family")
+
+
+def test_a_simulated_payment_makes_the_family_pro(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
+    owner = parent(client)
+    add_child(client, owner)
+    helper = add_helper(client, owner)
+
+    def pay(who: dict[str, str], months: int, payment: str | None = None) -> Any:
+        body = {"paymentId": payment or str(uuid.uuid4()), "months": months}
+        return client.post(f"{API}/family/pay", headers=who, json=body)
+
+    assert title(pay(helper, 1)) == (403, "owner_only")
+    once = str(uuid.uuid4())
+    paid = pay(owner, 1, once).json()
+    assert (paid["plan"], paid["trial"]) == ("pro", False)
+    first = datetime.fromisoformat(paid["paidUntil"])
+    assert pay(owner, 1, once).json()["paidUntil"] == paid["paidUntil"]  # the same message again: no second month
+    again = pay(owner, 2).json()
+    assert datetime.fromisoformat(again["paidUntil"]) - first == timedelta(days=60)  # added to the end
+    assert title(pay(owner, 13)) == (422, "validation_error")
+    monkeypatch.setattr(settings, "env", "prod")
+    assert title(pay(owner, 1)) == (403, "payments_not_available")
+
+
+def test_an_admin_upgrades_a_family_by_hand(client: TestClient) -> None:
+    owner = parent(client)
+    add_child(client, owner)
+    me = client.get(f"{API}/me", headers=owner).json()["id"]
+    _, admin, _ = make(client, Role.admin)
+    done = client.post(f"{API}/admin/users/{me}/pro", headers=admin, json={"days": 30})
+    assert done.status_code == 200 and done.json()["plan"] == "pro"
+    assert plan(client, owner).json()["plan"] == "pro"
+    assert title(client.post(f"{API}/admin/users/{me}/pro", headers=owner, json={"days": 30})) == (403, "forbidden")
+    assert title(client.post(f"{API}/admin/users/{uuid.uuid4()}/pro", headers=admin, json={"days": 30})) == (
+        404,
+        "no_family",
+    )
