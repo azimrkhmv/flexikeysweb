@@ -16,8 +16,9 @@ from app.modules.auth.session import CurrentUser
 from app.modules.children.models import Child
 from app.modules.children.router import get_visible_child
 from app.modules.plans import engine
-from app.modules.plans.models import ItemKind, Plan, PlanItem, PlanReason
+from app.modules.plans.models import FixedLevel, ItemKind, Plan, PlanItem, PlanReason
 from app.modules.plans.safety import LibraryExercise
+from app.modules.today.models import TaskDone
 from app.modules.videos.models import Exercise, Video, VideoStatus
 from app.schemas import ApiModel
 
@@ -122,12 +123,39 @@ class PlanOut(ApiModel):
     reasons: list[ReasonOut]
 
 
-async def _current(db: AsyncSession, user: User, child_id: uuid.UUID) -> Plan:
+async def current_plan_of(db: AsyncSession, user: User, child_id: uuid.UUID) -> Plan:
     await get_visible_child(db, user, child_id)  # any member of the family; 404 for everyone else
     plan = await db.scalar(select(Plan).where(Plan.child_id == child_id).order_by(Plan.created_at.desc()).limit(1))
     if plan is None:
         raise AppError(404, "no_plan")  # the first question round is not finished yet
     return plan
+
+
+async def exercise_levels(db: AsyncSession, plan: Plan) -> dict[str, int]:
+    """Each exercise's level now: its level in the plan, moved by the parent's easy / hard ratings, unless a
+    therapist fixed it (spec §8). The stored plan items keep the level the plan was made with."""
+    start: dict[str, int] = {}
+    for ref, level in await db.execute(
+        select(PlanItem.ref, PlanItem.level)
+        .where(PlanItem.plan_id == plan.id, PlanItem.kind == ItemKind.exercise)
+        .order_by(PlanItem.day, PlanItem.position)
+    ):
+        start.setdefault(ref, level or 1)
+    feelings: dict[str, list[str | None]] = {}
+    for ref, feeling in await db.execute(
+        select(PlanItem.ref, TaskDone.feeling)
+        .join(PlanItem, TaskDone.plan_item_id == PlanItem.id)
+        .where(PlanItem.plan_id == plan.id)
+        .order_by(TaskDone.created_at)
+    ):
+        feelings.setdefault(ref, []).append(feeling)
+    fixed: dict[str, int] = {
+        e: lvl
+        for e, lvl in await db.execute(
+            select(FixedLevel.exercise_id, FixedLevel.level).where(FixedLevel.child_id == plan.child_id)
+        )
+    }
+    return {ref: fixed.get(ref) or engine.level_after(lvl, feelings.get(ref, [])) for ref, lvl in start.items()}
 
 
 async def _days(db: AsyncSession, plan: Plan, only: int | None = None) -> list[DayOut]:
@@ -139,6 +167,7 @@ async def _days(db: AsyncSession, plan: Plan, only: int | None = None) -> list[D
         select(Exercise.id, Exercise.title, Exercise.tool).where(Exercise.id.in_({i.ref for i in items}))
     )
     info: dict[str, tuple[dict[str, str], str | None]] = {eid: (title, tool) for eid, title, tool in rows}
+    levels = await exercise_levels(db, plan)
     days = {
         d: DayOut(day=d, date=plan.start_date + timedelta(days=d), exercises=[], games=[])
         for d in sorted({i.day for i in items} | ({only} if only is not None else set()))
@@ -146,7 +175,7 @@ async def _days(db: AsyncSession, plan: Plan, only: int | None = None) -> list[D
     for i in items:
         if i.kind == ItemKind.exercise:
             title, tool = info[i.ref]
-            days[i.day].exercises.append(ExerciseItem(exercise_id=i.ref, title=title, tool=tool, level=i.level or 1))
+            days[i.day].exercises.append(ExerciseItem(exercise_id=i.ref, title=title, tool=tool, level=levels[i.ref]))
         else:
             days[i.day].games.append(GameItem(kind=i.ref, minutes=i.minutes or 0))
     return list(days.values())
@@ -157,7 +186,7 @@ async def current_plan(
     child_id: uuid.UUID, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]
 ) -> PlanOut:
     """The child's current (newest) 4-week plan, every day, and the reasons behind it."""
-    plan = await _current(db, user, child_id)
+    plan = await current_plan_of(db, user, child_id)
     reasons = await db.scalars(select(PlanReason).where(PlanReason.plan_id == plan.id).order_by(PlanReason.position))
     return PlanOut(
         id=plan.id,
@@ -172,7 +201,7 @@ async def current_plan(
 @router.get("/{child_id}/today")
 async def today(child_id: uuid.UUID, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]) -> DayOut:
     """Today's exercises and games (Tashkent date). 404 no_task_today before the plan starts or after its 28 days."""
-    plan = await _current(db, user, child_id)
+    plan = await current_plan_of(db, user, child_id)
     day = (datetime.now(TASHKENT).date() - plan.start_date).days
     if not 0 <= day < engine.DAYS:
         raise AppError(404, "no_task_today")

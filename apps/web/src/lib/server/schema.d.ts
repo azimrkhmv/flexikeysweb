@@ -473,6 +473,48 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/children/{child_id}/done": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mark Done
+         * @description One tap: this exercise of that day of the current plan is done. Twice = once (200 with the first record).
+         *     404 when the plan has no such exercise that day; 409 not_yet for a day still to come.
+         */
+        post: operations["mark_done_api_v1_children__child_id__done_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/children/{child_id}/done/{done_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Rate Done
+         * @description The optional easy / ok / hard after Done; can be changed. Two "hard" in a row lower the exercise's level, two
+         *     "easy" raise it, unless a therapist fixed it.
+         */
+        patch: operations["rate_done_api_v1_children__child_id__done__done_id__patch"];
+        trace?: never;
+    };
     "/api/v1/admin/videos/upload-link": {
         parameters: {
             query?: never;
@@ -685,6 +727,33 @@ export interface components {
             /** Note */
             note?: string | null;
         };
+        /** DoneIn */
+        DoneIn: {
+            /** Day */
+            day: number;
+            /** Exerciseid */
+            exerciseId: string;
+        };
+        /** DoneOut */
+        DoneOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Day */
+            day: number;
+            /** Exerciseid */
+            exerciseId: string;
+            /**
+             * Doneon
+             * Format: date
+             */
+            doneOn: string;
+            feeling: components["schemas"]["Feeling"] | null;
+            /** Level */
+            level: number;
+        };
         /** ExerciseItem */
         ExerciseItem: {
             /** Exerciseid */
@@ -707,6 +776,16 @@ export interface components {
             durationS: number | null;
             /** Watchurl */
             watchUrl: string;
+        };
+        /**
+         * Feeling
+         * @description The parent's optional answer after Done (spec §8). Two "hard" in a row lower the level, two "easy" raise it.
+         * @enum {string}
+         */
+        Feeling: "easy" | "ok" | "hard";
+        /** FeelingIn */
+        FeelingIn: {
+            feeling: components["schemas"]["Feeling"];
         };
         /** GameItem */
         GameItem: {
@@ -1932,6 +2011,77 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DayOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    mark_done_api_v1_children__child_id__done_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DoneIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DoneOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    rate_done_api_v1_children__child_id__done__done_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+                done_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FeelingIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DoneOut"];
                 };
             };
             /** @description Validation Error */

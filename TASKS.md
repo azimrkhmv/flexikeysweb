@@ -363,7 +363,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `B10` Daily question
   - Done when: one question a day is asked and the answer is saved
   - Needs: B7
-- [ ] **Azim** — `A5.3` Server: Done with easy / OK / hard
+- [x] **Azim** — `A5.3` Server: Done with easy / OK / hard
   - Done when: two "hard" lower the level and two "easy" raise it, unless a therapist fixed the level
   - Needs: A5.1, A4.5
 - [ ] **Azim** — `A5.4` Server: pause today; week view

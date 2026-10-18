@@ -12,8 +12,14 @@ from app.main import app
 from tests.test_children import API, add_child, client, parent  # noqa: F401 (client is a fixture)
 from tests.test_intake_save import save, saved
 
-BODIES = {"ChildChange": {"name": "X"}, "ConsentChange": {"granted": True}, "AnswersIn": {"answers": {}}}
-PARTS = {"kind": "health", "number": "1"}
+BODIES = {
+    "ChildChange": {"name": "X"},
+    "ConsentChange": {"granted": True},
+    "AnswersIn": {"answers": {}},
+    "DoneIn": {"day": 0, "exerciseId": "putty_squeeze"},
+    "FeelingIn": {"feeling": "easy"},
+}
+PARTS = {"kind": "health", "number": "1", "done_id": str(uuid.uuid4())}
 
 
 def child_addresses() -> list[tuple[str, str, object]]:

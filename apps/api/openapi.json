@@ -1224,6 +1224,124 @@
     }
    }
   },
+  "/api/v1/children/{child_id}/done": {
+   "post": {
+    "tags": [
+     "today"
+    ],
+    "summary": "Mark Done",
+    "description": "One tap: this exercise of that day of the current plan is done. Twice = once (200 with the first record).\n404 when the plan has no such exercise that day; 409 not_yet for a day still to come.",
+    "operationId": "mark_done_api_v1_children__child_id__done_post",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/DoneIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/DoneOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/children/{child_id}/done/{done_id}": {
+   "patch": {
+    "tags": [
+     "today"
+    ],
+    "summary": "Rate Done",
+    "description": "The optional easy / ok / hard after Done; can be changed. Two \"hard\" in a row lower the exercise's level, two\n\"easy\" raise it, unless a therapist fixed it.",
+    "operationId": "rate_done_api_v1_children__child_id__done__done_id__patch",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     },
+     {
+      "name": "done_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Done Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/FeelingIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/DoneOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/v1/admin/videos/upload-link": {
    "post": {
     "tags": [
@@ -1770,6 +1888,70 @@
     ],
     "title": "Decision"
    },
+   "DoneIn": {
+    "properties": {
+     "day": {
+      "type": "integer",
+      "title": "Day"
+     },
+     "exerciseId": {
+      "type": "string",
+      "title": "Exerciseid"
+     }
+    },
+    "type": "object",
+    "required": [
+     "day",
+     "exerciseId"
+    ],
+    "title": "DoneIn"
+   },
+   "DoneOut": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "day": {
+      "type": "integer",
+      "title": "Day"
+     },
+     "exerciseId": {
+      "type": "string",
+      "title": "Exerciseid"
+     },
+     "doneOn": {
+      "type": "string",
+      "format": "date",
+      "title": "Doneon"
+     },
+     "feeling": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Feeling"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "level": {
+      "type": "integer",
+      "title": "Level"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "day",
+     "exerciseId",
+     "doneOn",
+     "feeling",
+     "level"
+    ],
+    "title": "DoneOut"
+   },
    "ExerciseItem": {
     "properties": {
      "exerciseId": {
@@ -1841,6 +2023,28 @@
      "watchUrl"
     ],
     "title": "FamilyVideo"
+   },
+   "Feeling": {
+    "type": "string",
+    "enum": [
+     "easy",
+     "ok",
+     "hard"
+    ],
+    "title": "Feeling",
+    "description": "The parent's optional answer after Done (spec §8). Two \"hard\" in a row lower the level, two \"easy\" raise it."
+   },
+   "FeelingIn": {
+    "properties": {
+     "feeling": {
+      "$ref": "#/components/schemas/Feeling"
+     }
+    },
+    "type": "object",
+    "required": [
+     "feeling"
+    ],
+    "title": "FeelingIn"
    },
    "GameItem": {
     "properties": {

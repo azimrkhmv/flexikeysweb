@@ -6,7 +6,7 @@ from app.modules.auth.models import RefreshToken
 from app.modules.children.consents import ChildConsent
 from app.modules.children.models import Child
 from app.modules.intake.models import IntakeAnswer, IntakeRound
-from app.modules.plans.models import Plan, PlanItem, PlanReason
+from app.modules.plans.models import FixedLevel, Plan, PlanItem, PlanReason
 from app.modules.today.models import DailyAnswer, DailyQuestion, PausedDay, TaskDone
 from app.modules.videos.models import Exercise, Video, VideoReview
 
@@ -19,6 +19,7 @@ __all__ = [
     "Exercise",
     "Family",
     "FamilyMember",
+    "FixedLevel",
     "IntakeAnswer",
     "IntakeRound",
     "PausedDay",

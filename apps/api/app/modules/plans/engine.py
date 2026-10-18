@@ -7,7 +7,7 @@ give exactly the same plan for every case in roadmap_cases.json.
 
 import json
 import math
-from collections.abc import Collection, Mapping
+from collections.abc import Collection, Mapping, Sequence
 from dataclasses import dataclass
 from datetime import date, timedelta
 from pathlib import Path
@@ -137,3 +137,19 @@ def build_plan(
         Reason("game", next(g for g in f.goals if kind in GOAL_GAMES[g]), kind, 1) for kind in games
     ]
     return BuiltPlan(days=days, reasons=reasons, exercises_allowed=f.exercises_allowed)
+
+
+def level_after(start: int, feelings: Sequence[str | None]) -> int:
+    """An exercise's level after the parent's ratings, oldest first (spec §8). A copy of levelAfter in roadmap.ts:
+    two "hard" in a row lower it, two "easy" raise it, within 1-3. "ok" breaks the row; a Done without a rating is
+    skipped. A change starts a new row."""
+    level, last, row = start, None, 0
+    for f in feelings:
+        if f is None:
+            continue
+        row = row + 1 if f == last else 1
+        last = f
+        if row == 2 and f != "ok":
+            level = max(1, min(3, level + (1 if f == "easy" else -1)))
+            last = None
+    return level

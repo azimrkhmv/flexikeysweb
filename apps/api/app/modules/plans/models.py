@@ -9,7 +9,7 @@ import uuid
 from datetime import date
 from enum import StrEnum
 
-from sqlalchemy import CheckConstraint, Date, ForeignKey, Index, SmallInteger, String
+from sqlalchemy import CheckConstraint, Date, ForeignKey, Index, SmallInteger, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db import Base, IdTimeMixin
@@ -68,3 +68,19 @@ class PlanReason(IdTimeMixin, Base):
     goal: Mapped[str] = mapped_column(String(16))
     ref: Mapped[str] = mapped_column(String(48))
     level: Mapped[int] = mapped_column(SmallInteger)
+
+
+class FixedLevel(IdTimeMixin, Base):
+    """A level a therapist set for one exercise of one child. The parent's easy / hard ratings no longer move it
+    (spec §8). Set through the therapist form (A8.2)."""
+
+    __tablename__ = "fixed_levels"
+    __table_args__ = (
+        UniqueConstraint("child_id", "exercise_id"),
+        CheckConstraint("level between 1 and 3", name="level"),
+    )
+
+    child_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("children.id", ondelete="CASCADE"))
+    exercise_id: Mapped[str] = mapped_column(ForeignKey("exercises.id", ondelete="CASCADE"))
+    level: Mapped[int] = mapped_column(SmallInteger)
+    fixed_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
