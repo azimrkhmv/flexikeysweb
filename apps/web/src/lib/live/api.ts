@@ -5,12 +5,14 @@ import { ApiError } from "@/lib/api/schema";
 import { AAC_BY_ID, CUSTOM_PREFIX } from "@/content/aac";
 import { SHOP_BY_ID } from "@/content/shop";
 import { sessionStore } from "@/lib/session";
-import type { PhoneStarted } from "@/lib/server/types";
+import { STEPS, type Answers } from "@/content/intake";
+import type { ChildOut, Consents, PhoneStarted, PlanOut, RoundOut } from "@/lib/server/types";
 import type { Lang, UiLang } from "@/lib/translate";
-import type { AacCustomCard, Child, ChildSupport, ClassRoom, ConsentScope, InputProfile, InteractionEvent, Order, Role, User, UserStatus } from "@/lib/types";
+import type { AacCustomCard, Child, ChildSupport, ClassRoom, ConsentScope, InputProfile, InteractionEvent, Order, Roadmap, Role, User, UserStatus } from "@/lib/types";
 import { queryClient } from "./client";
 import { http, upload } from "./http";
 import {
+  CONSENT_KIND, familyChildFrom, planFrom,
   careLinkFrom, childFrom, childTo, classFrom, eventTo, rosterChildFrom, scopeTo, userFrom,
   type BCareLink, type BChild, type BClass, type BConsent, type BGoal, type BRosterChild, type BUser,
 } from "./map";
@@ -30,6 +32,9 @@ const refreshBilling = () =>
 const liveUserId = () => queryClient.getQueryData<BUser | null>(["me"])?.id ?? "";
 const refetch = () => queryClient.invalidateQueries();
 const id = () => crypto.randomUUID();
+const QUESTION_IDS = new Set(STEPS.flatMap((s) => s.questions.map((q) => q.id)));
+/** Section B (P9–P17) is health data (same rule as the mock and the server's intake.json). */
+const HEALTH_QUESTION = /^P(9|1[0-7])(_|$)/;
 
 async function signedIn(): Promise<User> {
   const raw = await http<BUser>("GET", "/me");
@@ -158,12 +163,54 @@ export const liveApi = {
   async exportChild(childId: string): Promise<MockExport> {
     return http<MockExport>("GET", `/parent/children/${childId}/export`);
   },
+  /** PUT /children/{id}/consents/{kind} — owner only. "core" is the basic consent every family gave at sign-up. */
   async setConsent(childId: string, scope: ConsentScope, granted: boolean) {
-    if (scope === "core" && !granted) throw new ApiError("core_consent_required_use_delete");
-    if (granted) await http("POST", `/children/${childId}/consent`, { consent_type: scopeTo(scope) });
-    else await http("DELETE", `/children/${childId}/consent/${scopeTo(scope)}`);
+    if (scope === "core") {
+      if (!granted) throw new ApiError("core_consent_required_use_delete");
+      return true;
+    }
+    const kind = CONSENT_KIND[scope];
+    if (!kind) throw new ApiError("not_available");
+    await http("PUT", `/children/${childId}/consents/${kind}`, { granted });
+    await refetch(); // a withdrawn health consent also changes the saved answers and the plan
+    return true;
+  },
+
+  // ------------------------------------------------------------ parent questions (spec §5)
+  /** POST /children from the first question step (P1–P3, P8), then its answers. */
+  async createChildFromIntake(answers: Answers, uiLang: UiLang) {
+    const name = String(answers.P1 ?? "").trim();
+    const birthDate = String(answers.P2 ?? "");
+    if (!name) throw new ApiError("name_required");
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(birthDate) || birthDate > new Date().toISOString().slice(0, 10)) throw new ApiError("invalid_date");
+    const c = await http<ChildOut>("POST", "/children", { name, birthDate, sex: answers.P3, color: typeof answers.P8 === "string" ? answers.P8 : null, lang: uiLang });
+    await liveApi.saveAnswers(c.id, 1, answers);
+    return familyChildFrom(c);
+  },
+  /** PUT /children/{id}/intake/{round} — saves as the parent goes. Only real questions go to the server; health
+   *  questions only with the health consent (the server refuses them otherwise). */
+  async saveAnswers(childId: string, round: number, answers: Answers) {
+    const health = queryClient.getQueryData<Consents>(["consents", childId])?.health ?? false;
+    const keep = Object.entries(answers).filter(([q, v]) => v !== undefined && QUESTION_IDS.has(q) && (health || !HEALTH_QUESTION.test(q)));
+    if (keep.length) {
+      const body = Object.fromEntries(keep.map(([q, v]) => [q, typeof v === "string" ? v.slice(0, 1000) : v]));
+      await http("PUT", `/children/${childId}/intake/${round}`, { answers: body });
+    }
     await refetch();
     return true;
+  },
+  /** POST /children/{id}/intake/{round}/finish — the server closes the round and builds the plan. */
+  async finishIntake(childId: string, round: number): Promise<Roadmap> {
+    await http("POST", `/children/${childId}/intake/${round}/finish`, {});
+    const plan = await http<PlanOut>("GET", `/children/${childId}/plan`);
+    await refetch();
+    return planFrom(childId, round, plan);
+  },
+  /** POST /children/{id}/intake — the 3-month repeat, filled in with last time's answers. */
+  async startReintake(childId: string) {
+    const r = await http<RoundOut>("POST", `/children/${childId}/intake`, {});
+    await refetch();
+    return r.number;
   },
 
   // ------------------------------------------------------------ child mode

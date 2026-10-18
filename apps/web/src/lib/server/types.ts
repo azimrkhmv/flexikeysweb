@@ -11,6 +11,9 @@ export type SignedIn = Schemas["SignedIn"];
 export type ChildIn = Schemas["ChildIn"];
 export type ChildOut = Schemas["ChildOut"];
 export type Consents = Schemas["Consents"];
+export type ConsentKind = Schemas["ConsentKind"];
+export type RoundSummary = Schemas["RoundSummary"];
+export type PlanOut = Schemas["PlanOut"];
 export type RoundOut = Schemas["RoundOut"];
 
 /** Every address the website calls (under /api/v1, which the website proxies). */

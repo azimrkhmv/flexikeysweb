@@ -3,9 +3,9 @@
 
 import { AAC_BY_ID, CUSTOM_PREFIX } from "@/content/aac";
 import { DEFAULT_PROFILE } from "@/lib/adaptive";
-import type { Me, UserOut } from "@/lib/server/types";
+import type { ChildOut, ConsentKind, Consents, Me, PlanOut, RoundOut, UserOut } from "@/lib/server/types";
 import type { Lang } from "@/lib/translate";
-import type { ChildSupport,
+import type { ChildSupport, ActivityKind, GoalKey, IntakeAnswer, IntakeValue, Roadmap,
   AacCustomCard, AacEvent, AccessMode, AuditLog, AdaptationChange, AdaptiveProfile, Assignment, CareLink, Child, ClassRoom, Consent, ConsentScope, Goal,
   InteractionEvent, LearningSession, LevelProgress, Note, Notification, Order, ParamKey, Role, SkillMastery, Subscription, User, UserStatus,
 } from "@/lib/types";
@@ -61,6 +61,44 @@ export function userFrom(u: BUser): User {
     createdAt: "",
   };
 }
+
+// ---------------------------------------------------------------- the new server (apps/api)
+
+/** A child of the family (GET /children). Uzbek Cyrillic plays with the Uzbek content. */
+export function familyChildFrom(c: ChildOut): Child {
+  const lang = c.lang === "uz_cyrl" ? "uz" : c.lang;
+  return {
+    id: c.id, familyId: c.familyId, name: c.name, birthYear: Number(c.birthDate.slice(0, 4)), birthDate: c.birthDate, sex: c.sex,
+    learningLang: lang, uiLang: lang, avatar: "☁️", access: "touch", equipped: c.color ? { color: c.color } : {}, createdAt: "",
+  };
+}
+
+/** The web's consent scopes the server knows; "core" is the basic consent every family gave at sign-up. */
+export const CONSENT_KIND: Partial<Record<ConsentScope, ConsentKind>> = { health: "health", movement_videos: "movement_videos", therapist_sharing: "therapist_share" };
+
+export function familyConsentsFrom(childId: string, c: Consents): Consent[] {
+  const on: ConsentScope[] = ["core", ...(c.health ? ["health" as const] : []), ...(c.movementVideos ? ["movement_videos" as const] : []), ...(c.therapistShare ? ["therapist_sharing" as const] : [])];
+  return on.map((scope) => ({ id: `${childId}-${scope}`, childId, scope, version: "", grantedBy: "", grantedAt: "" }));
+}
+
+export function answersFrom(childId: string, r: RoundOut): IntakeAnswer[] {
+  return Object.entries(r.answers).map(([questionId, value]) => ({ childId, round: r.number, questionId, value: value as IntakeValue, answeredAt: "", respondent: "parent" }));
+}
+
+/** The current plan (GET /children/{id}/plan) as the website's roadmap. */
+export function planFrom(childId: string, round: number, p: PlanOut): Roadmap {
+  return {
+    id: p.id, childId, round, startDate: p.startDate, exercisesAllowed: p.exercisesAllowed, createdAt: "",
+    days: p.days.map((d) => ({
+      date: d.date,
+      exercises: d.exercises.map((e) => ({ videoId: e.exerciseId, level: Math.min(3, Math.max(1, e.level)) as 1 | 2 | 3 })),
+      games: d.games.map((g) => ({ kind: g.kind as ActivityKind, minutes: g.minutes })),
+    })),
+    reasons: p.reasons.map((r) => ({ slot: r.slot, goal: r.goal as GoalKey, ref: r.ref, level: r.level })),
+  };
+}
+
+// ---------------------------------------------------------------- the old backend (areas not moved yet)
 
 export function childFrom(c: BChild): Child {
   const eq = c.equipped ?? {};

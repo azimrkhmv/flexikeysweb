@@ -6,7 +6,7 @@ import { ShieldCheck } from "lucide-react";
 import { Button, Card, LinkButton, useAction } from "@/components/ui";
 import { openQuestions, STEPS, stepComplete, visibleQuestions, type Answers, type Step } from "@/content/intake";
 import { FormError, FormNote } from "@/features/auth/parts";
-import { api, sel, useDb } from "@/lib/api";
+import { api, ApiError, sel, useDb } from "@/lib/api";
 import { useT, useUiLang } from "@/lib/i18n";
 import type { IntakeValue, Roadmap } from "@/lib/types";
 import { QuestionField } from "./Fields";
@@ -71,7 +71,10 @@ export function IntakeWizard({ childId: initialChild }: { childId?: string }) {
       if (i + 1 < steps.length) return setI(i + 1);
       if (typeof answers.P41 === "string" && answers.P41.trim() && answers.P41_consent === "yes") {
         await api.setConsent(id, "therapist_sharing", true);
-        await api.inviteCare(id, answers.P41);
+        // ponytail: the server has no therapist invites until A8.1; the consent is saved, the invite waits.
+        await api.inviteCare(id, answers.P41).catch((e) => {
+          if (!(e instanceof ApiError && e.code === "not_available")) throw e;
+        });
       }
       setPlan(await api.finishIntake(id, round));
     });

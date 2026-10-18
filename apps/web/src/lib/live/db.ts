@@ -6,11 +6,13 @@ import { ApiError, type ChildAuth, type DB } from "@/lib/api/schema";
 import { sessionStore } from "@/lib/session";
 import { useStore } from "@/lib/store";
 import { http } from "./http";
+import type { ChildOut, Consents, PlanOut, RoundOut, RoundSummary } from "@/lib/server/types";
 import {
-  aacCardFrom, aacEventFrom, auditFrom, careLinkFrom, orderFrom, subscriptionFrom, changeFrom, childFrom, notificationFrom, classFrom, consentsFrom, goalFrom, levelsFrom, masteryFrom, noteFrom, profileFrom, rosterChildFrom,
+  answersFrom, familyChildFrom, familyConsentsFrom, planFrom,
+  aacCardFrom, auditFrom, careLinkFrom, orderFrom, subscriptionFrom, changeFrom, childFrom, notificationFrom, classFrom, goalFrom, levelsFrom, masteryFrom, noteFrom, profileFrom, rosterChildFrom,
   sessionsFrom, taskFrom, userFrom,
-  type BAacCard, type BAacSentence, type BAdminSub, type BAudit, type BOrder, type BOverview, type BCareLink, type BChange, type BNotification, type BChild, type BChildOverview, type BClass, type BConsent, type BGoal, type BLevel, type BNote,
-  type BPoint, type BProfile, type BSkill, type BSummary, type BTask, type BUser,
+  type BAacCard, type BAdminSub, type BAudit, type BOrder, type BOverview, type BCareLink, type BNotification, type BChild, type BChildOverview, type BClass, type BGoal, type BLevel, type BNote,
+  type BProfile, type BTask, type BUser,
 } from "./map";
 import { liveChild } from "./state";
 
@@ -27,26 +29,10 @@ const empty = (): DB => ({
   otp: [], intakeAnswers: [], intakeRounds: [], videos: [], roadmaps: [],
 });
 
-const PER_CHILD = ["levels", "summary", "changes", "consents", "minutes", "skills", "profile", "tasks", "careLinks", "classes", "notes", "goals", "aacCards", "aacSentences", "aiMessages"] as const;
+/** A family child's data on the new server (apps/api); each round's answers are loaded after the round list. */
+const PER_CHILD = ["consents", "rounds", "plan"] as const;
 type PerChild = (typeof PER_CHILD)[number];
-const path = (kind: PerChild, id: string) =>
-  ({
-    levels: `/activities/progress/${id}`,
-    summary: `/parent/children/${id}/summary`,
-    changes: `/progress/adaptations?child_id=${id}&limit=50`,
-    consents: `/children/${id}/consents`,
-    minutes: `/progress/timeseries?child_id=${id}&metric=time&range_days=60`,
-    skills: `/progress/skills?child_id=${id}`,
-    profile: `/adaptive/profile/${id}`,
-    tasks: `/activities/tasks/${id}`,
-    careLinks: `/children/${id}/care-links`,
-    classes: `/children/${id}/classes`,
-    notes: `/children/${id}/notes`,
-    goals: `/children/${id}/goals`,
-    aacCards: `/children/${id}/aac/cards`,
-    aacSentences: `/children/${id}/aac/sentences?days=7`,
-    aiMessages: `/ai-assistant/children/${id}/messages`,
-  })[kind];
+const path = (kind: PerChild, id: string) => ({ consents: `/children/${id}/consents`, rounds: `/children/${id}/intake`, plan: `/children/${id}/plan` })[kind];
 
 /** Child mode reads only the child's own endpoints (child token = the httpOnly fk_child cookie). */
 const OWN = ["me", "levels", "wallet", "profile", "tasks", "catalog", "aacCards"] as const;
@@ -102,10 +88,21 @@ export function useLiveDb(): DB {
   }, [ownMeError]);
 
   // ---- parent (paused while a child plays: the dashboards aren't on screen)
-  const kids = useQuery({ queryKey: ["children"], enabled: role === "parent", queryFn: () => http<BChild[]>("GET", "/children") });
+  const kids = useQuery({ queryKey: ["children"], enabled: role === "parent", queryFn: () => http<ChildOut[]>("GET", "/children") });
   const ids = role === "parent" && !child ? (kids.data ?? []).map((c) => c.id) : [];
   const per = useQueries({
-    queries: ids.flatMap((id) => PER_CHILD.map((kind) => ({ queryKey: [kind, id], queryFn: () => http<unknown>("GET", path(kind, id)) }))),
+    queries: ids.flatMap((id) =>
+      PER_CHILD.map((kind) => ({
+        queryKey: [kind, id],
+        // "No plan yet" (before the first round is finished) is an answer, not an error to retry.
+        queryFn: () => http<unknown>("GET", path(kind, id)).catch((e) => (kind === "plan" && e instanceof ApiError && e.code === "not_found" ? null : Promise.reject(e))),
+      })),
+    ),
+  });
+  const perChild = (i: number, kind: PerChild) => per[i * PER_CHILD.length + PER_CHILD.indexOf(kind)]?.data;
+  const roundsOf = ids.flatMap((id, i) => ((perChild(i, "rounds") as RoundSummary[] | undefined) ?? []).map((r) => ({ id, n: r.number })));
+  const answers = useQueries({
+    queries: roundsOf.map(({ id, n }) => ({ queryKey: ["answers", id, n], queryFn: () => http<RoundOut>("GET", `/children/${id}/intake/${n}`) })),
   });
 
   const subscription = useQuery({
@@ -166,12 +163,13 @@ export function useLiveDb(): DB {
     if (signedIn !== undefined && sessionStore.get().role !== signedIn) sessionStore.set({ role: signedIn });
   }, [signedIn]);
 
-  const all = [me, kids, classes, linked, invites, notifications, flags, subscription, orders, ...own, ...per, ...overviews, ...views, ...admin];
+  const all = [me, kids, classes, linked, invites, notifications, flags, subscription, orders, ...own, ...per, ...answers, ...overviews, ...views, ...admin];
   const stamp = all.map((q) => q.dataUpdatedAt).join();
   const loading =
     me.isPending ||
     (!!child && !!own[0]?.isPending) ||
-    (role === "parent" && kids.isPending) ||
+    // The questions screen starts from the saved answers, so wait for them.
+    (role === "parent" && (kids.isPending || per.some((q) => q.isPending) || answers.some((q) => q.isPending))) ||
     (role === "teacher" && (classes.isPending || overviews.some((q) => q.isPending))) ||
     (role === "therapist" && (linked.isPending || views.some((q) => q.isPending)));
 
@@ -179,7 +177,6 @@ export function useLiveDb(): DB {
     const db: DB = { ...empty(), loading, auth: { userId: user?.id ?? null, child } };
     if (user) {
       db.users = [user];
-      if (user.role === "parent") db.familyMembers = [{ familyId: user.id, userId: user.id, role: "owner" }];
       db.notifications = (notifications.data ?? []).map((n) => notificationFrom(n, user.id));
       db.flags = Object.entries(flags.data ?? {}).map(([key, enabled]) => ({ key, enabled, description: "" }));
       db.subscriptions = [subscriptionFrom(user.id, subscription.data)];
@@ -207,39 +204,22 @@ export function useLiveDb(): DB {
     }
 
     if (role === "parent") {
-      for (const k of kids.data ?? []) if (!db.children.some((c) => c.id === k.id)) db.children.push(childFrom(k));
+      for (const k of kids.data ?? []) if (!db.children.some((c) => c.id === k.id)) db.children.push(familyChildFrom(k));
+      // ponytail: shown as the owner of every family the server returns children for; a helper is told apart in B27
+      // (the server already refuses a helper what only the owner may do).
+      for (const familyId of new Set((kids.data ?? []).map((k) => k.familyId))) db.familyMembers.push({ familyId, userId: user!.id, role: "owner" });
       ids.forEach((id, i) => {
-        const at = (kind: PerChild) => per[i * PER_CHILD.length + PER_CHILD.indexOf(kind)]?.data;
-        const levels = at("levels") as BLevel[] | undefined;
-        const summary = at("summary") as BSummary | undefined;
-        const changes = at("changes") as BChange[] | undefined;
-        const consents = at("consents") as BConsent[] | undefined;
-        const minutes = at("minutes") as BPoint[] | undefined;
-        const skills = at("skills") as BSkill[] | undefined;
-        const profile = at("profile") as BProfile | undefined;
-        if (levels) db.progress.push(...levelsFrom(id, levels));
-        if (consents) db.consents.push(...consentsFrom(consents));
-        if (changes) db.changes.push(...changes.map((c) => changeFrom(id, c)).filter((c) => c !== null));
-        if (minutes) db.sessions.push(...sessionsFrom(id, minutes));
-        if (skills) db.mastery.push(...masteryFrom(id, skills));
-        if (profile)
-          db.profiles.push({ childId: id, input: "touch", params: profileFrom(profile.profile.params), version: profile.profile.version, lastDir: {}, updatedAt: profile.profile.updated_at });
-        db.wallets.push({ childId: id, coins: summary?.coins ?? 0, stars: summary?.stars ?? 0, owned: [] });
-        for (const k of (at("classes") as BClass[] | undefined) ?? []) {
-          if (!db.classes.some((x) => x.id === k.id)) db.classes.push(classFrom({ ...k, join_code: "", created_at: "" }, ""));
-          db.enrollments.push({ classId: k.id, childId: id });
-        }
-        db.careLinks.push(...((at("careLinks") as BCareLink[] | undefined) ?? []).map(careLinkFrom));
-        db.notes.push(...((at("notes") as BNote[] | undefined) ?? []).map(noteFrom));
-        db.goals.push(...((at("goals") as BGoal[] | undefined) ?? []).map(goalFrom));
-        db.aacCards.push(...((at("aacCards") as BAacCard[] | undefined) ?? []).map((x) => aacCardFrom(x)));
-        db.aacEvents.push(...((at("aacSentences") as BAacSentence[] | undefined) ?? []).map((s, k) => aacEventFrom(id, s, k)));
-        for (const m of (at("aiMessages") as { id: string; role: string; content: string; created_at: string }[] | undefined) ?? [])
-          db.aiMessages.push({ id: m.id, userId: user!.id, childId: id, role: m.role === "user" ? "user" : "assistant", text: m.content, at: m.created_at });
-        for (const t of (at("tasks") as BTask[] | undefined) ?? []) {
-          const a = taskFrom(t, id);
-          if (a && !db.assignments.some((x) => x.id === a.id)) db.assignments.push(a);
-        }
+        const consents = perChild(i, "consents") as Consents | undefined;
+        const rounds = (perChild(i, "rounds") as RoundSummary[] | undefined) ?? [];
+        const plan = perChild(i, "plan") as PlanOut | null | undefined;
+        if (consents) db.consents.push(...familyConsentsFrom(id, consents));
+        db.intakeRounds.push(...rounds.map((r) => ({ childId: id, round: r.number, startedAt: r.startedAt, completedAt: r.completedAt ?? undefined })));
+        const finished = rounds.filter((r) => r.completedAt).at(-1);
+        if (plan && finished) db.roadmaps.push(planFrom(id, finished.number, plan));
+      });
+      roundsOf.forEach(({ id }, k) => {
+        const r = answers[k]?.data;
+        if (r) db.intakeAnswers.push(...answersFrom(id, r));
       });
     }
 
