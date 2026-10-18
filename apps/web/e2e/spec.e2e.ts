@@ -139,6 +139,21 @@ test("physio approves a queued video; the decision is recorded", async ({ page }
   await expect(page.locator("li").filter({ hasText: "Sort by colour with tongs" }).filter({ hasText: "English" })).toContainText("Approved by Rustam Yusupov");
 });
 
+test("Today is the first screen after sign-in: exercises with video and tool, and games", async ({ page }) => {
+  await setup(page);
+  await loginAs(page, "Parent");
+  const today = page.getByRole("region", { name: "Today" });
+  await expect(today).toBeVisible();
+  const ali = today.getByRole("article").filter({ hasText: "Ali" });
+  await expect(ali.getByText("Exercises", { exact: true })).toBeVisible();
+  await expect(ali.getByText("Video coming soon").first()).toBeVisible(); // demo files are empty placeholders
+  await expect(ali.getByText("Games", { exact: true })).toBeVisible();
+  // it comes before everything else on the page
+  const top = await today.boundingBox();
+  const kids = await page.getByRole("heading", { name: "Your children" }).boundingBox();
+  expect(top!.y).toBeLessThan(kids!.y);
+});
+
 test("Uzbek Cyrillic is a full app language", async ({ page }) => {
   await setup(page);
   await page.goto("/signup");

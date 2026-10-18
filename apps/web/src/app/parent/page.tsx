@@ -7,6 +7,7 @@ import { Avatar, Card, Chip, LinkButton, Meter, PageHeader, Stat } from "@/compo
 import { LEVEL_BY_ID } from "@/content/levels";
 import { age } from "@/features/parent/lib";
 import { fmtDate } from "@/lib/format";
+import { Today } from "@/features/parent/Today";
 import { LockNote } from "@/features/pro/shared";
 import { MAX_CHILDREN, sel, useDb } from "@/lib/api";
 import { useLang, useT } from "@/lib/i18n";
@@ -62,6 +63,8 @@ export default function ParentHome() {
         </Card>
       ) : (
         <>
+          <Today kids={kids} />
+
           {/* the week at a glance, for the whole family */}
           <div className="mb-6 grid grid-cols-2 gap-4 xl:grid-cols-4">
             <Stat tone="sky" icon={<Clock className="size-6" aria-hidden />} value={sum((c) => sel.dailyMinutes(db, c.id, 7).reduce((a, d) => a + d.minutes, 0))} label={t("parent.home.stat.minutes")} />

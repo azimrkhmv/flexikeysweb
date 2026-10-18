@@ -284,6 +284,9 @@ export const intake = {
     "plan.why.gamesOnly": "Without the health answers the plan has games only. You can agree to the health questions in Privacy.",
     "plan.reintake": "Update the answers",
     "plan.reintake.d": "Every 3 months: only tap what changed.",
+    "today.notYet": "The plan starts on {date}.",
+    "today.finished": "This plan is finished. Update the answers to get the next one.",
+    "today.videoSoon": "Video coming soon",
   },
   uz: {
     "intake.title": "Farzandingiz haqida aytib bering",
@@ -569,6 +572,9 @@ export const intake = {
     "plan.why.gamesOnly": "Sogʻliq haqidagi javoblarsiz rejada faqat oʻyinlar bor. Sogʻliq savollariga Maxfiylik boʻlimida rozilik berishingiz mumkin.",
     "plan.reintake": "Javoblarni yangilash",
     "plan.reintake.d": "Har 3 oyda: faqat oʻzgarganini belgilang.",
+    "today.notYet": "Reja {date} kuni boshlanadi.",
+    "today.finished": "Bu reja tugadi. Keyingisini olish uchun javoblarni yangilang.",
+    "today.videoSoon": "Video tez orada",
   },
   ru: {
     "intake.title": "Расскажите о ребёнке",
@@ -854,5 +860,8 @@ export const intake = {
     "plan.why.gamesOnly": "Без ответов о здоровье в плане только игры. Согласиться на вопросы о здоровье можно в разделе «Конфиденциальность».",
     "plan.reintake": "Обновить ответы",
     "plan.reintake.d": "Раз в 3 месяца: отметьте только то, что изменилось.",
+    "today.notYet": "План начнётся {date}.",
+    "today.finished": "Этот план закончен. Обновите ответы, чтобы получить следующий.",
+    "today.videoSoon": "Видео скоро будет",
   },
 };

@@ -351,7 +351,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `C3` Decide the video format: how long, one clip or several joined, how the three language versions are made
   - Done when: the decision is written in section 3 of this file
   - Needs: C1
-- [ ] **Azim** — `B7` Today screen on demo data: today's exercises (with video and tool) and today's games
+- [x] **Azim** — `B7` Today screen on demo data: today's exercises (with video and tool) and today's games
   - Done when: it is the first screen after sign-in
   - Needs: —
 - [ ] **Azim** — `B8` One-tap Done, then optional easy / OK / hard
