@@ -68,6 +68,7 @@ test("mobile marketing menu: Escape and outside click close it", async ({ page }
   const link = page.locator("details").getByRole("link", { name: "Pricing" });
   await toggle.click();
   await expect(link).toBeVisible();
+  await page.waitForTimeout(150); // <details> reports "toggle" asynchronously (see below)
   await page.keyboard.press("Escape");
   await expect(link).toBeHidden();
   await expect(toggle).toBeFocused();

@@ -13,6 +13,13 @@ describe("security headers", () => {
     expect(prod["script-src"].some((s) => s.startsWith("'nonce-"))).toBe(false); // static pages by decision
   });
 
+  it("the file storage origin is allowed only for network calls and media", () => {
+    const csp = directives(contentSecurityPolicy(false, "https://files.flexikeys.uz/flexikeys"));
+    expect(csp["connect-src"]).toEqual(["'self'", "https://files.flexikeys.uz"]);
+    expect(csp["media-src"]).toEqual(["'self'", "blob:", "https://files.flexikeys.uz"]);
+    for (const d of ["default-src", "script-src", "img-src", "font-src"]) expect(csp[d].join(" "), d).not.toContain("files.flexikeys.uz");
+  });
+
   it("blocks framing, plugins and base/form hijacking", () => {
     expect(prod["frame-ancestors"]).toEqual(["'none'"]);
     expect(prod["object-src"]).toEqual(["'none'"]);

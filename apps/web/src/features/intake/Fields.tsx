@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Mic, Square, Trash2, Video } from "lucide-react";
 import { Button, Checkbox, Field, Input, Textarea } from "@/components/ui";
 import { allowsNotSure, P39_MAX, P40_MAX_CLIPS, type Answers, type Question } from "@/content/intake";
-import { api } from "@/lib/api";
+import { api, sel, useDb } from "@/lib/api";
 import { deleteMedia, putMedia } from "@/lib/media";
 import { useT } from "@/lib/i18n";
 import type { IntakeValue } from "@/lib/types";
@@ -38,7 +38,7 @@ export function QuestionField({ q, answers, set, childId, previous }: { q: Quest
     const today = new Date().toISOString().slice(0, 10);
     return <Field label={label}><Input type="date" max={today} value={String(v ?? "")} onChange={(e) => set(q.id, e.target.value)} /></Field>;
   }
-  if (q.kind === "longtext") return <OwnWords q={q} label={label} answers={answers} set={set} />;
+  if (q.kind === "longtext") return <OwnWords q={q} label={label} answers={answers} set={set} childId={childId} />;
   if (q.kind === "media") return <Clips q={q} answers={answers} set={set} />;
   if (q.kind === "phone") return <Invite q={q} answers={answers} set={set} childId={childId} />;
 
@@ -96,8 +96,14 @@ function show(v: IntakeValue, q: Question, opt: (o: string) => string, t: (k: st
   return q.options ? opt(String(v)) : String(v);
 }
 
+/** The round being answered (1 for a new child). */
+function useRound(childId: string | null) {
+  const db = useDb();
+  return (childId && sel.intakeRound(db, childId)?.round) || 1;
+}
+
 /** P39: text or a voice note (≤ 2 min); keyword hints the parent confirms with one tap. */
-function OwnWords({ q, label, answers, set }: { q: Question; label: string; answers: Answers; set: Set }) {
+function OwnWords({ q, label, answers, set, childId }: { q: Question; label: string; answers: Answers; set: Set; childId: string | null }) {
   const t = useT();
   const text = String(answers[q.id] ?? "");
   const [hints, setHints] = useState<string[]>([]);
@@ -105,6 +111,19 @@ function OwnWords({ q, label, answers, set }: { q: Question; label: string; answ
   const rec = useRef<MediaRecorder | null>(null);
   const [recording, setRecording] = useState(false);
   const [seconds, setSeconds] = useState(0);
+  const voice = typeof answers.P39_voice === "string" ? answers.P39_voice : null;
+  const round = useRound(childId);
+  // A link to play the note again (a 15-minute link in live mode), kept with the note it belongs to.
+  const [link, setLink] = useState<{ key: string; url: string | null } | null>(null);
+  const listen = voice && link?.key === voice ? link.url : null;
+  useEffect(() => {
+    if (!voice || !childId) return;
+    let live = true;
+    api.voiceNoteUrl(childId, round, voice).then((url) => live && setLink({ key: voice, url })).catch(() => {});
+    return () => {
+      live = false;
+    };
+  }, [voice, childId, round]);
 
   useEffect(() => {
     const id = setTimeout(() => {
@@ -123,7 +142,8 @@ function OwnWords({ q, label, answers, set }: { q: Question; label: string; answ
     r.onstop = async () => {
       stream.getTracks().forEach((x) => x.stop());
       setSeconds(Math.round((Date.now() - began) / 1000));
-      set("P39_voice", await putMedia(new Blob(parts, { type: r.mimeType })));
+      const blob = new Blob(parts, { type: r.mimeType });
+      set("P39_voice", childId ? await api.saveVoiceNote(childId, blob) : await putMedia(blob));
       setRecording(false);
     };
     r.start();
@@ -144,7 +164,8 @@ function OwnWords({ q, label, answers, set }: { q: Question; label: string; answ
           ) : (
             <Button variant="outline" onClick={start}><Mic className="size-4" aria-hidden /> {t("intake.P39.record")}</Button>
           )}
-          {typeof answers.P39_voice === "string" && !recording && <span role="status" className="text-sm font-semibold text-ink-2">{t("intake.P39.recorded", { s: seconds })}</span>}
+          {voice && !recording && seconds > 0 && <span role="status" className="text-sm font-semibold text-ink-2">{t("intake.P39.recorded", { s: seconds })}</span>}
+          {listen && !recording && <audio controls src={listen} aria-label={t("intake.P39.listen")} className="h-10 max-w-full" />}
         </div>
       )}
       {hints.length > 0 && (

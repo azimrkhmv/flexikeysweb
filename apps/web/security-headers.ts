@@ -7,7 +7,13 @@
 // third-party scripts, analytics or ads — especially in child areas), no plugins, no <base> hijack, forms post
 // only to us, and the site can't be framed (clickjacking). Revisit with SRI hashes once that is stable in Next.
 
-export function contentSecurityPolicy(dev: boolean) {
+/**
+ * `storage`: the file storage origin (FK_STORAGE_ORIGIN, e.g. https://files.flexikeys.uz). The browser uploads and
+ * plays files there directly with short-lived signed links (apps/api app/storage.py): voice notes, exercise videos.
+ * It is the only other origin allowed, and only for network calls and media.
+ */
+export function contentSecurityPolicy(dev: boolean, storage = process.env.FK_STORAGE_ORIGIN ?? "") {
+  const files = storage ? ` ${new URL(storage).origin}` : "";
   return [
     "default-src 'self'",
     // 'unsafe-inline': Next's inline bootstrap/RSC scripts on static pages. 'unsafe-eval' only for React dev tooling.
@@ -15,8 +21,8 @@ export function contentSecurityPolicy(dev: boolean) {
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob:",
     "font-src 'self'",
-    "connect-src 'self'",
-    "media-src 'self' blob:",
+    `connect-src 'self'${files}`,
+    `media-src 'self' blob:${files}`,
     "object-src 'none'",
     "frame-ancestors 'none'",
     "base-uri 'self'",

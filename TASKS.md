@@ -290,7 +290,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `B4` Connect the children list and the parent questions to the server
   - Done when: a parent answers all questions in the browser against the real server, stops halfway and continues later
   - Needs: A2.7, B2
-- [ ] **Azim** — `A2.9` Keep the parent's own-words answer extras on the server: the P39 voice note (a file in storage) and the hints they kept
+- [x] **Azim** — `A2.9` Keep the parent's own-words answer extras on the server: the P39 voice note (a file in storage) and the hints they kept
   - Done when: a voice note recorded in the browser plays again after signing in on another device
   - Needs: A3.2, B4
 - [x] **Azim** — `A3.3` Load the exercise list from `exercises.json`; an admin registers a finished video file

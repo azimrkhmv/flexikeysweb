@@ -5,6 +5,7 @@
 import type { Answers } from "@/content/intake";
 import { baseLang, type Lang, type UiLang } from "../i18n";
 import { buildRoadmap } from "../roadmap";
+import { getMedia, putMedia } from "../media";
 import { read, write, net } from "./db";
 import { audit, familyForNewChild, requireChildAccess, requireUser } from "./guards";
 import { ApiError, CONSENT_VERSION, id, iso } from "./schema";
@@ -56,6 +57,16 @@ export const intakeApi = {
       }
     });
     return net(true, 0);
+  },
+
+  /** POST /children/{id}/intake/voice-link + upload — the P39 voice note; the answer keeps only its key. */
+  async saveVoiceNote(_childId: string, blob: Blob) {
+    return putMedia(blob);
+  },
+  /** GET /children/{id}/intake/{round}/voice — a link to listen to the voice note again. */
+  async voiceNoteUrl(_childId: string, _round: number, key: string) {
+    const blob = await getMedia(key);
+    return blob ? URL.createObjectURL(blob) : null;
   },
 
   /** POST /children/{id}/intake/{round}/complete — builds the 4-week roadmap from the answers. */

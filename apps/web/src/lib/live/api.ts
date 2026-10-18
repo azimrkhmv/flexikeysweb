@@ -32,7 +32,8 @@ const refreshBilling = () =>
 const liveUserId = () => queryClient.getQueryData<BUser | null>(["me"])?.id ?? "";
 const refetch = () => queryClient.invalidateQueries();
 const id = () => crypto.randomUUID();
-const QUESTION_IDS = new Set(STEPS.flatMap((s) => s.questions.map((q) => q.id)));
+/** Answers the server stores: every question, plus the P39 voice note and kept hints (apps/api intake/rules.py). */
+const QUESTION_IDS = new Set([...STEPS.flatMap((s) => s.questions.map((q) => q.id)), "P39_voice", "P39_hints"]);
 /** Section B (P9–P17) is health data (same rule as the mock and the server's intake.json). */
 const HEALTH_QUESTION = /^P(9|1[0-7])(_|$)/;
 
@@ -198,6 +199,17 @@ export const liveApi = {
     }
     await refetch();
     return true;
+  },
+  /** The P39 voice note goes straight to storage; the answer keeps only its key (POST .../intake/voice-link). */
+  async saveVoiceNote(childId: string, blob: Blob) {
+    const link = await http<{ storageKey: string; uploadUrl: string }>("POST", `/children/${childId}/intake/voice-link`, {});
+    const put = await fetch(link.uploadUrl, { method: "PUT", body: blob, headers: { "Content-Type": blob.type || "audio/webm" } });
+    if (!put.ok) throw new ApiError("generic");
+    return link.storageKey;
+  },
+  /** GET /children/{id}/intake/{round}/voice — a 15-minute link to listen again, on any device of the family. */
+  async voiceNoteUrl(childId: string, round: number, _key: string) {
+    return (await http<{ url: string }>("GET", `/children/${childId}/intake/${round}/voice`)).url;
   },
   /** POST /children/{id}/intake/{round}/finish — the server closes the round and builds the plan. */
   async finishIntake(childId: string, round: number): Promise<Roadmap> {

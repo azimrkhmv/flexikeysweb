@@ -13,6 +13,7 @@ from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app import storage
 from app.crypto import decrypt_json, encrypt_json
 from app.db import get_session
 from app.errors import AppError
@@ -84,6 +85,9 @@ async def save_answers(
     """Save some answers. Answers already saved for other questions stay; the same question is overwritten."""
     await get_visible_child(db, user, child_id)
     questions = [check_answer(qid, value) for qid, value in body.answers.items()]  # all valid, or nothing is saved
+    voice = body.answers.get("P39_voice")
+    if voice is not None and not (voice.startswith(f"children/{child_id}/p39/") and storage.exists(voice)):
+        raise AppError(422, "invalid_answer", question="P39_voice", reason="not_uploaded")  # this child's, uploaded
     if any(q.health for q in questions):
         await require_consent(db, child_id, ConsentKind.health)
     r = await _round(db, child_id, number, create_first=True)
@@ -174,3 +178,34 @@ async def start_next_round(
             )
     await db.commit()
     return await _out(db, new)
+
+
+class VoiceLink(ApiModel):
+    storage_key: str  # the P39_voice answer, once the file is uploaded
+    upload_url: str  # PUT the recording here within 10 minutes
+
+
+@router.post("/{child_id}/intake/voice-link")
+async def voice_link(
+    child_id: uuid.UUID, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]
+) -> VoiceLink:
+    """Where to upload the parent's P39 voice note (at most 2 minutes), straight to storage."""
+    await get_visible_child(db, user, child_id)
+    key = f"children/{child_id}/p39/{uuid.uuid4()}"
+    return VoiceLink(storage_key=key, upload_url=storage.upload_url(key))
+
+
+class VoiceNote(ApiModel):
+    url: str  # a 15-minute link to listen to it
+
+
+@router.get("/{child_id}/intake/{number}/voice")
+async def voice_note(
+    child_id: uuid.UUID, number: int, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]
+) -> VoiceNote:
+    """The round's P39 voice note, for every member of the family; 404 when there is none."""
+    await get_visible_child(db, user, child_id)
+    key = (await _out(db, await _round(db, child_id, number))).answers.get("P39_voice")
+    if not key:
+        raise AppError(404, "not_found")
+    return VoiceNote(url=storage.download_url(key))

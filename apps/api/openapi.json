@@ -1039,6 +1039,103 @@
     }
    }
   },
+  "/api/v1/children/{child_id}/intake/voice-link": {
+   "post": {
+    "tags": [
+     "intake"
+    ],
+    "summary": "Voice Link",
+    "description": "Where to upload the parent's P39 voice note (at most 2 minutes), straight to storage.",
+    "operationId": "voice_link_api_v1_children__child_id__intake_voice_link_post",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/VoiceLink"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/children/{child_id}/intake/{number}/voice": {
+   "get": {
+    "tags": [
+     "intake"
+    ],
+    "summary": "Voice Note",
+    "description": "The round's P39 voice note, for every member of the family; 404 when there is none.",
+    "operationId": "voice_note_api_v1_children__child_id__intake__number__voice_get",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     },
+     {
+      "name": "number",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Number"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/VoiceNote"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/v1/children/{child_id}/plan": {
    "get": {
     "tags": [
@@ -2604,6 +2701,37 @@
      "approved"
     ],
     "title": "VideoStatus"
+   },
+   "VoiceLink": {
+    "properties": {
+     "storageKey": {
+      "type": "string",
+      "title": "Storagekey"
+     },
+     "uploadUrl": {
+      "type": "string",
+      "title": "Uploadurl"
+     }
+    },
+    "type": "object",
+    "required": [
+     "storageKey",
+     "uploadUrl"
+    ],
+    "title": "VoiceLink"
+   },
+   "VoiceNote": {
+    "properties": {
+     "url": {
+      "type": "string",
+      "title": "Url"
+     }
+    },
+    "type": "object",
+    "required": [
+     "url"
+    ],
+    "title": "VoiceNote"
    }
   }
  }

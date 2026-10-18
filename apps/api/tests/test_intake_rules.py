@@ -11,7 +11,7 @@ from app.modules.intake.rules import QUESTIONS, check_answer, is_shown, problem_
 
 
 def test_all_questions_are_loaded() -> None:
-    assert len(QUESTIONS) == 43
+    assert len(QUESTIONS) == 43 + 2  # + the P39 voice note and hints (A2.9)
     assert QUESTIONS["P14"].exclusive == "nothing"
     assert QUESTIONS["P10"].show_if == ("P9", "cp")
     assert QUESTIONS["P10"].health and not QUESTIONS["P1"].health

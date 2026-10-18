@@ -23,6 +23,11 @@ export default defineConfig({
     url: `http://localhost:${PORT}/uz`,
     reuseExistingServer: false,
     timeout: 240_000,
-    env: { NEXT_PUBLIC_API_MODE: "live", FK_API_ORIGIN: process.env.FK_API_ORIGIN ?? "http://localhost:8000", NEXT_TELEMETRY_DISABLED: "1" },
+    env: {
+      NEXT_PUBLIC_API_MODE: "live",
+      FK_API_ORIGIN: process.env.FK_API_ORIGIN ?? "http://localhost:8000",
+      FK_STORAGE_ORIGIN: process.env.FK_STORAGE_ORIGIN ?? "http://localhost:9100", // apps/api compose MinIO
+      NEXT_TELEMETRY_DISABLED: "1",
+    },
   },
 });

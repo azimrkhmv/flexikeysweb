@@ -12,6 +12,7 @@ Answer values (apps/web/src/lib/types.ts IntakeValue):
 """
 
 import json
+import re
 from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
@@ -64,6 +65,14 @@ def _load() -> dict[str, Question]:
 
 
 QUESTIONS: dict[str, Question] = _load()
+# Extras of P39 "in your own words" that are not questions of their own (A2.9): the parent's voice note (a file in
+# storage, see intake/router.py voice_link) and the keyword hints they kept with one tap.
+VOICE_NOTE = re.compile(r"children/[0-9a-f-]{36}/p39/[0-9a-f-]{36}")
+for _extra, _kind in (("P39_voice", "voice_note"), ("P39_hints", "hints")):
+    QUESTIONS[_extra] = Question(
+        id=_extra, kind=_kind, options=None, required=False, max=None, exclusive=None, show_if=None,
+        step=QUESTIONS["P39"].step, health=False, health_step=False,
+    )  # fmt: skip
 
 
 def problem_with(q: Question, value: Any) -> str | None:
@@ -98,6 +107,15 @@ def problem_with(q: Question, value: Any) -> str | None:
             if not isinstance(value, str) or not value.strip():
                 return "not_text"
             return None if len(value) <= limit else "too_long"
+        case "voice_note":
+            return None if isinstance(value, str) and VOICE_NOTE.fullmatch(value) else "not_a_voice_note"
+        case "hints":
+            ok = (
+                isinstance(value, list)
+                and len(value) <= 10
+                and all(isinstance(v, str) and re.fullmatch(r"[a-z_]{1,32}", v) for v in value)
+            )
+            return None if ok else "not_hints"
         case "media":
             ok = isinstance(value, list) and len(value) <= MEDIA_MAX and all(isinstance(v, str) for v in value)
             return None if ok else "not_clips"
