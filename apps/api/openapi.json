@@ -2130,6 +2130,267 @@
     }
    }
   },
+  "/api/v1/children/{child_id}/voice-cards/upload-link": {
+   "post": {
+    "tags": [
+     "my voice"
+    ],
+    "summary": "Upload Link",
+    "operationId": "upload_link_api_v1_children__child_id__voice_cards_upload_link_post",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/UploadKind"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/CardUpload"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/children/{child_id}/voice-cards": {
+   "get": {
+    "tags": [
+     "my voice"
+    ],
+    "summary": "List Cards",
+    "operationId": "list_cards_api_v1_children__child_id__voice_cards_get",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/CardOut"
+         },
+         "title": "Response List Cards Api V1 Children  Child Id  Voice Cards Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "my voice"
+    ],
+    "summary": "Add Card",
+    "description": "A new card. 409 too_many_cards beyond 200.",
+    "operationId": "add_card_api_v1_children__child_id__voice_cards_post",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/CardIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/CardOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/children/{child_id}/voice-cards/{card_id}": {
+   "patch": {
+    "tags": [
+     "my voice"
+    ],
+    "summary": "Change Card",
+    "description": "Change what was sent; a new photo or recording replaces the old file.",
+    "operationId": "change_card_api_v1_children__child_id__voice_cards__card_id__patch",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     },
+     {
+      "name": "card_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Card Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/CardChange"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/CardOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "delete": {
+    "tags": [
+     "my voice"
+    ],
+    "summary": "Delete Card",
+    "description": "The card and its files are gone.",
+    "operationId": "delete_card_api_v1_children__child_id__voice_cards__card_id__delete",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     },
+     {
+      "name": "card_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Card Id"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/v1/admin/videos/upload-link": {
    "post": {
     "tags": [
@@ -2419,6 +2680,201 @@
      "answers"
     ],
     "title": "AnswersIn"
+   },
+   "CardChange": {
+    "properties": {
+     "category": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 24,
+        "minLength": 1
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Category"
+     },
+     "label": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 60,
+        "minLength": 1
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Label"
+     },
+     "emoji": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 16,
+        "minLength": 1
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Emoji"
+     },
+     "photoKey": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Photokey"
+     },
+     "audioKey": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Audiokey"
+     }
+    },
+    "type": "object",
+    "title": "CardChange"
+   },
+   "CardIn": {
+    "properties": {
+     "category": {
+      "type": "string",
+      "maxLength": 24,
+      "minLength": 1,
+      "title": "Category"
+     },
+     "label": {
+      "type": "string",
+      "maxLength": 60,
+      "minLength": 1,
+      "title": "Label"
+     },
+     "emoji": {
+      "type": "string",
+      "maxLength": 16,
+      "minLength": 1,
+      "title": "Emoji"
+     },
+     "photoKey": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Photokey"
+     },
+     "audioKey": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Audiokey"
+     }
+    },
+    "type": "object",
+    "required": [
+     "category",
+     "label",
+     "emoji"
+    ],
+    "title": "CardIn"
+   },
+   "CardOut": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "category": {
+      "type": "string",
+      "title": "Category"
+     },
+     "label": {
+      "type": "string",
+      "title": "Label"
+     },
+     "emoji": {
+      "type": "string",
+      "title": "Emoji"
+     },
+     "photoUrl": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Photourl"
+     },
+     "audioUrl": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Audiourl"
+     },
+     "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Createdat"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "category",
+     "label",
+     "emoji",
+     "photoUrl",
+     "audioUrl",
+     "createdAt"
+    ],
+    "title": "CardOut"
+   },
+   "CardUpload": {
+    "properties": {
+     "storageKey": {
+      "type": "string",
+      "title": "Storagekey"
+     },
+     "uploadUrl": {
+      "type": "string",
+      "title": "Uploadurl"
+     }
+    },
+    "type": "object",
+    "required": [
+     "storageKey",
+     "uploadUrl"
+    ],
+    "title": "CardUpload"
    },
    "ChildChange": {
     "properties": {
@@ -4259,6 +4715,23 @@
     ],
     "title": "TryIn",
     "description": "One try, as the website records it (lib/tries.ts, spec §7)."
+   },
+   "UploadKind": {
+    "properties": {
+     "kind": {
+      "type": "string",
+      "enum": [
+       "photo",
+       "audio"
+      ],
+      "title": "Kind"
+     }
+    },
+    "type": "object",
+    "required": [
+     "kind"
+    ],
+    "title": "UploadKind"
    },
    "UploadLink": {
     "properties": {

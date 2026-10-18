@@ -63,3 +63,8 @@ def exists(key: str) -> bool:
             return False
         raise  # storage itself is broken: say so, do not pretend the file is missing
     return True
+
+
+def remove(key: str) -> None:
+    """Delete a file (nothing happens if it is already gone)."""
+    internal().remove_object(settings.s3_bucket, key)

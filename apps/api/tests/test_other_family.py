@@ -20,6 +20,9 @@ BODIES = {
     "FeelingIn": {"feeling": "easy"},
     "DailyIn": {"questionId": "D1", "value": 2},
     "RunChange": {"stage": 2},
+    "UploadKind": {"kind": "photo"},
+    "CardIn": {"category": "food", "label": "Non", "emoji": "x"},
+    "CardChange": {"label": "X"},
     "SessionChange": {"secondsPlayed": 10},
     "Placement": {"buckets": {"memory": "yes"}},
     "TryIn": {
@@ -46,6 +49,7 @@ BODIES = {
 PARTS = {
     "kind": "health",
     "number": "1",
+    "card_id": str(uuid.uuid4()),
     "done_id": str(uuid.uuid4()),
     "run_id": str(uuid.uuid4()),
     "session_id": str(uuid.uuid4()),

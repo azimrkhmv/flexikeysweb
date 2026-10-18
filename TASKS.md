@@ -457,7 +457,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `B19` Connect the play check, tries, skill levels and game choice to the server
   - Done when: a child finishes the play check in the browser and the next day gets games picked by the server
   - Needs: A6.4, A6.7, B16, B18
-- [ ] **Azim** — `A6.8` Server: the parent's own My Voice cards, with photo and recorded voice
+- [x] **Azim** — `A6.8` Server: the parent's own My Voice cards, with photo and recorded voice
   - Done when: the cards are the same on every device of the family
   - Needs: A6.3, A3.2
 - [ ] **Azim** — `B20` Connect My Voice cards to the server

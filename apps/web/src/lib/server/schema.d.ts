@@ -780,6 +780,68 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/children/{child_id}/voice-cards/upload-link": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Upload Link */
+        post: operations["upload_link_api_v1_children__child_id__voice_cards_upload_link_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/children/{child_id}/voice-cards": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Cards */
+        get: operations["list_cards_api_v1_children__child_id__voice_cards_get"];
+        put?: never;
+        /**
+         * Add Card
+         * @description A new card. 409 too_many_cards beyond 200.
+         */
+        post: operations["add_card_api_v1_children__child_id__voice_cards_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/children/{child_id}/voice-cards/{card_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete Card
+         * @description The card and its files are gone.
+         */
+        delete: operations["delete_card_api_v1_children__child_id__voice_cards__card_id__delete"];
+        options?: never;
+        head?: never;
+        /**
+         * Change Card
+         * @description Change what was sent; a new photo or recording replaces the old file.
+         */
+        patch: operations["change_card_api_v1_children__child_id__voice_cards__card_id__patch"];
+        trace?: never;
+    };
     "/api/v1/admin/videos/upload-link": {
         parameters: {
             query?: never;
@@ -908,6 +970,62 @@ export interface components {
             answers: {
                 [key: string]: unknown;
             };
+        };
+        /** CardChange */
+        CardChange: {
+            /** Category */
+            category?: string | null;
+            /** Label */
+            label?: string | null;
+            /** Emoji */
+            emoji?: string | null;
+            /** Photokey */
+            photoKey?: string | null;
+            /** Audiokey */
+            audioKey?: string | null;
+        };
+        /** CardIn */
+        CardIn: {
+            /** Category */
+            category: string;
+            /** Label */
+            label: string;
+            /** Emoji */
+            emoji: string;
+            /** Photokey */
+            photoKey?: string | null;
+            /** Audiokey */
+            audioKey?: string | null;
+        };
+        /** CardOut */
+        CardOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Category */
+            category: string;
+            /** Label */
+            label: string;
+            /** Emoji */
+            emoji: string;
+            /** Photourl */
+            photoUrl: string | null;
+            /** Audiourl */
+            audioUrl: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /** CardUpload */
+        CardUpload: {
+            /** Storagekey */
+            storageKey: string;
+            /** Uploadurl */
+            uploadUrl: string;
         };
         /** ChildChange */
         ChildChange: {
@@ -1559,6 +1677,14 @@ export interface components {
             helpedByAdult: boolean;
             /** Responsems */
             responseMs?: number | null;
+        };
+        /** UploadKind */
+        UploadKind: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "photo" | "audio";
         };
         /** UploadLink */
         UploadLink: {
@@ -3112,6 +3238,173 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["GamesOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    upload_link_api_v1_children__child_id__voice_cards_upload_link_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UploadKind"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CardUpload"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_cards_api_v1_children__child_id__voice_cards_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CardOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_card_api_v1_children__child_id__voice_cards_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CardIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CardOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_card_api_v1_children__child_id__voice_cards__card_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+                card_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    change_card_api_v1_children__child_id__voice_cards__card_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+                card_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CardChange"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CardOut"];
                 };
             };
             /** @description Validation Error */
