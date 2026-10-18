@@ -387,6 +387,211 @@
     }
    }
   },
+  "/api/v1/family/helpers": {
+   "get": {
+    "tags": [
+     "helpers"
+    ],
+    "summary": "List Helpers",
+    "description": "The helpers and open invites of the family this person belongs to (their own first).",
+    "operationId": "list_helpers_api_v1_family_helpers_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Helpers"
+        }
+       }
+      }
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "helpers"
+    ],
+    "summary": "Invite Helper",
+    "description": "Owner only. 409 too_many_helpers (the limit is a setting, 1 now), already_member, already_invited,\nnot_a_parent (staff and therapists cannot be helpers).",
+    "operationId": "invite_helper_api_v1_family_helpers_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/HelperIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/app__modules__accounts__helpers__InviteOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/family/helpers/{user_id}": {
+   "delete": {
+    "tags": [
+     "helpers"
+    ],
+    "summary": "Remove Helper",
+    "description": "Owner only. The helper's next request already gets \"not found\" for the family's children.",
+    "operationId": "remove_helper_api_v1_family_helpers__user_id__delete",
+    "parameters": [
+     {
+      "name": "user_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "User Id"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/family/helper-invites/{invite_id}": {
+   "delete": {
+    "tags": [
+     "helpers"
+    ],
+    "summary": "Cancel Invite",
+    "operationId": "cancel_invite_api_v1_family_helper_invites__invite_id__delete",
+    "parameters": [
+     {
+      "name": "invite_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Invite Id"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/me/helper-invites": {
+   "get": {
+    "tags": [
+     "helpers"
+    ],
+    "summary": "My Invites",
+    "description": "Invites to help in another family, made for this person's number.",
+    "operationId": "my_invites_api_v1_me_helper_invites_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "$ref": "#/components/schemas/InviteForMe"
+         },
+         "type": "array",
+         "title": "Response My Invites Api V1 Me Helper Invites Get"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/me/helper-invites/{invite_id}/accept": {
+   "post": {
+    "tags": [
+     "helpers"
+    ],
+    "summary": "Accept Invite",
+    "description": "Join the family as its helper. The family's children then appear in GET /children.",
+    "operationId": "accept_invite_api_v1_me_helper_invites__invite_id__accept_post",
+    "parameters": [
+     {
+      "name": "invite_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Invite Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Helpers"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/v1/family/plan": {
    "get": {
     "tags": [
@@ -1868,7 +2073,7 @@
        "application/json": {
         "schema": {
          "items": {
-          "$ref": "#/components/schemas/InviteOut"
+          "$ref": "#/components/schemas/app__modules__therapists__router__InviteOut"
          },
          "type": "array",
          "title": "Response My Invites Api V1 Therapist Invites Get"
@@ -4630,6 +4835,80 @@
     "type": "object",
     "title": "HTTPValidationError"
    },
+   "HelperIn": {
+    "properties": {
+     "phone": {
+      "type": "string",
+      "title": "Phone"
+     }
+    },
+    "type": "object",
+    "required": [
+     "phone"
+    ],
+    "title": "HelperIn"
+   },
+   "HelperOut": {
+    "properties": {
+     "userId": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Userid"
+     },
+     "name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Name"
+     },
+     "phone": {
+      "type": "string",
+      "title": "Phone"
+     },
+     "since": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Since"
+     }
+    },
+    "type": "object",
+    "required": [
+     "userId",
+     "name",
+     "phone",
+     "since"
+    ],
+    "title": "HelperOut"
+   },
+   "Helpers": {
+    "properties": {
+     "helpers": {
+      "items": {
+       "$ref": "#/components/schemas/HelperOut"
+      },
+      "type": "array",
+      "title": "Helpers"
+     },
+     "invites": {
+      "items": {
+       "$ref": "#/components/schemas/app__modules__accounts__helpers__InviteOut"
+      },
+      "type": "array",
+      "title": "Invites"
+     }
+    },
+    "type": "object",
+    "required": [
+     "helpers",
+     "invites"
+    ],
+    "title": "Helpers"
+   },
    "Hint": {
     "type": "string",
     "enum": [
@@ -4679,16 +4958,23 @@
     ],
     "title": "InputMode"
    },
-   "InviteOut": {
+   "InviteForMe": {
     "properties": {
      "id": {
       "type": "string",
       "format": "uuid",
       "title": "Id"
      },
-     "childName": {
-      "type": "string",
-      "title": "Childname"
+     "ownerName": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ownername"
      },
      "expiresAt": {
       "type": "string",
@@ -4699,10 +4985,10 @@
     "type": "object",
     "required": [
      "id",
-     "childName",
+     "ownerName",
      "expiresAt"
     ],
-    "title": "InviteOut"
+    "title": "InviteForMe"
    },
    "ItemKind": {
     "type": "string",
@@ -6606,6 +6892,56 @@
      "url"
     ],
     "title": "VoiceNote"
+   },
+   "app__modules__accounts__helpers__InviteOut": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "phone": {
+      "type": "string",
+      "title": "Phone"
+     },
+     "expiresAt": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Expiresat"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "phone",
+     "expiresAt"
+    ],
+    "title": "InviteOut"
+   },
+   "app__modules__therapists__router__InviteOut": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "childName": {
+      "type": "string",
+      "title": "Childname"
+     },
+     "expiresAt": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Expiresat"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "childName",
+     "expiresAt"
+    ],
+    "title": "InviteOut"
    }
   }
  }

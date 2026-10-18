@@ -24,6 +24,7 @@ class Settings(BaseSettings):
     # Encrypts health answers (app/crypto.py). Comma-separated; the first one encrypts. Never in git outside dev.
     health_keys: str
     max_children_per_family: int = 3
+    max_helpers_per_family: int = 1
     intake_repeat_days: int = (
         90  # the questions come back every 3 months (spec)  # TASKS.md section 3: "Both numbers are settings"
     )

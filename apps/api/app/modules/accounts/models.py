@@ -78,3 +78,14 @@ class FamilyMember(IdTimeMixin, Base):
     family_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("families.id", ondelete="CASCADE"))
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
     role: Mapped[MemberRole] = mapped_column(enum_column(MemberRole))
+
+
+class HelperInvite(IdTimeMixin, Base):
+    """The owner invites one second adult by phone (A8.4). The invite waits for whoever signs in with that number."""
+
+    __tablename__ = "helper_invites"
+
+    family_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("families.id", ondelete="CASCADE"), index=True)
+    phone: Mapped[str] = mapped_column(String(16), index=True)
+    invited_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))

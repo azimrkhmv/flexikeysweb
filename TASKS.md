@@ -488,7 +488,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A8.3` Movement and feedback clips, allowed only with the movement-videos consent; the therapist replies
   - Done when: only the shared therapist can watch; the parent can delete any clip
   - Needs: A8.1, A3.2
-- [ ] **Azim** — `A8.4` Helpers: the owner invites one second adult by phone; the helper accepts; the owner removes them
+- [x] **Azim** — `A8.4` Helpers: the owner invites one second adult by phone; the helper accepts; the owner removes them
   - Done when: a helper can do daily use only (section 3); removal cuts access at once
   - Needs: A2.1
 

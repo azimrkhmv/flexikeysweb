@@ -206,6 +206,108 @@ export interface paths {
         patch: operations["signup_api_v1_me_signup_patch"];
         trace?: never;
     };
+    "/api/v1/family/helpers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Helpers
+         * @description The helpers and open invites of the family this person belongs to (their own first).
+         */
+        get: operations["list_helpers_api_v1_family_helpers_get"];
+        put?: never;
+        /**
+         * Invite Helper
+         * @description Owner only. 409 too_many_helpers (the limit is a setting, 1 now), already_member, already_invited,
+         *     not_a_parent (staff and therapists cannot be helpers).
+         */
+        post: operations["invite_helper_api_v1_family_helpers_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/family/helpers/{user_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Remove Helper
+         * @description Owner only. The helper's next request already gets "not found" for the family's children.
+         */
+        delete: operations["remove_helper_api_v1_family_helpers__user_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/family/helper-invites/{invite_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Cancel Invite */
+        delete: operations["cancel_invite_api_v1_family_helper_invites__invite_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/helper-invites": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * My Invites
+         * @description Invites to help in another family, made for this person's number.
+         */
+        get: operations["my_invites_api_v1_me_helper_invites_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/helper-invites/{invite_id}/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Accept Invite
+         * @description Join the family as its helper. The family's children then appear in GET /children.
+         */
+        post: operations["accept_invite_api_v1_me_helper_invites__invite_id__accept_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/family/plan": {
         parameters: {
             query?: never;
@@ -1696,6 +1798,35 @@ export interface components {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
         };
+        /** HelperIn */
+        HelperIn: {
+            /** Phone */
+            phone: string;
+        };
+        /** HelperOut */
+        HelperOut: {
+            /**
+             * Userid
+             * Format: uuid
+             */
+            userId: string;
+            /** Name */
+            name: string | null;
+            /** Phone */
+            phone: string;
+            /**
+             * Since
+             * Format: date-time
+             */
+            since: string;
+        };
+        /** Helpers */
+        Helpers: {
+            /** Helpers */
+            helpers: components["schemas"]["HelperOut"][];
+            /** Invites */
+            invites: components["schemas"]["app__modules__accounts__helpers__InviteOut"][];
+        };
         /**
          * Hint
          * @enum {string}
@@ -1719,15 +1850,15 @@ export interface components {
          * @enum {string}
          */
         InputMode: "touch" | "dwell" | "switch" | "keyboard";
-        /** InviteOut */
-        InviteOut: {
+        /** InviteForMe */
+        InviteForMe: {
             /**
              * Id
              * Format: uuid
              */
             id: string;
-            /** Childname */
-            childName: string;
+            /** Ownername */
+            ownerName: string | null;
             /**
              * Expiresat
              * Format: date-time
@@ -2407,6 +2538,36 @@ export interface components {
             /** Url */
             url: string;
         };
+        /** InviteOut */
+        app__modules__accounts__helpers__InviteOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Phone */
+            phone: string;
+            /**
+             * Expiresat
+             * Format: date-time
+             */
+            expiresAt: string;
+        };
+        /** InviteOut */
+        app__modules__therapists__router__InviteOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Childname */
+            childName: string;
+            /**
+             * Expiresat
+             * Format: date-time
+             */
+            expiresAt: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -2710,6 +2871,168 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Me"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_helpers_api_v1_family_helpers_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Helpers"];
+                };
+            };
+        };
+    };
+    invite_helper_api_v1_family_helpers_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HelperIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["app__modules__accounts__helpers__InviteOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    remove_helper_api_v1_family_helpers__user_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    cancel_invite_api_v1_family_helper_invites__invite_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                invite_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_invites_api_v1_me_helper_invites_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InviteForMe"][];
+                };
+            };
+        };
+    };
+    accept_invite_api_v1_me_helper_invites__invite_id__accept_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                invite_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Helpers"];
                 };
             };
             /** @description Validation Error */
@@ -3738,7 +4061,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["InviteOut"][];
+                    "application/json": components["schemas"]["app__modules__therapists__router__InviteOut"][];
                 };
             };
         };
