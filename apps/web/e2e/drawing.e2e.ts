@@ -1,14 +1,17 @@
-import { expect, test, type Page } from "@playwright/test";
-import { expectNoA11yIssues, loginAs, setup } from "./helpers";
+import { expect, test, type Locator, type Page } from "@playwright/test";
+import { childPress, expectNoA11yIssues, loginAs, setup } from "./helpers";
+
+/** Ali's demo profile ignores a press within 250 ms of the last one (more if it adapts); press like a person. */
+const tap = (target: Locator) => childPress(target, 450);
 
 // Drawing activities (PRD §9.7, Flutter parity): each one can be finished by tapping alone, and finishing
 // one is rewarded by the (mock) server like any other activity.
 
 async function openActivity(page: Page, level: string, kind: string) {
   const map = page.getByRole("heading", { name: "Where shall we go?" });
-  for (let i = 0; i < 4 && !(await map.isVisible()); i++) await page.getByRole("button", { name: /^(Back|Map)$/ }).first().press("Enter");
-  await page.getByRole("button", { name: level, exact: true }).first().press("Enter");
-  await page.getByRole("button", { name: kind, exact: true }).press("Enter");
+  for (let i = 0; i < 4 && !(await map.isVisible()); i++) await tap(page.getByRole("button", { name: /^(Back|Map)$/ }).first());
+  await tap(page.getByRole("button", { name: level, exact: true }).first());
+  await tap(page.getByRole("button", { name: kind, exact: true }));
 }
 
 async function celebrate(page: Page) {
@@ -20,13 +23,13 @@ async function celebrate(page: Page) {
 async function tapAllDots(page: Page) {
   for (let guard = 0; guard < 200; guard++) {
     const done = page.getByRole("button", { name: "Done", exact: true });
-    if (await done.isVisible()) return done.press("Enter");
+    if (await done.isVisible()) return tap(done);
     const next = page.getByRole("button", { name: "Next", exact: true });
     if (await next.isVisible()) {
-      await next.press("Enter");
+      await tap(next);
       continue;
     }
-    await page.getByRole("button", { name: /^Dot \d+$/ }).press("Enter");
+    await tap(page.getByRole("button", { name: /^Dot \d+$/ }));
   }
   throw new Error("dots never finished");
 }
@@ -42,7 +45,7 @@ async function solveMaze(page: Page) {
     for (const dir of options) {
       const b = page.getByRole("button", { name: dir, exact: true });
       if (await b.isVisible()) {
-        await b.press("Enter");
+        await tap(b);
         heading = dir;
         break;
       }
@@ -53,7 +56,7 @@ async function solveMaze(page: Page) {
 
 test("drawing activities: trace, connect the dots, paint, coloring and maze can all be finished by tapping", async ({ page }, info) => {
   test.skip(info.project.name !== "desktop", "one viewport is enough for the flow");
-  test.setTimeout(120_000);
+  test.setTimeout(300_000); // every press waits like a person would (see tap)
   await setup(page);
   await loginAs(page, "Parent");
   // Open Ali's levels 7–9 so the Toys maze is reachable, in English (demo data only).
@@ -69,8 +72,8 @@ test("drawing activities: trace, connect the dots, paint, coloring and maze can 
     localStorage.setItem("fk_db_v1", JSON.stringify(db));
   });
   await page.goto("/play");
-  await page.getByRole("button", { name: "Ali" }).press("Enter");
-  await page.getByRole("button", { name: "Start" }).press("Enter");
+  await tap(page.getByRole("button", { name: "Ali" }));
+  await tap(page.getByRole("button", { name: "Start" }));
 
   await openActivity(page, "Letters", "Draw");
   await expect(page.getByRole("heading", { name: "Draw A along the dots" })).toBeVisible();
@@ -84,22 +87,22 @@ test("drawing activities: trace, connect the dots, paint, coloring and maze can 
 
   await openActivity(page, "Colors", "Painting");
   await expect(page.getByRole("button", { name: "Done", exact: true })).toHaveCount(0); // a few marks first
-  await page.getByRole("button", { name: "Paint for me" }).press("Enter");
-  await page.getByRole("button", { name: "Done", exact: true }).press("Enter");
+  await tap(page.getByRole("button", { name: "Paint for me" }));
+  await tap(page.getByRole("button", { name: "Done", exact: true }));
   await celebrate(page);
 
   await openActivity(page, "Animals", "Coloring");
-  await page.getByRole("button", { name: "Cat" }).press("Enter");
+  await tap(page.getByRole("button", { name: "Cat" }));
   await expect(page.getByRole("heading", { name: "Color the Cat" })).toBeVisible();
-  await page.getByRole("button", { name: "blue" }).press("Enter");
-  await page.getByRole("button", { name: "Paint for me" }).press("Enter");
-  await page.getByRole("button", { name: "Done", exact: true }).press("Enter");
+  await tap(page.getByRole("button", { name: "blue" }));
+  await tap(page.getByRole("button", { name: "Paint for me" }));
+  await tap(page.getByRole("button", { name: "Done", exact: true }));
   await celebrate(page);
 
   await openActivity(page, "Toys", "Maze");
   for (let round = 0; round < 2; round++) {
     await solveMaze(page);
-    await page.getByRole("button", { name: /^(Next|Done)$/ }).press("Enter");
+    await tap(page.getByRole("button", { name: /^(Next|Done)$/ }));
   }
   await celebrate(page);
 });

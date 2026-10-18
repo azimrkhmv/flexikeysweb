@@ -1,5 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, type Page } from "@playwright/test";
+import { expect, type Locator, type Page } from "@playwright/test";
 
 /** Fixed clock + English UI so seeded demo data and copy are the same on every run. */
 export async function setup(page: Page, lang: "en" | "uz" | "ru" = "en") {
@@ -24,11 +24,20 @@ const GATE = {
   uz: { pause: "Pauza", exit: "Kattalar uchun", hold: "2 soniya bosib turing", q: /^(\S+) qoʻshuv (\S+) necha/, nums: { uch: 3, "toʻrt": 4, besh: 5, olti: 6, yetti: 7, sakkiz: 8, "toʻqqiz": 9 } as Record<string, number> },
 };
 
+/**
+ * Child mode ignores a second press that comes too soon after the last one (up to 600 ms, so a tremor cannot
+ * double-select). Tests press like a person: wait that long first.
+ */
+export async function childPress(target: Locator, waitMs = 650) {
+  await target.page().waitForTimeout(waitMs);
+  await target.press("Enter");
+}
+
 /** Leaves child mode the only allowed way: Pause → For grown-ups → hold 2 s → answer the sum. */
 export async function exitThroughGate(page: Page, lang: "en" | "uz") {
   const g = GATE[lang];
-  await page.getByRole("button", { name: g.pause }).press("Enter");
-  await page.getByRole("button", { name: g.exit }).press("Enter");
+  await childPress(page.getByRole("button", { name: g.pause }));
+  await childPress(page.getByRole("button", { name: g.exit }));
   await page.getByRole("button", { name: g.hold }).focus();
   await page.keyboard.down("Enter");
   await page.waitForTimeout(2200);

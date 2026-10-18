@@ -11,7 +11,8 @@ export default defineConfig({
   fullyParallel: true,
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? "github" : "list",
-  use: { baseURL: `http://localhost:${PORT}`, trace: "retain-on-failure" },
+  // Tashkent time everywhere: GitHub runs in UTC, which moved demo dates near midnight by a day.
+  use: { baseURL: `http://localhost:${PORT}`, trace: "retain-on-failure", timezoneId: "Asia/Tashkent" },
   projects: [
     { name: "desktop", use: { ...devices["Desktop Chrome"] } },
     { name: "tablet", use: { ...devices["Desktop Chrome"], viewport: { width: 820, height: 1180 }, hasTouch: true } },
@@ -21,6 +22,7 @@ export default defineConfig({
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI,
     timeout: 240_000,
-    env: { NEXT_TELEMETRY_DISABLED: "1" },
+    // The real site address, so canonical links are the same on every machine (a local .env.local may differ).
+    env: { NEXT_TELEMETRY_DISABLED: "1", NEXT_PUBLIC_SITE_URL: "https://flexikeys.uz" },
   },
 });

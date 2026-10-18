@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { loginAs, setup } from "./helpers";
+import { childPress, loginAs, setup } from "./helpers";
 
 // Escape closes popups and dialogs where closing is safe; focus returns to what opened them.
 test.describe("Escape key", () => {
@@ -44,14 +44,14 @@ test.describe("Escape key", () => {
     await page.goto("/parent/child/ch_ali");
     await page.getByRole("button", { name: "Play now" }).click();
     const pause = page.getByRole("button", { name: "Pauza" });
-    await pause.press("Enter");
+    await childPress(pause);
     await expect(page.getByRole("dialog", { name: "Pauza" })).toBeVisible();
     await page.keyboard.press("Escape");
     await expect(page.getByRole("dialog")).toHaveCount(0);
     await expect(pause).toBeFocused();
 
-    await pause.press("Enter");
-    await page.getByRole("button", { name: "Kattalar uchun" }).press("Enter");
+    await childPress(pause);
+    await childPress(page.getByRole("button", { name: "Kattalar uchun" }));
     await expect(page.getByRole("dialog", { name: "Kattalar uchun" })).toBeVisible();
     await page.keyboard.press("Escape");
     await expect(page.getByRole("dialog")).toHaveCount(0);
