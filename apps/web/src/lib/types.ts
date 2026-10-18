@@ -424,6 +424,8 @@ export type AgeBand = "2-4" | "5-8" | "9-12" | "13-20";
 export type VideoStatus = "generated" | "changes_requested" | "rejected" | "approved";
 
 export interface VideoVersion {
+  /** Live mode: the server's id of this file (apps/api videos table). */
+  id?: string;
   url: string;
   durationS: number;
   status: VideoStatus;

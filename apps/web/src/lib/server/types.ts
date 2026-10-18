@@ -14,6 +14,7 @@ export type Consents = Schemas["Consents"];
 export type ConsentKind = Schemas["ConsentKind"];
 export type RoundSummary = Schemas["RoundSummary"];
 export type PlanOut = Schemas["PlanOut"];
+export type ReviewItem = Schemas["ReviewItem"];
 export type RoundOut = Schemas["RoundOut"];
 
 /** Every address the website calls (under /api/v1, which the website proxies). */

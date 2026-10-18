@@ -1,3 +1,5 @@
+import { execFileSync } from "node:child_process";
+import path from "node:path";
 import { expect, type Page } from "@playwright/test";
 
 // Shared steps of the live browser tests (the real server, apps/api; the SMS is simulated: the code is on screen).
@@ -69,3 +71,24 @@ export async function goals(page: Page) {
 /** Calls the server from the page, with the page's session cookies. */
 export const fromServer = (page: Page, path: string) =>
   page.evaluate((p) => fetch(`/api/v1${p}`, { headers: { "X-Auth-Transport": "cookie" } }).then((r) => r.json()), path);
+
+// ---------------------------------------------------------------- straight to the server (test setup)
+export const API = process.env.FK_API_ORIGIN ?? "http://localhost:8000";
+const SERVER_DIR = path.resolve(__dirname, "../../api");
+
+/** Runs a server command (apps/api app/cli.py), e.g. create-admin; what an operator does on the server. */
+export const serverCommand = (...args: string[]) => execFileSync("uv", ["run", "python", "-m", "app.cli", ...args], { cwd: SERVER_DIR, stdio: "pipe" }).toString();
+
+/** Signs a number in through the server's own addresses (app-style Bearer token) and gives the basic consent. */
+export async function bearerFor(phone: string) {
+  const call = (path: string, body: unknown, token?: string) =>
+    fetch(`${API}/api/v1${path}`, {
+      method: path === "/me/signup" ? "PATCH" : "POST",
+      headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      body: JSON.stringify(body),
+    }).then((r) => r.json());
+  const { demoCode } = await call("/auth/phone/start", { phone });
+  const { accessToken } = await call("/auth/phone/verify", { phone, code: demoCode });
+  await call("/me/signup", { region: "tashkent_city", district: "Chilonzor", consent: true }, accessToken);
+  return { Authorization: `Bearer ${accessToken}` };
+}

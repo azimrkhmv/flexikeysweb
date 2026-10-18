@@ -6,9 +6,9 @@ import { AAC_BY_ID, CUSTOM_PREFIX } from "@/content/aac";
 import { SHOP_BY_ID } from "@/content/shop";
 import { sessionStore } from "@/lib/session";
 import { STEPS, type Answers } from "@/content/intake";
-import type { ChildOut, Consents, PhoneStarted, PlanOut, RoundOut } from "@/lib/server/types";
+import type { ChildOut, Consents, PhoneStarted, PlanOut, ReviewItem, RoundOut } from "@/lib/server/types";
 import type { Lang, UiLang } from "@/lib/translate";
-import type { AacCustomCard, Child, ChildSupport, ClassRoom, ConsentScope, InputProfile, InteractionEvent, Order, Roadmap, Role, User, UserStatus } from "@/lib/types";
+import type { AacCustomCard, Child, ChildSupport, ClassRoom, ConsentScope, InputProfile, InteractionEvent, Order, Roadmap, Role, User, UserStatus, VideoStatus } from "@/lib/types";
 import { queryClient } from "./client";
 import { http, upload } from "./http";
 import {
@@ -164,6 +164,17 @@ export const liveApi = {
   async exportChild(childId: string): Promise<MockExport> {
     return http<MockExport>("GET", `/parent/children/${childId}/export`);
   },
+  // ------------------------------------------------------------ physiotherapist review (spec §8, product rule 3)
+  /** POST /review/videos/{id} — the server's id of this language file comes from the review queue. */
+  async reviewVideo(exerciseId: string, lang: Lang, status: Exclude<VideoStatus, "generated">, note: string) {
+    const items = queryClient.getQueriesData<ReviewItem[]>({ queryKey: ["review"] }).flatMap(([, d]) => d ?? []);
+    const file = items.find((v) => v.exerciseId === exerciseId && v.lang === lang);
+    if (!file) throw new ApiError("not_found");
+    await http("POST", `/review/videos/${file.id}`, { decision: status, note: note.trim() || null });
+    await queryClient.invalidateQueries({ queryKey: ["review"] });
+    return true;
+  },
+
   /** PUT /children/{id}/consents/{kind} — owner only. "core" is the basic consent every family gave at sign-up. */
   async setConsent(childId: string, scope: ConsentScope, granted: boolean) {
     if (scope === "core") {

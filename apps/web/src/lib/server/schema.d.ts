@@ -523,7 +523,7 @@ export interface paths {
         };
         /**
          * Review Queue
-         * @description Videos with this status (by default: waiting for review), oldest first.
+         * @description Videos with this status (by default: waiting for review), oldest first, with their tags and history.
          */
         get: operations["review_queue_api_v1_review_videos_get"];
         put?: never;
@@ -869,6 +869,39 @@ export interface components {
             };
             /** Watchurl */
             watchUrl: string;
+            /** Bodyarea */
+            bodyArea: string;
+            /** Goals */
+            goals: string[];
+            /** Gmfcs */
+            gmfcs: number[];
+            /** Ages */
+            ages: string[];
+            /** Tool */
+            tool: string | null;
+            /** Difficulty */
+            difficulty: number;
+            /** Conflicts */
+            conflicts: string[];
+            /** Approvedby */
+            approvedBy: string | null;
+            /** Approvedat */
+            approvedAt: string | null;
+            /** History */
+            history: components["schemas"]["ReviewNote"][];
+        };
+        /** ReviewNote */
+        ReviewNote: {
+            decision: components["schemas"]["ReviewDecision"];
+            /** Note */
+            note: string | null;
+            /** Reviewerid */
+            reviewerId: string | null;
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
         };
         /**
          * Role

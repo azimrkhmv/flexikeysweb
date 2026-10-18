@@ -1314,7 +1314,7 @@
      "videos"
     ],
     "summary": "Review Queue",
-    "description": "Videos with this status (by default: waiting for review), oldest first.",
+    "description": "Videos with this status (by default: waiting for review), oldest first, with their tags and history.",
     "operationId": "review_queue_api_v1_review_videos_get",
     "parameters": [
      {
@@ -2286,6 +2286,84 @@
      "watchUrl": {
       "type": "string",
       "title": "Watchurl"
+     },
+     "bodyArea": {
+      "type": "string",
+      "title": "Bodyarea"
+     },
+     "goals": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Goals"
+     },
+     "gmfcs": {
+      "items": {
+       "type": "integer"
+      },
+      "type": "array",
+      "title": "Gmfcs"
+     },
+     "ages": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Ages"
+     },
+     "tool": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Tool"
+     },
+     "difficulty": {
+      "type": "integer",
+      "title": "Difficulty"
+     },
+     "conflicts": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Conflicts"
+     },
+     "approvedBy": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "uuid"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Approvedby"
+     },
+     "approvedAt": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Approvedat"
+     },
+     "history": {
+      "items": {
+       "$ref": "#/components/schemas/ReviewNote"
+      },
+      "type": "array",
+      "title": "History"
      }
     },
     "type": "object",
@@ -2296,9 +2374,62 @@
      "status",
      "durationS",
      "title",
-     "watchUrl"
+     "watchUrl",
+     "bodyArea",
+     "goals",
+     "gmfcs",
+     "ages",
+     "tool",
+     "difficulty",
+     "conflicts",
+     "approvedBy",
+     "approvedAt",
+     "history"
     ],
     "title": "ReviewItem"
+   },
+   "ReviewNote": {
+    "properties": {
+     "decision": {
+      "$ref": "#/components/schemas/ReviewDecision"
+     },
+     "note": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Note"
+     },
+     "reviewerId": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "uuid"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Reviewerid"
+     },
+     "at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "At"
+     }
+    },
+    "type": "object",
+    "required": [
+     "decision",
+     "note",
+     "reviewerId",
+     "at"
+    ],
+    "title": "ReviewNote"
    },
    "Role": {
     "type": "string",

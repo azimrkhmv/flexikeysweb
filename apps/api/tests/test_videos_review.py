@@ -96,3 +96,17 @@ def test_only_a_physiotherapist_reviews(client: TestClient) -> None:
         assert title(decide(client, someone, video, "approved")) == (403, "forbidden")
     _, physio, _ = make(client, Role.physio)
     assert title(decide(client, physio, str(uuid.uuid4()), "approved")) == (404, "not_found")
+
+
+def test_the_queue_shows_tags_and_history(client: TestClient) -> None:
+    video = new_video(client, "tongs_sort", "ru")
+    physio_id, physio, _ = make(client, Role.physio)
+    decide(client, physio, video, "changes_requested", "Slower, please")
+    item = queue(client, physio, "changes_requested")[video]
+    assert (item["bodyArea"], item["tool"], item["difficulty"]) == ("hands", "tongs", 3)
+    assert [(h["decision"], h["note"], h["reviewerId"]) for h in item["history"]] == [
+        ("changes_requested", "Slower, please", str(physio_id))
+    ]
+    decide(client, physio, video, "approved")
+    approved = queue(client, physio, "approved")[video]
+    assert approved["approvedBy"] == str(physio_id) and approved["approvedAt"]

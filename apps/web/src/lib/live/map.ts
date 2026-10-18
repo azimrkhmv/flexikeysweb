@@ -3,9 +3,9 @@
 
 import { AAC_BY_ID, CUSTOM_PREFIX } from "@/content/aac";
 import { DEFAULT_PROFILE } from "@/lib/adaptive";
-import type { ChildOut, ConsentKind, Consents, Me, PlanOut, RoundOut, UserOut } from "@/lib/server/types";
+import type { ChildOut, ConsentKind, Consents, Me, PlanOut, ReviewItem, RoundOut, UserOut } from "@/lib/server/types";
 import type { Lang } from "@/lib/translate";
-import type { ChildSupport, ActivityKind, GoalKey, IntakeAnswer, IntakeValue, Roadmap,
+import type { ChildSupport, ActivityKind, AgeBand, BodyArea, ExerciseVideo, FnLevel, GoalKey, IntakeAnswer, IntakeValue, L10n, Restriction, Roadmap,
   AacCustomCard, AacEvent, AccessMode, AuditLog, AdaptationChange, AdaptiveProfile, Assignment, CareLink, Child, ClassRoom, Consent, ConsentScope, Goal,
   InteractionEvent, LearningSession, LevelProgress, Note, Notification, Order, ParamKey, Role, SkillMastery, Subscription, User, UserStatus,
 } from "@/lib/types";
@@ -96,6 +96,25 @@ export function planFrom(childId: string, round: number, p: PlanOut): Roadmap {
     })),
     reasons: p.reasons.map((r) => ({ slot: r.slot, goal: r.goal as GoalKey, ref: r.ref, level: r.level })),
   };
+}
+
+/** The physiotherapist's review queue: one ExerciseVideo per exercise, one version per language file. */
+export function reviewVideosFrom(items: ReviewItem[]): ExerciseVideo[] {
+  const byExercise = new Map<string, ExerciseVideo>();
+  for (const v of items) {
+    const video = byExercise.get(v.exerciseId) ?? {
+      id: v.exerciseId, title: v.title as L10n, bodyArea: v.bodyArea as BodyArea, goals: v.goals as GoalKey[], gmfcs: v.gmfcs as FnLevel[],
+      ages: v.ages as AgeBand[], tool: v.tool, difficulty: Math.min(3, Math.max(1, v.difficulty)) as 1 | 2 | 3, conflicts: v.conflicts as Restriction[], versions: {},
+    };
+    video.versions[v.lang] = {
+      id: v.id, url: v.watchUrl, durationS: v.durationS ?? 0,
+      status: v.status === "waiting_review" ? "generated" : v.status, // the web's name for "waiting for review"
+      approvedBy: v.approvedBy ?? undefined, approvedAt: v.approvedAt ?? undefined,
+      notes: v.history.filter((h) => h.note).map((h) => ({ by: h.reviewerId ?? "", text: h.note!, at: h.at })),
+    };
+    byExercise.set(v.exerciseId, video);
+  }
+  return [...byExercise.values()];
 }
 
 // ---------------------------------------------------------------- the old backend (areas not moved yet)

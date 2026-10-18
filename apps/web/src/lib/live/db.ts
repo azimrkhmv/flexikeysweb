@@ -6,9 +6,9 @@ import { ApiError, type ChildAuth, type DB } from "@/lib/api/schema";
 import { sessionStore } from "@/lib/session";
 import { useStore } from "@/lib/store";
 import { http } from "./http";
-import type { ChildOut, Consents, PlanOut, RoundOut, RoundSummary } from "@/lib/server/types";
+import type { ChildOut, Consents, PlanOut, ReviewItem, RoundOut, RoundSummary } from "@/lib/server/types";
 import {
-  answersFrom, familyChildFrom, familyConsentsFrom, planFrom,
+  answersFrom, familyChildFrom, familyConsentsFrom, planFrom, reviewVideosFrom,
   aacCardFrom, auditFrom, careLinkFrom, orderFrom, subscriptionFrom, changeFrom, childFrom, notificationFrom, classFrom, goalFrom, levelsFrom, masteryFrom, noteFrom, profileFrom, rosterChildFrom,
   sessionsFrom, taskFrom, userFrom,
   type BAacCard, type BAdminSub, type BAudit, type BOrder, type BOverview, type BCareLink, type BNotification, type BChild, type BChildOverview, type BClass, type BGoal, type BLevel, type BNote,
@@ -31,6 +31,7 @@ const empty = (): DB => ({
 
 /** A family child's data on the new server (apps/api); each round's answers are loaded after the round list. */
 const PER_CHILD = ["consents", "rounds", "plan"] as const;
+const REVIEW_STATUSES = ["waiting_review", "changes_requested", "rejected", "approved"] as const;
 type PerChild = (typeof PER_CHILD)[number];
 const path = (kind: PerChild, id: string) => ({ consents: `/children/${id}/consents`, rounds: `/children/${id}/intake`, plan: `/children/${id}/plan` })[kind];
 
@@ -116,6 +117,14 @@ export function useLiveDb(): DB {
     queryFn: () => http<BOrder[]>("GET", "/billing/orders"),
   });
 
+  // ---- physiotherapist: the review queue, every status (the page counts each)
+  const review = useQueries({
+    queries: (role === "physio" ? REVIEW_STATUSES : []).map((st) => ({
+      queryKey: ["review", st],
+      queryFn: () => http<ReviewItem[]>("GET", `/review/videos?status=${st}`),
+    })),
+  });
+
   // ---- admin console
   const ADMIN = ["users", "audit", "flagList", "subscriptions", "orders", "overview"] as const;
   const adminPath: Record<(typeof ADMIN)[number], string> = {
@@ -163,13 +172,14 @@ export function useLiveDb(): DB {
     if (signedIn !== undefined && sessionStore.get().role !== signedIn) sessionStore.set({ role: signedIn });
   }, [signedIn]);
 
-  const all = [me, kids, classes, linked, invites, notifications, flags, subscription, orders, ...own, ...per, ...answers, ...overviews, ...views, ...admin];
+  const all = [me, kids, classes, linked, invites, notifications, flags, subscription, orders, ...own, ...per, ...answers, ...review, ...overviews, ...views, ...admin];
   const stamp = all.map((q) => q.dataUpdatedAt).join();
   const loading =
     me.isPending ||
     (!!child && !!own[0]?.isPending) ||
     // The questions screen starts from the saved answers, so wait for them.
     (role === "parent" && (kids.isPending || per.some((q) => q.isPending) || answers.some((q) => q.isPending))) ||
+    (role === "physio" && review.some((q) => q.isPending)) ||
     (role === "teacher" && (classes.isPending || overviews.some((q) => q.isPending))) ||
     (role === "therapist" && (linked.isPending || views.some((q) => q.isPending)));
 
@@ -222,6 +232,8 @@ export function useLiveDb(): DB {
         if (r) db.intakeAnswers.push(...answersFrom(id, r));
       });
     }
+
+    if (role === "physio") db.videos = reviewVideosFrom(review.flatMap((q) => q.data ?? []));
 
     if (role === "admin" && user && admin[0]?.data) {
       const at = (k: (typeof ADMIN)[number]) => admin[ADMIN.indexOf(k)]?.data;

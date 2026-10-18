@@ -116,22 +116,49 @@ async def register(body: NewVideo, admin: Admin, db: Annotated[AsyncSession, Dep
     return VideoOut.model_validate(video, from_attributes=True)
 
 
+class ReviewNote(ApiModel):
+    decision: ReviewDecision
+    note: str | None
+    reviewer_id: uuid.UUID | None
+    at: datetime
+
+
 class ReviewItem(VideoOut):
     title: dict[str, str]  # the exercise's name in uz, ru, en
     watch_url: str  # a 15-minute link to the file
+    # The exercise's tags, so the physiotherapist also checks they fit what the video shows.
+    body_area: str
+    goals: list[str]
+    gmfcs: list[int]
+    ages: list[str]
+    tool: str | None
+    difficulty: int
+    conflicts: list[str]
+    approved_by: uuid.UUID | None
+    approved_at: datetime | None
+    history: list[ReviewNote]  # every earlier decision on this video, oldest first
 
 
 @review_router.get("")
 async def review_queue(
     _: Physio, db: Annotated[AsyncSession, Depends(get_session)], status: VideoStatus = VideoStatus.waiting_review
 ) -> list[ReviewItem]:
-    """Videos with this status (by default: waiting for review), oldest first."""
-    rows = await db.execute(
-        select(Video, Exercise.title)
-        .join(Exercise, Exercise.id == Video.exercise_id)
-        .where(Video.status == status)
-        .order_by(Video.updated_at)
+    """Videos with this status (by default: waiting for review), oldest first, with their tags and history."""
+    rows = list(
+        await db.execute(
+            select(Video, Exercise)
+            .join(Exercise, Exercise.id == Video.exercise_id)
+            .where(Video.status == status)
+            .order_by(Video.updated_at)
+        )
     )
+    history: dict[uuid.UUID, list[ReviewNote]] = {}
+    for r in await db.scalars(
+        select(VideoReview).where(VideoReview.video_id.in_([v.id for v, _ in rows])).order_by(VideoReview.created_at)
+    ):
+        history.setdefault(r.video_id, []).append(
+            ReviewNote(decision=r.decision, note=r.note, reviewer_id=r.reviewer_id, at=r.created_at)
+        )
     return [
         ReviewItem(
             id=v.id,
@@ -139,10 +166,20 @@ async def review_queue(
             lang=v.lang,
             status=v.status,
             duration_s=v.duration_s,
-            title=title,
+            title=e.title,
             watch_url=storage.download_url(v.storage_key),
+            body_area=e.body_area,
+            goals=e.goals,
+            gmfcs=e.gmfcs,
+            ages=e.ages,
+            tool=e.tool,
+            difficulty=e.difficulty,
+            conflicts=e.conflicts,
+            approved_by=v.approved_by,
+            approved_at=v.approved_at,
+            history=history.get(v.id, []),
         )
-        for v, title in rows
+        for v, e in rows
     ]
 
 
