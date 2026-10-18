@@ -393,6 +393,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/children/{child_id}/intake/voice-link": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Voice Link
+         * @description Where to upload the parent's P39 voice note (at most 2 minutes), straight to storage.
+         */
+        post: operations["voice_link_api_v1_children__child_id__intake_voice_link_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/children/{child_id}/intake/{number}/voice": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Voice Note
+         * @description The round's P39 voice note, for every member of the family; 404 when there is none.
+         */
+        get: operations["voice_note_api_v1_children__child_id__intake__number__voice_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/children/{child_id}/plan": {
         parameters: {
             query?: never;
@@ -972,6 +1012,18 @@ export interface components {
          * @enum {string}
          */
         VideoStatus: "waiting_review" | "changes_requested" | "rejected" | "approved";
+        /** VoiceLink */
+        VoiceLink: {
+            /** Storagekey */
+            storageKey: string;
+            /** Uploadurl */
+            uploadUrl: string;
+        };
+        /** VoiceNote */
+        VoiceNote: {
+            /** Url */
+            url: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -1720,6 +1772,69 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RoundOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    voice_link_api_v1_children__child_id__intake_voice_link_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VoiceLink"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    voice_note_api_v1_children__child_id__intake__number__voice_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+                number: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VoiceNote"];
                 };
             };
             /** @description Validation Error */
