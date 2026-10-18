@@ -409,7 +409,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A6.1` Tables for access settings, play check runs, skill levels, game sessions, and try records split by month
   - Done when: the database change applies; one month of tries can be dropped in a single step
   - Needs: A2.1
-- [ ] **Azim** — `A6.2` Nightly job that deletes try records older than 90 days
+- [x] **Azim** — `A6.2` Nightly job that deletes try records older than 90 days
   - Done when: old months are gone after the job runs
   - Needs: A6.1, A5.2
 - [ ] **Azim** — `A6.3` Table for the parent's own My Voice cards

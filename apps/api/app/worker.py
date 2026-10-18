@@ -10,6 +10,8 @@ from typing import Any, ClassVar
 from arq import cron
 from arq.connections import RedisSettings
 
+from app.db import SessionLocal
+from app.modules.play import tries
 from app.settings import settings
 
 HEARTBEAT_KEY = "worker:heartbeat"
@@ -22,7 +24,17 @@ async def heartbeat(ctx: dict[str, Any]) -> str:
     return now
 
 
+async def clean_old_tries(ctx: dict[str, Any]) -> str:
+    """Every night: tries older than 90 days are deleted, whole months at once (A6.2)."""
+    async with SessionLocal() as db:
+        dropped = await tries.clean(db, datetime.now(tries.TASHKENT).date())
+    return f"dropped {len(dropped)} months"
+
+
 class WorkerSettings:
     redis_settings = RedisSettings.from_dsn(settings.redis_url)
     functions: ClassVar[list[Any]] = []
-    cron_jobs: ClassVar[list[Any]] = [cron(heartbeat, second=0, run_at_startup=True)]
+    cron_jobs: ClassVar[list[Any]] = [
+        cron(heartbeat, second=0, run_at_startup=True),
+        cron(clean_old_tries, hour=22, minute=0, second=0),  # 03:00 in Tashkent
+    ]

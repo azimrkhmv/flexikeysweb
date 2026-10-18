@@ -24,8 +24,9 @@ async def test_the_scheduled_job_runs() -> None:
         await asyncio.wait_for(worker.async_run(), timeout=10)
     finally:
         await worker.close()
-    (job,) = WorkerSettings.cron_jobs
-    assert job.second == 0 and job.minute is None  # at the start of every minute
+    beat, clean = WorkerSettings.cron_jobs
+    assert beat.second == 0 and beat.minute is None  # at the start of every minute
+    assert (clean.name, clean.hour, clean.minute) == ("cron:clean_old_tries", 22, 0)  # 03:00 in Tashkent (A6.2)
     assert worker.jobs_complete == 1 and worker.jobs_failed == 0
     r = redis.connect()
     try:
