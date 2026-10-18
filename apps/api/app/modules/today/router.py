@@ -3,7 +3,7 @@ child: pause today, and the plan moves forward one day. One short question a day
 
 import json
 import uuid
-from datetime import date, datetime
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from typing import Annotated, Any
 
@@ -12,8 +12,10 @@ from sqlalchemy import delete, func, select, update
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app import storage
 from app.db import get_session
 from app.errors import AppError
+from app.modules.accounts.models import Lang
 from app.modules.auth.session import CurrentUser
 from app.modules.children.router import get_visible_child
 from app.modules.plans.models import ItemKind, Plan, PlanItem
@@ -26,6 +28,7 @@ from app.modules.plans.router import (
     plan_day_today,
 )
 from app.modules.today.models import DailyAnswer, DailyQuestion, Feeling, PausedDay, TaskDone
+from app.modules.videos.models import Video, VideoLang, VideoStatus
 from app.schemas import ApiModel
 
 router = APIRouter(prefix="/children", tags=["today"])
@@ -240,3 +243,50 @@ async def answer_question(
         )
     )
     await db.commit()
+
+
+# ---------------------------------------------------------------- videos for offline use (spec §8)
+
+
+class OfflineVideo(ApiModel):
+    exercise_id: str
+    lang: VideoLang
+    duration_s: int | None
+    cache_key: str  # the same as long as the file is the same: keep one copy per key, drop keys no longer listed
+    url: str  # works for 7 days, until expires_at
+    expires_at: datetime
+
+
+@router.get("/{child_id}/videos")
+async def offline_videos(
+    child_id: uuid.UUID, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)], lang: Lang | None = None
+) -> list[OfflineVideo]:
+    """The approved videos of today and the next 6 plan days, with links that work for 7 days, so the website and the
+    app can download them on Wi-Fi and play them offline (spec §8). Only physio-approved files (product rule 3).
+    `lang` defaults to the child's language."""
+    plan = await current_plan_of(db, user, child_id)
+    lang = lang or (await get_visible_child(db, user, child_id)).lang
+    today = datetime.now(TASHKENT).date()
+    dates = day_dates(plan.start_date, await paused_dates(db, plan))
+    days = [d for d, on in enumerate(dates) if today <= on < today + timedelta(days=7)]
+    exercises = select(PlanItem.ref).where(
+        PlanItem.plan_id == plan.id, PlanItem.kind == ItemKind.exercise, PlanItem.day.in_(days)
+    )
+    video_lang = VideoLang.uz if lang == Lang.uz_cyrl else VideoLang(lang.value)
+    videos = await db.scalars(
+        select(Video)
+        .where(Video.exercise_id.in_(exercises), Video.lang == video_lang, Video.status == VideoStatus.approved)
+        .order_by(Video.exercise_id)
+    )
+    expires = datetime.now(UTC) + storage.OFFLINE_TTL
+    return [
+        OfflineVideo(
+            exercise_id=v.exercise_id,
+            lang=v.lang,
+            duration_s=v.duration_s,
+            cache_key=v.storage_key,
+            url=storage.download_url(v.storage_key, storage.OFFLINE_TTL),
+            expires_at=expires,
+        )
+        for v in videos
+    ]

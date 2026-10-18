@@ -567,6 +567,28 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/children/{child_id}/videos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Offline Videos
+         * @description The approved videos of today and the next 6 plan days, with links that work for 7 days, so the website and the
+         *     app can download them on Wi-Fi and play them offline (spec §8). Only physio-approved files (product rule 3).
+         *     `lang` defaults to the child's language.
+         */
+        get: operations["offline_videos_api_v1_children__child_id__videos_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/videos/upload-link": {
         parameters: {
             query?: never;
@@ -955,6 +977,23 @@ export interface components {
             storageKey: string;
             /** Durations */
             durationS?: number | null;
+        };
+        /** OfflineVideo */
+        OfflineVideo: {
+            /** Exerciseid */
+            exerciseId: string;
+            lang: components["schemas"]["VideoLang"];
+            /** Durations */
+            durationS: number | null;
+            /** Cachekey */
+            cacheKey: string;
+            /** Url */
+            url: string;
+            /**
+             * Expiresat
+             * Format: date-time
+             */
+            expiresAt: string;
         };
         /** PhoneStart */
         PhoneStart: {
@@ -2312,6 +2351,39 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    offline_videos_api_v1_children__child_id__videos_get: {
+        parameters: {
+            query?: {
+                lang?: components["schemas"]["Lang"] | null;
+            };
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OfflineVideo"][];
+                };
             };
             /** @description Validation Error */
             422: {

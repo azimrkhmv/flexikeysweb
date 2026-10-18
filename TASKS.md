@@ -375,7 +375,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `A5.6` Server: reminder at the parent's preferred time of day
   - Done when: a reminder job runs at the right time in tests
   - Needs: A5.2, the mobile app (Q5: no reminders on the website)
-- [ ] **Azim** — `A5.7` Video links that the website and the future app can keep for 7 days offline
+- [x] **Azim** — `A5.7` Video links that the website and the future app can keep for 7 days offline
   - Done when: a saved video still plays offline after a week
   - Needs: A3.5
 - [ ] **Azim** — `B11` Connect the Today screen to the server

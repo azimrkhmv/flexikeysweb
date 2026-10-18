@@ -16,6 +16,7 @@ from app.settings import settings
 
 UPLOAD_TTL = timedelta(minutes=10)
 DOWNLOAD_TTL = timedelta(minutes=15)
+OFFLINE_TTL = timedelta(days=7)  # the longest S3 allows; for the next 7 days of videos (A5.7)
 REGION = "us-east-1"  # fixed, so signing a link needs no network call
 
 
@@ -47,9 +48,10 @@ def upload_url(key: str) -> str:
     return public().presigned_put_object(settings.s3_bucket, key, expires=UPLOAD_TTL)
 
 
-def download_url(key: str) -> str:
-    """A link to read the file at `key`, for 15 minutes. Callers decide who may get one (A3.5: approved only)."""
-    return public().presigned_get_object(settings.s3_bucket, key, expires=DOWNLOAD_TTL)
+def download_url(key: str, ttl: timedelta = DOWNLOAD_TTL) -> str:
+    """A link to read the file at `key`, for 15 minutes unless said otherwise. Callers decide who may get one (A3.5:
+    approved only)."""
+    return public().presigned_get_object(settings.s3_bucket, key, expires=ttl)
 
 
 def exists(key: str) -> bool:

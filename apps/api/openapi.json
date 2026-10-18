@@ -1503,6 +1503,70 @@
     }
    }
   },
+  "/api/v1/children/{child_id}/videos": {
+   "get": {
+    "tags": [
+     "today"
+    ],
+    "summary": "Offline Videos",
+    "description": "The approved videos of today and the next 6 plan days, with links that work for 7 days, so the website and the\napp can download them on Wi-Fi and play them offline (spec §8). Only physio-approved files (product rule 3).\n`lang` defaults to the child's language.",
+    "operationId": "offline_videos_api_v1_children__child_id__videos_get",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     },
+     {
+      "name": "lang",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "$ref": "#/components/schemas/Lang"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Lang"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/OfflineVideo"
+         },
+         "title": "Response Offline Videos Api V1 Children  Child Id  Videos Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/v1/admin/videos/upload-link": {
    "post": {
     "tags": [
@@ -2563,6 +2627,51 @@
      "storageKey"
     ],
     "title": "NewVideo"
+   },
+   "OfflineVideo": {
+    "properties": {
+     "exerciseId": {
+      "type": "string",
+      "title": "Exerciseid"
+     },
+     "lang": {
+      "$ref": "#/components/schemas/VideoLang"
+     },
+     "durationS": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Durations"
+     },
+     "cacheKey": {
+      "type": "string",
+      "title": "Cachekey"
+     },
+     "url": {
+      "type": "string",
+      "title": "Url"
+     },
+     "expiresAt": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Expiresat"
+     }
+    },
+    "type": "object",
+    "required": [
+     "exerciseId",
+     "lang",
+     "durationS",
+     "cacheKey",
+     "url",
+     "expiresAt"
+    ],
+    "title": "OfflineVideo"
    },
    "PhoneStart": {
     "properties": {
