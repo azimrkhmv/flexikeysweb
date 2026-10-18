@@ -30,6 +30,18 @@ export const sel = {
     const plan = sel.roadmap(db, childId);
     return plan ? (db.pausedDays ?? []).filter((p) => p.roadmapId === plan.id).map((p) => p.date) : [];
   },
+  /** The date of each plan day: each paused day moves the rest of the plan one day later (the server's day_dates). */
+  planDates: (db: DB, childId: string): string[] => {
+    const plan = sel.roadmap(db, childId);
+    if (!plan) return [];
+    const paused = new Set(sel.pausedDays(db, childId));
+    const dates: string[] = [];
+    for (let t = Date.parse(plan.startDate); dates.length < plan.days.length; t += DAY) {
+      const d = new Date(t).toISOString().slice(0, 10);
+      if (!paused.has(d)) dates.push(d);
+    }
+    return dates;
+  },
   /**
    * Which plan day falls on this date (YYYY-MM-DD): each paused day before it moves the plan forward one day, so a
    * paused day is never missed (spec §10). "paused" on a paused date, null before the plan starts or after it ends.

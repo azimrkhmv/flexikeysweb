@@ -242,6 +242,19 @@ test("at 1 am Tashkent time the plan and the plan view use that day, like the To
   await expect(days.filter({ has: page.getByText("Today", { exact: true }) })).toContainText("29");
 });
 
+test("after a pause the plan view moves its dates like the Today screen", async ({ page }) => {
+  await setup(page);
+  await loginAs(page, "Parent");
+  await page.getByRole("region", { name: "Today" }).getByRole("button", { name: "Pause today" }).click(); // Tue 29 Sep
+  await page.goto("/parent/child/ch_ali");
+  await page.getByRole("tab", { name: "Plan" }).click();
+  await page.getByRole("button", { name: "Week 1" }).click();
+  const days = page.locator("li").filter({ has: page.getByText("Games", { exact: true }) });
+  const dates = await days.locator("p.font-extrabold").allInnerTexts();
+  expect(dates.some((d) => /\b29\b/.test(d))).toBe(false); // the paused day holds no plan day
+  expect(dates[3]).toMatch(/\b30\b/); // plan day 3 moved to tomorrow, where the Today screen will show it
+});
+
 test("Uzbek Cyrillic is a full app language", async ({ page }) => {
   await setup(page);
   await page.goto("/signup");
