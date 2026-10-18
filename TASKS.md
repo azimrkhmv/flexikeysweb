@@ -427,7 +427,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `B14` Save every try with its access events; keep tries when the internet drops and send them later in batches
   - Done when: a missed tap, a double tap or an early release is saved as an access event, never as a wrong answer
   - Needs: B13
-- [ ] **Azim** — `B15` Play check, stage 1 — hands and touch: find the input mode, the smallest button that works, the hold time, accidental repeats, clean release
+- [x] **Azim** — `B15` Play check, stage 1 — hands and touch: find the input mode, the smallest button that works, the hold time, accidental repeats, clean release
   - Done when: all five access settings are found in about 2 minutes, with no timer, no red and no failure sound
   - Needs: B13
 - [ ] **Azim** — `B16` Play check, stage 2 — four placement games (seeing, memory, letters, thinking); after 2 mistakes the right answer shimmers, after 4 the others fade

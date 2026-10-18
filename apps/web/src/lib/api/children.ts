@@ -6,6 +6,7 @@ import { read, write, net } from "./db";
 import { requireUser, requireChildAccess, audit, purgeChild, familyForNewChild } from "./guards";
 import { ApiError, CONSENT_VERSION, id, iso } from "./schema";
 import { sel } from "./selectors";
+import { REPEAT_MS, type AccessSettings } from "../playcheck";
 import type { Child, ChildSupport, ConsentScope } from "../types";
 
 export const childrenApi = {
@@ -37,6 +38,27 @@ export const childrenApi = {
     write((db) => {
       db.children.find((c) => c.id === childId)!.support = support;
       audit(db, user.id, "child.support", childId, JSON.stringify(support));
+    });
+    return net(true);
+  },
+  /**
+   * PUT /children/{id}/access {inputMode, minTargetMm, dwellMs, repeatLock, releaseOk, helpedByAdult} — the play
+   * check's stage 1 (spec §7). Every game reads them: the access mode, and floors for hold time, repeat guard and
+   * button size (adaptive.ts withFloors), so the games never go below what the check found.
+   */
+  async saveAccessSettings(childId: string, s: AccessSettings, helpedByAdult: boolean) {
+    requireChildAccess(childId, ["owner"]);
+    if (s.minTargetMm < 12 || s.dwellMs < 500 || s.dwellMs > 3000) throw new ApiError("invalid_answer"); // spec ranges
+    write((db) => {
+      db.accessProfiles = [...db.accessProfiles.filter((a) => a.childId !== childId), { childId, ...s, helpedByAdult, at: iso() }];
+      const child = db.children.find((c) => c.id === childId)!;
+      const floors = { ...child.support?.floors };
+      if (s.inputMode === "dwell") floors.dwellMs = s.dwellMs;
+      if (s.repeatLock) floors.debounceMs = Math.max(floors.debounceMs ?? 0, REPEAT_MS);
+      // ponytail: 20 mm is about the smallest button games draw (76 px); a bigger floor scales every button up.
+      if (s.minTargetMm > 20) floors.targetScale = Math.round((s.minTargetMm / 20) * 100) / 100;
+      child.access = s.inputMode === "dwell" ? "dwell" : s.inputMode === "switch" ? "scan" : "touch";
+      child.support = { ...child.support, floors };
     });
     return net(true);
   },

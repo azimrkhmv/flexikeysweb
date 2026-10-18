@@ -2,6 +2,7 @@
 
 // Shape of the mock database, shared constants and id/time helpers.
 
+import type { AccessSettings } from "../playcheck";
 import type { TryRecord } from "../tries";
 import type { AacCustomCard, AacEvent, AdaptationChange, AiMessage, Assignment, AuditLog, CareLink, Child, ClassRoom, Consent, DailyAnswer, Enrollment, ExerciseVideo, FamilyMember, FeatureFlag, IntakeAnswer, IntakeRound, Goal, InteractionEvent, LearningSession, LevelProgress, Note, Notification, Order, PausedDay, Plan, ProfileRecord, Roadmap, SkillMastery, Subscription, TaskDone, User, Wallet } from "../types";
 
@@ -54,6 +55,8 @@ export interface DB {
   dailyAnswers: DailyAnswer[];
   /** Spec §7 try records (B14). */
   tries: TryRecord[];
+  /** The play check's five access settings per child (B15). */
+  accessProfiles: (AccessSettings & { childId: string; helpedByAdult: boolean; at: string })[];
 }
 
 export class ApiError extends Error {
@@ -83,4 +86,4 @@ const CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"; // no 0/O/1/I/L (SEC-5)
 export const makeCode = (n = 6) => Array.from({ length: n }, () => CODE_ALPHABET[Math.floor(Math.random() * CODE_ALPHABET.length)]).join("");
 
 /** Bump when the DB shape changes: browsers holding an older shape are reseeded instead of crashing. */
-export const DB_VERSION = 7;
+export const DB_VERSION = 8;

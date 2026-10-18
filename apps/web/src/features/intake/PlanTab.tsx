@@ -34,6 +34,12 @@ export function PlanTab({ child }: { child: Child }) {
       <Why plan={plan} />
       <Weeks plan={plan} />
       <Card className="flex flex-wrap items-center justify-between gap-3 p-5">
+        <p className="text-sm text-ink-2">{t("plan.check.d", { name: child.name })}</p>
+        <LinkButton href={`/play/check?child=${child.id}`} variant="soft">
+          {t("plan.check")}
+        </LinkButton>
+      </Card>
+      <Card className="flex flex-wrap items-center justify-between gap-3 p-5">
         <p className="text-sm text-ink-2">{t("plan.reintake.d")}</p>
         <Button
           variant="outline"
