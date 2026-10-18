@@ -26,8 +26,8 @@ async def family_role(db: AsyncSession, user: User, family_id: uuid.UUID) -> Mem
 
 async def may_see_child(db: AsyncSession, user: User, child_family_id: uuid.UUID) -> bool:
     """Family members (owner or helper) see their family's children, whatever their role.
-    A therapist also sees children shared with them — sharing arrives with A8.1; until then, nothing.
-    Everyone else (other families, physiotherapists, clinics, admins) sees nothing."""
+    Everyone else (other families, therapists, physiotherapists, clinics, admins) sees nothing here. A therapist
+    sees a shared child only through the therapist addresses (app/modules/therapists/router.py)."""
     return await family_role(db, user, child_family_id) is not None
 
 

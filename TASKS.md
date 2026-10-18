@@ -479,7 +479,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A7.3` A simulated payment turns a family to Pro; an admin can upgrade a family by hand
   - Done when: a repeated payment message never upgrades twice; only the owner can pay
   - Needs: A7.1
-- [ ] **Azim** — `A8.1` Invite a therapist by phone or link; the therapist accepts; the owner stops the share
+- [x] **Azim** — `A8.1` Invite a therapist by phone or link; the therapist accepts; the owner stops the share
   - Done when: stopping the share cuts the therapist's access at once
   - Needs: A2.2
 - [ ] **Azim** — `A8.2` Tables and addresses for the therapist form T1–T11; a therapist's answer wins over the parent's
@@ -746,6 +746,8 @@ These are not programming. The named developer asks the right person and writes 
   - Needed for: B16
 - [ ] **Azim** — `G8` Decide: does the parent's own recorded voice on a My Voice card need its own consent? The website asks for a "voice recording" consent; the new server has no such consent yet, so in live mode cards have photos but no recorded voice
   - Needed for: recorded voices on My Voice cards in live mode
+- [ ] **Azim** — `G9` Decide with the founders (spec §6 PROPOSAL): does an admin check each therapist's diploma by hand before their first share is active? And should a phone invite send an SMS to the therapist? Now the share works once the therapist accepts, and the parent passes the invite on by Telegram or by telling the therapist
+  - Needed for: a diploma check before a share, and invite SMS
 - [ ] **Azim** — `G6` Get the final consent texts in 4 languages. They must say that try records are kept on the server for 90 days
   - Needed for: F5
 - [ ] **Azim** — `G7` Get the lawyer's answers: may children's health data be stored abroad, and may data be sent to AI and voice companies abroad?

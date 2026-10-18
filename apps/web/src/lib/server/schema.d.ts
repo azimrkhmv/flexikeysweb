@@ -75,7 +75,8 @@ export interface paths {
         put?: never;
         /**
          * Phone Verify
-         * @description Sign in with the SMS code. The first time a number is used, this creates a parent account.
+         * @description Sign in with the SMS code. The first time a number is used, this creates a parent account (or a therapist's,
+         *     see `_new_account`).
          */
         post: operations["phone_verify_api_v1_auth_phone_verify_post"];
         delete?: never;
@@ -667,6 +668,150 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/children/{child_id}/therapists": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Shares
+         * @description Open invites and active shares of this child, oldest first.
+         */
+        get: operations["shares_api_v1_children__child_id__therapists_get"];
+        put?: never;
+        /**
+         * Invite
+         * @description Invite a therapist to see this child. Owner only; needs the `therapist_share` consent.
+         */
+        post: operations["invite_api_v1_children__child_id__therapists_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/children/{child_id}/therapists/{link_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Stop
+         * @description Stop a share or take back an invite. Owner only. The therapist's next request already gets "not found".
+         */
+        delete: operations["stop_api_v1_children__child_id__therapists__link_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/therapist/invites": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * My Invites
+         * @description Phone invites waiting for this therapist.
+         */
+        get: operations["my_invites_api_v1_therapist_invites_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/therapist/invites/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Accept Link
+         * @description Accept a link invite. The code works once.
+         */
+        post: operations["accept_link_api_v1_therapist_invites_accept_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/therapist/invites/{link_id}/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Accept Phone
+         * @description Accept a phone invite made for this therapist's number.
+         */
+        post: operations["accept_phone_api_v1_therapist_invites__link_id__accept_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/therapist/children": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * My Children
+         * @description The children shared with this therapist right now.
+         */
+        get: operations["my_children_api_v1_therapist_children_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/therapist/children/{child_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * My Child
+         * @description One shared child. Anyone else, and a therapist whose share stopped, gets "not found".
+         */
+        get: operations["my_child_api_v1_therapist_children__child_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/children/{child_id}/access": {
         parameters: {
             query?: never;
@@ -1027,6 +1172,11 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** Accept */
+        Accept: {
+            /** Code */
+            code: string;
+        };
         /**
          * AccessSettings
          * @description The five access settings the play check finds (spec §7). Values outside the spec's ranges are refused.
@@ -1338,6 +1488,21 @@ export interface components {
          * @enum {string}
          */
         InputMode: "touch" | "dwell" | "switch" | "keyboard";
+        /** InviteOut */
+        InviteOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Childname */
+            childName: string;
+            /**
+             * Expiresat
+             * Format: date-time
+             */
+            expiresAt: string;
+        };
         /**
          * ItemKind
          * @enum {string}
@@ -1460,6 +1625,8 @@ export interface components {
             code: string;
             /** @default uz */
             lang: components["schemas"]["Lang"];
+            /** Invitecode */
+            inviteCode?: string | null;
         };
         /**
          * Placement
@@ -1671,6 +1838,60 @@ export interface components {
          * @enum {string}
          */
         Sex: "boy" | "girl";
+        /** ShareOut */
+        ShareOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            status: components["schemas"]["ShareStatus"];
+            /** Phone */
+            phone: string | null;
+            /** Therapistname */
+            therapistName: string | null;
+            /**
+             * Invitedat
+             * Format: date-time
+             */
+            invitedAt: string;
+            /**
+             * Expiresat
+             * Format: date-time
+             */
+            expiresAt: string;
+            /** Acceptedat */
+            acceptedAt: string | null;
+            /** Code */
+            code?: string | null;
+        };
+        /**
+         * ShareStatus
+         * @enum {string}
+         */
+        ShareStatus: "invited" | "active" | "stopped";
+        /** SharedChild */
+        SharedChild: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Name */
+            name: string;
+            /**
+             * Birthdate
+             * Format: date
+             */
+            birthDate: string;
+            sex: components["schemas"]["Sex"];
+            lang: components["schemas"]["Lang"];
+            /**
+             * Sharedsince
+             * Format: date-time
+             */
+            sharedSince: string;
+        };
         /** SignedIn */
         SignedIn: {
             user: components["schemas"]["UserOut"];
@@ -1718,6 +1939,11 @@ export interface components {
             area: components["schemas"]["SkillArea"] | null;
             /** Games */
             games: components["schemas"]["GameOut"][];
+        };
+        /** TherapistInvite */
+        TherapistInvite: {
+            /** Phone */
+            phone?: string | null;
         };
         /** TodayOut */
         TodayOut: {
@@ -3092,6 +3318,237 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["OfflineVideo"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    shares_api_v1_children__child_id__therapists_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShareOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    invite_api_v1_children__child_id__therapists_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TherapistInvite"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShareOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    stop_api_v1_children__child_id__therapists__link_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+                link_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_invites_api_v1_therapist_invites_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InviteOut"][];
+                };
+            };
+        };
+    };
+    accept_link_api_v1_therapist_invites_accept_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Accept"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SharedChild"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    accept_phone_api_v1_therapist_invites__link_id__accept_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                link_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SharedChild"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_children_api_v1_therapist_children_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SharedChild"][];
+                };
+            };
+        };
+    };
+    my_child_api_v1_therapist_children__child_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SharedChild"];
                 };
             };
             /** @description Validation Error */

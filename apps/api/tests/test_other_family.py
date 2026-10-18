@@ -23,6 +23,7 @@ BODIES = {
     "UploadKind": {"kind": "photo"},
     "CardIn": {"category": "food", "label": "Non", "emoji": "x"},
     "CardChange": {"label": "X"},
+    "TherapistInvite": {},
     "SessionChange": {"secondsPlayed": 10},
     "Placement": {"buckets": {"memory": "yes"}},
     "TryIn": {
@@ -51,6 +52,7 @@ PARTS = {
     "number": "1",
     "card_id": str(uuid.uuid4()),
     "done_id": str(uuid.uuid4()),
+    "link_id": str(uuid.uuid4()),
     "run_id": str(uuid.uuid4()),
     "session_id": str(uuid.uuid4()),
 }

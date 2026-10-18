@@ -13,7 +13,7 @@ from app.errors import AppError
 from app.main import app
 from app.modules.accounts.models import FamilyMember, Lang, MemberRole, Role, User, UserStatus
 from app.modules.auth import tokens
-from app.modules.auth.router import _new_parent
+from app.modules.auth.router import _new_account
 
 
 @pytest.fixture
@@ -78,7 +78,7 @@ async def _user(session: AsyncSession, phone: str) -> User:
 
 
 async def test_a_new_parent_owns_exactly_one_new_family(session: AsyncSession) -> None:
-    user = await _new_parent(session, "+998911000005", Lang.uz)
+    user = await _new_account(session, "+998911000005", Lang.uz, None)
     rows = (await session.execute(select(FamilyMember).where(FamilyMember.user_id == user.id))).scalars().all()
     assert [r.role for r in rows] == [MemberRole.owner]
     await session.rollback()

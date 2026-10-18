@@ -99,7 +99,7 @@
      "auth"
     ],
     "summary": "Phone Verify",
-    "description": "Sign in with the SMS code. The first time a number is used, this creates a parent account.",
+    "description": "Sign in with the SMS code. The first time a number is used, this creates a parent account (or a therapist's,\nsee `_new_account`).",
     "operationId": "phone_verify_api_v1_auth_phone_verify_post",
     "requestBody": {
      "content": {
@@ -1706,6 +1706,335 @@
     }
    }
   },
+  "/api/v1/children/{child_id}/therapists": {
+   "post": {
+    "tags": [
+     "therapists"
+    ],
+    "summary": "Invite",
+    "description": "Invite a therapist to see this child. Owner only; needs the `therapist_share` consent.",
+    "operationId": "invite_api_v1_children__child_id__therapists_post",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/TherapistInvite"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ShareOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "get": {
+    "tags": [
+     "therapists"
+    ],
+    "summary": "Shares",
+    "description": "Open invites and active shares of this child, oldest first.",
+    "operationId": "shares_api_v1_children__child_id__therapists_get",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/ShareOut"
+         },
+         "title": "Response Shares Api V1 Children  Child Id  Therapists Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/children/{child_id}/therapists/{link_id}": {
+   "delete": {
+    "tags": [
+     "therapists"
+    ],
+    "summary": "Stop",
+    "description": "Stop a share or take back an invite. Owner only. The therapist's next request already gets \"not found\".",
+    "operationId": "stop_api_v1_children__child_id__therapists__link_id__delete",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     },
+     {
+      "name": "link_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Link Id"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/therapist/invites": {
+   "get": {
+    "tags": [
+     "therapists"
+    ],
+    "summary": "My Invites",
+    "description": "Phone invites waiting for this therapist.",
+    "operationId": "my_invites_api_v1_therapist_invites_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "$ref": "#/components/schemas/InviteOut"
+         },
+         "type": "array",
+         "title": "Response My Invites Api V1 Therapist Invites Get"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/therapist/invites/accept": {
+   "post": {
+    "tags": [
+     "therapists"
+    ],
+    "summary": "Accept Link",
+    "description": "Accept a link invite. The code works once.",
+    "operationId": "accept_link_api_v1_therapist_invites_accept_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/Accept"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/SharedChild"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/therapist/invites/{link_id}/accept": {
+   "post": {
+    "tags": [
+     "therapists"
+    ],
+    "summary": "Accept Phone",
+    "description": "Accept a phone invite made for this therapist's number.",
+    "operationId": "accept_phone_api_v1_therapist_invites__link_id__accept_post",
+    "parameters": [
+     {
+      "name": "link_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Link Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/SharedChild"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/therapist/children": {
+   "get": {
+    "tags": [
+     "therapists"
+    ],
+    "summary": "My Children",
+    "description": "The children shared with this therapist right now.",
+    "operationId": "my_children_api_v1_therapist_children_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "$ref": "#/components/schemas/SharedChild"
+         },
+         "type": "array",
+         "title": "Response My Children Api V1 Therapist Children Get"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/therapist/children/{child_id}": {
+   "get": {
+    "tags": [
+     "therapists"
+    ],
+    "summary": "My Child",
+    "description": "One shared child. Anyone else, and a therapist whose share stopped, gets \"not found\".",
+    "operationId": "my_child_api_v1_therapist_children__child_id__get",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/SharedChild"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/v1/children/{child_id}/access": {
    "get": {
     "tags": [
@@ -2769,6 +3098,19 @@
  },
  "components": {
   "schemas": {
+   "Accept": {
+    "properties": {
+     "code": {
+      "type": "string",
+      "title": "Code"
+     }
+    },
+    "type": "object",
+    "required": [
+     "code"
+    ],
+    "title": "Accept"
+   },
    "AccessSettings": {
     "properties": {
      "inputMode": {
@@ -3662,6 +4004,31 @@
     ],
     "title": "InputMode"
    },
+   "InviteOut": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "childName": {
+      "type": "string",
+      "title": "Childname"
+     },
+     "expiresAt": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Expiresat"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "childName",
+     "expiresAt"
+    ],
+    "title": "InviteOut"
+   },
    "ItemKind": {
     "type": "string",
     "enum": [
@@ -4016,6 +4383,17 @@
      "lang": {
       "$ref": "#/components/schemas/Lang",
       "default": "uz"
+     },
+     "inviteCode": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Invitecode"
      }
     },
     "type": "object",
@@ -4617,6 +4995,132 @@
     ],
     "title": "Sex"
    },
+   "ShareOut": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "status": {
+      "$ref": "#/components/schemas/ShareStatus"
+     },
+     "phone": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Phone"
+     },
+     "therapistName": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Therapistname"
+     },
+     "invitedAt": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Invitedat"
+     },
+     "expiresAt": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Expiresat"
+     },
+     "acceptedAt": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Acceptedat"
+     },
+     "code": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Code"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "status",
+     "phone",
+     "therapistName",
+     "invitedAt",
+     "expiresAt",
+     "acceptedAt"
+    ],
+    "title": "ShareOut"
+   },
+   "ShareStatus": {
+    "type": "string",
+    "enum": [
+     "invited",
+     "active",
+     "stopped"
+    ],
+    "title": "ShareStatus"
+   },
+   "SharedChild": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "birthDate": {
+      "type": "string",
+      "format": "date",
+      "title": "Birthdate"
+     },
+     "sex": {
+      "$ref": "#/components/schemas/Sex"
+     },
+     "lang": {
+      "$ref": "#/components/schemas/Lang"
+     },
+     "sharedSince": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Sharedsince"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "name",
+     "birthDate",
+     "sex",
+     "lang",
+     "sharedSince"
+    ],
+    "title": "SharedChild"
+   },
    "SignedIn": {
     "properties": {
      "user": {
@@ -4755,6 +5259,23 @@
      "games"
     ],
     "title": "SlotOut"
+   },
+   "TherapistInvite": {
+    "properties": {
+     "phone": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Phone"
+     }
+    },
+    "type": "object",
+    "title": "TherapistInvite"
    },
    "TodayOut": {
     "properties": {

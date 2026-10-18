@@ -23,6 +23,7 @@ from app.modules.accounts.models import enum_column
 from app.modules.audit import models as audit
 from app.modules.auth.session import CurrentUser
 from app.modules.children.router import get_visible_child, require_owner
+from app.modules.therapists.models import stop_all
 from app.schemas import ApiModel
 
 
@@ -104,6 +105,8 @@ async def set_consent(
         row.granted, row.changed_at, row.changed_by = body.granted, now, user.id
     else:
         return await _consents(db, child_id)  # no change, nothing to log
+    if kind == ConsentKind.therapist_share and not body.granted:
+        await stop_all(db, child_id)
     audit.record(db, user.id, f"child.consent_{'given' if body.granted else 'withdrawn'}", child_id, kind=kind.value)
     await db.commit()
     return await _consents(db, child_id)

@@ -17,12 +17,14 @@ from app.modules.play.models import (
     Try,
     VoiceCard,
 )
+from app.modules.therapists.models import CareLink
 from app.modules.today.models import DailyAnswer, DailyQuestion, PausedDay, TaskDone
 from app.modules.videos.models import Exercise, Video, VideoReview
 
 __all__ = [
     "AccessProfile",
     "AuditEntry",
+    "CareLink",
     "Child",
     "ChildConsent",
     "DailyAnswer",

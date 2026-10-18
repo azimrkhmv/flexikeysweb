@@ -15,6 +15,7 @@ from app.modules.accounts.models import Family, FamilyMember, Lang, MemberRole, 
 from app.modules.auth import otp, session, tokens
 from app.modules.auth.otp import Check
 from app.modules.auth.sms import SmsSender, get_sms
+from app.modules.therapists.models import link_for_code, pending_for_phone
 from app.redis import get_redis
 from app.schemas import ApiModel
 
@@ -62,6 +63,7 @@ class PhoneVerify(ApiModel):
     phone: str
     code: str
     lang: Lang = Lang.uz  # the language the person signs up in
+    invite_code: str | None = None  # a therapist opening a share link (A8.1)
 
 
 class UserOut(ApiModel):
@@ -91,8 +93,19 @@ class RefreshBody(ApiModel):
     refresh_token: str | None = None  # the app sends it here; the website's is in a cookie
 
 
-async def _new_parent(db: AsyncSession, phone: str, lang: Lang) -> User:
-    """First sign-in with an unknown number: a parent, their family, and the parent as its owner."""
+async def _new_account(db: AsyncSession, phone: str, lang: Lang, invite_code: str | None) -> User:
+    """First sign-in with an unknown number: a parent, their family, and the parent as its owner.
+    A number a parent invited as a therapist, or someone opening a therapist link, becomes a therapist instead
+    (no family); the phone invites then wait for them under /therapist/invites."""
+    invites = await pending_for_phone(db, phone)
+    if invites or (invite_code and await link_for_code(db, invite_code)):
+        user = User(phone=phone, role=Role.therapist, lang=lang)
+        db.add(user)
+        await db.flush()
+        for link in invites:
+            link.therapist_id = user.id
+        await db.flush()
+        return user
     user, family = User(phone=phone, role=Role.parent, lang=lang), Family()
     db.add_all([user, family])
     await db.flush()
@@ -112,7 +125,8 @@ async def phone_verify(
     redis: Annotated[Redis, Depends(get_redis)],
     db: Annotated[AsyncSession, Depends(get_session)],
 ) -> SignedIn:
-    """Sign in with the SMS code. The first time a number is used, this creates a parent account."""
+    """Sign in with the SMS code. The first time a number is used, this creates a parent account (or a therapist's,
+    see `_new_account`)."""
     phone = normalize_phone(body.phone)
     if not phone:
         raise AppError(422, "invalid_phone")
@@ -123,7 +137,7 @@ async def phone_verify(
     is_new = user is None
     if user is None:
         try:
-            user = await _new_parent(db, phone, body.lang)
+            user = await _new_account(db, phone, body.lang, body.invite_code)
         except IntegrityError:  # the same number signed up a moment ago in another request
             await db.rollback()
             user = (await db.execute(select(User).where(User.phone == phone))).scalar_one()
