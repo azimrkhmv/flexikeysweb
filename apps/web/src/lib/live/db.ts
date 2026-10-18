@@ -6,9 +6,9 @@ import { ApiError, type ChildAuth, type DB } from "@/lib/api/schema";
 import { sessionStore } from "@/lib/session";
 import { useStore } from "@/lib/store";
 import { http } from "./http";
-import type { ChildOut, Consents, DailyOut, PlanOut, ReviewItem, RoundOut, RoundSummary } from "@/lib/server/types";
+import type { CardOut, ChildOut, Consents, DailyOut, PlanOut, ReviewItem, RoundOut, RoundSummary } from "@/lib/server/types";
 import {
-  answersFrom, dailyFrom, doneFrom, familyChildFrom, familyConsentsFrom, pausedFrom, planFrom, planVideosFrom, reviewVideosFrom,
+  answersFrom, dailyFrom, doneFrom, familyChildFrom, familyConsentsFrom, pausedFrom, planFrom, planVideosFrom, reviewVideosFrom, voiceCardFrom,
   aacCardFrom, auditFrom, careLinkFrom, orderFrom, subscriptionFrom, changeFrom, childFrom, notificationFrom, classFrom, goalFrom, levelsFrom, masteryFrom, noteFrom, profileFrom, rosterChildFrom,
   sessionsFrom, taskFrom, userFrom,
   type BAacCard, type BAdminSub, type BAudit, type BOrder, type BOverview, type BCareLink, type BNotification, type BChild, type BChildOverview, type BClass, type BGoal, type BLevel, type BNote,
@@ -30,11 +30,11 @@ const empty = (): DB => ({
 });
 
 /** A family child's data on the new server (apps/api); each round's answers are loaded after the round list. */
-const PER_CHILD = ["consents", "rounds", "plan", "daily"] as const;
+const PER_CHILD = ["consents", "rounds", "plan", "daily", "cards"] as const;
 const REVIEW_STATUSES = ["waiting_review", "changes_requested", "rejected", "approved"] as const;
 type PerChild = (typeof PER_CHILD)[number];
 const path = (kind: PerChild, id: string) =>
-  ({ consents: `/children/${id}/consents`, rounds: `/children/${id}/intake`, plan: `/children/${id}/plan`, daily: `/children/${id}/daily` })[kind];
+  ({ consents: `/children/${id}/consents`, rounds: `/children/${id}/intake`, plan: `/children/${id}/plan`, daily: `/children/${id}/daily`, cards: `/children/${id}/voice-cards` })[kind];
 /** "No plan yet" and "no daily question list loaded" are answers, not errors to retry. */
 const MAY_BE_MISSING: PerChild[] = ["plan", "daily"];
 
@@ -226,6 +226,7 @@ export function useLiveDb(): DB {
         const rounds = (perChild(i, "rounds") as RoundSummary[] | undefined) ?? [];
         const plan = perChild(i, "plan") as PlanOut | null | undefined;
         if (consents) db.consents.push(...familyConsentsFrom(id, consents));
+        db.aacCards.push(...((perChild(i, "cards") as CardOut[] | undefined) ?? []).map((c) => voiceCardFrom(id, c)));
         const daily = perChild(i, "daily") as DailyOut | null | undefined;
         if (daily) db.dailyAnswers.push(...dailyFrom(id, daily));
         db.intakeRounds.push(...rounds.map((r) => ({ childId: id, round: r.number, startedAt: r.startedAt, completedAt: r.completedAt ?? undefined })));

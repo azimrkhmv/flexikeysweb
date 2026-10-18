@@ -18,6 +18,7 @@ export type ReviewItem = Schemas["ReviewItem"];
 export type RoundOut = Schemas["RoundOut"];
 export type DailyOut = Schemas["DailyOut"];
 export type DoneOut = Schemas["DoneOut"];
+export type CardOut = Schemas["CardOut"];
 
 /** Every address the website calls (under /api/v1, which the website proxies). */
 export const ADDRESSES = [
@@ -41,6 +42,9 @@ export const ADDRESSES = [
   "/api/v1/children/{child_id}/done/{done_id}",
   "/api/v1/children/{child_id}/pause",
   "/api/v1/children/{child_id}/daily",
+  "/api/v1/children/{child_id}/voice-cards",
+  "/api/v1/children/{child_id}/voice-cards/upload-link",
+  "/api/v1/children/{child_id}/voice-cards/{card_id}",
   "/api/v1/admin/users",
   "/api/v1/admin/users/{user_id}",
 ] as const satisfies readonly (keyof paths)[];

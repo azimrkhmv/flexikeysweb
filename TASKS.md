@@ -460,7 +460,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A6.8` Server: the parent's own My Voice cards, with photo and recorded voice
   - Done when: the cards are the same on every device of the family
   - Needs: A6.3, A3.2
-- [ ] **Azim** — `B20` Connect My Voice cards to the server
+- [x] **Azim** — `B20` Connect My Voice cards to the server
   - Done when: a card made on one device appears on another
   - Needs: A6.8
 
@@ -744,6 +744,8 @@ These are not programming. The named developer asks the right person and writes 
   - Needed for: B35, B36
 - [ ] **Azim** — `G5` Get the game catalogue (3 → 20 games) and the onboarding assessment document, both named as sources in the spec
   - Needed for: B16
+- [ ] **Azim** — `G8` Decide: does the parent's own recorded voice on a My Voice card need its own consent? The website asks for a "voice recording" consent; the new server has no such consent yet, so in live mode cards have photos but no recorded voice
+  - Needed for: recorded voices on My Voice cards in live mode
 - [ ] **Azim** — `G6` Get the final consent texts in 4 languages. They must say that try records are kept on the server for 90 days
   - Needed for: F5
 - [ ] **Azim** — `G7` Get the lawyer's answers: may children's health data be stored abroad, and may data be sent to AI and voice companies abroad?

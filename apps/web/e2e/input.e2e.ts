@@ -35,13 +35,14 @@ for (const kind of KINDS) {
     const target = page.locator("[data-fk-target]:not([disabled])").first();
     await expect(target).toBeVisible();
     const box = (await target.boundingBox())!;
-    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-    await page.mouse.down();
-    await page.mouse.up(); // far shorter than the 600 ms hold
+    // A short touch, then away at once: resting on a button also chooses (hover dwell, for eye-gaze and head mice).
+    await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2); // far shorter than the 600 ms hold
+    await page.mouse.move(0, 0);
     expect((await input(page)).accepts).toEqual([]);
     await expect.poll(async () => (await input(page)).events).toContain("accidental_tap");
 
     await page.waitForTimeout(700); // past the double-tap guard
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
     await page.mouse.down();
     await page.waitForTimeout(900);
     await page.mouse.up();

@@ -6,7 +6,7 @@ import { AAC_BY_ID, CUSTOM_PREFIX } from "@/content/aac";
 import { SHOP_BY_ID } from "@/content/shop";
 import { sessionStore } from "@/lib/session";
 import { STEPS, type Answers } from "@/content/intake";
-import type { ChildOut, Consents, DoneOut, PhoneStarted, PlanOut, ReviewItem, RoundOut } from "@/lib/server/types";
+import type { CardOut, ChildOut, Consents, DoneOut, PhoneStarted, PlanOut, ReviewItem, RoundOut } from "@/lib/server/types";
 import type { Lang, UiLang } from "@/lib/translate";
 import type { AacCustomCard, Child, ChildSupport, ClassRoom, ConsentScope, Feeling, InputProfile, InteractionEvent, Order, Roadmap, Role, TaskDone, User, UserStatus, VideoStatus } from "@/lib/types";
 import { queryClient } from "./client";
@@ -536,21 +536,28 @@ export const liveApi = {
       return { sentence: plain, ai: false };
     }
   },
-  /** Parent only; the card then shows on every device the child uses (FR-AAC-2). */
+  /** POST /children/{id}/voice-cards — the files go straight to storage first; the card then shows on every
+   *  device of the family (A6.8). */
   async aacAddCard(childId: string, card: Pick<AacCustomCard, "category" | "emoji" | "label">, media: { photo?: Blob | null; voice?: Blob | null } = {}) {
-    const c = await http<{ id: string }>("POST", `/children/${childId}/aac/cards`, { category: card.category, label: card.label.trim(), emoji: card.emoji });
-    try {
-      // The server strips photo metadata, checks the type, and needs the voice-recording consent.
-      if (media.photo) await upload("PUT", `/aac/cards/${c.id}/photo`, media.photo, "photo");
-      if (media.voice) await upload("PUT", `/aac/cards/${c.id}/audio`, media.voice, "voice");
-    } finally {
-      await refetch();
-    }
+    const put = async (kind: "photo" | "audio", file: Blob) => {
+      const link = await http<{ storageKey: string; uploadUrl: string }>("POST", `/children/${childId}/voice-cards/upload-link`, { kind });
+      const r = await fetch(link.uploadUrl, { method: "PUT", body: file, headers: { "Content-Type": file.type || "application/octet-stream" } });
+      if (!r.ok) throw new ApiError("generic");
+      return link.storageKey;
+    };
+    const photoKey = media.photo ? await put("photo", media.photo) : undefined;
+    const audioKey = media.voice ? await put("audio", media.voice) : undefined;
+    await http("POST", `/children/${childId}/voice-cards`, { category: card.category, label: card.label.trim(), emoji: card.emoji, photoKey, audioKey });
+    await queryClient.invalidateQueries({ queryKey: ["cards", childId] });
     return true;
   },
+  /** DELETE /children/{id}/voice-cards/{cardId} — its files too. */
   async aacDeleteCard(cardId: string) {
-    await http("DELETE", `/aac/cards/${cardId}`);
-    await refetch();
+    const owner = queryClient.getQueriesData<CardOut[]>({ queryKey: ["cards"] }).find(([, cards]) => cards?.some((c) => c.id === cardId));
+    if (!owner) throw new ApiError("not_found");
+    const childId = owner[0][1] as string;
+    await http("DELETE", `/children/${childId}/voice-cards/${cardId}`);
+    await queryClient.invalidateQueries({ queryKey: ["cards", childId] });
     return true;
   },
 };

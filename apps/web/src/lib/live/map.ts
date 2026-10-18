@@ -3,7 +3,7 @@
 
 import { AAC_BY_ID, CUSTOM_PREFIX } from "@/content/aac";
 import { DEFAULT_PROFILE } from "@/lib/adaptive";
-import type { ChildOut, ConsentKind, Consents, DailyOut, Me, PlanOut, ReviewItem, RoundOut, UserOut } from "@/lib/server/types";
+import type { CardOut, ChildOut, ConsentKind, Consents, DailyOut, Me, PlanOut, ReviewItem, RoundOut, UserOut } from "@/lib/server/types";
 import type { Lang } from "@/lib/translate";
 import type { ChildSupport, ActivityKind, AgeBand, BodyArea, DailyAnswer, ExerciseVideo, FnLevel, GoalKey, IntakeAnswer, IntakeValue, L10n, PausedDay, Restriction, Roadmap, TaskDone,
   AacCustomCard, AacEvent, AccessMode, AuditLog, AdaptationChange, AdaptiveProfile, Assignment, CareLink, Child, ClassRoom, Consent, ConsentScope, Goal,
@@ -318,6 +318,10 @@ export function aacCardFrom(c: BAacCard, asChild = false): AacCustomCard {
     photo: c.has_photo ? `${base}/photo` : undefined, audio: c.has_audio ? `${base}/audio` : undefined,
   };
 }
+/** A My Voice card on the new server (A6.8): the photo and voice come as storage links. */
+export const voiceCardFrom = (childId: string, c: CardOut): AacCustomCard => ({
+  id: c.id, childId, category: c.category, emoji: c.emoji, label: c.label, createdAt: c.createdAt, photo: c.photoUrl ?? undefined, audio: c.audioUrl ?? undefined,
+});
 /** A spoken sentence; custom card ids get the web's custom: prefix back. */
 export const aacEventFrom = (childId: string, s: BAacSentence, k: number): AacEvent => ({
   id: `${childId}-${s.at}-${k}`, childId, cardIds: s.card_ids.map((c) => (AAC_BY_ID[c] ? c : `${CUSTOM_PREFIX}${c}`)), sentence: s.sentence, lang: lang(s.language), at: s.at,
