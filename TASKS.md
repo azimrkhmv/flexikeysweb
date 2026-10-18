@@ -442,7 +442,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `B18` 20-minute daily game limit with the sleeping cloud; at most one new game a week; an open game is never taken away
   - Done when: the limit still holds after closing and reopening the website
   - Needs: B17
-- [ ] **Azim** — `A6.4` Server: access settings (`input_mode`, `min_target_mm`, `dwell_ms`, `repeat_lock`, `release_ok`)
+- [x] **Azim** — `A6.4` Server: access settings (`input_mode`, `min_target_mm`, `dwell_ms`, `repeat_lock`, `release_ok`)
   - Done when: values outside the spec's ranges are refused
   - Needs: A6.1
 - [ ] **Azim** — `A6.5` Server: play check runs; accept batches of tries; leave access events out of the skill level

@@ -589,6 +589,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/children/{child_id}/access": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Access
+         * @description The child's access settings; 404 no_access_settings before the play check found them.
+         */
+        get: operations["get_access_api_v1_children__child_id__access_get"];
+        /**
+         * Save Access
+         * @description Save what the play check found (or what an adult corrected). Every game reads them.
+         */
+        put: operations["save_access_api_v1_children__child_id__access_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/videos/upload-link": {
         parameters: {
             query?: never;
@@ -696,6 +720,21 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /**
+         * AccessSettings
+         * @description The five access settings the play check finds (spec §7). Values outside the spec's ranges are refused.
+         */
+        AccessSettings: {
+            inputMode: components["schemas"]["InputMode"];
+            /** Mintargetmm */
+            minTargetMm: number;
+            /** Dwellms */
+            dwellMs: number;
+            /** Repeatlock */
+            repeatLock: boolean;
+            /** Releaseok */
+            releaseOk: boolean;
+        };
         /** AnswersIn */
         AnswersIn: {
             /** Answers */
@@ -910,6 +949,11 @@ export interface components {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
         };
+        /**
+         * InputMode
+         * @enum {string}
+         */
+        InputMode: "touch" | "dwell" | "switch" | "keyboard";
         /**
          * ItemKind
          * @enum {string}
@@ -2383,6 +2427,72 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["OfflineVideo"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_access_api_v1_children__child_id__access_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccessSettings"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    save_access_api_v1_children__child_id__access_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AccessSettings"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccessSettings"];
                 };
             };
             /** @description Validation Error */

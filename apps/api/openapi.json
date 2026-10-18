@@ -1567,6 +1567,102 @@
     }
    }
   },
+  "/api/v1/children/{child_id}/access": {
+   "get": {
+    "tags": [
+     "play"
+    ],
+    "summary": "Get Access",
+    "description": "The child's access settings; 404 no_access_settings before the play check found them.",
+    "operationId": "get_access_api_v1_children__child_id__access_get",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/AccessSettings"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "put": {
+    "tags": [
+     "play"
+    ],
+    "summary": "Save Access",
+    "description": "Save what the play check found (or what an adult corrected). Every game reads them.",
+    "operationId": "save_access_api_v1_children__child_id__access_put",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/AccessSettings"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/AccessSettings"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/v1/admin/videos/upload-link": {
    "post": {
     "tags": [
@@ -1806,6 +1902,43 @@
  },
  "components": {
   "schemas": {
+   "AccessSettings": {
+    "properties": {
+     "inputMode": {
+      "$ref": "#/components/schemas/InputMode"
+     },
+     "minTargetMm": {
+      "type": "integer",
+      "maximum": 100.0,
+      "minimum": 12.0,
+      "title": "Mintargetmm"
+     },
+     "dwellMs": {
+      "type": "integer",
+      "maximum": 3000.0,
+      "minimum": 500.0,
+      "title": "Dwellms"
+     },
+     "repeatLock": {
+      "type": "boolean",
+      "title": "Repeatlock"
+     },
+     "releaseOk": {
+      "type": "boolean",
+      "title": "Releaseok"
+     }
+    },
+    "type": "object",
+    "required": [
+     "inputMode",
+     "minTargetMm",
+     "dwellMs",
+     "repeatLock",
+     "releaseOk"
+    ],
+    "title": "AccessSettings",
+    "description": "The five access settings the play check finds (spec §7). Values outside the spec's ranges are refused."
+   },
    "AnswersIn": {
     "properties": {
      "answers": {
@@ -2403,6 +2536,16 @@
     },
     "type": "object",
     "title": "HTTPValidationError"
+   },
+   "InputMode": {
+    "type": "string",
+    "enum": [
+     "touch",
+     "dwell",
+     "switch",
+     "keyboard"
+    ],
+    "title": "InputMode"
    },
    "ItemKind": {
     "type": "string",

@@ -15,6 +15,7 @@ from app.modules.children import router as children
 from app.modules.health import router as health
 from app.modules.intake import router as intake
 from app.modules.plans import router as plans
+from app.modules.play import router as play
 from app.modules.today import router as today
 from app.modules.videos import router as videos
 from app.settings import settings
@@ -45,6 +46,7 @@ app.include_router(consents.router, prefix="/api/v1")
 app.include_router(intake.router, prefix="/api/v1")
 app.include_router(plans.router, prefix="/api/v1")
 app.include_router(today.router, prefix="/api/v1")
+app.include_router(play.router, prefix="/api/v1")
 app.include_router(videos.router, prefix="/api/v1")
 app.include_router(videos.review_router, prefix="/api/v1")
 app.include_router(videos.family_router, prefix="/api/v1")
