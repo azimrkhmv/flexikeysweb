@@ -281,7 +281,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `B3` Connect the website's sign-in and sign-up to the server
   - Done when: sign-up works in the browser against the real server, covered by a browser test
   - Needs: A1.6
-- [ ] **Azim** — `A0.8` Run the live browser tests (`apps/web/e2e-live/`) against the new server on GitHub: start the server, PostgreSQL, Redis and MinIO from `apps/api/compose.yaml`; remove `journey.e2e.ts` and the old backend image, which test the old backend
+- [x] **Azim** — `A0.8` Run the live browser tests (`apps/web/e2e-live/`) against the new server on GitHub: start the server, PostgreSQL, Redis and MinIO from `apps/api/compose.yaml`; remove `journey.e2e.ts` and the old backend image, which test the old backend
   - Done when: `e2e-live` is green on GitHub with `signup.e2e.ts`
   - Needs: B3
 - [x] **Azim** — `A2.8` Write the test "someone from family B tries to read family A's child" for every child address

@@ -1,18 +1,26 @@
 name: e2e-live
 
-# Web + FastAPI backend + Postgres + Redis, end to end, on every change to the live integration and
-# nightly. The backend is the PRIVATE image pinned by digest in apps/web/e2e-live/backend.image
-# (never `latest`), pulled with this job's own short-lived GITHUB_TOKEN — no stored credentials.
-# Needs: both repos in one GitHub organization and the backend package granting this repo read
-# access (Package settings → Manage Actions access). Until the pin is set the job is skipped with
-# a warning. Each run starts from an empty in-memory database (e2e-live/compose.yml).
+# The website in live mode against the real server (apps/api), end to end in a browser. PostgreSQL, Redis and
+# MinIO come from apps/api/compose.yaml with the dev-only values of .env.example; each run starts from an empty
+# database. Runs on changes to the live connection or the server, and nightly.
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/api/**"
+      - "apps/web/src/lib/live/**"
+      - "apps/web/src/lib/server/**"
+      - "apps/web/src/features/auth/**"
+      - "apps/web/e2e-live/**"
+      - "apps/web/playwright.live.config.ts"
+      - ".github/workflows/e2e-live.yml"
   pull_request:
     paths:
+      - "apps/api/**"
       - "apps/web/src/lib/live/**"
-      - "apps/web/src/lib/api/**"
-      - "apps/web/src/content/levels.manifest.json"
+      - "apps/web/src/lib/server/**"
+      - "apps/web/src/features/auth/**"
       - "apps/web/e2e-live/**"
       - "apps/web/playwright.live.config.ts"
       - ".github/workflows/e2e-live.yml"
@@ -22,77 +30,52 @@ on:
 
 permissions:
   contents: read
-  packages: read
 
 jobs:
   live:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    defaults:
-      run:
-        working-directory: apps/web
     env:
       NEXT_TELEMETRY_DISABLED: 1
-      FK_API_ORIGIN: http://localhost:58000
     steps:
       - uses: actions/checkout@v4
 
-      - name: Pinned backend image
-        id: pin
-        run: |
-          image=$(tr -d '[:space:]' < e2e-live/backend.image)
-          if [ "$image" = "PENDING" ]; then
-            echo "::warning::e2e-live skipped: pin a backend image digest in apps/web/e2e-live/backend.image"
-            echo "ready=false" >> "$GITHUB_OUTPUT"
-          elif ! echo "$image" | grep -Eq '^ghcr\.io/[a-z0-9._/-]+@sha256:[0-9a-f]{64}$'; then
-            echo "::error::backend.image must be ghcr.io/<owner>/<repo>/backend@sha256:<digest> (no tags, no latest)"
-            exit 1
-          else
-            echo "BACKEND_IMAGE=$image" >> "$GITHUB_ENV"
-            echo "ready=true" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Log in to GitHub Container Registry
-        if: steps.pin.outputs.ready == 'true'
-        uses: docker/login-action@v3
+      - uses: astral-sh/setup-uv@v6
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          enable-cache: true
+          cache-dependency-glob: apps/api/uv.lock
 
-      - name: Start backend stack (fresh database)
-        if: steps.pin.outputs.ready == 'true'
+      - name: Start the server (fresh database)
+        working-directory: apps/api
         run: |
-          key=$(openssl rand -hex 32)
-          echo "::add-mask::$key"
-          echo "E2E_SECRET_KEY=$key" >> "$GITHUB_ENV"
-          E2E_SECRET_KEY=$key docker compose -f e2e-live/compose.yml up -d --wait
+          cp .env.example .env
+          docker compose up -d --wait db redis minio
+          timeout 60 sh -c 'until curl -sf http://localhost:9100/minio/health/live; do sleep 1; done'
+          uv sync --locked
+          uv run alembic upgrade head
+          uv run uvicorn app.main:app --port 8000 > "$RUNNER_TEMP/api.log" 2>&1 &
+          timeout 60 sh -c 'until curl -sf http://localhost:8000/healthz; do sleep 1; done'
 
       - uses: actions/setup-node@v4
-        if: steps.pin.outputs.ready == 'true'
         with:
           node-version: 22
           cache: npm
           cache-dependency-path: apps/web/package-lock.json
 
       - name: Live E2E
-        if: steps.pin.outputs.ready == 'true'
+        working-directory: apps/web
         run: |
           npm ci
           npx playwright install --with-deps chromium
           npm run e2e:live
 
-      - name: Backend logs
-        if: failure() && steps.pin.outputs.ready == 'true'
-        run: docker compose -f e2e-live/compose.yml logs backend --tail 200
+      - name: Server logs
+        if: failure()
+        run: tail -n 200 "$RUNNER_TEMP/api.log"
 
       - uses: actions/upload-artifact@v4
-        if: failure() && steps.pin.outputs.ready == 'true'
+        if: failure()
         with:
           name: e2e-live-traces
           path: apps/web/test-results
           retention-days: 7
-
-      - name: Stop backend stack
-        if: always() && steps.pin.outputs.ready == 'true'
-        run: docker compose -f e2e-live/compose.yml down -v
