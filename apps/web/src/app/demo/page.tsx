@@ -1,16 +1,17 @@
 "use client";
 
 import "@/messages/child";
-import { useEffect, useMemo, useState, type ComponentType } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type ComponentType } from "react";
 import { LangSwitch, Logo } from "@/components/brand";
 import { Mascot } from "@/components/Mascot";
 import { Chip, LinkButton } from "@/components/ui";
-import { LEVEL_BY_ID } from "@/content/levels";
+import { LEVEL_BY_ID, LEVELS } from "@/content/levels";
 import { ENGINES, type EngineProps } from "@/features/activities/registry";
 import { DEMO_PLAY, PlayContext, type PlayCtx } from "@/features/play/context";
+import { SCAN_DEFAULT, useScanning } from "@/features/play/Target";
 import { sfx, unlockAudio } from "@/lib/audio";
 import { useLang, useT } from "@/lib/i18n";
-import type { MascotMood } from "@/lib/types";
+import type { AccessMode, Activity, InteractionEvent, MascotMood } from "@/lib/types";
 
 // "Try a demo" (PRD §9.3 SHOULD): a few real engines, default profile, nothing is stored.
 const GAMES = [
@@ -22,6 +23,29 @@ const GAMES = [
   { level: "fruits", activity: "fruits-same", key: "g_fruits", arch: "A" },
 ] as const;
 
+/** Hold-to-choose time in the dwell demo. */
+const DEMO_DWELL_MS = 600;
+
+/**
+ * `?access=dwell|scan` plays with hold-to-choose or switch scanning (Space moves, Enter chooses), and `?kind=<game>`
+ * opens the first game of that kind. Every accepted press and every input event is kept in `window.fkInput`, so the
+ * input layer can be tested in every game (B13).
+ */
+function useDemoOptions(): { access: AccessMode; kind: string | null } {
+  // The address never changes while the page is open; the server render has no options.
+  const search = useSyncExternalStore(noSubscribe, () => window.location.search, () => "");
+  const q = new URLSearchParams(search);
+  const access = q.get("access");
+  return { access: access === "dwell" || access === "scan" ? access : "touch", kind: q.get("kind") };
+}
+const noSubscribe = () => () => {};
+
+declare global {
+  interface Window {
+    fkInput?: { accepts: InteractionEvent["pointerType"][]; events: string[] };
+  }
+}
+
 export default function DemoPage() {
   const [lang] = useLang();
   const t = useT();
@@ -29,9 +53,14 @@ export default function DemoPage() {
   const [run, setRun] = useState(0);
   const [finished, setFinished] = useState(false);
   const [mood, setMood] = useState<{ m: MascotMood; n: number }>({ m: "wave", n: 0 });
+  const options = useDemoOptions();
+  const engineRoot = useRef<HTMLDivElement>(null);
   const g = GAMES[game];
-  const activity = LEVEL_BY_ID[g.level].activities.find((a) => a.id === g.activity)!;
+  const ofKind = options.kind ? LEVELS.flatMap((l) => l.activities.map((a) => ({ level: l.id, a }))).find((x) => x.a.kind === options.kind) : undefined;
+  const activity: Activity = ofKind?.a ?? LEVEL_BY_ID[g.level].activities.find((a) => a.id === g.activity)!;
+  const levelId = ofKind?.level ?? g.level;
   const Engine = ENGINES[activity.kind] as ComponentType<EngineProps>;
+  useScanning(options.access === "scan", engineRoot, { ...SCAN_DEFAULT, mode: "step", lang });
 
   useEffect(() => {
     if (mood.m === "calm" || mood.m === "celebrate") return;
@@ -42,16 +71,20 @@ export default function DemoPage() {
   const ctx: PlayCtx = useMemo(
     () => ({
       ...DEMO_PLAY,
+      access: options.access,
+      profile: options.access === "dwell" ? { ...DEMO_PLAY.profile, dwellMs: DEMO_DWELL_MS } : DEMO_PLAY.profile,
       learnLang: lang,
       uiLang: lang,
-      levelId: g.level,
-      activityId: g.activity,
+      levelId,
+      activityId: activity.id,
+      emit: (e) => (window.fkInput ??= { accepts: [], events: [] }).events.push(e.type),
+      onAccept: (how) => (window.fkInput ??= { accepts: [], events: [] }).accepts.push(how),
       react: (k) => {
         sfx(k === "success" ? "success" : "soft");
         setMood((x) => ({ m: k === "success" ? "happy" : "curious", n: x.n + 1 }));
       },
     }),
-    [lang, g.level, g.activity],
+    [lang, levelId, activity.id, options.access],
   );
 
   const choose = (i: number) => {
@@ -103,7 +136,7 @@ export default function DemoPage() {
           ))}
         </nav>
 
-        <div className="relative">
+        <div className="relative" ref={engineRoot}>
           <PlayContext.Provider value={ctx}>
             {finished ? (
               <section className="flex min-h-[480px] flex-col items-center justify-center gap-4 rounded-fk-lg border border-line bg-surface p-8 text-center shadow-soft">

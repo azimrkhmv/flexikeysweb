@@ -67,6 +67,7 @@ export function Target({
   const fire = (info: SelectInfo) => {
     markAccept(ctx);
     sfx("tap");
+    ctx.onAccept?.(info.pointerType);
     onSelect(info);
   };
 
@@ -159,9 +160,10 @@ export function Target({
       // Switches and keys get the same debounce as touch, so a tremor or clonus can't double-select.
       onClick={(e) => {
         if (e.detail !== 0 || disabled) return;
+        const pointerType = e.currentTarget.dataset.scanPress === undefined ? "keyboard" : "switch";
         const since = ctx.lastAccept.current === null ? null : performance.now() - ctx.lastAccept.current;
-        if (pressDecision(Infinity, since, ctx.profile) === "debounced") ctx.emit({ type: "debounced", target: targetId, pointerType: "keyboard" });
-        else fire({ pointerType: "keyboard" });
+        if (pressDecision(Infinity, since, ctx.profile) === "debounced") ctx.emit({ type: "debounced", target: targetId, pointerType });
+        else fire({ pointerType });
       }}
     >
       {children}
@@ -187,6 +189,7 @@ export function useScanning(
     let i = -1;
     let current: HTMLElement | null = null;
     let timer: ReturnType<typeof setInterval> | undefined;
+    let settling = false; // after a choice, the next screen gets 300 ms to render
     const targets = () => Array.from(root.current?.querySelectorAll<HTMLElement>("[data-fk-target]:not([disabled]):not([data-scan-skip])") ?? []);
     const step = () => {
       const list = targets();
@@ -209,21 +212,32 @@ export function useScanning(
       e.stopPropagation();
       if (e.repeat) return; // a held switch auto-repeats ~30×/s: one press = one selection
       if (mode === "step" && e.key === " ") return step();
-      current?.click();
+      if (current) {
+        current.dataset.scanPress = ""; // the target reports it as a switch press
+        current.click();
+        delete current.dataset.scanPress;
+      }
       i = -1;
       if (current) delete current.dataset.scanActive;
       current = null;
       // Let the next screen render, then highlight its first item with a full step of time.
+      settling = true;
       setTimeout(() => {
+        settling = false;
         step();
         restart();
       }, 300);
     };
     step();
     restart();
+    // Targets that appear later (a picture still loading) or a highlighted target that is gone: highlight again.
+    const watch = setInterval(() => {
+      if (!settling && !current?.isConnected) step();
+    }, 500);
     window.addEventListener("keydown", onKey, true);
     return () => {
       clearInterval(timer);
+      clearInterval(watch);
       window.removeEventListener("keydown", onKey, true);
       if (current) delete current.dataset.scanActive;
     };

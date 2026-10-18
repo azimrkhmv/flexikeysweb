@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent as RPointerEvent, type ReactNode } from "react";
 import { itemName, loadColoring, loadTrace, PALETTE, pathD, traceItems, type ColoringItem, type Pt, type TraceItem } from "@/content/drawing";
 import { vocab } from "@/content/vocab";
-import { usePlay } from "@/features/play/context";
+import { markAccept, usePlay } from "@/features/play/context";
+import { pressDecision } from "@/lib/adaptive";
 import { Target, type SelectInfo } from "@/features/play/Target";
 import { ActionButton, answer, Frame, sizeFor, useActT, useClock } from "./kit";
 import type { EngineProps } from "./registry";
@@ -468,11 +469,16 @@ function MazeRound({ n, seed, index, total, last, next }: { n: number; seed: num
       const to = at + d;
       if ((d === -1 && at % n === 0) || (d === 1 && at % n === n - 1) || to < 0 || to >= n * n) return;
       e.preventDefault();
+      // The same debounce as every target, so a tremor can't take two steps.
+      const since = ctx.lastAccept.current === null ? null : performance.now() - ctx.lastAccept.current;
+      if (pressDecision(Infinity, since, ctx.profile) === "debounced") return ctx.emit({ type: "debounced", target: "maze", pointerType: "keyboard" });
+      markAccept(ctx);
+      ctx.onAccept?.("keyboard");
       move(to, { pointerType: "keyboard" });
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [at, n, move]);
+  }, [at, n, move, ctx]);
 
   const cell = 100 / n;
   const pos = (c: Cell) => ({ left: `${(c % n) * cell}%`, top: `${Math.floor(c / n) * cell}%`, width: `${cell}%`, height: `${cell}%` });

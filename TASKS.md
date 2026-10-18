@@ -421,7 +421,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 
 **Website and content — in this order**
 
-- [ ] **Azim** — `B13` Input layer: every game receives "select, move, hold" and never a raw tap
+- [x] **Azim** — `B13` Input layer: every game receives "select, move, hold" and never a raw tap
   - Done when: hold-to-choose and switch scanning work in every game
   - Needs: —
 - [ ] **Azim** — `B14` Save every try with its access events; keep tries when the internet drops and send them later in batches

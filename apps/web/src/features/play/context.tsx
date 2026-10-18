@@ -28,6 +28,8 @@ export interface PlayCtx {
   say(text: string, lang?: Lang, queue?: boolean): void;
   /** Shared across all targets for debounce. */
   lastAccept: { current: number | null };
+  /** Every press the input layer accepted (select or hold), and how it came: touch, mouse, keyboard or switch. */
+  onAccept?(pointerType: InteractionEvent["pointerType"]): void;
 }
 
 const demoLastAccept = { current: null as number | null };
