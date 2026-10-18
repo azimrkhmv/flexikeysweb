@@ -23,7 +23,7 @@ from app.modules.children.router import get_visible_child
 from app.modules.intake.models import IntakeAnswer, IntakeRound
 from app.modules.intake.rules import QUESTIONS, check_answer, missing_answers
 from app.modules.plans.router import create_plan
-from app.modules.therapists.form import answers_in_use
+from app.modules.therapists.form import answers_in_use, therapist_input
 from app.modules.today.router import daily_updates
 from app.schemas import ApiModel
 from app.settings import settings
@@ -142,7 +142,8 @@ async def finish_round(
         raise AppError(422, "round_incomplete", missing=missing)
     r.completed_at = datetime.now(UTC)
     used, _ = await answers_in_use(db, child_id, answers, health)  # a therapist's answer wins (A8.2)
-    await create_plan(db, child, r.id, used, health)  # in the same transaction: no finished round without a plan
+    therapist = await therapist_input(db, child_id, health)
+    await create_plan(db, child, r.id, used, health, therapist)  # in the same transaction: always a plan with a round
     await db.commit()
     return await _out(db, r)
 

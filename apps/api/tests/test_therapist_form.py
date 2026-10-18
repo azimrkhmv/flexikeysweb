@@ -140,7 +140,7 @@ def test_the_plan_is_built_from_the_answers_in_use(client: TestClient, monkeypat
     form(client, therapist, child, {"T6": {"items": ["prone"], "text": ""}})
     seen: dict[str, Any] = {}
 
-    async def fake_plan(db: Any, child: Any, round_id: Any, answers: dict[str, Any], health: bool) -> None:
+    async def fake_plan(db: Any, child: Any, round_id: Any, answers: dict[str, Any], *_: Any) -> None:
         seen.update(answers)
 
     monkeypatch.setattr(intake_router, "create_plan", fake_plan)

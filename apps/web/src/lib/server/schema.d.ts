@@ -1769,6 +1769,11 @@ export interface components {
             parentAnswers: {
                 [key: string]: unknown;
             };
+            /**
+             * Planrebuilt
+             * @default false
+             */
+            planRebuilt: boolean;
         };
         /** GameItem */
         GameItem: {

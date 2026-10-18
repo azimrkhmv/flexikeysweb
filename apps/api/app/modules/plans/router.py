@@ -17,7 +17,7 @@ from app.modules.children.models import Child
 from app.modules.children.router import get_visible_child
 from app.modules.plans import engine
 from app.modules.plans.models import FixedLevel, ItemKind, Plan, PlanItem, PlanReason
-from app.modules.plans.safety import LibraryExercise
+from app.modules.plans.safety import LibraryExercise, Therapist
 from app.modules.today.models import Feeling, PausedDay, TaskDone
 from app.modules.videos.models import Exercise, Video, servable
 from app.schemas import ApiModel
@@ -48,10 +48,16 @@ async def library(db: AsyncSession) -> list[LibraryExercise]:
 
 
 async def create_plan(
-    db: AsyncSession, child: Child, round_id: uuid.UUID, answers: dict[str, Any], health_consent: bool
+    db: AsyncSession,
+    child: Child,
+    round_id: uuid.UUID,
+    answers: dict[str, Any],
+    health_consent: bool,
+    therapist: Therapist | None = None,
 ) -> Plan:
-    """Build the 4-week plan from the round's answers and add it, with its items and reasons, to the session.
-    Starts today in Tashkent. Older plans stay as the child's history; the newest is the current one."""
+    """Build the 4-week plan from the round's answers (and what the child's therapists set) and add it, with its
+    items and reasons, to the session. Starts today in Tashkent. Older plans stay as the child's history; the newest
+    is the current one."""
     start = datetime.now(TASHKENT).date()
     built = engine.build_plan(
         answers,
@@ -60,6 +66,7 @@ async def create_plan(
         start_date=start,
         lang="uz" if child.lang == Lang.uz_cyrl else child.lang.value,
         health_consent=health_consent,
+        therapist=therapist,
     )
     plan = Plan(
         child_id=child.id,

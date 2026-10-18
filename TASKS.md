@@ -509,7 +509,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `B25` Therapist assigns or excludes exercises; watches clips and replies
   - Done when: an excluded exercise never comes back into the plan
   - Needs: B23
-- [ ] **Azim** — `A8.5` Server: rebuild the plan when a therapist changes restrictions, goals or exercises
+- [x] **Azim** — `A8.5` Server: rebuild the plan when a therapist changes restrictions, goals or exercises
   - Done when: a test proves a therapist's restriction never appears in the new plan
   - Needs: A8.2, A4.4
 - [ ] **Azim** — `A8.6` Movement and feedback clips encrypted at rest in storage (spec §15 "encrypted storage"), for example MinIO server-side encryption with a key kept like the health key

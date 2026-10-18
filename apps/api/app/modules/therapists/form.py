@@ -2,8 +2,11 @@
 
 A therapist's answer wins over the parent's (product rule 4): T2 replaces P12, T5 replaces P10 and P11, T6 replaces
 P14 and T7 replaces P33 in the answers the plan is built from, and each replaced answer carries the therapist's name,
-so the parent sees "Updated by …". When two therapists answer the same question, the newer answer is used. T9 (notes
-on the parent's movement clips) lives with the clips (A8.3).
+so the parent sees "Updated by …". When two therapists answer the same question, the newer answer is used; but every
+therapist's restrictions (T6) and excluded exercises (T8) count. T9 (notes on the parent's movement clips) lives with
+the clips (A8.3).
+
+A change to T2, T5, T6, T7 or T8 rebuilds the plan at once (A8.5).
 
 An answer stays after the share stops: a restriction a therapist gave must not quietly disappear (rule 2).
 """
@@ -25,9 +28,13 @@ from app.modules.accounts.models import User
 from app.modules.audit import models as audit
 from app.modules.auth.session import CurrentUser
 from app.modules.children.consents import ConsentKind, has_consent, require_consent
+from app.modules.children.models import Child
 from app.modules.children.router import get_visible_child
 from app.modules.intake.models import IntakeAnswer, IntakeRound
 from app.modules.intake.rules import QUESTIONS
+from app.modules.plans.router import create_plan
+from app.modules.plans.safety import P14_TAGS
+from app.modules.plans.safety import Therapist as TherapistInput
 from app.modules.therapists.models import Profession, TherapistAnswer, TherapistProfile
 from app.modules.therapists.router import Therapist, get_shared_child
 from app.modules.videos.models import Exercise
@@ -183,14 +190,59 @@ async def answers_in_use(
     return answers, by
 
 
+async def therapist_input(db: AsyncSession, child_id: uuid.UUID, health: bool) -> TherapistInput | None:
+    """What the child's therapists set, for the plan engine (plans/safety.py Therapist). The newest T2 and T7 are used;
+    the restrictions (T6) and the assigned and excluded exercises (T8) of every therapist count, and an exclusion beats
+    an assignment."""
+    rows = await _therapist_rows(db, child_id, ["T2", "T6", "T7", "T8"], health)
+    if not rows:
+        return None
+    newest = {q: v for q, v, _ in rows}  # oldest first, so the newest stays
+    exclude = {e for q, v, _ in rows if q == "T8" for e in v["exclude"]}
+    return TherapistInput(
+        restrictions=frozenset(r for q, v, _ in rows if q == "T6" for r in v["items"] if r in P14_TAGS),
+        goals=tuple(newest["T7"]["goals"]) if "T7" in newest else (),
+        assign=frozenset(e for q, v, _ in rows if q == "T8" for e in v["assign"]) - exclude,
+        exclude=frozenset(exclude),
+        gmfcs=newest.get("T2"),
+    )
+
+
+async def _round_answers(db: AsyncSession, round_id: uuid.UUID | None) -> dict[str, Any]:
+    rows = await db.execute(
+        select(IntakeAnswer.question_id, IntakeAnswer.value, IntakeAnswer.secret).where(
+            IntakeAnswer.round_id == round_id
+        )
+    )
+    return {q: decrypt_json(secret) if secret else value for q, value, secret in rows}
+
+
 async def _latest_parent_answers(db: AsyncSession, child_id: uuid.UUID) -> dict[str, Any]:
     last = await db.scalar(
         select(IntakeRound.id).where(IntakeRound.child_id == child_id).order_by(IntakeRound.number.desc()).limit(1)
     )
-    rows = await db.execute(
-        select(IntakeAnswer.question_id, IntakeAnswer.value, IntakeAnswer.secret).where(IntakeAnswer.round_id == last)
+    return await _round_answers(db, last)
+
+
+REBUILDS = {"T2", "T5", "T6", "T7", "T8"}  # restrictions, movement level, goals, exercises
+
+
+async def rebuild_plan(db: AsyncSession, child_id: uuid.UUID) -> bool:
+    """A new plan from the last finished round and what the therapists set now. False when there is no finished
+    round yet (the plan then comes when the parent finishes the questions)."""
+    last = await db.scalar(
+        select(IntakeRound)
+        .where(IntakeRound.child_id == child_id, IntakeRound.completed_at.is_not(None))
+        .order_by(IntakeRound.number.desc())
+        .limit(1)
     )
-    return {q: decrypt_json(secret) if secret else value for q, value, secret in rows}
+    child = await db.get(Child, child_id)
+    if last is None or child is None:
+        return False
+    health = await has_consent(db, child_id, ConsentKind.health)
+    used, _ = await answers_in_use(db, child_id, await _round_answers(db, last.id), health)
+    await create_plan(db, child, last.id, used, health, await therapist_input(db, child_id, health))
+    return True
 
 
 @router.get("/{child_id}/answers-in-use")
@@ -255,6 +307,7 @@ class FormOut(ApiModel):
     answers: dict[str, Any]  # this therapist's own answers
     missing: list[str]  # required answers still to give
     parent_answers: dict[str, Any]  # what the parent said to the questions the form confirms or corrects
+    plan_rebuilt: bool = False  # this save changed the child's plan (A8.5)
 
 
 async def _form(db: AsyncSession, user: User, child_id: uuid.UUID, profession: Profession) -> FormOut:
@@ -332,5 +385,6 @@ async def save_form(
             )
         )
     audit.record(db, user.id, "therapist.form_saved", child_id, questions=sorted(clean))
+    rebuilt = bool(REBUILDS & clean.keys()) and await rebuild_plan(db, child_id)
     await db.commit()
-    return await _form(db, user, child_id, profession)
+    return (await _form(db, user, child_id, profession)).model_copy(update={"plan_rebuilt": rebuilt})
