@@ -5,7 +5,7 @@ from datetime import date, datetime
 from decimal import Decimal
 from enum import StrEnum
 
-from sqlalchemy import CheckConstraint, Date, DateTime, ForeignKey, Numeric, String, UniqueConstraint
+from sqlalchemy import CheckConstraint, Date, DateTime, ForeignKey, Index, Numeric, String, UniqueConstraint, text
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -95,3 +95,32 @@ class Slot(IdTimeMixin, Base):
     specialist: Mapped[str | None] = mapped_column(String(80))  # who sees the child, when the clinic says
     in_person: Mapped[bool]
     online: Mapped[bool]
+
+
+class BookingMode(StrEnum):
+    in_person = "in_person"
+    online = "online"
+
+
+class BookingStatus(StrEnum):
+    booked = "booked"  # waiting for the clinic
+    confirmed = "confirmed"
+    cancelled = "cancelled"
+
+
+class Booking(IdTimeMixin, Base):
+    """A family books one free time (spec §11). The family pays the clinic directly; no money passes here."""
+
+    __tablename__ = "bookings"
+    __table_args__ = (
+        # The database itself refuses a second booking of the same time, even from two requests at once.
+        Index("uq_bookings_one_per_slot", "slot_id", unique=True, postgresql_where=text("status <> 'cancelled'")),
+    )
+
+    slot_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("slots.id", ondelete="CASCADE"))
+    child_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("children.id", ondelete="CASCADE"), index=True)
+    booked_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
+    mode: Mapped[BookingMode] = mapped_column(enum_column(BookingMode))
+    status: Mapped[BookingStatus] = mapped_column(enum_column(BookingStatus), default=BookingStatus.booked)
+    online_link: Mapped[str | None] = mapped_column(String(500))  # the clinic adds it for an online session
+    cancelled_by: Mapped[str | None] = mapped_column(String(8))  # "family" or "clinic"

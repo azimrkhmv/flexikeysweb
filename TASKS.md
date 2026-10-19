@@ -604,7 +604,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A10.3` Clinic accounts and their free times
   - Done when: a clinic sees only its own data
   - Needs: A1.7
-- [ ] **Azim** — `A10.4` Booking, confirm and cancel, in person or online
+- [x] **Azim** — `A10.4` Booking, confirm and cancel, in person or online
   - Done when: the database makes a double booking impossible
   - Needs: A10.3
 - [ ] **Azim** — `A10.5` Reminders 1 day and 2 hours before a visit

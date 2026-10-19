@@ -1281,6 +1281,353 @@
     }
    }
   },
+  "/api/v1/places/{place_id}/slots": {
+   "get": {
+    "tags": [
+     "booking"
+    ],
+    "summary": "Free Slots",
+    "description": "The free times still to come, earliest first. A taken time is not listed.",
+    "operationId": "free_slots_api_v1_places__place_id__slots_get",
+    "parameters": [
+     {
+      "name": "place_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Place Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/FreeSlot"
+         },
+         "title": "Response Free Slots Api V1 Places  Place Id  Slots Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/children/{child_id}/bookings": {
+   "post": {
+    "tags": [
+     "booking"
+    ],
+    "summary": "Book",
+    "description": "409 slot_taken when someone booked it first; 422 slot_gone (past or removed), mode_not_offered.",
+    "operationId": "book_api_v1_children__child_id__bookings_post",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/BookingIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/BookingOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "get": {
+    "tags": [
+     "booking"
+    ],
+    "summary": "Family Bookings",
+    "description": "This child's bookings, cancelled ones too, by time.",
+    "operationId": "family_bookings_api_v1_children__child_id__bookings_get",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/BookingOut"
+         },
+         "title": "Response Family Bookings Api V1 Children  Child Id  Bookings Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/children/{child_id}/bookings/{booking_id}/cancel": {
+   "post": {
+    "tags": [
+     "booking"
+    ],
+    "summary": "Family Cancel",
+    "description": "The time is free again for others.",
+    "operationId": "family_cancel_api_v1_children__child_id__bookings__booking_id__cancel_post",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     },
+     {
+      "name": "booking_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Booking Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/BookingOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clinic/places/{place_id}/bookings": {
+   "get": {
+    "tags": [
+     "booking"
+    ],
+    "summary": "Clinic Bookings",
+    "description": "Bookings of this place from now on, earliest first; cancelled ones too.",
+    "operationId": "clinic_bookings_api_v1_clinic_places__place_id__bookings_get",
+    "parameters": [
+     {
+      "name": "place_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Place Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/ClinicBooking"
+         },
+         "title": "Response Clinic Bookings Api V1 Clinic Places  Place Id  Bookings Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clinic/bookings/{booking_id}/confirm": {
+   "post": {
+    "tags": [
+     "booking"
+    ],
+    "summary": "Confirm",
+    "description": "Confirm, and for an online session give the link (422 online_link_needed without one).",
+    "operationId": "confirm_api_v1_clinic_bookings__booking_id__confirm_post",
+    "parameters": [
+     {
+      "name": "booking_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Booking Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/app__modules__places__bookings__Decision"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ClinicBooking"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clinic/bookings/{booking_id}/cancel": {
+   "post": {
+    "tags": [
+     "booking"
+    ],
+    "summary": "Clinic Cancel",
+    "operationId": "clinic_cancel_api_v1_clinic_bookings__booking_id__cancel_post",
+    "parameters": [
+     {
+      "name": "booking_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Booking Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ClinicBooking"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/v1/children": {
    "get": {
     "tags": [
@@ -4174,7 +4521,7 @@
      "content": {
       "application/json": {
        "schema": {
-        "$ref": "#/components/schemas/Decision"
+        "$ref": "#/components/schemas/app__modules__videos__router__Decision"
        }
       }
      }
@@ -4320,6 +4667,121 @@
      "answers"
     ],
     "title": "AnswersIn"
+   },
+   "BookingIn": {
+    "properties": {
+     "slotId": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Slotid"
+     },
+     "mode": {
+      "$ref": "#/components/schemas/BookingMode"
+     }
+    },
+    "type": "object",
+    "required": [
+     "slotId",
+     "mode"
+    ],
+    "title": "BookingIn"
+   },
+   "BookingMode": {
+    "type": "string",
+    "enum": [
+     "in_person",
+     "online"
+    ],
+    "title": "BookingMode"
+   },
+   "BookingOut": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "placeId": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Placeid"
+     },
+     "placeName": {
+      "type": "string",
+      "title": "Placename"
+     },
+     "startsAt": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Startsat"
+     },
+     "minutes": {
+      "type": "integer",
+      "title": "Minutes"
+     },
+     "specialist": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Specialist"
+     },
+     "mode": {
+      "$ref": "#/components/schemas/BookingMode"
+     },
+     "status": {
+      "$ref": "#/components/schemas/BookingStatus"
+     },
+     "onlineLink": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Onlinelink"
+     },
+     "cancelledBy": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Cancelledby"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "placeId",
+     "placeName",
+     "startsAt",
+     "minutes",
+     "specialist",
+     "mode",
+     "status",
+     "onlineLink",
+     "cancelledBy"
+    ],
+    "title": "BookingOut"
+   },
+   "BookingStatus": {
+    "type": "string",
+    "enum": [
+     "booked",
+     "confirmed",
+     "cancelled"
+    ],
+    "title": "BookingStatus"
    },
    "CardChange": {
     "properties": {
@@ -4683,6 +5145,109 @@
     ],
     "title": "ChildOut"
    },
+   "ClinicBooking": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "placeId": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Placeid"
+     },
+     "placeName": {
+      "type": "string",
+      "title": "Placename"
+     },
+     "startsAt": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Startsat"
+     },
+     "minutes": {
+      "type": "integer",
+      "title": "Minutes"
+     },
+     "specialist": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Specialist"
+     },
+     "mode": {
+      "$ref": "#/components/schemas/BookingMode"
+     },
+     "status": {
+      "$ref": "#/components/schemas/BookingStatus"
+     },
+     "onlineLink": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Onlinelink"
+     },
+     "cancelledBy": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Cancelledby"
+     },
+     "childName": {
+      "type": "string",
+      "title": "Childname"
+     },
+     "childBirthDate": {
+      "type": "string",
+      "format": "date",
+      "title": "Childbirthdate"
+     },
+     "parentPhone": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Parentphone"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "placeId",
+     "placeName",
+     "startsAt",
+     "minutes",
+     "specialist",
+     "mode",
+     "status",
+     "onlineLink",
+     "cancelledBy",
+     "childName",
+     "childBirthDate",
+     "parentPhone"
+    ],
+    "title": "ClinicBooking"
+   },
    "ClipIn": {
     "properties": {
      "kind": {
@@ -4955,29 +5520,6 @@
     ],
     "title": "DayOut"
    },
-   "Decision": {
-    "properties": {
-     "decision": {
-      "$ref": "#/components/schemas/ReviewDecision"
-     },
-     "note": {
-      "anyOf": [
-       {
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Note"
-     }
-    },
-    "type": "object",
-    "required": [
-     "decision"
-    ],
-    "title": "Decision"
-   },
    "DoneIn": {
     "properties": {
      "day": {
@@ -5218,6 +5760,53 @@
      "parentAnswers"
     ],
     "title": "FormOut"
+   },
+   "FreeSlot": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "startsAt": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Startsat"
+     },
+     "minutes": {
+      "type": "integer",
+      "title": "Minutes"
+     },
+     "specialist": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Specialist"
+     },
+     "inPerson": {
+      "type": "boolean",
+      "title": "Inperson"
+     },
+     "online": {
+      "type": "boolean",
+      "title": "Online"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "startsAt",
+     "minutes",
+     "specialist",
+     "inPerson",
+     "online"
+    ],
+    "title": "FreeSlot"
    },
    "GameItem": {
     "properties": {
@@ -8296,6 +8885,25 @@
     ],
     "title": "InviteOut"
    },
+   "app__modules__places__bookings__Decision": {
+    "properties": {
+     "onlineLink": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 500,
+        "pattern": "^https://"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Onlinelink"
+     }
+    },
+    "type": "object",
+    "title": "Decision"
+   },
    "app__modules__places__clinic__SlotOut": {
     "properties": {
      "startsAt": {
@@ -8406,6 +9014,29 @@
      "expiresAt"
     ],
     "title": "InviteOut"
+   },
+   "app__modules__videos__router__Decision": {
+    "properties": {
+     "decision": {
+      "$ref": "#/components/schemas/ReviewDecision"
+     },
+     "note": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Note"
+     }
+    },
+    "type": "object",
+    "required": [
+     "decision"
+    ],
+    "title": "Decision"
    }
   }
  }

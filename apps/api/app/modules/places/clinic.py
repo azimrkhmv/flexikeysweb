@@ -14,7 +14,7 @@ from app.db import get_session
 from app.errors import AppError
 from app.modules.accounts.access import require_role
 from app.modules.accounts.models import Role, User
-from app.modules.places.models import Place, Slot
+from app.modules.places.models import Booking, BookingStatus, Place, Slot
 from app.schemas import ApiModel
 
 router = APIRouter(prefix="/clinic", tags=["clinic"])
@@ -108,6 +108,9 @@ async def delete_slot(
     slot = await db.get(Slot, slot_id)
     if slot is None or slot.place_id != place_id:
         raise AppError(404, "not_found")
+    booked = select(Booking.id).where(Booking.slot_id == slot_id, Booking.status != BookingStatus.cancelled)
+    if await db.scalar(booked):
+        raise AppError(409, "slot_booked")  # cancel the booking first, so the family is told
     await db.delete(slot)
     await db.commit()
     return Response(status_code=204)

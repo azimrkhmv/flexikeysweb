@@ -565,6 +565,127 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/places/{place_id}/slots": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Free Slots
+         * @description The free times still to come, earliest first. A taken time is not listed.
+         */
+        get: operations["free_slots_api_v1_places__place_id__slots_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/children/{child_id}/bookings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Family Bookings
+         * @description This child's bookings, cancelled ones too, by time.
+         */
+        get: operations["family_bookings_api_v1_children__child_id__bookings_get"];
+        put?: never;
+        /**
+         * Book
+         * @description 409 slot_taken when someone booked it first; 422 slot_gone (past or removed), mode_not_offered.
+         */
+        post: operations["book_api_v1_children__child_id__bookings_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/children/{child_id}/bookings/{booking_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Family Cancel
+         * @description The time is free again for others.
+         */
+        post: operations["family_cancel_api_v1_children__child_id__bookings__booking_id__cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clinic/places/{place_id}/bookings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Clinic Bookings
+         * @description Bookings of this place from now on, earliest first; cancelled ones too.
+         */
+        get: operations["clinic_bookings_api_v1_clinic_places__place_id__bookings_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clinic/bookings/{booking_id}/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Confirm
+         * @description Confirm, and for an online session give the link (422 online_link_needed without one).
+         */
+        post: operations["confirm_api_v1_clinic_bookings__booking_id__confirm_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clinic/bookings/{booking_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Clinic Cancel */
+        post: operations["clinic_cancel_api_v1_clinic_bookings__booking_id__cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/children": {
         parameters: {
             query?: never;
@@ -1598,6 +1719,55 @@ export interface components {
                 [key: string]: unknown;
             };
         };
+        /** BookingIn */
+        BookingIn: {
+            /**
+             * Slotid
+             * Format: uuid
+             */
+            slotId: string;
+            mode: components["schemas"]["BookingMode"];
+        };
+        /**
+         * BookingMode
+         * @enum {string}
+         */
+        BookingMode: "in_person" | "online";
+        /** BookingOut */
+        BookingOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Placeid
+             * Format: uuid
+             */
+            placeId: string;
+            /** Placename */
+            placeName: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /** Minutes */
+            minutes: number;
+            /** Specialist */
+            specialist: string | null;
+            mode: components["schemas"]["BookingMode"];
+            status: components["schemas"]["BookingStatus"];
+            /** Onlinelink */
+            onlineLink: string | null;
+            /** Cancelledby */
+            cancelledBy: string | null;
+        };
+        /**
+         * BookingStatus
+         * @enum {string}
+         */
+        BookingStatus: "booked" | "confirmed" | "cancelled";
         /** CardChange */
         CardChange: {
             /** Category */
@@ -1703,6 +1873,45 @@ export interface components {
             /** Color */
             color: string | null;
             lang: components["schemas"]["Lang"];
+        };
+        /** ClinicBooking */
+        ClinicBooking: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Placeid
+             * Format: uuid
+             */
+            placeId: string;
+            /** Placename */
+            placeName: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /** Minutes */
+            minutes: number;
+            /** Specialist */
+            specialist: string | null;
+            mode: components["schemas"]["BookingMode"];
+            status: components["schemas"]["BookingStatus"];
+            /** Onlinelink */
+            onlineLink: string | null;
+            /** Cancelledby */
+            cancelledBy: string | null;
+            /** Childname */
+            childName: string;
+            /**
+             * Childbirthdate
+             * Format: date
+             */
+            childBirthDate: string;
+            /** Parentphone */
+            parentPhone: string | null;
         };
         /** ClipIn */
         ClipIn: {
@@ -1813,12 +2022,6 @@ export interface components {
             /** Games */
             games: components["schemas"]["GameItem"][];
         };
-        /** Decision */
-        Decision: {
-            decision: components["schemas"]["ReviewDecision"];
-            /** Note */
-            note?: string | null;
-        };
         /** DoneIn */
         DoneIn: {
             /** Day */
@@ -1913,6 +2116,27 @@ export interface components {
              * @default false
              */
             planRebuilt: boolean;
+        };
+        /** FreeSlot */
+        FreeSlot: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /** Minutes */
+            minutes: number;
+            /** Specialist */
+            specialist: string | null;
+            /** Inperson */
+            inPerson: boolean;
+            /** Online */
+            online: boolean;
         };
         /** GameItem */
         GameItem: {
@@ -2941,6 +3165,11 @@ export interface components {
              */
             expiresAt: string;
         };
+        /** Decision */
+        app__modules__places__bookings__Decision: {
+            /** Onlinelink */
+            onlineLink?: string | null;
+        };
         /** SlotOut */
         app__modules__places__clinic__SlotOut: {
             /**
@@ -2993,6 +3222,12 @@ export interface components {
              * Format: date-time
              */
             expiresAt: string;
+        };
+        /** Decision */
+        app__modules__videos__router__Decision: {
+            decision: components["schemas"]["ReviewDecision"];
+            /** Note */
+            note?: string | null;
         };
     };
     responses: never;
@@ -3908,6 +4143,232 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    free_slots_api_v1_places__place_id__slots_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                place_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FreeSlot"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    family_bookings_api_v1_children__child_id__bookings_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    book_api_v1_children__child_id__bookings_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BookingIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    family_cancel_api_v1_children__child_id__bookings__booking_id__cancel_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+                booking_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    clinic_bookings_api_v1_clinic_places__place_id__bookings_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                place_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClinicBooking"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    confirm_api_v1_clinic_bookings__booking_id__confirm_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                booking_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["app__modules__places__bookings__Decision"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClinicBooking"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    clinic_cancel_api_v1_clinic_bookings__booking_id__cancel_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                booking_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClinicBooking"];
+                };
             };
             /** @description Validation Error */
             422: {
@@ -5861,7 +6322,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["Decision"];
+                "application/json": components["schemas"]["app__modules__videos__router__Decision"];
             };
         };
         responses: {
