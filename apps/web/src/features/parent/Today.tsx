@@ -164,6 +164,49 @@ function Week({ child, today }: { child: Child; today: string }) {
 
 const FEELINGS: Feeling[] = ["easy", "ok", "hard"];
 
+/** Optional (spec §8): film the child doing this exercise for their therapist. Only with the movement-videos
+ * consent; never analysed by AI; the parent can remove it at any time. */
+function FeedbackClip({ child, exerciseId }: { child: Child; exerciseId: string }) {
+  const t = useT();
+  const db = useDb();
+  const add = useAction(api.addFeedbackClip);
+  const remove = useAction(api.removeFeedbackClip);
+  if (!sel.hasConsent(db, child.id, "movement_videos")) return null;
+  const mine = sel.feedbackClips(db, child.id).filter((c) => c.exerciseId === exerciseId);
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      {mine.map((c) => (
+        <span key={c.id} className="inline-flex items-center gap-2">
+          <Chip tone="teal">
+            <Video className="size-3.5" aria-hidden /> {t("today.clip.sent")}
+          </Chip>
+          <Button size="sm" variant="ghost" pending={remove.pending} onClick={() => remove.run(child.id, c.id)}>
+            {t("today.clip.remove")}
+          </Button>
+        </span>
+      ))}
+      {mine.length === 0 && (
+        <label className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-full border border-line px-3 text-sm font-bold text-ink-2 hover:bg-surface-2">
+          <input
+            type="file"
+            accept="video/*"
+            capture="environment"
+            className="sr-only"
+            aria-label={t("today.clip.add")}
+            onChange={async (e) => {
+              const f = e.target.files?.[0];
+              e.target.value = "";
+              if (f) await add.run(child.id, exerciseId, f);
+            }}
+          />
+          <Video className="size-4" aria-hidden /> {t("today.clip.add")}
+        </label>
+      )}
+      {(add.error ?? remove.error) && <p role="alert" className="w-full text-sm font-semibold text-[#8f3a2c]">{add.error ?? remove.error}</p>}
+    </div>
+  );
+}
+
 function ExerciseItem({ child, day, video }: { child: Child; day: number; video: ExerciseVideo }) {
   const t = useT();
   const db = useDb();
@@ -208,6 +251,7 @@ function ExerciseItem({ child, day, video }: { child: Child; day: number; video:
               ))}
             </div>
             {level !== planned && <p className="text-sm text-ink-2">{t(level < planned ? "today.easierNext" : "today.harderNext")}</p>}
+            <FeedbackClip child={child} exerciseId={video.id} />
           </div>
         )}
         {(markDone.error ?? rate.error) && <p role="alert" className="text-sm font-semibold text-[#8f3a2c]">{markDone.error ?? rate.error}</p>}

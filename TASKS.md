@@ -524,7 +524,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `B28` Connect the helper screens to the server
   - Done when: a helper signs in with their own phone and sees the family's child
   - Needs: A8.4, B27
-- [ ] **Azim** — `B29` Today: the parent may film the child doing one exercise (optional feedback clip, spec §8), only with the movement-videos consent; the therapist sees it with the movement clips and replies
+- [x] **Azim** — `B29` Today: the parent may film the child doing one exercise (optional feedback clip, spec §8), only with the movement-videos consent; the therapist sees it with the movement clips and replies
   - Done when: a feedback clip filmed on Today shows on the therapist's child page with its exercise name
   - Needs: B25
 - [ ] **Azim** — `B30` Invite link for a therapist: the parent gets a link (not only a code) to send by Telegram; a therapist with a new number who opens it signs in straight into a therapist account (the server takes `inviteCode` at sign-in) and accepts in one step
@@ -552,7 +552,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 
 **Website and content — in this order**
 
-- [ ] **Azim** — `B29` Assistant screen: emergency words (seizure, trouble breathing, a fall with a head injury, sudden strong pain) show **103** before anything else
+- [x] **Azim** — `B29` Assistant screen: emergency words (seizure, trouble breathing, a fall with a head injury, sudden strong pain) show **103** before anything else
   - Done when: tested in all 4 languages
   - Needs: —
 - [ ] **Azim** — `A9.2` Server: the AI provider behind one setting, with a fake one for tests; a daily message limit; the child's name and birth date are never sent

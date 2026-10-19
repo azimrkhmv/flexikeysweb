@@ -468,6 +468,19 @@ export const liveApi = {
     await refetch();
     return clip.id;
   },
+  async addFeedbackClip(childId: string, exerciseId: string, file: Blob) {
+    const link = await http<ClipUpload>("POST", `/children/${childId}/clips/upload-link`, {});
+    const put = await fetch(link.uploadUrl, { method: "PUT", body: file, headers: { "Content-Type": file.type || "video/mp4" } });
+    if (!put.ok) throw new ApiError("generic");
+    const clip = await http<ClipOut>("POST", `/children/${childId}/clips`, { kind: "feedback", storageKey: link.storageKey, exerciseId });
+    await refetch();
+    return clip.id;
+  },
+  async removeFeedbackClip(childId: string, clipId: string) {
+    await http("DELETE", `/children/${childId}/clips/${clipId}`);
+    await refetch();
+    return true;
+  },
   async removeMovementClip(childId: string, clipId: string) {
     await http("DELETE", `/children/${childId}/clips/${clipId}`);
     await refetch();

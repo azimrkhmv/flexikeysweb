@@ -1,6 +1,10 @@
 // Strings for the "parent" area. Same keys in en/uz/ru (checked by src/lib/i18n.test.ts).
 export const parent = {
   en: {
+    "parent.therapist.replyExercise": "About your video of “{name}”",
+    "today.clip.add": "Film it for the therapist (optional)",
+    "today.clip.sent": "Video sent to the therapist",
+    "today.clip.remove": "Remove video",
     "parent.helpers.title": "Second adult",
     "parent.helpers.hint": "One more adult can help every day: answer the questions, mark tasks done and play. Only you can change consents, share, delete or pay.",
     "parent.helpers.phone": "Their phone number",
@@ -320,6 +324,10 @@ export const parent = {
     "parent.account.typeEmail": "Type your email to confirm",
   },
   uz: {
+    "parent.therapist.replyExercise": "“{name}” videongiz haqida",
+    "today.clip.add": "Mutaxassis uchun suratga oling (ixtiyoriy)",
+    "today.clip.sent": "Video mutaxassisga yuborildi",
+    "today.clip.remove": "Videoni oʻchirish",
     "parent.helpers.title": "Ikkinchi kattalar",
     "parent.helpers.hint": "Yana bir kattalar har kuni yordam bera oladi: savollarga javob berish, vazifalarni belgilash va oʻynash. Roziliklarni oʻzgartirish, ulashish, oʻchirish yoki toʻlashni faqat siz qila olasiz.",
     "parent.helpers.phone": "Uning telefon raqami",
@@ -639,6 +647,10 @@ export const parent = {
     "parent.account.typeEmail": "Tasdiqlash uchun emailingizni yozing",
   },
   ru: {
+    "parent.therapist.replyExercise": "О вашем видео «{name}»",
+    "today.clip.add": "Снять для специалиста (по желанию)",
+    "today.clip.sent": "Видео отправлено специалисту",
+    "today.clip.remove": "Удалить видео",
     "parent.helpers.title": "Второй взрослый",
     "parent.helpers.hint": "Ещё один взрослый может помогать каждый день: отвечать на вопросы, отмечать задания и играть. Менять согласия, делиться, удалять или платить можете только вы.",
     "parent.helpers.phone": "Его номер телефона",

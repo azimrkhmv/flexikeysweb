@@ -112,7 +112,8 @@ export const careApi = {
   /** POST /therapist/children/{id}/clips/{clip_id}/replies — T9, a note on one of the parent's clips. */
   async replyToClip(childId: string, clipId: string, text: string) {
     const { user } = requireChildAccess(childId, ["therapist"]);
-    if (!sel.movementClips(read(), childId).includes(clipId)) throw new ApiError("not_found");
+    const db = read();
+    if (!sel.movementClips(db, childId).includes(clipId) && !sel.feedbackClips(db, childId).some((c) => c.id === clipId)) throw new ApiError("not_found");
     if (!text.trim()) throw new ApiError("invalid_answer");
     write((db) => {
       db.clipReplies.push({ id: id(), childId, clipId, therapistId: user.id, text: text.trim(), at: iso() });

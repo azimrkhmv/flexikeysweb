@@ -134,6 +134,7 @@ export function seed(): DB {
     therapistAnswers: [],
     clipReplies: [],
     helperInvites: [],
+    feedbackClips: [],
   };
 
   // ~2 weeks of play history so dashboards have something real to show.

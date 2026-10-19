@@ -17,7 +17,10 @@ export function TherapistUpdates({ child }: { child: Child }) {
   const db = useDb();
   const { updated, messages, mustNotText } = sel.therapistUpdates(db, child.id);
   const questions = ORDER.filter((q) => updated[q]);
-  const replies = sel.movementClips(db, child.id).flatMap((c, i) => sel.clipReplies(db, child.id, c).map((r) => ({ ...r, n: i + 1 })));
+  const replies = [
+    ...sel.movementClips(db, child.id).map((c, i) => ({ c, about: t("parent.therapist.reply", { n: i + 1 }) })),
+    ...sel.feedbackClips(db, child.id).map(({ id: c, exerciseId }) => ({ c, about: t("parent.therapist.replyExercise", { name: sel.video(db, exerciseId)?.title[lang] ?? exerciseId }) })),
+  ].flatMap(({ c, about }) => sel.clipReplies(db, child.id, c).map((r) => ({ ...r, about })));
   if (!questions.length && !messages.length && !replies.length) return null;
   const by = (name: string, profession?: string) => (profession ? `${name}, ${t(`tform.profession.${profession}`)}` : name);
   const words = (q: string, v: string | string[]) => (Array.isArray(v) ? v : [v]).map((o) => t(`intake.${q}.${o}`)).join(", ");
@@ -51,7 +54,7 @@ export function TherapistUpdates({ child }: { child: Child }) {
       ))}
       {replies.map((r) => (
         <blockquote key={r.id} className="rounded-2xl bg-surface-2 p-3">
-          <p className="text-xs font-bold text-muted">{t("parent.therapist.reply", { n: r.n })}</p>
+          <p className="text-xs font-bold text-muted">{r.about}</p>
           <p className="whitespace-pre-line text-ink">{r.text}</p>
           <footer className="mt-1 text-xs text-muted">
             {r.name} · {fmtDate(r.at, lang, "date")}

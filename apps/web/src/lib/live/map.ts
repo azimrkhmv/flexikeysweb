@@ -371,11 +371,10 @@ export const inUseFrom = (u: InUse): NonNullable<DB["answersInUse"]>[string] => 
   messages: u.messages.map((m) => ({ text: m.text, name: m.therapistName ?? "", profession: m.profession ?? undefined, at: m.at })),
 });
 
-/** Movement clips (P40) with their links and the therapists' replies. Feedback clips come with B29. */
+/** Movement (P40) and feedback clips with their links and the therapists' replies. */
 export function clipsFrom(childId: string, list: ClipOut[]) {
-  const movement = list.filter((c) => c.kind === "movement");
   return {
-    clips: movement.map((c) => ({ id: c.id, childId, url: c.url })),
-    replies: movement.flatMap((c) => c.replies.map((r, i) => ({ id: `${c.id}-${i}`, childId, clipId: c.id, therapistId: "", name: r.therapistName ?? "", text: r.text, at: r.at }))),
+    clips: list.map((c) => ({ id: c.id, childId, url: c.url, exerciseId: c.kind === "feedback" ? (c.exerciseId ?? undefined) : undefined })),
+    replies: list.flatMap((c) => c.replies.map((r, i) => ({ id: `${c.id}-${i}`, childId, clipId: c.id, therapistId: "", name: r.therapistName ?? "", text: r.text, at: r.at }))),
   };
 }

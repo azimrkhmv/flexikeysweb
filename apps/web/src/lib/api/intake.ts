@@ -83,6 +83,25 @@ export const intakeApi = {
     await deleteMedia(clipId);
     return net(true);
   },
+  /** POST /children/{id}/clips (kind feedback) — the child doing one exercise, for the therapist (spec §8). */
+  async addFeedbackClip(childId: string, exerciseId: string, file: Blob) {
+    requireChildAccess(childId, FAMILY);
+    if (!sel.hasConsent(read(), childId, "movement_videos")) throw new ApiError("consent_required");
+    const clipId = await putMedia(file);
+    write((db) => {
+      db.feedbackClips.push({ id: clipId, childId, exerciseId, at: iso() });
+    });
+    return net(clipId);
+  },
+  async removeFeedbackClip(childId: string, clipId: string) {
+    requireChildAccess(childId, FAMILY);
+    await deleteMedia(clipId);
+    write((db) => {
+      db.feedbackClips = db.feedbackClips.filter((c) => c.id !== clipId);
+      db.clipReplies = db.clipReplies.filter((r) => r.clipId !== clipId);
+    });
+    return net(true);
+  },
   /** GET /children/{id}/intake/{round}/voice — a link to listen to the voice note again. */
   async voiceNoteUrl(_childId: string, _round: number, key: string) {
     const blob = await getMedia(key);

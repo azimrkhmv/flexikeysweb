@@ -105,3 +105,24 @@ test("an excluded exercise leaves the plan", async ({ page }, info) => {
     await expect(exercises.filter({ hasText: title })).toHaveCount(0);
   }
 });
+
+// B29: a feedback clip filmed on Today shows on the therapist's child page with its exercise name.
+test("a feedback clip from Today reaches the therapist", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop");
+  await setup(page);
+  await loginAs(page, "Parent");
+  await page.goto("/parent/child/ch_ali#privacy");
+  await page.reload();
+  await page.getByRole("switch", { name: /^Movement videos/ }).click();
+  await page.goto("/parent");
+  const item = page.locator("li").filter({ has: page.getByRole("button", { name: "Done", exact: true }) }).first();
+  const title = (await item.locator("p.font-extrabold").innerText()).trim();
+  await item.getByRole("button", { name: "Done", exact: true }).click();
+  const done = page.locator("li").filter({ hasText: title }).first();
+  await done.getByLabel("Film it for the therapist (optional)").setInputFiles({ name: "clip.mp4", mimeType: "video/mp4", buffer: Buffer.from("pretend clip") });
+  await expect(done.getByText("Video sent to the therapist")).toBeVisible();
+
+  await loginAs(page, "Therapist");
+  await page.goto("/therapist/child/ch_ali");
+  await expect(page.getByText(`Exercise: ${title}`, { exact: true })).toBeVisible();
+});

@@ -70,7 +70,9 @@ export interface DB {
   /** A therapist's replies to the parent's movement clips (T9, B25). `clipId` is the P40 media id. */
   clipReplies: { id: string; childId: string; clipId: string; therapistId: string; text: string; at: string; name?: string }[];
   /** Live mode: the clips on the server (P40 movement clips), with a short-lived link to watch each. */
-  clips?: { id: string; childId: string; url: string }[];
+  clips?: { id: string; childId: string; url: string; exerciseId?: string }[];
+  /** Feedback clips (spec §8, B29): the child doing one exercise, filmed from Today. Live: in `clips`. */
+  feedbackClips: { id: string; childId: string; exerciseId: string; at: string }[];
   /** Live mode, parent: what the server says the therapists changed (GET /children/{id}/answers-in-use). */
   /** The owner's invites to a second adult (A8.4); accepted ones become a helper family member. */
   helperInvites: { id: string; familyId: string; phone: string; at: string; ownerName?: string }[];
@@ -104,6 +106,6 @@ const CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"; // no 0/O/1/I/L (SEC-5)
 export const makeCode = (n = 6) => Array.from({ length: n }, () => CODE_ALPHABET[Math.floor(Math.random() * CODE_ALPHABET.length)]).join("");
 
 /** Bump when the DB shape changes: browsers holding an older shape are reseeded instead of crashing. */
-export const DB_VERSION = 13;
+export const DB_VERSION = 14;
 /** Same limit as the server (MAX_HELPERS_PER_FAMILY). */
 export const MAX_HELPERS = 1;

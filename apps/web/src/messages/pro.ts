@@ -174,8 +174,9 @@ export const pro = {
     "tclips.title": "Movement videos from the parent",
     "tclips.none": "No videos yet. A parent can add up to 3 short clips when they allow movement videos.",
     "tclips.clip": "Video {n}",
-    "tclips.reply": "Your note on video {n}",
+    "tclips.reply": "Your note on: {name}",
     "tclips.send": "Send",
+    "tclips.exercise": "Exercise: {name}",
 
     "admin.nav.overview": "Overview",
     "admin.nav.users": "Users",
@@ -434,8 +435,9 @@ export const pro = {
     "tclips.title": "Ota-onadan harakat videolari",
     "tclips.none": "Hozircha video yoʻq. Ota-ona harakat videolariga ruxsat bersa, 3 tagacha qisqa video qoʻsha oladi.",
     "tclips.clip": "{n}-video",
-    "tclips.reply": "{n}-video haqida izohingiz",
+    "tclips.reply": "Izohingiz: {name}",
     "tclips.send": "Yuborish",
+    "tclips.exercise": "Mashq: {name}",
 
     "admin.nav.overview": "Umumiy",
     "admin.nav.users": "Foydalanuvchilar",
@@ -694,8 +696,9 @@ export const pro = {
     "tclips.title": "Видео движений от родителя",
     "tclips.none": "Видео пока нет. Родитель может добавить до 3 коротких роликов, если разрешит видео движений.",
     "tclips.clip": "Видео {n}",
-    "tclips.reply": "Ваш комментарий к видео {n}",
+    "tclips.reply": "Ваш комментарий: {name}",
     "tclips.send": "Отправить",
+    "tclips.exercise": "Упражнение: {name}",
 
     "admin.nav.overview": "Обзор",
     "admin.nav.users": "Пользователи",

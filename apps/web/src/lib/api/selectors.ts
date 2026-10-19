@@ -250,10 +250,16 @@ export const sel = {
   },
   /** The parent's movement clips (P40 media ids, latest round) when the movement-videos consent is given. */
   movementClips(db: DB, childId: string): string[] {
-    if (db.clips) return db.clips.filter((c) => c.childId === childId).map((c) => c.id);
+    if (db.clips) return db.clips.filter((c) => c.childId === childId && !c.exerciseId).map((c) => c.id);
     const round = sel.intakeRound(db, childId);
     const ids = round ? sel.intakeAnswers(db, childId, round.round).P40 : undefined;
     return sel.hasConsent(db, childId, "movement_videos") && Array.isArray(ids) ? ids : [];
+  },
+  /** Feedback clips of one child (B29), oldest first, with the exercise each one shows; only with the consent. */
+  feedbackClips(db: DB, childId: string): { id: string; exerciseId: string }[] {
+    if (!sel.hasConsent(db, childId, "movement_videos")) return [];
+    if (db.clips) return db.clips.filter((c) => c.childId === childId && c.exerciseId).map((c) => ({ id: c.id, exerciseId: c.exerciseId! }));
+    return (db.feedbackClips ?? []).filter((c) => c.childId === childId).map((c) => ({ id: c.id, exerciseId: c.exerciseId }));
   },
   /** Live: the server's short-lived link to watch a clip (demo clips are on this device). */
   clipUrl: (db: DB, clipId: string) => db.clips?.find((c) => c.id === clipId)?.url,
