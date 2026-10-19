@@ -561,7 +561,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 
 **Website and content — in this order**
 
-- [x] **Azim** — `B29` Assistant screen: emergency words (seizure, trouble breathing, a fall with a head injury, sudden strong pain) show **103** before anything else
+- [ ] **Azim** — `B29` Assistant screen: emergency words (seizure, trouble breathing, a fall with a head injury, sudden strong pain) show **103** before anything else
   - Done when: tested in all 4 languages
   - Needs: —
 - [x] **Azim** — `A9.2` Server: the AI provider behind one setting, with a fake one for tests; a daily message limit; the child's name and birth date are never sent
@@ -583,7 +583,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `A9.8` Research library: load the open research files, search them, and give the assistant only the matching passages with their source
   - Done when: an answer names the book or paper it came from; with no matching passage the assistant says it does not know
   - Needs: A9.2
-- [x] **Azim** — `B30` Assistant knows the child's plan, finished tasks and restrictions
+- [ ] **Azim** — `B30` Assistant knows the child's plan, finished tasks and restrictions
   - Done when: it never suggests a forbidden exercise
   - Needs: A9.3
 - [ ] **Azim** — `B31` Assistant in the therapist dashboard; summary of the parent's chats
