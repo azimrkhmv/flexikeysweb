@@ -674,6 +674,9 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `A13.6` Error alerts and uptime checks
   - Done when: an alert arrives when the server is stopped on purpose
   - Needs: A13.4
+- [ ] **Azim** — `A13.7` `deploy/`: the website image is built without `FK_STORAGE_ORIGIN` (and the Dockerfile has no such build argument), so the browser's security policy blocks videos and voice notes from `files.<domain>`; also check the server's file links point at `files.<domain>`
+  - Done when: with `deploy/compose.yaml` on this computer a voice note uploads and plays over HTTPS
+  - Needs: —
 - [ ] **Azim** — `F3` Security check before launch
   - Done when: no serious finding is open
   - Needs: A13.4
@@ -695,7 +698,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `B53` Demo data: deleting a child and downloading its data skip the newer tables (daily tasks done, daily answers, tries, play check, skill levels, play time, paused days, feedback clips, therapists' answers and replies)
   - Done when: after deleting a demo child no row with its id is left, and the download holds every table that "Everything we store" counts
   - Needs: —
-- [ ] **Azim** — `B54` `apps/web/README.md`, "Live mode": it still describes the old backend (its repository, Google sign-in, SMTP, Mailpit, Payme/Click test keys). Rewrite it for `apps/api`
+- [x] **Azim** — `B54` `apps/web/README.md`, "Live mode": it still describes the old backend (its repository, Google sign-in, SMTP, Mailpit, Payme/Click test keys). Rewrite it for `apps/api`
   - Done when: every step in that section works with `apps/api`
   - Needs: —
 - [ ] **Azim** — `B43` New text for the public pages and the pricing page

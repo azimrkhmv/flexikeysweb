@@ -91,68 +91,53 @@ src/messages          i18n catalogs per area (en/uz/ru). Routes register only wh
   therapist views all use it. Adults see why an assigned level is still closed ("Opens after … is finished",
   "Needs the Family plan"); the child sees a sleeping cloud and hears a gentle line.
 
-## Live mode (real backend)
+## Live mode (real server)
 
-`NEXT_PUBLIC_API_MODE=live` (build time) switches the connected areas to the FastAPI backend
-(`Shoxjahon001/flexikeys`, branch `web-backend`). The browser calls `/api/v1` on its own origin;
-`next.config.ts` forwards it to `FK_API_ORIGIN` (default `http://localhost:8000`) — in production the
-reverse proxy does this. Auth is httpOnly cookies set by the API; writes carry the CSRF token.
+`NEXT_PUBLIC_API_MODE=live` (build time) switches the website to our own server in `../api` (FastAPI). The
+browser calls `/api/v1` on its own origin; `next.config.ts` forwards it to `FK_API_ORIGIN` (default
+`http://localhost:8000`); in production Caddy does this (`../../deploy/`). Files (videos, voice notes) go
+straight between the browser and the file storage, so the security policy allows `FK_STORAGE_ORIGIN` (default
+`http://localhost:9100`, the server's MinIO). Sign-in is
+httpOnly cookies set by the server; writes carry the CSRF token. There is no demo data in live mode.
 
-Every area is connected; there is no demo data in live mode:
+Connected to the server (every address is listed in `src/lib/server/types.ts`, typed from
+`../api/openapi.json`, so a changed address fails `npm run typecheck`):
 
-- **Accounts:** phone + SMS code sign-in, the details step, the admin's authenticator code, `/me` (sign out
-  everywhere, delete).
-- **Parent:** children with consent, settings, consents, export, delete; progress, "what changed",
-  reports (print to PDF), sharing with a therapist, notification bell and preferences, billing.
-- **Child mode:** sessions, events, server-granted rewards, the mastery and plan gates, adaptive profile,
-  cloud shop, drawing activities, AAC (core + the parent's own cards with photo and recorded voice).
-- **Therapist:** invites, care links, notes and goals (reads are audited).
-- **Assistant:** the parent assistant (built-in rule-based summary when the server has no LLM key).
-- **Admin:** users and approvals, subscriptions and orders, complimentary access, support actions,
-  overview with service health; every change is audited.
+- **Accounts:** phone + SMS code sign-in, the details step, the admin's authenticator code, sign out
+  everywhere, delete the account.
+- **Parent:** children, consents, the questions (intake), the plan, Today (tasks done, pause, daily question),
+  My Voice cards, sharing with a therapist (phone or link), clips, what the therapists changed, a second adult.
+- **Therapist:** invites, shared children, the therapist form, clips and replies.
+- **Video reviewer and admin:** the review queue, video upload, users.
 
-External setup still needed (server side, not in this repo): Google sign-in client ID, SMTP provider,
-Payme/Click merchant credentials, an LLM key, pre-generated Azure audio, and cron for the weekly reports
-and the deleted-account purge (see the backend README).
-
-**Consent:** no consent record means no consent. For a profile without core consent, e.g. one mirrored from the
-mobile app, child mode doesn't start. The parent sees why, and the Privacy tab offers **Give consent**. The server
-stores nothing for such a child (backend `docs/consent-compatibility.md`).
+Every other `api.*` call answers "not available" or still points at the old backend's addresses, which
+`../api` does not have; `TASKS.md` lists the work that moves each one.
 
 ```bash
-# backend: cd flexikeys/infra && docker compose up -d   (API on :8000)
-NEXT_PUBLIC_API_MODE=live npm run dev
+cd ../api && cp .env.example .env && docker compose up -d db redis minio && uv run alembic upgrade head
+uv run uvicorn app.main:app --port 8000          # in ../api
+NEXT_PUBLIC_API_MODE=live npm run dev            # here
 ```
 
-`FK_API_ORIGIN` and `NEXT_PUBLIC_API_MODE` are read at **build** time: Next bakes the `/api/v1` rewrite into
-`.next`. Changing them needs a rebuild.
+`FK_API_ORIGIN`, `FK_STORAGE_ORIGIN` and `NEXT_PUBLIC_API_MODE` are read at **build** time: Next bakes the
+rewrite and the security policy into `.next`. Changing them needs a rebuild.
 
-### Live E2E (web + API + database)
+**Consent:** no consent record means no consent. For a child without the basic consent, child mode doesn't start.
+The parent sees why, and the Privacy tab offers **Give consent**.
 
-`e2e-live/compose.yml` starts a throwaway stack: an empty in-memory Postgres, Redis, Mailpit (catches the
-verification / reset emails), MinIO (private media bucket) and a backend **image**, with only the API published
-on `127.0.0.1:58000`. Payme/Click use test credentials local to the stack. Chromium gets a fake microphone. CI uses the same file.
+### Live E2E (website + server + database)
 
-```bash
-export BACKEND_IMAGE=$(cat e2e-live/backend.image)   # or a local build: docker build -t flexikeys-backend:local ../flexikeys/backend
-export E2E_SECRET_KEY=$(openssl rand -hex 32)
-docker compose -f e2e-live/compose.yml up -d --wait
-FK_API_ORIGIN=http://localhost:58000 npm run e2e:live
-docker compose -f e2e-live/compose.yml down
-```
+With the server running as above, `npm run e2e:live` builds the website in live mode on port 3200 and runs
+`e2e-live/` in Chromium (with a fake microphone). The demo SMS sender shows the code on screen, and the tests
+read it from there. Start the server with `OTP_PER_IP_PER_HOUR=500`: every test signs in from the same address.
 
-CI (`.github/workflows/e2e-live.yml`) pulls the **private** image pinned by digest in `e2e-live/backend.image`
-(never `latest`) with the job's own `GITHUB_TOKEN`. One-time setup:
-1. Put both repos in one GitHub organization.
-2. On the backend package (`ghcr.io/<org>/flexikeys/backend`), go to Package settings → Manage Actions access and add this repo with **Read**.
-3. Paste a digest from the backend's "Backend image" workflow summary into `e2e-live/backend.image`.
+CI (`../../.github/workflows/e2e-live.yml`) does the same on every change to the server or the live connection,
+and nightly, from an empty database.
 
-Until step 3 the job is skipped with a warning.
-
-Code: `src/lib/live/` — `http.ts` (client, refresh on 401, error codes), `map.ts` (backend ↔ web
-shapes, unit-tested), `db.ts` (TanStack Query reads shaped like the mock DB so pages and `sel.*` are
-unchanged), `api.ts` (writes). The level manifest the server gates on is `src/content/levels.manifest.json`
-(`UPDATE_MANIFEST=1 npm test` regenerates it; copy it to the backend's `flexikeys/content/`).
+Code: `src/lib/live/`: `http.ts` (client, refresh on 401, error codes), `map.ts` (server ↔ website shapes,
+unit-tested), `db.ts` (TanStack Query reads shaped like the mock DB, so pages and `sel.*` don't change),
+`api.ts` (writes). `src/content/levels.manifest.json` (`UPDATE_MANIFEST=1 npm test`) is what the old backend
+gated levels on; `../api` doesn't use it yet.
 
 ## Security headers
 
