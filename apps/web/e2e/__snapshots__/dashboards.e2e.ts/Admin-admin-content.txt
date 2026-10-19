@@ -117,15 +117,9 @@ Every admin action is recorded in the audit log.
 
 ai_assistant
 Parent AI assistant
-teacher_ai
-Teacher AI helper
 ai_weekly_reports
 AI-written weekly reports
 recurring_payments
 Card tokenization + auto-renew
-auto_approve_professionals
-Skip admin verification for teachers/therapists (pilot)
 connect_dots
 Connect-the-dots activity (cut line)
-legacy
-Pre-spec features: teacher/class, 16-level map, cloud shop, email login

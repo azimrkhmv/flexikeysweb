@@ -6,11 +6,11 @@ import type { Profession, TherapistAnswers, TherapistProfile } from "@/content/t
 import type { AccessSettings } from "../playcheck";
 import type { Area } from "../skill";
 import type { TryRecord } from "../tries";
-import type { AacCustomCard, AacEvent, AdaptationChange, AiMessage, Assignment, AuditLog, CareLink, Child, ClassRoom, Consent, DailyAnswer, Enrollment, ExerciseVideo, FamilyMember, FeatureFlag, IntakeAnswer, IntakeRound, Goal, InteractionEvent, LearningSession, LevelProgress, Note, Notification, Order, PausedDay, Plan, ProfileRecord, Roadmap, SkillMastery, Subscription, TaskDone, User, Wallet } from "../types";
+import type { AacCustomCard, AacEvent, AdaptationChange, AiMessage, Assignment, AuditLog, CareLink, Child, Consent, DailyAnswer, ExerciseVideo, FamilyMember, FeatureFlag, IntakeAnswer, IntakeRound, Goal, InteractionEvent, LearningSession, LevelProgress, Note, Notification, Order, PausedDay, Plan, ProfileRecord, Roadmap, SkillMastery, Subscription, TaskDone, User, Wallet } from "../types";
 
 export interface ChildAuth {
   childId: string;
-  grantedBy: "parent" | "class";
+  grantedBy: "parent";
   exp: number;
 }
 
@@ -32,8 +32,6 @@ export interface DB {
   mastery: SkillMastery[];
   progress: LevelProgress[];
   wallets: Wallet[];
-  classes: ClassRoom[];
-  enrollments: Enrollment[];
   assignments: Assignment[];
   careLinks: CareLink[];
   notes: Note[];
@@ -88,7 +86,6 @@ export class ApiError extends Error {
 export const CONSENT_VERSION = "2026-09-v1";
 /** Same limit as the server (MAX_CHILDREN_PER_FAMILY). */
 export const MAX_CHILDREN = 3;
-export const DEMO_PASSWORD = "demo12345";
 /** Demo sign-in numbers (mock: the SMS code is shown on screen). */
 export const DEMO_PHONES = { parent: "+998900000001", therapist: "+998900000002", physio: "+998900000003", admin: "+998900000004" } as const;
 export const PRICES: Record<Exclude<Plan, "free">, number> = { monthly: 49_000_00, yearly: 390_000_00 }; // tiyin
@@ -106,6 +103,6 @@ const CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"; // no 0/O/1/I/L (SEC-5)
 export const makeCode = (n = 6) => Array.from({ length: n }, () => CODE_ALPHABET[Math.floor(Math.random() * CODE_ALPHABET.length)]).join("");
 
 /** Bump when the DB shape changes: browsers holding an older shape are reseeded instead of crashing. */
-export const DB_VERSION = 14;
+export const DB_VERSION = 15;
 /** Same limit as the server (MAX_HELPERS_PER_FAMILY). */
 export const MAX_HELPERS = 1;

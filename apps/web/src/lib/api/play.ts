@@ -15,7 +15,7 @@ import { sel } from "./selectors";
 import type { AacCustomCard, ActivityKind, AdaptationChange, InputProfile, InteractionEvent, LearningSession } from "../types";
 
 export const playApi = {
-  // ------------------------------------------------------------ child mode (/children/{id}/session, /class-login/*)
+  // ------------------------------------------------------------ child mode (/children/{id}/session)
   /** POST /children/{id}/session — parent path. */
   async startChildMode(childId: string) {
     requireChildAccess(childId, FAMILY);
@@ -23,21 +23,6 @@ export const playApi = {
     if (!sel.hasConsent(read(), childId, "core")) throw await net(new ApiError("consent_missing"), 403);
     write((db) => {
       db.auth.child = { childId, grantedBy: "parent", exp: Date.now() + CHILD_TOKEN_MS };
-    });
-    return net(true, 60);
-  },
-  /** POST /class-login/start — class code → roster (nickname + avatar only). */
-  async classLoginStart(code: string) {
-    const k = read().classes.find((c) => c.code === code.trim().toUpperCase());
-    if (!k) throw await net(new ApiError("class_code_invalid"), 400);
-    const roster = sel.classChildren(read(), k.id).map(({ id, name, avatar }) => ({ id, name, avatar }));
-    return net({ classId: k.id, className: k.name, roster });
-  },
-  /** POST /class-login/child */
-  async classLoginChild(classId: string, childId: string) {
-    if (!read().enrollments.some((e) => e.classId === classId && e.childId === childId)) throw new ApiError("not_found");
-    write((db) => {
-      db.auth.child = { childId, grantedBy: "class", exp: Date.now() + CHILD_TOKEN_MS };
     });
     return net(true, 60);
   },

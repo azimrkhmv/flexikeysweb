@@ -32,10 +32,6 @@ Given Aug 30, 2026 · version 2026-09-v1
 
 Voice: allow me to record my voice for custom picture cards
 
-School: share progress with my child's teacher when I join a class
-
-Given Aug 30, 2026 · version 2026-09-v1
-
 Specialists: allow sharing with a therapist that I invite
 
 Given Aug 30, 2026 · version 2026-09-v1
@@ -47,7 +43,7 @@ Name, birth year, picture and settings
 Answers to the questions: 33
 Plans: 1
 Your own My Voice cards: 1
-Consents you gave: 5
+Consents you gave: 4
 Download data
 
 Get everything we store about your child in one file (JSON).

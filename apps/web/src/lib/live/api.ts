@@ -1,6 +1,5 @@
 "use client";
 
-import { CONSENT_VERSION } from "@/lib/api/schema";
 import { ApiError } from "@/lib/api/schema";
 import { AAC_BY_ID, CUSTOM_PREFIX } from "@/content/aac";
 import { SHOP_BY_ID } from "@/content/shop";
@@ -9,13 +8,13 @@ import { STEPS, type Answers } from "@/content/intake";
 import type { CardOut, ChildOut, ClipOut, ClipUpload, Consents, DoneOut, FormOut, PhoneStarted, PlanOut, ReviewItem, RoundOut, ShareOut } from "@/lib/server/types";
 import type { Profession, TherapistAnswers } from "@/content/therapist";
 import type { Lang, UiLang } from "@/lib/translate";
-import type { AacCustomCard, Child, ChildSupport, ClassRoom, ConsentScope, Feeling, InputProfile, InteractionEvent, Order, Roadmap, Role, TaskDone, User, UserStatus, VideoStatus } from "@/lib/types";
+import type { AacCustomCard, Child, ChildSupport, ConsentScope, Feeling, InputProfile, InteractionEvent, Order, Roadmap, TaskDone, User, UserStatus, VideoStatus } from "@/lib/types";
 import { queryClient } from "./client";
-import { http, upload } from "./http";
+import { http } from "./http";
 import {
   CONSENT_KIND, familyChildFrom, planFrom, shareFrom,
-  careLinkFrom, childFrom, childTo, classFrom, eventTo, rosterChildFrom, scopeTo, userFrom,
-  type BCareLink, type BChild, type BClass, type BConsent, type BGoal, type BRosterChild, type BUser,
+  childFrom, childTo, eventTo, scopeTo, userFrom,
+  type BChild, type BConsent, type BGoal, type BUser,
 } from "./map";
 import { liveChild } from "./state";
 import type { childrenApi } from "@/lib/api/children";
@@ -26,11 +25,8 @@ type MockExport = Awaited<ReturnType<typeof childrenApi.exportChild>>;
 // lib/api/, so pages don't change. After a write, cached reads are refetched.
 
 const CHILD_TOKEN_MS = 8 * 3600_000;
-/** The class code this device signed in with (class login asks for it again with the child). */
-let classCode = "";
 const refreshBilling = () =>
   Promise.all([queryClient.invalidateQueries({ queryKey: ["subscription"] }), queryClient.invalidateQueries({ queryKey: ["orders"] })]);
-const liveUserId = () => queryClient.getQueryData<BUser | null>(["me"])?.id ?? "";
 const refetch = () => queryClient.invalidateQueries();
 const id = () => crypto.randomUUID();
 /** Answers the server stores: every question, plus the P39 voice note and kept hints (apps/api intake/rules.py). */
@@ -75,24 +71,6 @@ export const liveApi = {
     await signedIn();
     return true;
   },
-  async register(input: { email: string; password: string; name: string; role: Exclude<Role, "admin">; uiLang: Lang }) {
-    if (input.password.length < 10) throw new ApiError("weak_password"); // PRD SEC-4 (server minimum is lower)
-    await http("POST", "/auth/register", {
-      email: input.email.trim().toLowerCase(),
-      password: input.password,
-      role: input.role,
-      locale: input.uiLang,
-      display_name: input.name.trim(),
-    });
-    return signedIn();
-  },
-  async login(email: string, password: string) {
-    await http("POST", "/auth/login", { email: email.trim().toLowerCase(), password });
-    return signedIn();
-  },
-  async loginWithGoogle(): Promise<User> {
-    throw new ApiError("not_available"); // Google Identity Services not configured yet
-  },
   async logout() {
     await http("POST", "/auth/logout", {}).catch(() => {});
     liveChild.set(null);
@@ -104,32 +82,11 @@ export const liveApi = {
     await http("POST", "/auth/logout-all", {}).catch(() => {});
     return liveApi.logout();
   },
-  async forgotPassword(email: string) {
-    await http("POST", "/auth/password/forgot", { email: email.trim().toLowerCase() });
-    return true;
-  },
-  /** The single-use token from the emailed link (FR-AUTH-3); a second use fails with token_used. */
-  async resetPassword(token: string, password: string) {
-    if (password.length < 10) throw new ApiError("weak_password");
-    await http("POST", "/auth/password/reset", { token, new_password: password });
-    return true;
-  },
-  async resendVerification() {
-    await http("POST", "/me/resend-verification", {});
-    return true;
-  },
-  async deleteMe(confirmEmail?: string) {
-    await http("DELETE", "/me", { email: confirmEmail ?? "" });
+  async deleteMe() {
+    await http("DELETE", "/me");
     liveChild.set(null);
     sessionStore.set({ role: null });
     queryClient.clear();
-    return true;
-  },
-  /** With the token from the emailed link (/verify-email?token=…); without it, the email is the way. */
-  async verifyEmail(token?: string): Promise<boolean> {
-    if (!token) throw new ApiError("verify_by_email");
-    await http("POST", "/auth/verify-email", { token });
-    await refetch();
     return true;
   },
   async updateMe(patch: Partial<Pick<User, "name" | "uiLang">>) {
@@ -139,16 +96,6 @@ export const liveApi = {
   },
 
   // ------------------------------------------------------------ children & consent
-  async createChild(input: Pick<Child, "name" | "birthYear" | "learningLang" | "uiLang" | "avatar" | "access" | "support">, scopes: ConsentScope[]) {
-    if (!scopes.includes("core")) throw new ApiError("consent_required");
-    const created = await http<BChild>("POST", "/children", {
-      ...childTo(input),
-      consents: scopes.map(scopeTo),
-      consent_version: CONSENT_VERSION,
-    });
-    await refetch();
-    return childFrom(created);
-  },
   async updateChild(childId: string, patch: Partial<Pick<Child, "name" | "birthYear" | "learningLang" | "uiLang" | "avatar" | "access">>) {
     await http("PATCH", `/children/${childId}`, childTo(patch));
     await refetch();
@@ -297,33 +244,13 @@ export const liveApi = {
     return true;
   },
   async exitChildMode() {
-    // A class device has no adult signed in: it only drops the child cookie and goes back to the roster.
-    const fromClass = liveChild.get()?.grantedBy === "class";
-    await http("DELETE", fromClass ? "/class-login/session" : "/children/session").catch(() => {});
+    await http("DELETE", "/children/session").catch(() => {});
     liveChild.set(null);
     queryClient.removeQueries({ queryKey: ["own"] });
     await refetch();
     return true;
   },
 
-  // ------------------------------------------------------------ class login (shared classroom device)
-  /** The class code (remembered on the device) → class + roster (nicknames and avatars only). */
-  async classLoginStart(code: string) {
-    const r = await http<{ class_id: string; class_name: string; roster: { id: string; display_name: string; avatar_id: string | null }[] }>(
-      "POST",
-      "/class-login/start",
-      { code: code.trim().toUpperCase() },
-    );
-    classCode = code.trim().toUpperCase();
-    return { classId: r.class_id, className: r.class_name, roster: r.roster.map((c) => ({ id: c.id, name: c.display_name, avatar: c.avatar_id ?? "🦊" })) };
-  },
-  async classLoginChild(classId: string, childId: string) {
-    void classId; // the server checks the code again together with the child
-    await http("POST", "/class-login/child", { code: classCode, child_id: childId });
-    liveChild.set({ childId, grantedBy: "class", exp: Date.now() + CHILD_TOKEN_MS });
-    await refetch();
-    return true;
-  },
   async startSession(input: InputProfile) {
     void input; // input profiles are per device on the server (PRD §9.5.2) — not split yet
     const childId = liveChild.get()?.childId;
@@ -354,39 +281,6 @@ export const liveApi = {
     sessionStart.delete(sessionId);
     setTimeout(() => void refetch(), 1500);
     return [];
-  },
-
-  // ------------------------------------------------------------ teacher (/teacher/*)
-  async createClass(input: Pick<ClassRoom, "name" | "grade" | "learningLang">) {
-    const k = await http<BClass>("POST", "/teacher/classes", { name: input.name, grade: input.grade, learning_language: input.learningLang });
-    await refetch();
-    return classFrom(k, liveUserId());
-  },
-  /** A school-managed profile; the school attests it holds the parental consent form. */
-  async addSchoolChild(classId: string, input: { name: string; avatar: string; attested: boolean }) {
-    if (!input.attested) throw new ApiError("consent_required");
-    const c = await http<BRosterChild>("POST", `/teacher/classes/${classId}/children`, { display_name: input.name.trim(), avatar_id: input.avatar, attested: true });
-    await refetch();
-    return rosterChildFrom(c);
-  },
-  async removeFromClass(classId: string, childId: string) {
-    await http("DELETE", `/teacher/classes/${classId}/children/${childId}`);
-    await refetch();
-    return true;
-  },
-  async assign(input: { classId: string; levelId: string; note: string; due?: string }) {
-    await http("POST", `/teacher/classes/${input.classId}/assignments`, {
-      level_slug: input.levelId,
-      instructions: input.note.trim() || null,
-      due_at: input.due ? new Date(input.due).toISOString() : null,
-    });
-    await refetch();
-    return true;
-  },
-  async deleteAssignment(assignmentId: string) {
-    await http("DELETE", `/teacher/assignments/${assignmentId}`);
-    await refetch();
-    return true;
   },
 
   // ------------------------------------------------------------ helpers (apps/api accounts/helpers.py)
@@ -424,16 +318,6 @@ export const liveApi = {
     const childId = shares.find(([, list]) => list?.some((l) => l.id === linkId))?.[0][1] as string | undefined;
     if (!childId) throw new ApiError("not_found");
     await http("DELETE", `/children/${childId}/therapists/${linkId}`);
-    await refetch();
-    return true;
-  },
-  async joinClass(childId: string, code: string) {
-    const r = await http<{ class_id: string; class_name: string }>("POST", "/teacher/classes/join", { join_code: code.trim().toUpperCase(), child_id: childId });
-    await refetch();
-    return { id: r.class_id, teacherId: "", name: r.class_name, grade: "", learningLang: "uz" as const, code: "", createdAt: "" };
-  },
-  async leaveClass(childId: string, classId: string) {
-    await http("DELETE", `/children/${childId}/classes/${classId}`);
     await refetch();
     return true;
   },
@@ -535,10 +419,6 @@ export const liveApi = {
     await http("DELETE", `/ai-assistant/children/${childId}/messages`);
     await queryClient.invalidateQueries({ queryKey: ["aiMessages", childId] });
     return true;
-  },
-  async teacherAiSummary(classId: string, lang: Lang) {
-    const r = await http<{ text: string }>("POST", `/teacher/classes/${classId}/ai-summary`, { language: lang });
-    return r.text;
   },
 
   // ------------------------------------------------------------ billing (PRD §9.18)

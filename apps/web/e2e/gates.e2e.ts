@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { childPress, loginAs, setup } from "./helpers";
 
-// FR-CUR-4: teacher/therapist assignments point the way but never open a level the child hasn't unlocked.
+// FR-CUR-4: therapist recommendations point the way but never open a level the child hasn't unlocked.
 // Seed: Ali's therapist recommended "Body parts" (level 11); Ali has only reached level 6.
 test.describe("assignments vs level gates", () => {
   test.beforeEach(async ({ page }, info) => {

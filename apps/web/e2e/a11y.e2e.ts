@@ -15,7 +15,7 @@ test.describe("axe", () => {
     await setup(page);
   });
 
-  for (const path of ["/", "/pricing", "/privacy", "/login", "/signup", "/forgot-password", "/demo"])
+  for (const path of ["/", "/pricing", "/privacy", "/login", "/demo"])
     test(`public ${path}`, async ({ page }) => scan(page, path));
 
   test("parent area", async ({ page }) => {
@@ -23,7 +23,6 @@ test.describe("axe", () => {
     for (const p of ["/parent", "/parent/child/ch_ali", "/parent/child/ch_ali#aac", "/parent/children/new", "/parent/reports", "/parent/billing", "/parent/assistant", "/parent/account"]) await scan(page, p);
   });
 
-  // The teacher area is legacy (hidden by the product spec of 2026-10-06); the video reviewer replaces it here.
   test("reviewer, therapist and admin areas", async ({ page }) => {
     await loginAs(page, "Video reviewer");
     await scan(page, "/physio");

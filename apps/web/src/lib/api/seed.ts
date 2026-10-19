@@ -7,7 +7,7 @@ import { LEVEL_BY_ID } from "@/content/levels";
 import { DEFAULT_PROFILE } from "../adaptive";
 import { buildRoadmap } from "../roadmap";
 import type { Lang } from "../i18n";
-import { CONSENT_VERSION, DEMO_PASSWORD, DEMO_PHONES, DAY, DB_VERSION, id, iso, localDate, type DB } from "./schema";
+import { CONSENT_VERSION, DEMO_PHONES, DAY, DB_VERSION, id, iso, localDate, type DB } from "./schema";
 import type { AdaptationChange, Child, Consent, ConsentScope, IntakeValue, ProfileRecord, Role, User, UserStatus } from "../types";
 
 // ---------------------------------------------------------------- seed
@@ -24,11 +24,11 @@ function rng(seed: number) {
 export function seed(): DB {
   const r = rng(42);
   const now = Date.now();
-  const user = (uid: string, email: string, name: string, role: Role, status: UserStatus = "active", phone?: string): User => ({
-    id: uid, email, name, role, status, password: DEMO_PASSWORD, uiLang: "uz", emailVerified: true, createdAt: iso(now - 40 * DAY),
-    ...(phone && { phone, district: { region: "tashkent_city", district: "Chilonzor" }, consentVersion: CONSENT_VERSION }),
+  const user = (uid: string, phone: string, name: string, role: Role, status: UserStatus = "active"): User => ({
+    id: uid, phone, name, role, status, uiLang: "uz", createdAt: iso(now - 40 * DAY),
+    district: { region: "tashkent_city", district: "Chilonzor" }, consentVersion: CONSENT_VERSION,
   });
-  const kid = (cid: string, familyId: string | null, name: string, birthYear: number, avatar: string, learningLang: Lang = "uz", access: Child["access"] = "touch"): Child => ({
+  const kid = (cid: string, familyId: string, name: string, birthYear: number, avatar: string, learningLang: Lang = "uz", access: Child["access"] = "touch"): Child => ({
     id: cid, familyId, name, birthYear, avatar, learningLang, uiLang: learningLang, access, equipped: {}, createdAt: iso(now - 30 * DAY),
   });
   const consent = (childId: string, scope: ConsentScope, by = "u_parent"): Consent => ({
@@ -39,13 +39,12 @@ export function seed(): DB {
     v: DB_VERSION,
     auth: { userId: null, child: null },
     users: [
-      user("u_parent", "parent@demo.uz", "Dilnoza", "parent", "active", DEMO_PHONES.parent),
-      user("u_teacher", "teacher@demo.uz", "Gulnora Karimova", "teacher"),
-      user("u_therapist", "therapist@demo.uz", "Kamola Rashidova", "therapist", "active", DEMO_PHONES.therapist),
-      user("u_physio", "physio@demo.uz", "Rustam Yusupov", "physio", "active", DEMO_PHONES.physio),
-      user("u_admin", "admin@demo.uz", "FlexiKeys Admin", "admin", "active", DEMO_PHONES.admin),
-      user("u_pending", "new.therapist@demo.uz", "Sardor Aliev", "therapist", "pending_verification"),
-      user("u_parent2", "family@demo.uz", "Aziza", "parent"),
+      user("u_parent", DEMO_PHONES.parent, "Dilnoza", "parent"),
+      user("u_therapist", DEMO_PHONES.therapist, "Kamola Rashidova", "therapist"),
+      user("u_physio", DEMO_PHONES.physio, "Rustam Yusupov", "physio"),
+      user("u_admin", DEMO_PHONES.admin, "FlexiKeys Admin", "admin"),
+      user("u_pending", "+998900000005", "Sardor Aliev", "therapist", "pending_verification"),
+      user("u_parent2", "+998900000006", "Aziza", "parent"),
     ],
     familyMembers: [
       { familyId: "fam_1", userId: "u_parent", role: "owner" },
@@ -55,13 +54,9 @@ export function seed(): DB {
       { ...kid("ch_ali", "fam_1", "Ali", 2019, "🦊"), equipped: { hat: "hat_crown" } },
       kid("ch_madina", "fam_1", "Madina", 2021, "🐰", "ru", "dwell"),
       kid("ch_other", "fam_2", "Jasur", 2020, "🐼"),
-      kid("ch_s1", null, "Bekzod", 2019, "🐻"),
-      kid("ch_s2", null, "Sevara", 2019, "🐱"),
-      kid("ch_s3", null, "Timur", 2020, "🐯"),
-      kid("ch_s4", null, "Zarina", 2019, "🦋"),
     ],
     consents: [
-      consent("ch_ali", "core"), consent("ch_ali", "ai_processing"), consent("ch_ali", "school_sharing"), consent("ch_ali", "therapist_sharing"),
+      consent("ch_ali", "core"), consent("ch_ali", "ai_processing"), consent("ch_ali", "therapist_sharing"),
       consent("ch_madina", "core"), consent("ch_madina", "voice_recording"),
       consent("ch_other", "core", "u_parent2"),
     ],
@@ -75,15 +70,12 @@ export function seed(): DB {
       { childId: "ch_ali", coins: 120, stars: 46, owned: ["hat_crown", "color_mint"] },
       { childId: "ch_madina", coins: 35, stars: 12, owned: [] },
     ],
-    classes: [{ id: "cl_sun", teacherId: "u_teacher", name: "Quyoshcha", grade: "Tayyorlov guruhi", learningLang: "uz", code: "KQ7M4P", createdAt: iso(now - 25 * DAY) }],
-    enrollments: ["ch_ali", "ch_s1", "ch_s2", "ch_s3", "ch_s4"].map((childId) => ({ classId: "cl_sun", childId })),
     assignments: [
-      { id: id(), kind: "teacher", byUserId: "u_teacher", classId: "cl_sun", levelId: "animals", note: "Hayvonlar haftasi", due: iso(now + 3 * DAY), createdAt: iso(now - 2 * DAY) },
       { id: id(), kind: "therapist", byUserId: "u_therapist", childId: "ch_ali", levelId: "body", note: "Tana aʼzolari soʻzlari — kuniga 5 daqiqa", createdAt: iso(now - DAY) },
     ],
     careLinks: [
-      { id: "cl_link1", childId: "ch_ali", kind: "therapist", email: "therapist@demo.uz", professionalId: "u_therapist", status: "active", code: "TH4K9Q", createdAt: iso(now - 20 * DAY) },
-      { id: "cl_link2", childId: "ch_madina", kind: "therapist", email: "therapist@demo.uz", status: "invited", code: "MD7PX3", createdAt: iso(now - 1 * DAY) },
+      { id: "cl_link1", childId: "ch_ali", kind: "therapist", phone: DEMO_PHONES.therapist, professionalId: "u_therapist", status: "active", code: "TH4K9Q", createdAt: iso(now - 20 * DAY) },
+      { id: "cl_link2", childId: "ch_madina", kind: "therapist", phone: DEMO_PHONES.therapist, status: "invited", code: "MD7PX3", createdAt: iso(now - 1 * DAY) },
     ],
     notes: [
       { id: id(), childId: "ch_ali", authorId: "u_therapist", text: "Ali oʻng qoʻl bilan aniqroq bosmoqda. Kattaroq tugmalar yordam beryapti.", visibleToParent: true, createdAt: iso(now - 6 * DAY) },
@@ -100,7 +92,6 @@ export function seed(): DB {
       { id: id(), userId: "u_parent", titleKey: "notif.adaptation", vars: { name: "Ali" }, read: false, at: iso(now - 2 * DAY) },
       { id: id(), userId: "u_parent", titleKey: "notif.care_invite_sent", vars: { name: "Madina" }, read: true, at: iso(now - 1 * DAY) },
       { id: id(), userId: "u_therapist", titleKey: "notif.care_invite", vars: { name: "Madina" }, read: false, at: iso(now - 1 * DAY) },
-      { id: id(), userId: "u_teacher", titleKey: "notif.class_joined", vars: { name: "Ali" }, read: true, at: iso(now - 20 * DAY) },
     ],
     subscriptions: [{ userId: "u_parent", plan: "free", status: "active" }],
     orders: [],
@@ -110,12 +101,9 @@ export function seed(): DB {
     ],
     flags: [
       { key: "ai_assistant", enabled: true, description: "Parent AI assistant" },
-      { key: "teacher_ai", enabled: true, description: "Teacher AI helper" },
       { key: "ai_weekly_reports", enabled: true, description: "AI-written weekly reports" },
       { key: "recurring_payments", enabled: false, description: "Card tokenization + auto-renew" },
-      { key: "auto_approve_professionals", enabled: false, description: "Skip admin verification for teachers/therapists (pilot)" },
       { key: "connect_dots", enabled: false, description: "Connect-the-dots activity (cut line)" },
-      { key: "legacy", enabled: false, description: "Pre-spec features: teacher/class, 16-level map, cloud shop, email login" },
     ],
     aiMessages: [],
     otp: [],
@@ -141,10 +129,6 @@ export function seed(): DB {
   const history: [string, number, string[]][] = [
     ["ch_ali", 14, ["letters", "numbers", "shapes", "colors", "family", "animals"]],
     ["ch_madina", 9, ["letters", "numbers", "shapes"]],
-    ["ch_s1", 10, ["letters", "numbers", "shapes", "colors"]],
-    ["ch_s2", 8, ["letters", "numbers", "shapes"]],
-    ["ch_s3", 6, ["letters", "numbers"]],
-    ["ch_s4", 12, ["letters", "numbers", "shapes", "colors", "family"]],
   ];
   for (const [childId, days, levels] of history) {
     for (let d = days; d >= 1; d--) {

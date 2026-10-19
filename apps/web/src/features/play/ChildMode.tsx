@@ -7,7 +7,7 @@ import { Mascot } from "@/components/Mascot";
 import { LEVELS, LEVEL_BY_ID } from "@/content/levels";
 import { SHOP_BY_ID } from "@/content/shop";
 import { ENGINES, type EngineProps } from "@/features/activities/registry";
-import { api, sel, useDb, type ChildAuth, type DB } from "@/lib/api";
+import { api, sel, useDb, type DB } from "@/lib/api";
 import { sfx, speak, unlockAudio } from "@/lib/audio";
 import { useT, type Lang } from "@/lib/i18n";
 import { useFocusTrap } from "@/lib/useFocusTrap";
@@ -92,7 +92,7 @@ class ChildBoundary extends Component<{ fallback: ReactNode; children: ReactNode
   }
 }
 
-export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
+export function ChildMode({ child }: { child: Child }) {
   const db = useDb();
   const router = useRouter();
   const lang: Lang = child.uiLang;
@@ -333,7 +333,7 @@ export function ChildMode({ child, auth }: { child: Child; auth: ChildAuth }) {
     playing.current = false;
     endSession();
     await api.exitChildMode();
-    router.replace(auth.grantedBy === "class" ? "/class" : "/parent");
+    router.replace("/parent");
   };
 
   useEffect(() => {

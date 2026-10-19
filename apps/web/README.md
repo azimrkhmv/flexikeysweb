@@ -3,8 +3,7 @@
 Next.js 16 web app for FlexiKeys, built from `../../PRD.md`, the design board and — where they disagree — the
 product spec of 6 October 2026 (`../../docs/product-spec-2026-10-06.pdf`). It covers the marketing site, phone sign-in,
 the parent intake and 4-week exercise roadmap, the physio video review queue, child play mode, AAC, parents,
-therapists and admins. Pre-spec features (teacher/class codes, email sign-in, the old add-child form) are hidden behind
-the `legacy` flag (Admin → Content → flags); live mode keeps them until the backend has the spec's features.
+therapists and admins. The pre-spec features (teachers, classes, email sign-in) are deleted (Q7).
 
 ## Run
 
@@ -36,8 +35,7 @@ Sign-in is phone + SMS code. In the demo no SMS is sent: the code is shown on sc
 | Video reviewer (physiotherapist, `/physio`) | +998 90 000 00 03 |
 | Admin | +998 90 000 00 04 |
 
-With the `legacy` flag on, `/login?email=1` signs in the older email accounts (password `demo12345`, e.g.
-teacher@demo.uz, class code `KQ7M4P`). You can reset all demo data from **Admin → Support**.
+You can reset all demo data from **Admin → Support**.
 
 ### Product spec (2026-10-06) — what is built
 
@@ -56,10 +54,10 @@ The FastAPI backend lives in another repository. By default (`NEXT_PUBLIC_API_MO
 in-browser mock of it; `NEXT_PUBLIC_API_MODE=live` connects every area to the real API
 (see **Live mode** below). In mock mode:
 
-- **`src/lib/api/` is an in-browser mock of the API**, split by domain (`auth`, `children`, `play`, `care`, `teacher`, `ai`, `billing`, `admin`, plus `schema`, `seed`, `db`, `selectors`, `guards`). Its data is stored in `localStorage` under the key `fk_db_v1`. Every mutation has a comment naming the endpoint it stands for (PRD §14). Pages read data only through the `sel.*` selectors (a test enforces it). Authorization rules (`sel.access`, the same logic as `can_access_child`, PRD §15.4), consent checks, server-side rewards, session ownership and billing idempotency all run inside `src/lib/api/`. Components never make these decisions.
+- **`src/lib/api/` is an in-browser mock of the API**, split by domain (`auth`, `children`, `intake`, `play`, `care`, `ai`, `billing`, `admin`, plus `schema`, `seed`, `db`, `selectors`, `guards`). Its data is stored in `localStorage` under the key `fk_db_v1`. Every mutation has a comment naming the endpoint it stands for (PRD §14). Pages read data only through the `sel.*` selectors (a test enforces it). Authorization rules (`sel.access`, the same logic as `can_access_child`, PRD §15.4), consent checks, server-side rewards, session ownership and billing idempotency all run inside `src/lib/api/`. Components never make these decisions.
 - The **adaptive engine** is mirrored client-side in `src/lib/adaptive.ts`. It uses per-session metrics, BKT and a bounded policy. The policy changes each value by at most one step per session, and each rule has a matching rule that reduces help again. Hysteresis expires, which fixes the B5 ratchet. Tests are in `adaptive.test.ts`.
 - **Audio:** the app uses on-device `speechSynthesis`, and only local voices, so no text leaves the device. This stands in for the pre-generated Azure audio manifest. Sound effects are Web Audio tones. The app never calls Google Translate TTS.
-- **The AI assistant and teacher helper are rule-based stubs.** They use only aggregated data with no names, need consent and have a daily quota.
+- **The AI assistant is a rule-based stub.** They use only aggregated data with no names, need consent and have a daily quota.
 - **Payme and Click checkout is simulated.** An order is created, the provider callback is faked, and then the entitlement is granted.
 
 
@@ -68,11 +66,9 @@ in-browser mock of it; `NEXT_PUBLIC_API_MODE=live` connects every area to the re
 ```
 src/app/[locale]      public site in /uz /ru /en: landing, pricing, privacy, terms (server-rendered, hreflang, sitemap)
 src/proxy.ts          redirects /, /pricing, /privacy, /terms to the visitor's language
-src/app/(auth)        login, signup, verify-email, forgot/reset password
-src/app/class         class-code login for school devices
+src/app/(auth)        phone sign-in and the details step after it
 src/app/play          child mode: map, levels, activities, AAC "My Voice", cloud shop
 src/app/parent        dashboard, child progress, "what changed and why", reports, AI assistant, billing, privacy
-src/app/teacher       classes, QR poster, roster, heatmap, assignments, AI helper
 src/app/therapist     linked children, notes, goals, recommendations (reads are audited)
 src/app/admin         users, subscriptions, content, flags, audit log, AI usage, support
 src/app/demo          try-a-demo (stores nothing)
@@ -90,8 +86,8 @@ src/messages          i18n catalogs per area (en/uz/ru). Routes register only wh
 - The server grants coins and stars. The client never sends amounts. Coins cannot be bought. A subscription opens more levels but never changes rewards.
 - Parents see every adaptation change as a plain-language sentence. They cannot change the adaptation settings.
 - Levels unlock by mastery. Locked levels appear as "sleeping clouds", not padlocks.
-- Teacher and therapist assignments point the way but never unlock a level (FR-CUR-4). `sel.lockReason` is the
-  single gate: the child's map, the API (`completeActivity` rejects locked levels) and the parent, teacher and
+- Therapist recommendations point the way but never unlock a level (FR-CUR-4). `sel.lockReason` is the
+  single gate: the child's map, the API (`completeActivity` rejects locked levels) and the parent and
   therapist views all use it. Adults see why an assigned level is still closed ("Opens after … is finished",
   "Needs the Family plan"); the child sees a sleeping cloud and hears a gentle line.
 
@@ -104,17 +100,16 @@ reverse proxy does this. Auth is httpOnly cookies set by the API; writes carry t
 
 Every area is connected; there is no demo data in live mode:
 
-- **Accounts:** email + password sign-up for parents, teachers and therapists (teachers/therapists wait for
-  admin approval), email verification, password reset, `/me` (change password, sign out everywhere, delete).
+- **Accounts:** phone + SMS code sign-in, the details step, the admin's authenticator code, `/me` (sign out
+  everywhere, delete).
 - **Parent:** children with consent, settings, consents, export, delete; progress, "what changed",
-  reports (print to PDF), sharing with a class or a therapist, notification bell and preferences, billing.
+  reports (print to PDF), sharing with a therapist, notification bell and preferences, billing.
 - **Child mode:** sessions, events, server-granted rewards, the mastery and plan gates, adaptive profile,
   cloud shop, drawing activities, AAC (core + the parent's own cards with photo and recorded voice).
-- **Teacher:** classes, class codes + class login on a shared device, assignments, roster progress.
 - **Therapist:** invites, care links, notes and goals (reads are audited).
-- **Assistant:** the parent/teacher assistant (built-in rule-based summary when the server has no LLM key).
+- **Assistant:** the parent assistant (built-in rule-based summary when the server has no LLM key).
 - **Admin:** users and approvals, subscriptions and orders, complimentary access, support actions,
-  overview with service health; changes need a password re-check (15 min) and are audited.
+  overview with service health; every change is audited.
 
 External setup still needed (server side, not in this repo): Google sign-in client ID, SMTP provider,
 Payme/Click merchant credentials, an LLM key, pre-generated Azure audio, and cron for the weekly reports

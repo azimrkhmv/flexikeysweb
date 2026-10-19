@@ -16,20 +16,19 @@ import { careApi } from "./care";
 import { childrenApi } from "./children";
 import { intakeApi } from "./intake";
 import { playApi } from "./play";
-import { teacherApi } from "./teacher";
 import { liveApi } from "../live/api";
 import { useLiveDb } from "../live/db";
 import { useDb as useMockDb } from "./db";
 import { LIVE } from "./mode";
 import { ApiError } from "./schema";
 
-export { ApiError, CONSENT_VERSION, DB_VERSION, MAX_CHILDREN, DEMO_PASSWORD, DEMO_PHONES, makeCode, PRICES, type ChildAuth, type DB } from "./schema";
+export { ApiError, CONSENT_VERSION, DB_VERSION, MAX_CHILDREN, DEMO_PHONES, makeCode, PRICES, type ChildAuth, type DB } from "./schema";
 export { seed } from "./seed";
 export { dbStore } from "./db";
 export { LIVE } from "./mode";
 export { sel } from "./selectors";
 
-const mockApi = { ...authApi, ...childrenApi, ...intakeApi, ...playApi, ...careApi, ...teacherApi, ...aiApi, ...billingApi, ...adminApi };
+const mockApi = { ...authApi, ...childrenApi, ...intakeApi, ...playApi, ...careApi, ...aiApi, ...billingApi, ...adminApi };
 
 const notConnected = Object.fromEntries(
   Object.keys(mockApi).map((k) => [k, async () => Promise.reject(new ApiError("not_available"))]),

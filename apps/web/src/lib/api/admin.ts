@@ -15,7 +15,7 @@ export const adminApi = {
     write((db) => {
       const target = db.users.find((x) => x.id === userId);
       if (!target) return;
-      audit(db, u.id, "user.status", target.email, `${target.status} → ${status}`);
+      audit(db, u.id, "user.status", target.id, `${target.status} → ${status}`);
       target.status = status;
       if (status === "active") notify(db, target.id, "notif.account_approved");
     });

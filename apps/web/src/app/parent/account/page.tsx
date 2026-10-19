@@ -5,6 +5,7 @@ import { useState } from "react";
 import { LogOut, Trash } from "lucide-react";
 import { Button, Card, Field, Input, Modal, PageHeader, Select, useAction } from "@/components/ui";
 import { api, sel, useDb } from "@/lib/api";
+import { normalizePhone } from "@/lib/api/auth";
 import { LANGS, useLang, useT, type Lang } from "@/lib/i18n";
 
 export default function Account() {
@@ -35,8 +36,8 @@ export default function Account() {
           <Field label={t("parent.account.name")}>
             <Input value={name} onChange={(e) => setName(e.target.value)} required maxLength={60} />
           </Field>
-          <Field label={t("parent.account.email")}>
-            <Input value={me.email} readOnly disabled />
+          <Field label={t("parent.account.phone")}>
+            <Input value={me.phone ?? ""} readOnly disabled />
           </Field>
           <Field label={t("parent.account.uiLang")} hint={t("parent.account.uiLangHint")}>
             <Select
@@ -99,7 +100,7 @@ export default function Account() {
         title={t("parent.account.deleteTitle")}
       >
         <p className="mb-4 text-ink-2">{t("parent.account.deleteConfirm")}</p>
-        <Field label={t("parent.account.typeEmail")}>
+        <Field label={t("parent.account.typePhone")}>
           <Input value={typed} onChange={(e) => setTyped(e.target.value)} autoFocus />
         </Field>
         {del.error && <p role="alert" className="mt-3 text-sm font-semibold text-[#8f3a2c]">{del.error}</p>}
@@ -109,10 +110,10 @@ export default function Account() {
           </Button>
           <Button
             variant="danger"
-            disabled={typed.trim().toLowerCase() !== me.email}
+            disabled={!me.phone || normalizePhone(typed) !== me.phone}
             pending={del.pending}
             onClick={async () => {
-              if ((await del.run(typed)) !== undefined) router.replace("/");
+              if ((await del.run()) !== undefined) router.replace("/");
             }}
           >
             {t("common.delete")}

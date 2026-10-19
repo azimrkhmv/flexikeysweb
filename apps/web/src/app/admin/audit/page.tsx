@@ -10,7 +10,7 @@ export default function AdminAudit() {
   const t = useT();
   const [lang] = useLang();
   const { db } = useMe();
-  const email = (id: string) => sel.user(db, id)?.email ?? id;
+  const email = (id: string) => sel.user(db, id)?.phone ?? id;
   const audit = sel.admin.audit(db);
 
   return (

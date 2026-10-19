@@ -1,6 +1,6 @@
 "use client";
 
-// /ai-assistant/*, /teacher/ai/summary — rule-based stand-ins for the LlmProvider (PRD §16).
+// /ai-assistant/* — rule-based stand-ins for the LlmProvider (PRD §16).
 
 import { LEVEL_BY_ID } from "@/content/levels";
 import { translate, type Lang } from "../i18n";
@@ -25,7 +25,7 @@ export const aiApi = {
     requireUser(["parent"]);
     return net(HINTS.filter(([re]) => re.test(text)).map(([, h]) => h), 200);
   },
-  // ------------------------------------------------------------ AI (/ai-assistant/*, /teacher/ai/summary)
+  // ------------------------------------------------------------ AI (/ai-assistant/*)
   /** POST /ai-assistant/chat — pseudonymized context, consent-gated, quota-limited (PRD §16). */
   async askAssistant(childId: string, text: string, lang: Lang) {
     const { user } = requireChildAccess(childId, FAMILY);
@@ -55,27 +55,6 @@ export const aiApi = {
       audit(db, user.id, "chat.delete", childId);
     });
     return net(true, 0);
-  },
-  async teacherAiSummary(classId: string, lang: Lang) {
-    const u = requireUser(["teacher"]);
-    const db = read();
-    const k = db.classes.find((c) => c.id === classId && c.teacherId === u.id);
-    if (!k) throw new ApiError("not_found");
-    // FR-AI-4: only children whose parent gave ai_processing consent (school-managed profiles have none).
-    const kids = sel.classChildren(db, classId).filter((c) => sel.hasConsent(db, c.id, "ai_processing"));
-    const avg = (childId: string) => {
-      const m = sel.mastery(db, childId).filter((x) => x.attempts > 0);
-      return m.length ? m.reduce((a, x) => a + x.pKnown, 0) / m.length : 0;
-    };
-    const sorted = [...kids].sort((a, b) => avg(b.id) - avg(a.id));
-    const t = (key: string, vars?: Record<string, string | number>) => translate(lang, key, vars);
-    const lines = [
-      t("ai.teacher.summary", { n: kids.length }),
-      t("ai.teacher.groups", { a: sorted.slice(0, Math.ceil(sorted.length / 2)).map((c) => c.name).join(", "), b: sorted.slice(Math.ceil(sorted.length / 2)).map((c) => c.name).join(", ") || "—" }),
-      t("ai.teacher.suggest"),
-      t("ai.disclaimer"),
-    ];
-    return net(lines.join("\n\n"), 800);
   },
 };
 

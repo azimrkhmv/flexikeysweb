@@ -10,7 +10,7 @@ import { useLang, useT } from "@/lib/i18n";
 import type { Role, UserStatus } from "@/lib/types";
 
 const STATUS_TONE: Record<UserStatus, Tone> = { active: "leaf", pending_verification: "sun", disabled: "gray" };
-const ROLES: Role[] = ["parent", "teacher", "therapist", "admin"];
+const ROLES: Role[] = ["parent", "therapist", "physio", "admin"];
 
 export default function AdminUsers() {
   const t = useT();
@@ -23,8 +23,8 @@ export default function AdminUsers() {
 
   const needle = q.trim().toLowerCase();
   const users = sel.admin.users(db)
-    .filter((u) => (!role || u.role === role) && (!needle || u.email.includes(needle) || u.name.toLowerCase().includes(needle)))
-    .sort((a, b) => Number(b.status === "pending_verification") - Number(a.status === "pending_verification") || a.email.localeCompare(b.email));
+    .filter((u) => (!role || u.role === role) && (!needle || (u.phone ?? "").includes(needle) || u.name.toLowerCase().includes(needle)))
+    .sort((a, b) => Number(b.status === "pending_verification") - Number(a.status === "pending_verification") || a.name.localeCompare(b.name));
 
   return (
     <>
@@ -64,7 +64,7 @@ export default function AdminUsers() {
                 <tr key={u.id}>
                   <td className={td}>
                     <div className="font-bold">{u.name}</div>
-                    <div className="text-xs text-muted">{u.email}</div>
+                    <div className="text-xs text-muted">{u.phone}</div>
                   </td>
                   <td className={td}>{t(`role.${u.role}`)}</td>
                   <td className={td}>

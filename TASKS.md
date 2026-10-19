@@ -695,13 +695,16 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `B53` Demo data: deleting a child and downloading its data skip the newer tables (daily tasks done, daily answers, tries, play check, skill levels, play time, paused days, feedback clips, therapists' answers and replies)
   - Done when: after deleting a demo child no row with its id is left, and the download holds every table that "Everything we store" counts
   - Needs: —
+- [ ] **Azim** — `B54` `apps/web/README.md`, "Live mode": it still describes the old backend (its repository, Google sign-in, SMTP, Mailpit, Payme/Click test keys). Rewrite it for `apps/api`
+  - Done when: every step in that section works with `apps/api`
+  - Needs: —
 - [ ] **Azim** — `B43` New text for the public pages and the pricing page
   - Done when: they describe the new product, not the old 16 levels
   - Needs: G3
 - [ ] **Azim** — `B44` Native-speaker check of the Uzbek Latin, Uzbek Cyrillic and Russian text
   - Done when: a named person has signed off each language
   - Needs: —
-- [ ] **Azim** — `B45` Remove the hidden old features, or keep them hidden
+- [x] **Azim** — `B45` Remove the hidden old features, or keep them hidden
   - Done when: the founders' answer is carried out
   - Needs: Q7
 - [ ] **Azim** — `V6` Replace the device voice in games and My Voice with the audio files

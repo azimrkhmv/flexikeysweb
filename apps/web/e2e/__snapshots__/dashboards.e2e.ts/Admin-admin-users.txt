@@ -5,48 +5,42 @@ Every admin action is recorded in the audit log.
 Search by name or email
 All roles
 Parent
-Teacher
 Therapist
+Video reviewer
 Admin
 USER	ROLE	STATUS	JOINED	ACTIONS
 
 Sardor Aliev
-new.therapist@demo.uz
++998900000005
 	Therapist	Waiting for verification	Aug 20
 Verify
 
 
-FlexiKeys Admin
-admin@demo.uz
-	Admin	Active	Aug 20
-
 Aziza
-family@demo.uz
++998900000006
 	Parent	Active	Aug 20
 Disable
 Give 30 days free
 
 
 Dilnoza
-parent@demo.uz
++998900000001
 	Parent	Active	Aug 20
 Disable
 Give 30 days free
 
 
-Rustam Yusupov
-physio@demo.uz
-	Video reviewer	Active	Aug 20
-Disable
-
-
-Gulnora Karimova
-teacher@demo.uz
-	Teacher	Active	Aug 20
-Disable
-
+FlexiKeys Admin
++998900000004
+	Admin	Active	Aug 20
 
 Kamola Rashidova
-therapist@demo.uz
++998900000002
 	Therapist	Active	Aug 20
+Disable
+
+
+Rustam Yusupov
++998900000003
+	Video reviewer	Active	Aug 20
 Disable

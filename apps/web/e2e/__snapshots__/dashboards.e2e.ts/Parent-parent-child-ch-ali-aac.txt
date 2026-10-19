@@ -14,37 +14,37 @@ Settings
 Privacy
 26
 Sentences this week
-2.4
+1.7
 Words per sentence
 Most used cards
 I
-×16
+×7
 want
-×9
-like
 ×7
-music
-×7
-water
-×5
-more
-×3
+mom
+×4
+hug
+×4
+tired
+×4
+happy
+×4
 Recent sentences
+“happy”
+Sep 29, 2026
 “I want more”
 Sep 29, 2026
-“I like music”
+“mom hug”
 Sep 28, 2026
-“I want water”
+“help”
 Sep 28, 2026
 “happy”
 Sep 28, 2026
-“I like music”
+“finished”
 Sep 28, 2026
-“I want water”
+“happy”
 Sep 27, 2026
-“I like music”
-Sep 27, 2026
-“go outside”
+“finished”
 Sep 27, 2026
 Your own cards
 

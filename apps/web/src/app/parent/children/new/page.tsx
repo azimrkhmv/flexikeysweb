@@ -3,12 +3,9 @@
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { IntakeWizard } from "@/features/intake/Wizard";
-import { NewChildLegacy } from "@/features/parent/NewChildLegacy";
-import { useLegacy } from "@/features/auth/mode";
 
-/** Adding a child is the parent intake (spec §5). Live mode keeps the older form until the backend has intake. */
+/** Adding a child is the parent intake (spec §5). */
 export default function NewChild() {
-  if (useLegacy()) return <NewChildLegacy />;
   return (
     <Suspense>
       <WithChild />

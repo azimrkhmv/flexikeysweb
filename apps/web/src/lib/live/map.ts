@@ -7,8 +7,8 @@ import type { CardOut, ChildOut, ClipOut, ConsentKind, Consents, DailyOut, InUse
 import type { DB } from "@/lib/api/schema";
 import type { Lang } from "@/lib/translate";
 import type { ChildSupport, ActivityKind, AgeBand, BodyArea, DailyAnswer, ExerciseVideo, FnLevel, GoalKey, IntakeAnswer, IntakeValue, L10n, PausedDay, Restriction, Roadmap, TaskDone,
-  AacCustomCard, AacEvent, AccessMode, AuditLog, AdaptationChange, AdaptiveProfile, Assignment, CareLink, Child, ClassRoom, Consent, ConsentScope, Goal,
-  InteractionEvent, LearningSession, LevelProgress, Note, Notification, Order, ParamKey, Role, SkillMastery, Subscription, User, UserStatus,
+  AacCustomCard, AacEvent, AccessMode, AuditLog, AdaptationChange, AdaptiveProfile, Assignment, CareLink, Child, Consent, ConsentScope, Goal,
+  InteractionEvent, LearningSession, LevelProgress, Note, Notification, Order, ParamKey, Role, SkillMastery, Subscription, User,
 } from "@/lib/types";
 
 // ---------------------------------------------------------------- backend shapes (subset we read)
@@ -27,17 +27,10 @@ export interface BSkill { skill_key: string; p_known: number; attempts: number }
 export interface BPoint { date: string; value: number | null }
 export interface BSummary { child_id: string; streak_days: number; coins: number; stars: number }
 export interface BProfile { profile: { params: Record<string, unknown>; version: number; updated_at: string } }
-export interface BClass { id: string; name: string; grade: string; learning_language: string; join_code: string; created_at: string }
-export interface BRosterChild {
-  id: string; display_name: string; avatar_id: string | null; learning_language: string; ui_language: string; access_mode: string;
-  birth_year: number | null; school_managed: boolean; created_at: string;
-}
-export interface BChildOverview { child: BRosterChild; levels: BLevel[]; skills: BSkill[]; minutes: BPoint[]; changes: BChange[] }
 export interface BTask {
-  id: string; kind: string; class_id: string | null; child_id: string | null; created_by: string | null; level_slug: string | null;
+  id: string; kind: string; child_id: string | null; created_by: string | null; level_slug: string | null;
   instructions: string | null; due_at: string | null; created_at: string;
 }
-export interface BCareLink { id: string; child_id: string; email: string; kind: string; status: string; code: string; professional_user_id: string | null; created_at: string; revoked_at: string | null }
 export interface BNote { id: string; child_id: string; author_id: string; text: string; visible_to_parent: boolean; created_at: string }
 export interface BGoal { id: string; child_id: string; author_id: string; text: string; done: boolean; created_at: string }
 
@@ -48,14 +41,11 @@ const lang = (x: string | null | undefined, fallback: Lang = "uz"): Lang => (x =
 export function userFrom(u: BUser): User {
   return {
     id: u.id,
-    email: "",
     name: u.name ?? "",
     // ponytail: "clinic" has no screens until M6; it gets the parent area, where the server shows it nothing.
     role: (["parent", "therapist", "physio", "admin"].includes(u.role) ? u.role : "parent") as Role,
     status: u.status === "disabled" ? "disabled" : "active",
-    password: "",
     uiLang: u.lang,
-    emailVerified: true,
     phone: u.phone,
     district: u.region && u.district ? { region: u.region, district: u.district } : undefined,
     consentVersion: u.consentVersion ?? undefined,
@@ -150,7 +140,7 @@ export function childFrom(c: BChild): Child {
   const eq = c.equipped ?? {};
   return {
     id: c.id,
-    familyId: c.parent_id, // old backend: the parent's id stands in for the family
+    familyId: c.parent_id ?? "", // old backend: the parent's id stands in for the family
     name: c.display_name,
     birthYear: c.birth_year ?? new Date(c.created_at).getFullYear() - 6,
     learningLang: lang(c.learning_language),
@@ -178,7 +168,7 @@ export function childTo(c: Partial<Pick<Child, "name" | "birthYear" | "learningL
 // "core" consent is the backend's data_processing scope; the other four have the same names.
 export const scopeTo = (s: ConsentScope) => (s === "core" ? "data_processing" : s);
 export const scopeFrom = (s: string): ConsentScope | null =>
-  s === "data_processing" ? "core" : (["ai_processing", "voice_recording", "school_sharing", "therapist_sharing"] as const).find((x) => x === s) ?? null;
+  s === "data_processing" ? "core" : (["ai_processing", "voice_recording", "therapist_sharing"] as const).find((x) => x === s) ?? null;
 
 export function consentsFrom(list: BConsent[]): Consent[] {
   return list.flatMap((c) => {
@@ -271,35 +261,16 @@ export function eventTo(e: Omit<InteractionEvent, "sessionId">, sessionStartMs: 
   return null;
 }
 
-// ---------------------------------------------------------------- school & care
-/** A child seen from a class or a therapist link: a parent's child gets a placeholder parent id (the
- *  professional never learns who the parent is); school-managed children have none. */
-export function rosterChildFrom(c: BRosterChild): Child {
-  return childFrom({
-    id: c.id, parent_id: c.school_managed ? null : "family", display_name: c.display_name, learning_language: c.learning_language,
-    ui_language: c.ui_language, birth_year: c.birth_year, avatar_id: c.avatar_id, access_mode: c.access_mode, created_at: c.created_at,
-  });
-}
-
-export const classFrom = (k: BClass, teacherId: string): ClassRoom => ({
-  id: k.id, teacherId, name: k.name, grade: k.grade, learningLang: lang(k.learning_language), code: k.join_code, createdAt: k.created_at,
-});
-
-/** Assignments (teacher, class) and recommendations (therapist, one child) → the web's Assignment. */
+// ---------------------------------------------------------------- care
+/** A therapist's recommendation for one child → the web's Assignment. */
 export const taskFrom = (t: BTask, fallbackChild?: string): Assignment | null =>
-  t.level_slug
+  t.level_slug && (t.child_id ?? fallbackChild)
     ? {
-        id: t.id, kind: t.kind === "therapist" ? "therapist" : "teacher", byUserId: t.created_by ?? "", classId: t.class_id ?? undefined,
-        childId: t.child_id ?? (t.class_id ? undefined : fallbackChild), levelId: t.level_slug, note: t.instructions ?? "",
+        id: t.id, kind: "therapist", byUserId: t.created_by ?? "",
+        childId: (t.child_id ?? fallbackChild)!, levelId: t.level_slug, note: t.instructions ?? "",
         due: t.due_at ?? undefined, createdAt: t.created_at,
       }
     : null;
-
-export const careLinkFrom = (l: BCareLink): CareLink => ({
-  id: l.id, childId: l.child_id, kind: l.kind === "teacher" ? "teacher" : "therapist", email: l.email,
-  professionalId: l.professional_user_id ?? undefined, status: (["invited", "active", "revoked"].includes(l.status) ? l.status : "invited") as CareLink["status"],
-  code: l.code, createdAt: l.created_at, revokedAt: l.revoked_at ?? undefined,
-});
 
 export const noteFrom = (n: BNote): Note => ({ id: n.id, childId: n.child_id, authorId: n.author_id, text: n.text, visibleToParent: n.visible_to_parent, createdAt: n.created_at });
 export const goalFrom = (g: BGoal): Goal => ({ id: g.id, childId: g.child_id, authorId: g.author_id, text: g.text, done: g.done, createdAt: g.created_at });
@@ -360,7 +331,7 @@ export const sharedChildFrom = (c: SharedChild): Child => familyChildFrom({ ...c
 
 /** A share or invite of one child, as the parent's Sharing tab lists it. `code` is a link invite's code (once). */
 export const shareFrom = (childId: string, l: ShareOut): CareLink => ({
-  id: l.id, childId, kind: "therapist", email: "", phone: l.phone ?? undefined, therapistName: l.therapistName ?? undefined,
+  id: l.id, childId, kind: "therapist", phone: l.phone ?? undefined, therapistName: l.therapistName ?? undefined,
   professionalId: l.status === "active" ? `therapist-${l.id}` : undefined, status: l.status === "active" ? "active" : "invited",
   code: l.code ?? "", createdAt: l.invitedAt,
 });

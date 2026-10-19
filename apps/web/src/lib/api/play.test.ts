@@ -1,13 +1,23 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { LEVEL_BY_ID } from "@/content/levels";
 import { createTryLog } from "../tries";
-import { api, DEMO_PASSWORD, dbStore, sel } from "./index";
+import { api, DEMO_PHONES, dbStore, sel } from "./index";
+
+async function asParent() {
+  const { demoCode } = await api.requestCode(DEMO_PHONES.parent);
+  await api.verifyCode(DEMO_PHONES.parent, demoCode, "en");
+}
+/** Ali in child mode on the parent's device. */
+async function asAli() {
+  await asParent();
+  await api.startChildMode("ch_ali");
+}
 
 // The mock server enforces the level gate itself — a client (or an assignment) can't play a sleeping level.
 describe("api.completeActivity", () => {
   beforeEach(async () => {
     api.resetDemo();
-    await api.classLoginChild("cl_sun", "ch_ali"); // child token for Ali (class path)
+    await asAli();
   });
 
   it("rejects activities of a level the child hasn't unlocked, even when it is assigned", async () => {
@@ -26,7 +36,7 @@ describe("api.completeActivity", () => {
 describe("api.startChildMode without a core consent record", () => {
   beforeEach(async () => {
     api.resetDemo();
-    await api.login("parent@demo.uz", DEMO_PASSWORD);
+    await asParent();
     dbStore.set((db) => ({ ...db, consents: db.consents.filter((c) => c.childId !== "ch_ali") })); // e.g. a mobile-app profile
   });
 
@@ -42,7 +52,7 @@ describe("api.startChildMode without a core consent record", () => {
 describe("api.saveTries", () => {
   beforeEach(async () => {
     api.resetDemo();
-    await api.classLoginChild("cl_sun", "ch_ali");
+    await asAli();
   });
 
   it("stores each try once, access events included as access events", async () => {
@@ -62,7 +72,7 @@ describe("api.saveTries", () => {
 describe("skill levels from tries", () => {
   beforeEach(async () => {
     api.resetDemo();
-    await api.classLoginChild("cl_sun", "ch_ali");
+    await asAli();
   });
 
   it("a right answer raises θ, an access event changes nothing", async () => {

@@ -30,14 +30,14 @@ export const intakeApi = {
   /** POST /children — from intake step 1 (P1–P5, P8). Basic consent was given at sign-up. */
   async createChildFromIntake(answers: Answers, uiLang: UiLang) {
     const u = requireUser(["parent"]);
-    if (!u.consentVersion && !u.emailVerified) throw new ApiError("consent_required");
+    if (!u.consentVersion) throw new ApiError("consent_required");
     const name = String(answers.P1 ?? "").trim();
     const birthDate = String(answers.P2 ?? "");
     if (!name) throw new ApiError("name_required");
     if (!/^\d{4}-\d{2}-\d{2}$/.test(birthDate) || birthDate > today()) throw new ApiError("invalid_date");
     const lang = baseLang(uiLang);
     const child: Child = {
-      id: id(), familyId: null, name, birthYear: Number(birthDate.slice(0, 4)), birthDate, learningLang: lang, uiLang: lang, avatar: "☁️", access: "touch",
+      id: id(), familyId: "", name, birthYear: Number(birthDate.slice(0, 4)), birthDate, learningLang: lang, uiLang: lang, avatar: "☁️", access: "touch",
       equipped: typeof answers.P8 === "string" ? { color: answers.P8 } : {},
       sex: answers.P3 === "boy" || answers.P3 === "girl" ? answers.P3 : undefined,
       relationship: (["mother", "father", "grandparent", "carer"] as const).find((r) => r === answers.P4),

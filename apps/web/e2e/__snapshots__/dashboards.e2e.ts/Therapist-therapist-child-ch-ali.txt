@@ -106,31 +106,31 @@ Opens after “Transport” is finished
 My Voice (AAC) · last 7 days
 26
 Sentences spoken
-2.4
+1.7
 Cards per sentence
 Most used cards
-🙋 I · 16
-🤲 want · 9
-💛 like · 7
-🎵 music · 7
-💧 water · 5
-➕ more · 3
+🙋 I · 7
+🤲 want · 7
+👩 mom · 4
+🤗 hug · 4
+🥱 tired · 4
+😊 happy · 4
 Recent sentences
+😊 happy
+Sep 29
 🙋 I 🤲 want ➕ more
 Sep 29
-🙋 I 💛 like 🎵 music
+👩 mom 🤗 hug
 Sep 28
-🙋 I 🤲 want 💧 water
+🆘 help
 Sep 28
 😊 happy
 Sep 28
-🙋 I 💛 like 🎵 music
+✅ finished
 Sep 28
-🙋 I 🤲 want 💧 water
+😊 happy
 Sep 27
-🙋 I 💛 like 🎵 music
-Sep 27
-➡️ go 🌳 outside
+✅ finished
 Sep 27
 What changed and why
 

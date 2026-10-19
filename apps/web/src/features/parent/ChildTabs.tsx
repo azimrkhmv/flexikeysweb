@@ -349,20 +349,15 @@ export function SharingTab({ childId, goTab }: { childId: string; goTab: (t: Tab
   const [lang] = useLang();
   const db = useDb();
   const links = sel.careLinks(db, childId);
-  const classes = sel.classesOfChild(db, childId);
   const notes = sel.notes(db, childId, { visibleToParent: true });
   const goals = sel.goals(db, childId);
   const canTherapist = sel.hasConsent(db, childId, "therapist_sharing");
-  const canSchool = sel.hasConsent(db, childId, "school_sharing");
-  const [email, setEmail] = useState("");
-  const [code, setCode] = useState("");
+  const [phone, setPhone] = useState("");
   const [newCode, setNewCode] = useState<string | null>(null);
   const [revoking, setRevoking] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const invite = useAction(api.inviteCare);
   const revoke = useAction(api.revokeCare);
-  const join = useAction(api.joinClass);
-  const leave = useAction(api.leaveClass);
   const user = (id: string) => sel.user(db, id)?.name ?? "";
 
   const consentHint = (
@@ -383,9 +378,9 @@ export function SharingTab({ childId, goTab }: { childId: string; goTab: (t: Tab
           {links.map((l) => (
             <li key={l.id} className="flex flex-wrap items-center gap-2 rounded-2xl bg-surface-2 p-3">
               <div className="min-w-0 flex-1">
-                <p className="truncate font-bold">{l.therapistName || (l.professionalId && user(l.professionalId)) || l.phone || l.email}</p>
+                <p className="truncate font-bold">{l.therapistName || (l.professionalId && user(l.professionalId)) || l.phone}</p>
                 <p className="text-xs text-muted">
-                  {l.phone || l.email} · {fmtDate(l.createdAt, lang)}
+                  {l.phone && `${l.phone} · `}{fmtDate(l.createdAt, lang)}
                   {l.status === "invited" && ` · ${t("parent.sharing.code")}: `}
                   {l.status === "invited" && <span className="font-mono font-bold text-ink">{l.code}</span>}
                 </p>
@@ -405,16 +400,16 @@ export function SharingTab({ childId, goTab }: { childId: string; goTab: (t: Tab
             className="flex flex-wrap items-end gap-2"
             onSubmit={async (e) => {
               e.preventDefault();
-              const link = await invite.run(childId, email, "therapist");
+              const link = await invite.run(childId, phone);
               if (link) {
                 setNewCode(link.code || null); // a phone invite waits in the therapist's own list instead
-                setEmail("");
+                setPhone("");
               }
             }}
           >
             <div className="min-w-48 flex-1">
-              <Field label={t("parent.sharing.email")} hint={t("parent.sharing.phoneHint")}>
-                <Input type="tel" inputMode="tel" placeholder="+998" value={email} onChange={(e) => setEmail(e.target.value)} />
+              <Field label={t("parent.sharing.phone")} hint={t("parent.sharing.phoneHint")}>
+                <Input type="tel" inputMode="tel" placeholder="+998" value={phone} onChange={(e) => setPhone(e.target.value)} />
               </Field>
             </div>
             <Button type="submit" pending={invite.pending}>
@@ -447,47 +442,6 @@ export function SharingTab({ childId, goTab }: { childId: string; goTab: (t: Tab
             </a>
           </div>
         )}
-      </Card>
-
-      <Card className="h-fit space-y-4">
-        <H2>{t("parent.sharing.classes")}</H2>
-        <ul className="space-y-2">
-          {classes.map((k) => (
-            <li key={k.id} className="flex items-center gap-2 rounded-2xl bg-surface-2 p-3">
-              <div className="min-w-0 flex-1">
-                <p className="font-bold">{k.name}</p>
-                <p className="text-xs text-muted">
-                  {k.grade} · {user(k.teacherId)}
-                </p>
-              </div>
-              <Button size="sm" variant="danger" pending={leave.pending} onClick={() => leave.run(childId, k.id)}>
-                {t("parent.sharing.leave")}
-              </Button>
-            </li>
-          ))}
-          {classes.length === 0 && <li className="text-sm text-muted">{t("common.none")}</li>}
-        </ul>
-        {!canSchool ? (
-          consentHint
-        ) : (
-          <form
-            className="flex flex-wrap items-end gap-2"
-            onSubmit={async (e) => {
-              e.preventDefault();
-              if ((await join.run(childId, code)) !== undefined) setCode("");
-            }}
-          >
-            <div className="min-w-40 flex-1">
-              <Field label={t("parent.sharing.classCode")}>
-                <Input value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} maxLength={8} className="font-mono uppercase tracking-widest" required />
-              </Field>
-            </div>
-            <Button type="submit" pending={join.pending}>
-              {t("parent.sharing.join")}
-            </Button>
-          </form>
-        )}
-        {(join.error || leave.error) && <p role="alert" className="text-sm font-semibold text-[#8f3a2c]">{join.error ?? leave.error}</p>}
       </Card>
 
       <Card>
@@ -627,7 +581,7 @@ export function SettingsTab({ child }: { child: Child }) {
 }
 
 // ---------------------------------------------------------------- privacy
-const OPTIONAL: ConsentScope[] = ["health", "movement_videos", "ai_processing", "voice_recording", "school_sharing", "therapist_sharing"];
+const OPTIONAL: ConsentScope[] = ["health", "movement_videos", "ai_processing", "voice_recording", "therapist_sharing"];
 
 /** Warns when this device can't speak a child's language (most devices have no Uzbek voice). */
 function VoiceNotice({ langs }: { langs: Lang[] }) {

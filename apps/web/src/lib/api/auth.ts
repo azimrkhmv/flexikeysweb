@@ -2,12 +2,12 @@
 
 // /auth/*, /users/me, notifications.
 
-import type { Lang, UiLang } from "../i18n";
+import type { UiLang } from "../i18n";
 import { read, write, net } from "./db";
 import { requireUser, purgeChild } from "./guards";
 import { sel } from "./selectors";
 import { ApiError, CONSENT_VERSION, DEMO_PHONES, id, iso, OTP_MAX_TRIES, OTP_RESEND_MS } from "./schema";
-import type { Role, User } from "../types";
+import type { User } from "../types";
 
 /** "+998 90 123-45-67", "90 123 45 67" → "+998901234567"; null when it isn't an Uzbek mobile number. */
 export function normalizePhone(raw: string): string | null {
@@ -49,7 +49,7 @@ export const authApi = {
     if (user?.status === "disabled") throw new ApiError("account_disabled");
     const isNew = !user;
     const invited = read().careLinks.some((l) => l.status === "invited" && (l.phone === phone || (!!invite && l.code === invite.trim().toUpperCase())));
-    user ??= { id: id(), email: "", name: "", role: invited ? "therapist" : "parent", status: "active", password: id(), uiLang, emailVerified: false, phone, createdAt: iso() };
+    user ??= { id: id(), name: "", role: invited ? "therapist" : "parent", status: "active", uiLang, phone, createdAt: iso() };
     const u = user;
     write((db) => {
       db.otp = db.otp.filter((o) => o.phone !== phone);
@@ -77,52 +77,6 @@ export const authApi = {
     });
     return net(true);
   },
-  /** POST /auth/register (legacy email sign-up) */
-  async register(input: { email: string; password: string; name: string; role: Exclude<Role, "admin" | "physio">; uiLang: Lang }) {
-    const email = input.email.trim().toLowerCase();
-    if (!/^\S+@\S+\.\S+$/.test(email)) throw new ApiError("invalid_email");
-    if (input.password.length < 10) throw new ApiError("weak_password");
-    if (read().users.some((u) => u.email === email)) throw new ApiError("email_taken");
-    const autoApprove = read().flags.find((f) => f.key === "auto_approve_professionals")?.enabled;
-    const user: User = {
-      id: id(), email, name: input.name.trim(), role: input.role, password: input.password, uiLang: input.uiLang,
-      status: input.role === "parent" || autoApprove ? "active" : "pending_verification", emailVerified: false, createdAt: iso(),
-    };
-    write((db) => {
-      db.users.push(user);
-      db.auth.userId = user.id;
-      if (user.role === "parent") db.subscriptions.push({ userId: user.id, plan: "free", status: "active" });
-    });
-    return net(user);
-  },
-  /** POST /auth/login */
-  async login(email: string, password: string) {
-    const u = read().users.find((x) => x.email === email.trim().toLowerCase());
-    if (!u || u.password !== password) throw await net(new ApiError("invalid_credentials"), 300);
-    if (u.status === "disabled") throw new ApiError("account_disabled");
-    write((db) => {
-      db.auth.userId = u.id;
-    });
-    return net(u);
-  },
-  /** POST /auth/google — demo: signs in (or creates) a Google-linked parent. */
-  async loginWithGoogle() {
-    const email = "google.parent@demo.uz";
-    let u = read().users.find((x) => x.email === email);
-    if (!u) {
-      u = { id: id(), email, name: "Google Parent", role: "parent", status: "active", password: id(), uiLang: "uz", emailVerified: true, createdAt: iso() };
-      const nu = u;
-      write((db) => {
-        db.users.push(nu);
-        db.subscriptions.push({ userId: nu.id, plan: "free", status: "active" });
-      });
-    }
-    const uid = u.id;
-    write((db) => {
-      db.auth.userId = uid;
-    });
-    return net(u);
-  },
   /** POST /auth/logout */
   async logout() {
     write((db) => {
@@ -134,42 +88,15 @@ export const authApi = {
   async logoutAll() {
     return authApi.logout();
   },
-  /** POST /auth/forgot-password — always succeeds (never reveals whether the email exists). */
-  async forgotPassword(email: string) {
-    void email;
-    return net(true, 400);
-  },
-  /** POST /auth/password/reset — the single-use token from the emailed link (mock: any token works). */
-  async resetPassword(token: string, password: string) {
-    void token;
-    if (password.length < 10) throw new ApiError("weak_password");
-    return net(true);
-  },
-  /** POST /me/resend-verification */
-  async resendVerification() {
-    requireUser();
-    return net(true, 300);
-  },
-  /** POST /auth/verify-email */
-  async verifyEmail(token?: string) {
-    void token; // mock: the demo button verifies directly (live: token from the emailed link)
-    const u = requireUser();
-    write((db) => {
-      db.users.find((x) => x.id === u.id)!.emailVerified = true;
-    });
-    return net(true);
-  },
   /** PATCH /users/me */
   async updateMe(patch: Partial<Pick<User, "name" | "uiLang">>) {
     const u = requireUser();
     write((db) => Object.assign(db.users.find((x) => x.id === u.id)!, patch));
     return net(true);
   },
-  /** DELETE /users/me — deletes the account, the family it owns and that family's children (PRD §20). */
-  /** DELETE /me — `confirmEmail` is the address the parent typed (checked by the server too). */
-  async deleteMe(confirmEmail?: string) {
+  /** DELETE /me — deletes the account, the family it owns and that family's children (A12.2). */
+  async deleteMe() {
     const u = requireUser();
-    if (confirmEmail !== undefined && confirmEmail.trim().toLowerCase() !== u.email.toLowerCase()) throw new ApiError("confirmation_mismatch");
     write((db) => {
       const family = sel.ownFamily(db, u.id);
       db.children.filter((c) => c.familyId !== null && c.familyId === family).forEach((c) => purgeChild(db, c.id));

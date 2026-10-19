@@ -23,7 +23,7 @@ function PlayPage() {
 
   const auth = sel.childAuth(db);
   const child = auth && sel.child(db, auth.childId);
-  if (auth && child) return <ChildMode key={child.id} child={child} auth={auth} />;
+  if (auth && child) return <ChildMode key={child.id} child={child} />;
 
   const me = sel.me(db);
   const kids = me?.role === "parent" ? sel.childrenOf(db, me.id) : [];
@@ -78,9 +78,6 @@ function PlayPage() {
             <div className="flex flex-wrap justify-center gap-3">
               <LinkButton href="/login?next=/play" size="lg">
                 {t("play.signedOut.parent")}
-              </LinkButton>
-              <LinkButton href="/class" variant="soft" size="lg">
-                {t("play.signedOut.class")}
               </LinkButton>
             </div>
           </>

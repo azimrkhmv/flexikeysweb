@@ -2,13 +2,13 @@ Admin overview
 
 Every admin action is recorded in the audit log.
 
-7
+6
 Accounts
-7
+3
 Child profiles
 0
 Paying families
-31
+10
 Sessions · 7 days
 System health
 
@@ -42,7 +42,6 @@ Not connected (demo)
 0
 29
 Parent: 0
-Teacher: 0
 Therapist: 0
 
 Parents can ask up to 30 questions a day. A monthly cost cap switches AI to a friendly fallback message.

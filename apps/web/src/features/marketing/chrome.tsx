@@ -65,9 +65,6 @@ export function Header() {
         </nav>
         <div className="ml-auto hidden items-center gap-2 lg:flex">
           <LangSwitch compact />
-          <Link href="/class" className={buttonClass("ghost", "sm")}>
-            {t("nav.class")}
-          </Link>
           {account}
         </div>
         <div className="ml-auto flex items-center gap-2 lg:hidden">
@@ -82,9 +79,6 @@ export function Header() {
                   {t(l.key)}
                 </Link>
               ))}
-              <Link href="/class" className="rounded-xl px-3 py-2.5 font-bold text-ink-2 hover:bg-surface-2">
-                {t("nav.class")}
-              </Link>
               <div className="mt-2 flex flex-col gap-2 border-t border-line pt-3 [&>a]:w-full">{account}</div>
             </div>
           </details>
@@ -113,7 +107,6 @@ export function Footer() {
             <li><Link href={lp("/#schools")}>{t("nav.schools")}</Link></li>
             <li><Link href={lp("/#therapists")}>{t("nav.therapists")}</Link></li>
             <li><Link href="/demo">{t("mkt.hero.demo")}</Link></li>
-            <li><Link href="/class">{t("nav.class")}</Link></li>
           </ul>
         </div>
         <div className={col}>

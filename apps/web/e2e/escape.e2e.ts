@@ -21,24 +21,6 @@ test.describe("Escape key", () => {
     await expect(bell).toHaveAttribute("aria-expanded", "false");
   });
 
-  // Legacy teacher area: hidden by the product spec of 2026-10-06 (the `legacy` flag brings it back).
-  test.skip("adult modal dialog closes with Escape", async ({ page }) => {
-    await loginAs(page, "Teacher");
-    await page.getByRole("button", { name: "New class" }).click();
-    await expect(page.getByRole("dialog")).toBeVisible();
-    await page.keyboard.press("Escape");
-    await expect(page.getByRole("dialog")).toHaveCount(0);
-  });
-
-  test.skip("classroom mode closes with Escape", async ({ page }) => {
-    await loginAs(page, "Teacher");
-    await page.goto("/teacher/class/cl_sun");
-    await page.getByRole("button", { name: "Classroom mode" }).click();
-    await expect(page.getByRole("dialog", { name: "Classroom mode" })).toBeVisible();
-    await page.keyboard.press("Escape");
-    await expect(page.getByRole("dialog", { name: "Classroom mode" })).toHaveCount(0);
-  });
-
   test("child mode: Escape continues playing from the pause menu and the parent gate — it never exits", async ({ page }) => {
     await loginAs(page, "Parent");
     await page.goto("/parent/child/ch_ali");

@@ -3,20 +3,16 @@ import type { Lang, UiLang } from "./i18n";
 export type L10n<T = string> = Record<Lang, T>;
 
 // ---------- Accounts ----------
-/** `physio` reviews exercise videos before families see them (spec §8). `teacher` is legacy (hidden). */
-export type Role = "parent" | "teacher" | "therapist" | "physio" | "admin";
+/** `physio` reviews exercise videos before families see them (spec §8). */
+export type Role = "parent" | "therapist" | "physio" | "admin";
 export type UserStatus = "active" | "pending_verification" | "disabled";
 
 export interface User {
   id: string;
-  email: string;
   name: string;
   role: Role;
   status: UserStatus;
-  /** MOCK ONLY — the real backend stores an Argon2id hash, never the password. */
-  password: string;
   uiLang: UiLang;
-  emailVerified: boolean;
   /** Sign-in is phone + SMS code (spec §4): +998XXXXXXXXX. */
   phone?: string;
   /** City/region and district ids from content/districts.ts (Find help, booking, Home Kit delivery). */
@@ -42,8 +38,7 @@ export interface FamilyMember {
 
 export interface Child {
   id: string;
-  /** null = school‑managed profile (created by a teacher, no family). */
-  familyId: string | null;
+  familyId: string;
   name: string;
   birthYear: number;
   learningLang: Lang;
@@ -87,7 +82,7 @@ export interface ChildSupport {
 }
 
 /** `health` gates the exercise roadmap; `movement_videos` gates P40 clips (spec §4). */
-export type ConsentScope = "core" | "health" | "movement_videos" | "ai_processing" | "voice_recording" | "school_sharing" | "therapist_sharing";
+export type ConsentScope = "core" | "health" | "movement_videos" | "ai_processing" | "voice_recording" | "therapist_sharing";
 
 export interface Consent {
   id: string;
@@ -187,28 +182,13 @@ export interface Wallet {
   owned: string[];
 }
 
-// ---------- School / care ----------
-export interface ClassRoom {
-  id: string;
-  teacherId: string;
-  name: string;
-  grade: string;
-  learningLang: Lang;
-  code: string;
-  createdAt: string;
-}
-
-export interface Enrollment {
-  classId: string;
-  childId: string;
-}
-
+// ---------- Care ----------
+/** A therapist's recommendation of a level for one child. */
 export interface Assignment {
   id: string;
-  kind: "teacher" | "therapist";
+  kind: "therapist";
   byUserId: string;
-  classId?: string;
-  childId?: string;
+  childId: string;
   levelId: string;
   note: string;
   due?: string;
@@ -218,9 +198,8 @@ export interface Assignment {
 export interface CareLink {
   id: string;
   childId: string;
-  kind: "therapist" | "teacher";
-  email: string;
-  /** Invites by phone (spec P41); email stays for older invites. */
+  kind: "therapist";
+  /** Invites by phone (spec P41). */
   phone?: string;
   professionalId?: string;
   /** Live mode: the child's name on a therapist's invite, and the therapist's name on the parent's list. */

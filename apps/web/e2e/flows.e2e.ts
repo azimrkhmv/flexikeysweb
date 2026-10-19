@@ -56,21 +56,6 @@ test.skip("new parent: sign up → consent → add child → play → progress i
   await expect(stars).toHaveText(/^\s*3\s*Stars earned\s*$/);
 });
 
-// Legacy: class codes are hidden by the product spec of 2026-10-06.
-test.skip("school: class code on a shared device → roster → child mode, code remembered", async ({ page }) => {
-  await setup(page);
-  await page.goto("/class");
-  await page.getByLabel("Class code").fill("kq7m4p");
-  await page.getByRole("button", { name: "Go" }).click();
-  await expect(page.getByRole("heading", { name: "Quyoshcha" })).toBeVisible();
-  await page.getByRole("button", { name: "Bekzod" }).press("Enter");
-  await expect(page).toHaveURL(/\/play$/);
-  await expect(page.getByRole("button", { name: "Boshlash" })).toBeVisible(); // Bekzod's UI language is Uzbek
-  await exitThroughGate(page, "uz");
-  await expect(page).toHaveURL(/\/class$/);
-  await expect(page.getByRole("heading", { name: "Quyoshcha" })).toBeVisible(); // next child can pick straight away (FR-TCH-2)
-});
-
 test("therapist link: parent invites → therapist accepts → parent revokes → access stops", async ({ page }, info) => {
   test.skip(info.project.name !== "desktop");
   await setup(page);

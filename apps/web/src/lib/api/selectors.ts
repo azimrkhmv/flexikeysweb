@@ -10,7 +10,7 @@ import type { Answers } from "@/content/intake";
 import { replaces, therapistInput, type Profession } from "@/content/therapist";
 import { LANGS, type Lang } from "../i18n";
 import { DAY, iso, localDate, type DB } from "./schema";
-import type { AdaptiveProfile, Child, ClassRoom, ConsentScope, InputProfile, LevelProgress, Roadmap, Subscription, User, VideoStatus, Wallet } from "../types";
+import type { AdaptiveProfile, Child, ConsentScope, InputProfile, LevelProgress, Roadmap, Subscription, User, VideoStatus, Wallet } from "../types";
 
 // ---------------------------------------------------------------- selectors (pure)
 export const sel = {
@@ -100,19 +100,14 @@ export const sel = {
   hasConsent: (db: DB, childId: string, scope: ConsentScope) => db.consents.some((c) => c.childId === childId && c.scope === scope && !c.withdrawnAt),
 
   /** PRD §15.4 — the single authorization rule. Returns the relation or null (→ 404). */
-  access(db: DB, userId: string | null, childId: string): "owner" | "helper" | "admin" | "therapist" | "teacher" | null {
+  access(db: DB, userId: string | null, childId: string): "owner" | "helper" | "admin" | "therapist" | null {
     const u = db.users.find((x) => x.id === userId);
     const c = db.children.find((x) => x.id === childId);
     if (!u || !c || u.status === "disabled") return null;
     if (u.role === "admin") return "admin";
-    if (u.role === "parent" && c.familyId !== null && sel.ownFamily(db, u.id) === c.familyId) return "owner";
+    if (u.role === "parent" && sel.ownFamily(db, u.id) === c.familyId) return "owner";
     if (u.role === "parent" && db.familyMembers.some((m) => m.userId === u.id && m.familyId === c.familyId && m.role === "helper")) return "helper";
     if (u.role === "therapist" && db.careLinks.some((l) => l.childId === childId && l.professionalId === u.id && l.status === "active" && l.kind === "therapist")) return "therapist";
-    if (u.role === "teacher") {
-      const mine = db.classes.filter((k) => k.teacherId === u.id).map((k) => k.id);
-      const enrolled = db.enrollments.some((e) => e.childId === childId && mine.includes(e.classId));
-      if (enrolled && (c.familyId === null || sel.hasConsent(db, childId, "school_sharing"))) return "teacher";
-    }
     return null;
   },
 
@@ -141,14 +136,13 @@ export const sel = {
     if (s && s.plan !== "free" && s.until && s.until < iso()) return { ...s, status: "expired" };
     return s ?? { userId, plan: "free", status: "active" };
   },
-  /** Paid access: family subscription, or school/therapist link (free during pilot). Never affects rewards. */
+  /** Paid access: family subscription, or a therapist link (free during pilot). Never affects rewards. */
   entitled(db: DB, childId: string) {
     const c = sel.child(db, childId);
     if (!c) return false;
-    if (c.familyId === null) return true;
     const s = sel.subscription(db, sel.familyOwner(db, c.familyId) ?? "");
     if (s.plan !== "free" && s.status !== "expired") return true;
-    return db.enrollments.some((e) => e.childId === childId) || db.careLinks.some((l) => l.childId === childId && l.status === "active");
+    return db.careLinks.some((l) => l.childId === childId && l.status === "active");
   },
   /** done | open | sleeping (mastery gate) | plan (needs subscription — shown to the child as sleeping too). */
   levelState(db: DB, childId: string, index: number): "done" | "open" | "sleeping" | "plan" {
@@ -161,7 +155,7 @@ export const sel = {
     return levelComplete(prev, sel.levelProgress(db, childId, prev.id).completed) ? "open" : "sleeping";
   },
   /**
-   * Why a level can't be opened yet — null when it is playable. Teacher/therapist assignments never change
+   * Why a level can't be opened yet — null when it is playable. Therapist recommendations never change
    * this: levels open only through mastery, and paid levels only with access (FR-CUR-4, product rule 5).
    */
   lockReason(db: DB, childId: string, levelId: string): null | { kind: "mastery"; after: string } | { kind: "plan" } {
@@ -204,18 +198,13 @@ export const sel = {
     return n;
   },
   assignmentsFor(db: DB, childId: string) {
-    const classIds = db.enrollments.filter((e) => e.childId === childId).map((e) => e.classId);
     // A therapist's recommendations count only while their parent-approved link is active (FR-PAR-2).
     const linked = (userId: string) => db.careLinks.some((l) => l.childId === childId && l.professionalId === userId && l.status === "active");
-    return db.assignments.filter((a) => (a.childId === childId && (a.kind !== "therapist" || linked(a.byUserId))) || (a.classId && classIds.includes(a.classId)));
+    return db.assignments.filter((a) => a.childId === childId && linked(a.byUserId));
   },
-  classesOf: (db: DB, teacherId: string) => db.classes.filter((c) => c.teacherId === teacherId),
-  classChildren: (db: DB, classId: string) =>
-    db.enrollments.filter((e) => e.classId === classId).map((e) => sel.child(db, e.childId)).filter((c): c is Child => !!c),
   therapistChildren: (db: DB, userId: string) =>
     db.careLinks.filter((l) => l.professionalId === userId && l.status === "active").map((l) => sel.child(db, l.childId)).filter((c): c is Child => !!c),
-  invitesFor: (db: DB, email: string, phone?: string) =>
-    db.careLinks.filter((l) => l.status === "invited" && ((!!l.email && l.email.toLowerCase() === email.toLowerCase()) || (!!phone && l.phone === phone))),
+  invitesFor: (db: DB, phone?: string) => db.careLinks.filter((l) => l.status === "invited" && !!phone && l.phone === phone),
   therapistProfile: (db: DB, userId: string) => (db.therapistProfiles ?? []).find((p) => p.userId === userId) ?? null,
   therapistAnswers: (db: DB, childId: string, therapistId: string) =>
     (db.therapistAnswers ?? []).find((r) => r.childId === childId && r.therapistId === therapistId)?.answers ?? {},
@@ -324,11 +313,6 @@ export const sel = {
   goals: (db: DB, childId: string) => db.goals.filter((g) => g.childId === childId),
   openGoals: (db: DB, childId: string) => db.goals.filter((g) => g.childId === childId && !g.done).length,
   recommendations: (db: DB, childId: string) => db.assignments.filter((a) => a.kind === "therapist" && a.childId === childId),
-  classAssignments: (db: DB, classId: string) => db.assignments.filter((a) => a.classId === classId).sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
-  /** The class only if it belongs to this teacher (→ 404 otherwise). */
-  teacherClass: (db: DB, teacherId: string, classId: string) => db.classes.find((c) => c.id === classId && c.teacherId === teacherId) ?? null,
-  classesOfChild: (db: DB, childId: string) =>
-    db.enrollments.filter((e) => e.childId === childId).map((e) => db.classes.find((k) => k.id === e.classId)).filter((k): k is ClassRoom => !!k),
 
   // ---- admin-only reads (/admin/*)
   admin: {

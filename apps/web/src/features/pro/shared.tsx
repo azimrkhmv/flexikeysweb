@@ -10,7 +10,7 @@ import { sel, useDb, type DB } from "@/lib/api";
 import { fmtDate } from "@/lib/format";
 import { useLang, useT } from "@/lib/i18n";
 
-// Shared read-only building blocks for teacher / therapist / admin views.
+// Shared read-only building blocks for therapist / physio / admin views.
 
 /** Signed-in professional. Pages render inside RequireRole, so `me` is always present. */
 export function useMe() {

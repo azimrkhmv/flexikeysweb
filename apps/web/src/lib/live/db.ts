@@ -9,9 +9,9 @@ import { http } from "./http";
 import type { CardOut, ChildOut, ClipOut, Helpers, InviteForMe, Consents, DailyOut, FormOut, InUse, InviteOut, PlanOut, ProfileOut, ReviewItem, RoundOut, RoundSummary, ShareOut, SharedChild } from "@/lib/server/types";
 import {
   answersFrom, clipsFrom, dailyFrom, doneFrom, familyChildFrom, familyConsentsFrom, inUseFrom, pausedFrom, planFrom, planVideosFrom, reviewVideosFrom, shareFrom, sharedChildFrom, voiceCardFrom,
-  aacCardFrom, auditFrom, orderFrom, subscriptionFrom, changeFrom, childFrom, notificationFrom, classFrom, levelsFrom, masteryFrom, profileFrom, rosterChildFrom,
-  sessionsFrom, taskFrom, userFrom,
-  type BAacCard, type BAdminSub, type BAudit, type BOrder, type BOverview, type BNotification, type BChild, type BChildOverview, type BClass, type BLevel,
+  aacCardFrom, auditFrom, orderFrom, subscriptionFrom, childFrom, notificationFrom, levelsFrom, profileFrom,
+  taskFrom, userFrom,
+  type BAacCard, type BAdminSub, type BAudit, type BOrder, type BOverview, type BNotification, type BChild, type BLevel,
   type BProfile, type BTask, type BUser,
 } from "./map";
 import { liveChild } from "./state";
@@ -19,12 +19,12 @@ import { liveChild } from "./state";
 // Live-mode useDb(): the connected server data, fetched with TanStack Query and shaped like the mock DB, so
 // pages and the sel.* rules work unchanged. Each role loads only what its pages read:
 // child mode (parent's device or a class device) → the child's own endpoints; parent → their children;
-// teacher → one overview per class; therapist → one view per linked child.
+// therapist → one view per linked child.
 
 /** A fresh, empty DB each time — never share arrays between snapshots (they get pushed into below). */
 const empty = (): DB => ({
   v: 1, auth: { userId: null, child: null }, users: [], familyMembers: [], children: [], consents: [], profiles: [], changes: [], sessions: [],
-  events: [], mastery: [], progress: [], wallets: [], classes: [], enrollments: [], assignments: [], careLinks: [], notes: [],
+  events: [], mastery: [], progress: [], wallets: [], assignments: [], careLinks: [], notes: [],
   goals: [], aacEvents: [], aacCards: [], notifications: [], subscriptions: [], orders: [], audit: [], flags: [], aiMessages: [],
   otp: [], intakeAnswers: [], intakeRounds: [], videos: [], roadmaps: [], tasksDone: [], pausedDays: [], dailyAnswers: [], tries: [], accessProfiles: [], skills: [], playTime: [], therapistProfiles: [], therapistAnswers: [], clipReplies: [], helperInvites: [], feedbackClips: [],
 });
@@ -53,20 +53,8 @@ const OWN_PATH: Record<(typeof OWN)[number], string> = {
   aacCards: "/aac/cards",
 };
 
-interface BClassOverview { klass: BClass; children: BChildOverview[]; assignments: BTask[] }
-
 /** The child-mode marker while it's valid (the server's child token lasts 8 h). */
 const activeChild = (c: ChildAuth | null) => (c && c.exp > Date.now() ? c : null);
-
-/** Progress, skills, minutes and adaptations of one child, as a professional sees them. */
-function addOverview(db: DB, o: BChildOverview) {
-  const id = o.child.id;
-  if (!db.children.some((c) => c.id === id)) db.children.push(rosterChildFrom(o.child));
-  db.progress.push(...levelsFrom(id, o.levels));
-  db.mastery.push(...masteryFrom(id, o.skills));
-  db.sessions.push(...sessionsFrom(id, o.minutes));
-  db.changes.push(...o.changes.map((c) => changeFrom(id, c)).filter((c) => c !== null));
-}
 
 export function useLiveDb(): DB {
   const child = activeChild(useStore(liveChild));
@@ -147,15 +135,6 @@ export function useLiveDb(): DB {
     queries: role === "admin" ? ADMIN.map((k) => ({ queryKey: ["admin", k], queryFn: () => http<unknown>("GET", adminPath[k]) })) : [],
   });
 
-  // ---- teacher
-  const classes = useQuery({ queryKey: ["teacher-classes"], enabled: role === "teacher", queryFn: () => http<BClass[]>("GET", "/teacher/classes") });
-  const overviews = useQueries({
-    queries: (role === "teacher" ? (classes.data ?? []) : []).map((k) => ({
-      queryKey: ["class-overview", k.id],
-      queryFn: () => http<BClassOverview>("GET", `/teacher/classes/${k.id}/overview`),
-    })),
-  });
-
   // ---- therapist (apps/api therapists/): shared children, invites, the profile, and per child the form and clips
   const linked = useQuery({ queryKey: ["therapist-children"], enabled: role === "therapist", queryFn: () => http<SharedChild[]>("GET", "/therapist/children") });
   const invites = useQuery({ queryKey: ["therapist-invites"], enabled: role === "therapist", queryFn: () => http<InviteOut[]>("GET", "/therapist/invites") });
@@ -189,7 +168,7 @@ export function useLiveDb(): DB {
     if (signedIn !== undefined && sessionStore.get().role !== signedIn) sessionStore.set({ role: signedIn });
   }, [signedIn]);
 
-  const all = [me, kids, classes, linked, invites, tprofile, family, helpInvites, notifications, flags, subscription, orders, ...own, ...per, ...answers, ...review, ...overviews, ...views, ...admin];
+  const all = [me, kids, linked, invites, tprofile, family, helpInvites, notifications, flags, subscription, orders, ...own, ...per, ...answers, ...review, ...views, ...admin];
   const stamp = all.map((q) => q.dataUpdatedAt).join();
   const loading =
     me.isPending ||
@@ -197,7 +176,6 @@ export function useLiveDb(): DB {
     // The questions screen starts from the saved answers, so wait for them.
     (role === "parent" && (kids.isPending || per.some((q) => q.isPending) || answers.some((q) => q.isPending))) ||
     (role === "physio" && review.some((q) => q.isPending)) ||
-    (role === "teacher" && (classes.isPending || overviews.some((q) => q.isPending))) ||
     (role === "therapist" && (linked.isPending || tprofile.isPending || views.some((q) => q.isPending && q.fetchStatus !== "idle")));
 
   return useMemo(() => {
@@ -225,7 +203,7 @@ export function useLiveDb(): DB {
       db.aacCards.push(...((at("aacCards") as BAacCard[] | undefined) ?? []).map((x) => aacCardFrom(x, true)));
       // The server already filtered these for this child; seen as the child's own tasks.
       for (const t of (at("tasks") as BTask[] | undefined) ?? []) {
-        const a = taskFrom({ ...t, class_id: null, kind: "teacher" }, c.id);
+        const a = taskFrom(t, c.id);
         if (a) db.assignments.push(a);
       }
     }
@@ -290,27 +268,9 @@ export function useLiveDb(): DB {
         };
     }
 
-    if (role === "teacher" && user) {
-      for (const q of overviews) {
-        const o = q.data;
-        if (!o) continue;
-        db.classes.push(classFrom(o.klass, user.id));
-        for (const ch of o.children) {
-          addOverview(db, ch);
-          db.enrollments.push({ classId: o.klass.id, childId: ch.child.id });
-          // The server only returns children shared with the school.
-          if (!ch.child.school_managed) db.consents.push({ id: `school-${ch.child.id}`, childId: ch.child.id, scope: "school_sharing", version: "", grantedBy: "", grantedAt: "" });
-        }
-        for (const t of o.assignments) {
-          const a = taskFrom(t);
-          if (a) db.assignments.push({ ...a, byUserId: a.byUserId || user.id });
-        }
-      }
-    }
-
     if (role === "therapist" && user) {
       for (const i of invites.data ?? [])
-        db.careLinks.push({ id: i.id, childId: "", childName: i.childName, kind: "therapist", email: "", phone: user.phone, status: "invited", code: i.id, createdAt: i.expiresAt });
+        db.careLinks.push({ id: i.id, childId: "", childName: i.childName, kind: "therapist", phone: user.phone, status: "invited", code: i.id, createdAt: i.expiresAt });
       if (tprofile.data) {
         db.therapistProfiles.push({ userId: user.id, profession: tprofile.data.profession, workplace: tprofile.data.workplace });
         user.name = tprofile.data.name;
@@ -318,7 +278,7 @@ export function useLiveDb(): DB {
       db.clips = [];
       shared.forEach((c, k) => {
         db.children.push(sharedChildFrom(c));
-        db.careLinks.push({ id: `link-${c.id}`, childId: c.id, kind: "therapist", email: "", professionalId: user.id, status: "active", code: "", createdAt: c.sharedSince });
+        db.careLinks.push({ id: `link-${c.id}`, childId: c.id, kind: "therapist", professionalId: user.id, status: "active", code: "", createdAt: c.sharedSince });
         db.consents.push({ id: `therapist-${c.id}`, childId: c.id, scope: "therapist_sharing", version: "", grantedBy: "", grantedAt: "" });
         const form = views[k * 2]?.data as FormOut | undefined;
         if (form) db.therapistAnswers.push({ childId: c.id, therapistId: user.id, answers: form.answers, at: "" });

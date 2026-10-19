@@ -64,7 +64,7 @@ export default function AdminOverview() {
           </SectionTitle>
           <Bars data={days.map((d, i) => ({ label: d.slice(8), value: ai.byDay[i] }))} height={110} tone="#b3a8e8" />
           <div className="mt-3 flex flex-wrap gap-2">
-            {(["parent", "teacher", "therapist"] as const).map((r) => (
+            {(["parent", "therapist"] as const).map((r) => (
               <Chip key={r} tone="gray">
                 {t(`role.${r}`)}: {byRole[r] ?? 0}
               </Chip>

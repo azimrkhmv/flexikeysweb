@@ -13,17 +13,17 @@ import { buildRoadmap } from "../roadmap";
 import { planInput } from "./intake";
 
 export const careApi = {
-  // ------------------------------------------------------------ care links & classes (parent side)
+  // ------------------------------------------------------------ care links (parent side)
   /** POST /parent/children/{id}/care-links */
-  async inviteCare(childId: string, contact: string, kind: "therapist" | "teacher" = "therapist") {
+  async inviteCare(childId: string, contact: string) {
     const { user } = requireChildAccess(childId, ["owner"]);
     if (!sel.hasConsent(read(), childId, "therapist_sharing")) throw new ApiError("consent_required");
     const phone = normalizePhone(contact); // spec P41: invite by phone number, or a link (no contact) to send
-    if (!phone && contact.trim() && !contact.includes("@")) throw new ApiError("invalid_phone");
-    const link: CareLink = { id: id(), childId, kind, email: phone ? "" : contact.trim().toLowerCase(), phone: phone ?? undefined, status: "invited", code: makeCode(), createdAt: iso() };
+    if (!phone && contact.trim()) throw new ApiError("invalid_phone");
+    const link: CareLink = { id: id(), childId, kind: "therapist", phone: phone ?? undefined, status: "invited", code: makeCode(), createdAt: iso() };
     write((db) => {
       db.careLinks.push(link);
-      const pro = db.users.find((u) => (phone ? u.phone === phone : u.email === link.email));
+      const pro = phone ? db.users.find((u) => u.phone === phone) : undefined;
       notify(db, pro?.id ?? null, "notif.care_invite", { name: sel.child(db, childId)?.name ?? "" });
       audit(db, user.id, "care_link.invite", childId);
     });
@@ -40,27 +40,6 @@ export const careApi = {
     });
     return net(true);
   },
-  /** POST /teacher/classes/join — parent links own child with a class code; needs school_sharing (fixes B4). */
-  async joinClass(childId: string, code: string) {
-    requireChildAccess(childId, ["owner"]);
-    if (!sel.hasConsent(read(), childId, "school_sharing")) throw new ApiError("consent_required");
-    const k = read().classes.find((c) => c.code === code.trim().toUpperCase());
-    if (!k) throw new ApiError("class_code_invalid");
-    write((db) => {
-      if (!db.enrollments.some((e) => e.classId === k.id && e.childId === childId)) db.enrollments.push({ classId: k.id, childId });
-      notify(db, k.teacherId, "notif.class_joined", { name: sel.child(db, childId)?.name ?? "" });
-    });
-    return net(k);
-  },
-  /** DELETE enrollment by parent. */
-  async leaveClass(childId: string, classId: string) {
-    requireChildAccess(childId, ["owner"]);
-    write((db) => {
-      db.enrollments = db.enrollments.filter((e) => !(e.childId === childId && e.classId === classId));
-    });
-    return net(true);
-  },
-
   // ------------------------------------------------------------ therapist (/therapist/*)
   /** POST /therapist/care-links/{id}/accept (by code) */
   async acceptInvite(code: string) {
@@ -122,7 +101,7 @@ export const careApi = {
   },
   /** Every therapist read is audit-logged (FR-THR-2). */
   async logChildRead(childId: string) {
-    const { user, rel } = requireChildAccess(childId, ["therapist", "teacher", "admin", "owner"]);
+    const { user, rel } = requireChildAccess(childId, ["therapist", "admin", "owner"]);
     if (rel === "therapist" || rel === "admin")
       write((db) => audit(db, user.id, "child.read", childId));
     return net(true, 0);
@@ -159,5 +138,12 @@ export const careApi = {
       db.assignments.push({ id: id(), kind: "therapist", byUserId: user.id, childId, levelId, note: note.trim(), createdAt: iso() });
     });
     return net(true);
+  },
+  async deleteAssignment(assignmentId: string) {
+    const u = requireUser(["therapist"]);
+    write((db) => {
+      db.assignments = db.assignments.filter((a) => !(a.id === assignmentId && a.byUserId === u.id));
+    });
+    return net(true, 0);
   },
 };

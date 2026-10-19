@@ -3,7 +3,7 @@
 // /children/* — consent-first creation, edit, export, delete, consent changes.
 
 import { read, write, net } from "./db";
-import { requireUser, requireChildAccess, audit, purgeChild, familyForNewChild, FAMILY } from "./guards";
+import { requireUser, requireChildAccess, audit, purgeChild, FAMILY } from "./guards";
 import { ApiError, CONSENT_VERSION, DAY, id, iso, MAX_HELPERS } from "./schema";
 import { normalizePhone } from "./auth";
 import { sel } from "./selectors";
@@ -71,21 +71,6 @@ export const childrenApi = {
   },
 
   // ------------------------------------------------------------ children (/children/*)
-  /** POST /children — consent + child in one transaction; core consent is mandatory (FR-CHILD-1). */
-  async createChild(input: Pick<Child, "name" | "birthYear" | "learningLang" | "uiLang" | "avatar" | "access" | "support">, scopes: ConsentScope[]) {
-    const u = requireUser(["parent"]);
-    if (!u.emailVerified && !u.consentVersion) throw new ApiError("email_not_verified"); // phone sign-up = verified
-    if (!scopes.includes("core")) throw new ApiError("consent_required");
-    if (!input.name.trim()) throw new ApiError("name_required");
-    const child: Child = { ...input, name: input.name.trim(), id: id(), familyId: null, equipped: {}, createdAt: iso() };
-    write((db) => {
-      child.familyId = familyForNewChild(db, u.id);
-      db.children.push(child);
-      scopes.forEach((scope) => db.consents.push({ id: id(), childId: child.id, scope, version: CONSENT_VERSION, grantedBy: u.id, grantedAt: iso() }));
-      db.wallets.push({ childId: child.id, coins: 0, stars: 0, owned: [] });
-    });
-    return net(child);
-  },
   /** PATCH /children/{id} */
   async updateChild(childId: string, patch: Partial<Pick<Child, "name" | "birthYear" | "learningLang" | "uiLang" | "avatar" | "access">>) {
     requireChildAccess(childId, ["owner", "admin"]);
@@ -173,7 +158,6 @@ export const childrenApi = {
           r.days.forEach((d) => (d.exercises = []));
         });
       }
-      if (!granted && scope === "school_sharing") db.enrollments = db.enrollments.filter((e) => e.childId !== childId);
       if (!granted && scope === "therapist_sharing")
         db.careLinks.forEach((l) => {
           if (l.childId === childId && l.kind === "therapist" && l.status !== "revoked") Object.assign(l, { status: "revoked", revokedAt: iso() });

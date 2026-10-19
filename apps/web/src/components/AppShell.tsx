@@ -5,13 +5,12 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Bell, LogOut, type LucideIcon } from "lucide-react";
-import { api, LIVE, sel, useDb } from "@/lib/api";
+import { api, sel, useDb } from "@/lib/api";
 import { useT, useUiLang } from "@/lib/i18n";
 import { useMounted } from "@/lib/store";
 import { useDismiss } from "@/lib/useDismiss";
 import type { Role, User } from "@/lib/types";
 import { homeFor, LangSwitch, Logo } from "./brand";
-import { ReauthDialog } from "./ReauthDialog";
 import { Spinner } from "./ui";
 
 export interface NavItem {
@@ -55,7 +54,6 @@ export function AppShell({ role, nav, children }: { role: Role | Role[]; nav: Na
         <Shell me={me} nav={nav}>
           {/* Live mode connects the parent area first; other dashboards come in later phases. */}
           {children(me)}
-          {LIVE && role === "admin" && <ReauthDialog />}
         </Shell>
       )}
     </RequireRole>

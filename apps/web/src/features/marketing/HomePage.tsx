@@ -47,9 +47,6 @@ function Hero() {
           <LinkButton href="/demo" variant="soft" size="lg">
             <CirclePlay className="size-5" aria-hidden /> {t("mkt.hero.demo")}
           </LinkButton>
-          <LinkButton href="/class" variant="outline" size="lg">
-            <School className="size-5" aria-hidden /> {t("nav.class")}
-          </LinkButton>
         </div>
         <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold text-ink-2">
           {["mkt.hero.note1", "mkt.hero.note2", "mkt.hero.note3"].map((k) => (

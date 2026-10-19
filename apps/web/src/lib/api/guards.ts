@@ -57,7 +57,6 @@ export function purgeChild(db: DB, childId: string) {
   db.mastery = keep(db.mastery);
   db.progress = keep(db.progress);
   db.wallets = keep(db.wallets);
-  db.enrollments = keep(db.enrollments);
   db.assignments = db.assignments.filter((a) => a.childId !== childId);
   db.careLinks = keep(db.careLinks);
   db.notes = keep(db.notes);

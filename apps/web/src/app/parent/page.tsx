@@ -44,15 +44,6 @@ export default function ParentHome() {
         }
       />
 
-      {!me.emailVerified && (
-        <div role="status" className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-sun bg-sun-soft p-4 text-sm font-semibold text-[#7a5a0c]">
-          {t("parent.home.verify")}
-          <Link href="/verify-email" className="font-extrabold underline">
-            {t("parent.home.verifyLink")}
-          </Link>
-        </div>
-      )}
-
       {kids.length === 0 ? (
         <Card className="flex flex-col items-center gap-4 py-10 text-center">
           <Mascot mood="wave" size={150} />
@@ -154,7 +145,7 @@ export default function ParentHome() {
                             <div className="flex flex-wrap gap-1.5">
                               <Chip tone={a.kind === "therapist" ? "lavender" : "leaf"}>
                                 {a.kind === "therapist" ? <Stethoscope className="size-3.5" aria-hidden /> : <School className="size-3.5" aria-hidden />}
-                                {t(a.kind === "therapist" ? "role.therapist" : "role.teacher")}
+                                {t("role.therapist")}
                               </Chip>
                               <Chip tone="gray">{child.name}</Chip>
                             </div>
