@@ -3,8 +3,8 @@ import type { Lang, UiLang } from "./i18n";
 export type L10n<T = string> = Record<Lang, T>;
 
 // ---------- Accounts ----------
-/** `physio` reviews exercise videos before families see them (spec §8). */
-export type Role = "parent" | "therapist" | "physio" | "admin";
+/** `physio` reviews exercise videos before families see them (spec §8); `clinic` publishes free times (spec §11). */
+export type Role = "parent" | "therapist" | "physio" | "clinic" | "admin";
 export type UserStatus = "active" | "pending_verification" | "disabled";
 
 export interface User {
@@ -513,6 +513,8 @@ export interface Place {
   priceMax?: number;
   /** YYYY-MM-DD: when our team last checked it by phone. */
   checkedAt: string;
+  /** The clinic account that publishes this place's free times (role clinic). */
+  clinicId?: string;
   /** Demo only: a made-up place (G2). */
   sample?: boolean;
 }

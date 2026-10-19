@@ -637,7 +637,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `B35` Booking screen: free times, book in person or online
   - Done when: a taken time cannot be chosen
   - Needs: G4 (placeholders for now)
-- [ ] **Azim** — `B36` Clinic dashboard: publish free times, confirm or cancel, add an online link
+- [x] **Azim** — `B36` Clinic dashboard: publish free times, confirm or cancel, add an online link
   - Done when: a clinic sees only its own bookings
   - Needs: G4 (placeholders for now)
 - [ ] **Azim** — `B37` Connect Find help, booking and the clinic dashboard to the server

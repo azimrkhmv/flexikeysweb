@@ -38,11 +38,11 @@ export function samplePlaces(now: number): Place[] {
       lat: 41.285, lng: 69.204, mapUrl: osm(41.285, 69.204), phone: "+998712000001", needs: ["movement", "speech", "checkup"], ageMin: 0, ageMax: 18, checkedAt: daysAgo(now, 20),
     }),
     p("pl_clinic_speech", {
-      name: "«Soʻz» logopediya markazi", kind: "private_clinic", region: "tashkent_city", district: "Yunusobod", address: "Amir Temur koʻchasi, 107",
+      name: "«Soʻz» logopediya markazi", kind: "private_clinic", clinicId: "u_clinic", region: "tashkent_city", district: "Yunusobod", address: "Amir Temur koʻchasi, 107",
       lat: 41.364, lng: 69.288, mapUrl: osm(41.364, 69.288), phone: "+998712000002", telegram: "@soz_markaz", needs: ["speech"], ageMin: 2, ageMax: 14, priceMin: 150_000, priceMax: 250_000, checkedAt: daysAgo(now, 30),
     }),
     p("pl_clinic_move", {
-      name: "Harakat terapiyasi klinikasi", kind: "private_clinic", region: "tashkent_city", district: "Mirzo Ulugʻbek", address: "Buyuk Ipak Yoʻli, 50",
+      name: "Harakat terapiyasi klinikasi", kind: "private_clinic", clinicId: "u_clinic2", region: "tashkent_city", district: "Mirzo Ulugʻbek", address: "Buyuk Ipak Yoʻli, 50",
       lat: 41.327, lng: 69.334, mapUrl: osm(41.327, 69.334), phone: "+998712000003", languages: ["uz", "ru", "en"], needs: ["movement"], ageMin: 1, ageMax: 18, priceMin: 200_000, priceMax: 350_000, checkedAt: daysAgo(now, 250),
     }),
     p("pl_psych", {
@@ -75,6 +75,7 @@ export function sampleSlots(now: number): { slots: Slot[]; bookings: Booking[] }
   }
   const bookings: Booking[] = [
     { id: "bk_other", slotId: "sl_soz_1_10", childId: "ch_other", bookedBy: "u_parent2", mode: "in_person", status: "confirmed", at: new Date(now).toISOString() },
+    { id: "bk_move", slotId: "sl_move_2_11", childId: "ch_other", bookedBy: "u_parent2", mode: "in_person", status: "booked", at: new Date(now).toISOString() },
   ];
   return { slots, bookings };
 }

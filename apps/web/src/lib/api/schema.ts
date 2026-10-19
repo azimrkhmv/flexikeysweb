@@ -93,7 +93,7 @@ export const CONSENT_VERSION = "2026-09-v1";
 /** Same limit as the server (MAX_CHILDREN_PER_FAMILY). */
 export const MAX_CHILDREN = 3;
 /** Demo sign-in numbers (mock: the SMS code is shown on screen). */
-export const DEMO_PHONES = { parent: "+998900000001", therapist: "+998900000002", physio: "+998900000003", admin: "+998900000004" } as const;
+export const DEMO_PHONES = { parent: "+998900000001", therapist: "+998900000002", physio: "+998900000003", admin: "+998900000004", clinic: "+998900000007" } as const;
 export const PRICES: Record<Exclude<Plan, "free">, number> = { monthly: 49_000_00, yearly: 390_000_00 }; // tiyin
 export const AI_DAILY_QUOTA = 30;
 export const OTP_RESEND_MS = 60_000;

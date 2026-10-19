@@ -67,6 +67,12 @@ const BY_TITLE: Record<string, string> = {
     slot_taken: "slot_taken", // booking (A10.4)
     slot_gone: "slot_gone",
     mode_not_offered: "mode_not_offered",
+    slot_in_past: "slot_in_past", // the clinic dashboard (A10.3, A10.4)
+    slot_too_far: "slot_too_far",
+    slot_overlaps: "slot_overlaps",
+    slot_booked: "slot_booked",
+    online_link_needed: "online_link_needed",
+    booking_cancelled: "booking_cancelled",
 };
 
 /** Every code errorCode() can return — each has an err.* message (checked by lib/i18n.test.ts). */

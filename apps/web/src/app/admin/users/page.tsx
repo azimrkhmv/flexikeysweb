@@ -10,7 +10,7 @@ import { useLang, useT } from "@/lib/i18n";
 import type { Role, UserStatus } from "@/lib/types";
 
 const STATUS_TONE: Record<UserStatus, Tone> = { active: "leaf", pending_verification: "sun", disabled: "gray" };
-const ROLES: Role[] = ["parent", "therapist", "physio", "admin"];
+const ROLES: Role[] = ["parent", "therapist", "physio", "clinic", "admin"];
 
 export default function AdminUsers() {
   const t = useT();

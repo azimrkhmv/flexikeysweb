@@ -286,6 +286,26 @@ export const sel = {
           a.name.localeCompare(b.name),
       );
   },
+  /** The clinic dashboard (B36): this clinic's own places only. */
+  clinicPlaces: (db: DB, userId: string) => (db.places ?? []).filter((p) => p.clinicId === userId).sort((a, b) => a.name.localeCompare(b.name)),
+  /** A place's times from now on, with the open booking of each (the server's /clinic/places/{id}/slots + bookings). */
+  clinicSlots(db: DB, placeId: string, now = Date.now()) {
+    return (db.slots ?? [])
+      .filter((s) => s.placeId === placeId && Date.parse(s.startsAt) >= now)
+      .sort((a, b) => a.startsAt.localeCompare(b.startsAt))
+      .map((s) => ({ ...s, booked: (db.bookings ?? []).some((b) => b.slotId === s.id && b.status !== "cancelled") }));
+  },
+  /** A place's bookings from now on, with what the clinic is told: the child's first name and age, the parent's phone. */
+  clinicBookings(db: DB, placeId: string, now = Date.now()) {
+    const slots = new Map((db.slots ?? []).filter((s) => s.placeId === placeId && Date.parse(s.startsAt) >= now).map((s) => [s.id, s]));
+    return (db.bookings ?? [])
+      .filter((b) => slots.has(b.slotId))
+      .map((b) => {
+        const c = sel.child(db, b.childId);
+        return { ...b, slot: slots.get(b.slotId)!, childName: c?.name ?? "", birthYear: c?.birthYear, parentPhone: sel.user(db, b.bookedBy)?.phone };
+      })
+      .sort((a, b) => a.slot.startsAt.localeCompare(b.slot.startsAt));
+  },
   place: (db: DB, placeId: string) => (db.places ?? []).find((p) => p.id === placeId),
   /** Checked longer than 6 months ago: "price not recently checked" (spec §11). */
   priceOld: (p: Place, now = Date.now()) => now - Date.parse(p.checkedAt) > PRICE_FRESH_DAYS * DAY,

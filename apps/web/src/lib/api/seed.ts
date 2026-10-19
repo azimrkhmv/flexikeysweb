@@ -46,6 +46,8 @@ export function seed(): DB {
       user("u_admin", DEMO_PHONES.admin, "FlexiKeys Admin", "admin"),
       user("u_pending", "+998900000005", "Sardor Aliev", "therapist", "pending_verification"),
       user("u_parent2", "+998900000006", "Aziza", "parent"),
+      user("u_clinic", DEMO_PHONES.clinic, "«Soʻz» logopediya markazi", "clinic"),
+      user("u_clinic2", "+998900000008", "Harakat terapiyasi klinikasi", "clinic"),
     ],
     familyMembers: [
       { familyId: "fam_1", userId: "u_parent", role: "owner" },

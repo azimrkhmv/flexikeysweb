@@ -43,8 +43,7 @@ export function userFrom(u: BUser): User {
   return {
     id: u.id,
     name: u.name ?? "",
-    // ponytail: "clinic" has no screens until M6; it gets the parent area, where the server shows it nothing.
-    role: (["parent", "therapist", "physio", "admin"].includes(u.role) ? u.role : "parent") as Role,
+    role: (["parent", "therapist", "physio", "clinic", "admin"].includes(u.role) ? u.role : "parent") as Role,
     status: u.status === "disabled" ? "disabled" : "active",
     uiLang: u.lang,
     phone: u.phone,

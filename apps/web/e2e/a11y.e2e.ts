@@ -28,6 +28,8 @@ test.describe("axe", () => {
     await scan(page, "/physio");
     await loginAs(page, "Therapist");
     for (const p of ["/therapist", "/therapist/child/ch_ali"]) await scan(page, p);
+    await loginAs(page, "Clinic");
+    await scan(page, "/clinic");
     await loginAs(page, "Admin");
     for (const p of ["/admin", "/admin/users", "/admin/billing", "/admin/content", "/admin/audit"]) await scan(page, p);
   });

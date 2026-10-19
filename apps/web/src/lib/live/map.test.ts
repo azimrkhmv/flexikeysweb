@@ -68,7 +68,7 @@ describe("live ↔ web mappings", () => {
     const u = { id: "u", phone: "+998901234567", role: "physio", status: "active", lang: "ru", region: null, district: null } as const;
     expect(userFrom(u)).toMatchObject({ role: "physio", uiLang: "ru", phone: "+998901234567", consentVersion: undefined, district: undefined });
     expect(userFrom({ ...u, status: "disabled" }).status).toBe("disabled");
-    expect(userFrom({ ...u, role: "clinic" }).role).toBe("parent"); // no clinic screens until M6
+    expect(userFrom({ ...u, role: "clinic" }).role).toBe("clinic"); // the clinic dashboard (B36)
     const me = { ...u, role: "parent", name: "Dilnoza", consentVersion: "2026-09-v1", region: "tashkent_city", district: "Chilonzor" } as const;
     expect(userFrom(me)).toMatchObject({ name: "Dilnoza", consentVersion: "2026-09-v1", district: { region: "tashkent_city", district: "Chilonzor" } });
   });

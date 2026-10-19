@@ -23,6 +23,7 @@ const DEMOS = [
   ["parent", DEMO_PHONES.parent],
   ["therapist", DEMO_PHONES.therapist],
   ["physio", DEMO_PHONES.physio],
+  ["clinic", DEMO_PHONES.clinic],
   ["admin", DEMO_PHONES.admin],
 ] as const;
 
