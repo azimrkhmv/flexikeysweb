@@ -172,8 +172,11 @@ class PlaceView(ApiModel):
     price_min: int | None
     price_max: int | None
     checked_at: date
+    lat: float | None
+    lng: float | None
     price_not_recently_checked: bool  # checked more than 6 months ago
     distance_km: float | None  # when the parent's position and the place's are known
+    reported: bool  # this person already reported wrong information about it
 
 
 def _km(lat1: float, lng1: float, lat2: float, lng2: float) -> float:
@@ -200,12 +203,18 @@ async def search(
         stmt = stmt.where(Place.needs.contains([need.value]))
     today = datetime.now(UTC).date()
     region, district = region or user.region, district or user.district
+    mine = set(await db.scalars(select(PlaceReport.place_id).where(PlaceReport.user_id == user.id)))
     views = []
     for p in await db.scalars(stmt):
         km = _km(lat, lng, float(p.lat), float(p.lng)) if None not in (lat, lng, p.lat, p.lng) else None  # type: ignore[arg-type]
         views.append(
             PlaceView.model_validate(
-                {**p.__dict__, "price_not_recently_checked": today - p.checked_at > PRICE_FRESH, "distance_km": km}
+                {
+                    **p.__dict__,
+                    "price_not_recently_checked": today - p.checked_at > PRICE_FRESH,
+                    "distance_km": km,
+                    "reported": p.id in mine,
+                }
             )
         )
     # ponytail: sorted in Python over every active place (about 40 at launch); a SQL distance order when thousands.

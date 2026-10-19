@@ -1,13 +1,15 @@
 "use client";
 
 import { useQueries, useQuery } from "@tanstack/react-query";
+import { usePathname } from "next/navigation";
 import { useEffect, useMemo } from "react";
 import { ApiError, type ChildAuth, type DB } from "@/lib/api/schema";
 import { sessionStore } from "@/lib/session";
 import { useStore } from "@/lib/store";
 import { http } from "./http";
-import type { CardOut, ChildOut, ClipOut, Helpers, InviteForMe, Consents, DailyOut, FormOut, InUse, InviteOut, PlanOut, PlanStatus, ProfileOut, ReviewItem, RoundOut, RoundSummary, ShareOut, SharedChild } from "@/lib/server/types";
+import type { BookingOut, ClinicBooking, ClinicSlot, FreeSlot, MyPlace, PlaceView, CardOut, ChildOut, ClipOut, Helpers, InviteForMe, Consents, DailyOut, FormOut, InUse, InviteOut, PlanOut, PlanStatus, ProfileOut, ReviewItem, RoundOut, RoundSummary, ShareOut, SharedChild } from "@/lib/server/types";
 import {
+  bookingFrom, clinicBookingFrom, myPlaceFrom, placeFrom, slotFrom,
   answersFrom, clipsFrom, dailyFrom, doneFrom, familyChildFrom, familyConsentsFrom, familyPlanFrom, inUseFrom, pausedFrom, planFrom, planVideosFrom, reviewVideosFrom, shareFrom, sharedChildFrom, voiceCardFrom,
   aacCardFrom, auditFrom, childFrom, notificationFrom, levelsFrom, profileFrom,
   taskFrom, userFrom,
@@ -30,13 +32,13 @@ const empty = (): DB => ({
 });
 
 /** A family child's data on the new server (apps/api); each round's answers are loaded after the round list. */
-const PER_CHILD = ["consents", "rounds", "plan", "daily", "cards", "shares", "inUse", "clips"] as const;
+const PER_CHILD = ["consents", "rounds", "plan", "daily", "cards", "shares", "inUse", "clips", "bookings"] as const;
 const REVIEW_STATUSES = ["waiting_review", "changes_requested", "rejected", "approved"] as const;
 type PerChild = (typeof PER_CHILD)[number];
 const path = (kind: PerChild, id: string) =>
   ({
     consents: `/children/${id}/consents`, rounds: `/children/${id}/intake`, plan: `/children/${id}/plan`, daily: `/children/${id}/daily`,
-    cards: `/children/${id}/voice-cards`, shares: `/children/${id}/therapists`, inUse: `/children/${id}/answers-in-use`, clips: `/children/${id}/clips`,
+    cards: `/children/${id}/voice-cards`, shares: `/children/${id}/therapists`, inUse: `/children/${id}/answers-in-use`, clips: `/children/${id}/clips`, bookings: `/children/${id}/bookings`,
   })[kind];
 /** "No plan yet" and "no daily question list loaded" are answers, not errors to retry. */
 const MAY_BE_MISSING: PerChild[] = ["plan", "daily"];
@@ -58,6 +60,7 @@ const activeChild = (c: ChildAuth | null) => (c && c.exp > Date.now() ? c : null
 
 export function useLiveDb(): DB {
   const child = activeChild(useStore(liveChild));
+  const pathname = usePathname();
 
   const me = useQuery({
     queryKey: ["me"],
@@ -107,6 +110,23 @@ export function useLiveDb(): DB {
     queryFn: () => http<PlanStatus>("GET", "/family/plan").catch((e) => (e instanceof ApiError && e.code === "no_family" ? null : Promise.reject(e))),
   });
   const helpInvites = useQuery({ queryKey: ["helper-invites"], enabled: role === "parent", queryFn: () => http<InviteForMe[]>("GET", "/me/helper-invites") });
+
+  // ---- Find help (A10.2, A10.4): the places and their free times, only on the Find help pages
+  const onHelp = role === "parent" && !child && !!pathname?.includes("/parent/help");
+  const places = useQuery({ queryKey: ["places"], enabled: onHelp, queryFn: () => http<PlaceView[]>("GET", "/places") });
+  // ponytail: one request per place (about 40 at launch); one "free times of these places" address when hundreds.
+  const freeTimes = useQueries({
+    queries: (onHelp ? (places.data ?? []) : []).map((p) => ({ queryKey: ["slots", p.id], queryFn: () => http<FreeSlot[]>("GET", `/places/${p.id}/slots`) })),
+  });
+
+  // ---- clinic (A10.3): its own places, their times and bookings
+  const clinicPlaces = useQuery({ queryKey: ["clinic-places"], enabled: role === "clinic", queryFn: () => http<MyPlace[]>("GET", "/clinic/places") });
+  const clinicViews = useQueries({
+    queries: (role === "clinic" ? (clinicPlaces.data ?? []) : []).flatMap((p) => [
+      { queryKey: ["clinic-slots", p.id], queryFn: () => http<unknown>("GET", `/clinic/places/${p.id}/slots`) },
+      { queryKey: ["clinic-bookings", p.id], queryFn: () => http<unknown>("GET", `/clinic/places/${p.id}/bookings`) },
+    ]),
+  });
 
 
   // ---- physiotherapist: the review queue, every status (the page counts each)
@@ -162,13 +182,15 @@ export function useLiveDb(): DB {
     if (signedIn !== undefined && sessionStore.get().role !== signedIn) sessionStore.set({ role: signedIn });
   }, [signedIn]);
 
-  const all = [me, kids, linked, invites, tprofile, family, familyPlan, helpInvites, notifications, flags, ...own, ...per, ...answers, ...review, ...views, ...admin];
+  const all = [me, kids, linked, invites, tprofile, family, familyPlan, helpInvites, places, clinicPlaces, notifications, flags, ...own, ...per, ...answers, ...review, ...views, ...admin, ...freeTimes, ...clinicViews];
   const stamp = all.map((q) => q.dataUpdatedAt).join();
   const loading =
     me.isPending ||
     (!!child && !!own[0]?.isPending) ||
     // The questions screen starts from the saved answers, so wait for them.
     (role === "parent" && (kids.isPending || per.some((q) => q.isPending) || answers.some((q) => q.isPending))) ||
+    (onHelp && (places.isPending || freeTimes.some((q) => q.isPending))) ||
+    (role === "clinic" && (clinicPlaces.isPending || clinicViews.some((q) => q.isPending))) ||
     (role === "physio" && review.some((q) => q.isPending)) ||
     (role === "therapist" && (linked.isPending || tprofile.isPending || views.some((q) => q.isPending && q.fetchStatus !== "idle")));
 
@@ -227,6 +249,11 @@ export function useLiveDb(): DB {
         const clips = clipsFrom(id, (perChild(i, "clips") as ClipOut[] | undefined) ?? []);
         (db.clips ??= []).push(...clips.clips);
         db.clipReplies.push(...clips.replies);
+        for (const b of (perChild(i, "bookings") as BookingOut[] | undefined) ?? []) {
+          const { booking, slot } = bookingFrom(id, user!.id, b);
+          db.bookings.push(booking);
+          if (!db.slots.some((s) => s.id === slot.id)) db.slots.push(slot);
+        }
         const daily = perChild(i, "daily") as DailyOut | null | undefined;
         if (daily) db.dailyAnswers.push(...dailyFrom(id, daily));
         db.intakeRounds.push(...rounds.map((r) => ({ childId: id, round: r.number, startedAt: r.startedAt, completedAt: r.completedAt ?? undefined })));
@@ -238,9 +265,31 @@ export function useLiveDb(): DB {
           for (const v of planVideosFrom(plan)) if (!db.videos.some((x) => x.id === v.id)) db.videos.push(v);
         }
       });
+      for (const p of places.data ?? []) {
+        db.places.push(placeFrom(p));
+        if (p.reported) db.placeReports.push({ placeId: p.id, userId: user!.id, reason: "other", at: "" });
+      }
+      (places.data ?? []).forEach((p, k) => {
+        // A time free again after a cancelled booking: its free version says which ways it can be booked.
+        for (const s of freeTimes[k]?.data ?? []) db.slots = [...db.slots.filter((x) => x.id !== s.id), slotFrom(p.id, s)];
+      });
       roundsOf.forEach(({ id }, k) => {
         const r = answers[k]?.data;
         if (r) db.intakeAnswers.push(...answersFrom(id, r));
+      });
+    }
+
+    if (role === "clinic" && user) {
+      (clinicPlaces.data ?? []).forEach((p, k) => {
+        db.places.push(myPlaceFrom(p, user.id));
+        db.slots.push(...((clinicViews[k * 2]?.data as ClinicSlot[] | undefined) ?? []).map((s) => slotFrom(p.id, s)));
+        for (const b of (clinicViews[k * 2 + 1]?.data as ClinicBooking[] | undefined) ?? []) {
+          const { booking, slot, child, parent } = clinicBookingFrom(b);
+          db.bookings.push(booking);
+          if (!db.slots.some((s) => s.id === slot.id)) db.slots.push(slot);
+          db.children.push(child);
+          db.users.push(parent);
+        }
       });
     }
 

@@ -5,13 +5,14 @@ import { AAC_BY_ID, CUSTOM_PREFIX } from "@/content/aac";
 import { SHOP_BY_ID } from "@/content/shop";
 import { sessionStore } from "@/lib/session";
 import { STEPS, type Answers } from "@/content/intake";
-import type { CardOut, ChildOut, ClipOut, ClipUpload, Consents, DoneOut, FormOut, PhoneStarted, PlanOut, PlanStatus, ReviewItem, RoundOut, ShareOut } from "@/lib/server/types";
+import type { BookingOut, ClinicSlot, CardOut, ChildOut, ClipOut, ClipUpload, Consents, DoneOut, FormOut, PhoneStarted, PlanOut, PlanStatus, ReviewItem, RoundOut, ShareOut } from "@/lib/server/types";
 import type { Profession, TherapistAnswers } from "@/content/therapist";
 import type { Lang, UiLang } from "@/lib/translate";
-import type { AacCustomCard, Child, ChildSupport, ConsentScope, Feeling, InputProfile, InteractionEvent, Roadmap, TaskDone, User, UserStatus, VideoStatus } from "@/lib/types";
+import type { AacCustomCard, BookingMode, ReportReason, Slot, Child, ChildSupport, ConsentScope, Feeling, InputProfile, InteractionEvent, Roadmap, TaskDone, User, UserStatus, VideoStatus } from "@/lib/types";
 import { queryClient } from "./client";
 import { http } from "./http";
 import {
+  bookingFrom, slotFrom,
   CONSENT_KIND, familyChildFrom, planFrom, planStatusFrom, shareFrom,
   childFrom, childTo, eventTo, scopeTo, userFrom,
   type BChild, type BConsent, type BGoal, type BUser,
@@ -42,6 +43,10 @@ async function signedIn(): Promise<User> {
   sessionStore.set({ role: me.role });
   return me;
 }
+
+/** A booking changes the child's bookings and the place's free times. */
+const refetchBookings = (childId: string) =>
+  Promise.all([queryClient.invalidateQueries({ queryKey: ["bookings", childId] }), queryClient.invalidateQueries({ queryKey: ["slots"] })]);
 
 /** Wall-clock start of each session, for event timestamps (events carry ms since session start). */
 const sessionStart = new Map<string, number>();
@@ -431,6 +436,50 @@ export const liveApi = {
     const plan = await http<PlanStatus>("POST", "/family/pay", { paymentId: crypto.randomUUID(), months });
     await queryClient.invalidateQueries({ queryKey: ["family-plan"] });
     return planStatusFrom(plan);
+  },
+
+  // ------------------------------------------------------------ Find help and booking (apps/api places/)
+  /** POST /places/{id}/reports — our team checks the place; a second report changes nothing. */
+  async reportPlace(placeId: string, reason: ReportReason, note?: string) {
+    await http("POST", `/places/${placeId}/reports`, { reason, note: note?.trim() || null });
+    await queryClient.invalidateQueries({ queryKey: ["places"] });
+    return true;
+  },
+  /** POST /children/{id}/bookings — 409 slot_taken when another family was faster. */
+  async book(childId: string, slotId: string, mode: BookingMode) {
+    const b = await http<BookingOut>("POST", `/children/${childId}/bookings`, { slotId, mode });
+    await refetchBookings(childId);
+    const me = queryClient.getQueryData<{ id: string }>(["me"]);
+    return bookingFrom(childId, me?.id ?? "", b).booking;
+  },
+  async cancelBooking(childId: string, bookingId: string) {
+    await http("POST", `/children/${childId}/bookings/${bookingId}/cancel`, {});
+    await refetchBookings(childId);
+    return true;
+  },
+
+  // ------------------------------------------------------------ the clinic (apps/api places/clinic.py)
+  async addSlot(placeId: string, input: Omit<Slot, "id" | "placeId">) {
+    const s = await http<ClinicSlot>("POST", `/clinic/places/${placeId}/slots`, { ...input, specialist: input.specialist || null });
+    await queryClient.invalidateQueries({ queryKey: ["clinic-slots", placeId] });
+    return slotFrom(placeId, s);
+  },
+  /** DELETE /clinic/places/{id}/slots/{id} — 409 slot_booked: cancel the booking first, so the family is told. */
+  async removeSlot(placeId: string, slotId: string) {
+    await http("DELETE", `/clinic/places/${placeId}/slots/${slotId}`);
+    await queryClient.invalidateQueries({ queryKey: ["clinic-slots", placeId] });
+    return true;
+  },
+  /** POST /clinic/bookings/{id}/confirm — an online session needs its link (422 online_link_needed). */
+  async confirmBooking(bookingId: string, onlineLink?: string) {
+    await http("POST", `/clinic/bookings/${bookingId}/confirm`, { onlineLink: onlineLink?.trim() || null });
+    await queryClient.invalidateQueries({ queryKey: ["clinic-bookings"] });
+    return true;
+  },
+  async clinicCancelBooking(bookingId: string) {
+    await http("POST", `/clinic/bookings/${bookingId}/cancel`, {});
+    await queryClient.invalidateQueries({ queryKey: ["clinic-bookings"] });
+    return true;
   },
 
   // ------------------------------------------------------------ admin console (re-auth prompt + audit on the server)

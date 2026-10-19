@@ -640,7 +640,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `B36` Clinic dashboard: publish free times, confirm or cancel, add an online link
   - Done when: a clinic sees only its own bookings
   - Needs: G4 (placeholders for now)
-- [ ] **Azim** — `B37` Connect Find help, booking and the clinic dashboard to the server
+- [x] **Azim** — `B37` Connect Find help, booking and the clinic dashboard to the server
   - Done when: a parent books a real free time in the browser and the clinic confirms it
   - Needs: A10.2, A10.5, B34, B35, B36
 - [ ] **Azim** — `B38` Home Kit order screen: allergy question, address, delivery or pickup

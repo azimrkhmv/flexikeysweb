@@ -5013,6 +5013,11 @@
       "format": "uuid",
       "title": "Id"
      },
+     "slotId": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Slotid"
+     },
      "placeId": {
       "type": "string",
       "format": "uuid",
@@ -5074,6 +5079,7 @@
     "type": "object",
     "required": [
      "id",
+     "slotId",
      "placeId",
      "placeName",
      "startsAt",
@@ -5464,6 +5470,11 @@
       "format": "uuid",
       "title": "Id"
      },
+     "slotId": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Slotid"
+     },
      "placeId": {
       "type": "string",
       "format": "uuid",
@@ -5545,6 +5556,7 @@
     "type": "object",
     "required": [
      "id",
+     "slotId",
      "placeId",
      "placeName",
      "startsAt",
@@ -7890,6 +7902,28 @@
       "format": "date",
       "title": "Checkedat"
      },
+     "lat": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Lat"
+     },
+     "lng": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Lng"
+     },
      "priceNotRecentlyChecked": {
       "type": "boolean",
       "title": "Pricenotrecentlychecked"
@@ -7904,6 +7938,10 @@
        }
       ],
       "title": "Distancekm"
+     },
+     "reported": {
+      "type": "boolean",
+      "title": "Reported"
      }
     },
     "type": "object",
@@ -7925,8 +7963,11 @@
      "priceMin",
      "priceMax",
      "checkedAt",
+     "lat",
+     "lng",
      "priceNotRecentlyChecked",
-     "distanceKm"
+     "distanceKm",
+     "reported"
     ],
     "title": "PlaceView"
    },

@@ -4,11 +4,11 @@
 import { AAC_BY_ID, CUSTOM_PREFIX } from "@/content/aac";
 import { DEFAULT_PROFILE } from "@/lib/adaptive";
 import { TRIAL_DAYS } from "@/content/plans";
-import type { CardOut, ChildOut, ClipOut, ConsentKind, Consents, DailyOut, InUse, Me, PlanOut, PlanStatus, ReviewItem, RoundOut, ShareOut, SharedChild, UserOut } from "@/lib/server/types";
+import type { BookingOut, CardOut, ChildOut, ClinicBooking, ClinicSlot, ClipOut, ConsentKind, Consents, DailyOut, FreeSlot, InUse, Me, MyPlace, PlaceView, PlanOut, PlanStatus, ReviewItem, RoundOut, ShareOut, SharedChild, UserOut } from "@/lib/server/types";
 import type { DB } from "@/lib/api/schema";
 import type { Lang } from "@/lib/translate";
 import type { ChildSupport, ActivityKind, AgeBand, BodyArea, DailyAnswer, ExerciseVideo, FnLevel, GoalKey, IntakeAnswer, IntakeValue, L10n, PausedDay, Restriction, Roadmap, TaskDone,
-  AacCustomCard, AacEvent, AccessMode, AuditLog, AdaptationChange, AdaptiveProfile, Assignment, CareLink, Child, Consent, ConsentScope, Goal,
+  AacCustomCard, AacEvent, Booking, Place, PlaceNeed, Slot, AccessMode, AuditLog, AdaptationChange, AdaptiveProfile, Assignment, CareLink, Child, Consent, ConsentScope, Goal,
   InteractionEvent, LearningSession, LevelProgress, Note, Notification, ParamKey, Role, SkillMastery, User,
 } from "@/lib/types";
 
@@ -350,5 +350,42 @@ export function clipsFrom(childId: string, list: ClipOut[]) {
   return {
     clips: list.map((c) => ({ id: c.id, childId, url: c.url, exerciseId: c.kind === "feedback" ? (c.exerciseId ?? undefined) : undefined })),
     replies: list.flatMap((c) => c.replies.map((r, i) => ({ id: `${c.id}-${i}`, childId, clipId: c.id, therapistId: "", name: r.therapistName ?? "", text: r.text, at: r.at }))),
+  };
+}
+
+// ---------------------------------------------------------------- Find help, booking, the clinic (apps/api places/)
+const some = <T>(x: T | null | undefined) => x ?? undefined;
+
+export const placeFrom = (p: PlaceView): Place => ({
+  id: p.id, name: p.name, kind: p.kind, region: p.region, district: p.district, address: some(p.address), mapUrl: some(p.mapUrl), lat: some(p.lat), lng: some(p.lng),
+  phone: some(p.phone), telegram: some(p.telegram), languages: p.languages, needs: p.needs as PlaceNeed[], ageMin: p.ageMin, ageMax: p.ageMax, worksWithCp: p.worksWithCp,
+  priceMin: some(p.priceMin), priceMax: some(p.priceMax), checkedAt: p.checkedAt,
+});
+
+/** The clinic's own place (GET /clinic/places): only what its dashboard shows. */
+export const myPlaceFrom = (p: MyPlace, clinicId: string): Place => ({
+  id: p.id, name: p.name, kind: "private_clinic", region: "", district: p.district, languages: [], needs: [], ageMin: 0, ageMax: 0, worksWithCp: true, checkedAt: "", clinicId,
+});
+
+export const slotFrom = (placeId: string, s: FreeSlot | ClinicSlot): Slot => ({
+  id: s.id, placeId, startsAt: s.startsAt, minutes: s.minutes, specialist: some(s.specialist), inPerson: !!s.inPerson, online: !!s.online,
+});
+
+/** A booking and its time (a booked time is no longer among the free ones, so it comes with the booking). */
+export function bookingFrom(childId: string, bookedBy: string, b: BookingOut): { booking: Booking; slot: Slot } {
+  return {
+    booking: { id: b.id, slotId: b.slotId, childId, bookedBy, mode: b.mode, status: b.status, onlineLink: some(b.onlineLink), cancelledBy: some(b.cancelledBy) as Booking["cancelledBy"], at: "" },
+    slot: { id: b.slotId, placeId: b.placeId, startsAt: b.startsAt, minutes: b.minutes, specialist: some(b.specialist), inPerson: b.mode === "in_person", online: b.mode === "online" },
+  };
+}
+
+/** What a clinic is told about a booking: the child's first name and age, the parent's phone. */
+export function clinicBookingFrom(b: ClinicBooking) {
+  const child = `booking-child-${b.id}`;
+  const parent = `booking-parent-${b.id}`;
+  return {
+    ...bookingFrom(child, parent, b),
+    child: familyChildFrom({ id: child, familyId: "", name: b.childName, birthDate: b.childBirthDate, sex: "boy", lang: "uz", color: null } as ChildOut),
+    parent: { id: parent, name: "", role: "parent" as Role, status: "active" as const, uiLang: "uz" as const, phone: some(b.parentPhone), createdAt: "" },
   };
 }

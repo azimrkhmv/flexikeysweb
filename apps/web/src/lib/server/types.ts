@@ -30,6 +30,12 @@ export type ProfileOut = Schemas["ProfileOut"];
 export type Helpers = Schemas["Helpers"];
 export type InviteForMe = Schemas["InviteForMe"];
 export type PlanStatus = Schemas["PlanStatus"];
+export type PlaceView = Schemas["PlaceView"];
+export type FreeSlot = Schemas["FreeSlot"];
+export type BookingOut = Schemas["BookingOut"];
+export type ClinicBooking = Schemas["ClinicBooking"];
+export type MyPlace = Schemas["MyPlace"];
+export type ClinicSlot = Schemas["app__modules__places__clinic__SlotOut"];
 
 /** Every address the website calls (under /api/v1, which the website proxies). */
 export const ADDRESSES = [
@@ -79,6 +85,17 @@ export const ADDRESSES = [
   "/api/v1/family/plan",
   "/api/v1/family/trial",
   "/api/v1/family/pay",
+  "/api/v1/places",
+  "/api/v1/places/{place_id}/reports",
+  "/api/v1/places/{place_id}/slots",
+  "/api/v1/children/{child_id}/bookings",
+  "/api/v1/children/{child_id}/bookings/{booking_id}/cancel",
+  "/api/v1/clinic/places",
+  "/api/v1/clinic/places/{place_id}/slots",
+  "/api/v1/clinic/places/{place_id}/slots/{slot_id}",
+  "/api/v1/clinic/places/{place_id}/bookings",
+  "/api/v1/clinic/bookings/{booking_id}/confirm",
+  "/api/v1/clinic/bookings/{booking_id}/cancel",
   "/api/v1/admin/users",
   "/api/v1/admin/users/{user_id}",
 ] as const satisfies readonly (keyof paths)[];

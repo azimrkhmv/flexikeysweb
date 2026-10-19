@@ -42,6 +42,7 @@ def test_free_centres_first_then_by_distance(client: TestClient) -> None:
     mine = [p["id"] for p in found if p["id"] in {far, near, state, hidden, speech_only}]
     assert mine == [state, near, far]  # the free centre first, then the nearest; no hidden one, no other need
     assert next(p for p in found if p["id"] == near)["distanceKm"] < 2
+    assert next(p for p in found if p["id"] == near)["lat"] == 41.3  # the website sorts by distance itself too
     assert speech_only in [p["id"] for p in client.get(f"{API}/places", headers=owner).json()]  # no need: all
 
 
@@ -60,6 +61,9 @@ def test_a_report_flags_the_place_until_it_is_checked_again(client: TestClient) 
     url = f"{API}/places/{place}/reports"
     assert client.post(url, headers=owner, json={"reason": "closed"}).status_code == 204
     assert client.post(url, headers=owner, json={"reason": "closed"}).status_code == 204  # again: nothing new
+    seen = {p["id"]: p["reported"] for p in client.get(f"{API}/places", headers=owner).json()}
+    assert seen[place] is True  # the parent sees their report was sent; another parent does not
+    assert {p["id"]: p["reported"] for p in client.get(f"{API}/places", headers=parent(client)).json()}[place] is False
     listed = client.get(f"{API}/admin/places", headers=admin).json()
     assert listed[0]["flaggedAt"] is not None  # flagged places come first for our team
     assert next(p for p in listed if p["id"] == place)["flaggedAt"] is not None

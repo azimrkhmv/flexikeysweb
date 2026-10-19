@@ -1893,6 +1893,11 @@ export interface components {
              */
             id: string;
             /**
+             * Slotid
+             * Format: uuid
+             */
+            slotId: string;
+            /**
              * Placeid
              * Format: uuid
              */
@@ -2033,6 +2038,11 @@ export interface components {
              * Format: uuid
              */
             id: string;
+            /**
+             * Slotid
+             * Format: uuid
+             */
+            slotId: string;
             /**
              * Placeid
              * Format: uuid
@@ -2842,10 +2852,16 @@ export interface components {
              * Format: date
              */
             checkedAt: string;
+            /** Lat */
+            lat: number | null;
+            /** Lng */
+            lng: number | null;
             /** Pricenotrecentlychecked */
             priceNotRecentlyChecked: boolean;
             /** Distancekm */
             distanceKm: number | null;
+            /** Reported */
+            reported: boolean;
         };
         /**
          * Placement

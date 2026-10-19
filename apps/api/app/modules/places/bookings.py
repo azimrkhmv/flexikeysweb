@@ -48,6 +48,7 @@ class BookingIn(ApiModel):
 
 class BookingOut(ApiModel):
     id: uuid.UUID
+    slot_id: uuid.UUID
     place_id: uuid.UUID
     place_name: str
     starts_at: datetime
@@ -71,6 +72,7 @@ async def _out(db: AsyncSession, b: Booking) -> BookingOut:
     place = await db.get(Place, slot.place_id)
     return BookingOut(
         id=b.id,
+        slot_id=b.slot_id,
         place_id=slot.place_id,
         place_name=place.name if place else "",
         starts_at=slot.starts_at,

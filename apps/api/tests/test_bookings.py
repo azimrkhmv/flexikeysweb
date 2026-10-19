@@ -36,7 +36,7 @@ def test_book_confirm_and_cancel(client: TestClient) -> None:
     booked = client.post(f"{API}/children/{child}/bookings", headers=owner, json={"slotId": slot, "mode": "online"})
     assert booked.status_code == 201, booked.text
     b = booked.json()
-    assert (b["status"], b["placeId"]) == ("booked", place)
+    assert (b["status"], b["placeId"], b["slotId"]) == ("booked", place, slot)
     assert client.get(f"{API}/places/{place}/slots", headers=owner).json() == []  # taken: no longer listed
 
     other = parent(client)
