@@ -426,6 +426,44 @@ export interface paths {
         patch: operations["change_user_api_v1_admin_users__user_id__patch"];
         trace?: never;
     };
+    "/api/v1/admin/places": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Places
+         * @description Every place, hidden ones too, by region, district and name.
+         */
+        get: operations["list_places_api_v1_admin_places_get"];
+        put?: never;
+        /** Add Place */
+        post: operations["add_place_api_v1_admin_places_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/places/{place_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Change Place */
+        patch: operations["change_place_api_v1_admin_places__place_id__patch"];
+        trace?: never;
+    };
     "/api/v1/children": {
         parameters: {
             query?: never;
@@ -1932,6 +1970,12 @@ export interface components {
             /** Text */
             text: string;
         };
+        /**
+         * Need
+         * @description What the parent picks in plain words (spec §11); "I'm not sure" is not a need of a place.
+         * @enum {string}
+         */
+        Need: "speech" | "movement" | "learning" | "checkup";
         /** NewStaff */
         NewStaff: {
             /** Phone */
@@ -2012,6 +2056,151 @@ export interface components {
             lang: components["schemas"]["Lang"];
             /** Invitecode */
             inviteCode?: string | null;
+        };
+        /**
+         * PlaceChange
+         * @description Only what is sent changes.
+         */
+        PlaceChange: {
+            /** Name */
+            name?: string | null;
+            kind?: components["schemas"]["PlaceKind"] | null;
+            /** Region */
+            region?: string | null;
+            /** District */
+            district?: string | null;
+            /** Address */
+            address?: string | null;
+            /** Mapurl */
+            mapUrl?: string | null;
+            /** Lat */
+            lat?: number | string | null;
+            /** Lng */
+            lng?: number | string | null;
+            /** Phone */
+            phone?: string | null;
+            /** Telegram */
+            telegram?: string | null;
+            /** Languages */
+            languages?: ("uz" | "ru" | "en" | "kaa")[] | null;
+            /** Needs */
+            needs?: components["schemas"]["Need"][] | null;
+            /** Agemin */
+            ageMin?: number | null;
+            /** Agemax */
+            ageMax?: number | null;
+            /** Workswithcp */
+            worksWithCp?: boolean | null;
+            /** Pricemin */
+            priceMin?: number | null;
+            /** Pricemax */
+            priceMax?: number | null;
+            /** Checkedat */
+            checkedAt?: string | null;
+            /** Active */
+            active?: boolean | null;
+        };
+        /** PlaceIn */
+        PlaceIn: {
+            /** Name */
+            name: string;
+            kind: components["schemas"]["PlaceKind"];
+            /** Region */
+            region: string;
+            /** District */
+            district: string;
+            /** Address */
+            address?: string | null;
+            /** Mapurl */
+            mapUrl?: string | null;
+            /** Lat */
+            lat?: number | string | null;
+            /** Lng */
+            lng?: number | string | null;
+            /** Phone */
+            phone?: string | null;
+            /** Telegram */
+            telegram?: string | null;
+            /** Languages */
+            languages: ("uz" | "ru" | "en" | "kaa")[];
+            /** Needs */
+            needs: components["schemas"]["Need"][];
+            /** Agemin */
+            ageMin: number;
+            /** Agemax */
+            ageMax: number;
+            /** Workswithcp */
+            worksWithCp: boolean;
+            /** Pricemin */
+            priceMin?: number | null;
+            /** Pricemax */
+            priceMax?: number | null;
+            /**
+             * Checkedat
+             * Format: date
+             */
+            checkedAt: string;
+            /**
+             * Active
+             * @default true
+             */
+            active: boolean;
+        };
+        /**
+         * PlaceKind
+         * @enum {string}
+         */
+        PlaceKind: "state_centre" | "private_clinic" | "specialist";
+        /** PlaceOut */
+        PlaceOut: {
+            /** Name */
+            name: string;
+            kind: components["schemas"]["PlaceKind"];
+            /** Region */
+            region: string;
+            /** District */
+            district: string;
+            /** Address */
+            address?: string | null;
+            /** Mapurl */
+            mapUrl?: string | null;
+            /** Lat */
+            lat?: string | null;
+            /** Lng */
+            lng?: string | null;
+            /** Phone */
+            phone?: string | null;
+            /** Telegram */
+            telegram?: string | null;
+            /** Languages */
+            languages: ("uz" | "ru" | "en" | "kaa")[];
+            /** Needs */
+            needs: components["schemas"]["Need"][];
+            /** Agemin */
+            ageMin: number;
+            /** Agemax */
+            ageMax: number;
+            /** Workswithcp */
+            worksWithCp: boolean;
+            /** Pricemin */
+            priceMin?: number | null;
+            /** Pricemax */
+            priceMax?: number | null;
+            /**
+             * Checkedat
+             * Format: date
+             */
+            checkedAt: string;
+            /**
+             * Active
+             * @default true
+             */
+            active: boolean;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
         };
         /**
          * Placement
@@ -3219,6 +3408,94 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["UserOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_places_api_v1_admin_places_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlaceOut"][];
+                };
+            };
+        };
+    };
+    add_place_api_v1_admin_places_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PlaceIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlaceOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    change_place_api_v1_admin_places__place_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                place_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PlaceChange"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlaceOut"];
                 };
             };
             /** @description Validation Error */

@@ -9,6 +9,7 @@ from app.modules.children.consents import ChildConsent
 from app.modules.children.models import Child
 from app.modules.clips.models import Clip, ClipReply
 from app.modules.intake.models import IntakeAnswer, IntakeRound
+from app.modules.places.models import Place
 from app.modules.plans.models import FixedLevel, Plan, PlanItem, PlanReason
 from app.modules.play.models import (
     AccessProfile,
@@ -47,6 +48,7 @@ __all__ = [
     "IntakeAnswer",
     "IntakeRound",
     "PausedDay",
+    "Place",
     "Plan",
     "PlanItem",
     "PlanReason",

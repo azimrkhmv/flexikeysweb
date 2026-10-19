@@ -827,6 +827,124 @@
     }
    }
   },
+  "/api/v1/admin/places": {
+   "get": {
+    "tags": [
+     "places"
+    ],
+    "summary": "List Places",
+    "description": "Every place, hidden ones too, by region, district and name.",
+    "operationId": "list_places_api_v1_admin_places_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "$ref": "#/components/schemas/PlaceOut"
+         },
+         "type": "array",
+         "title": "Response List Places Api V1 Admin Places Get"
+        }
+       }
+      }
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "places"
+    ],
+    "summary": "Add Place",
+    "operationId": "add_place_api_v1_admin_places_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PlaceIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/PlaceOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/admin/places/{place_id}": {
+   "patch": {
+    "tags": [
+     "places"
+    ],
+    "summary": "Change Place",
+    "operationId": "change_place_api_v1_admin_places__place_id__patch",
+    "parameters": [
+     {
+      "name": "place_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Place Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PlaceChange"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/PlaceOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/v1/children": {
    "get": {
     "tags": [
@@ -5196,6 +5314,17 @@
     ],
     "title": "Message"
    },
+   "Need": {
+    "type": "string",
+    "enum": [
+     "speech",
+     "movement",
+     "learning",
+     "checkup"
+    ],
+    "title": "Need",
+    "description": "What the parent picks in plain words (spec §11); \"I'm not sure\" is not a need of a place."
+   },
    "NewStaff": {
     "properties": {
      "phone": {
@@ -5416,6 +5545,637 @@
      "code"
     ],
     "title": "PhoneVerify"
+   },
+   "PlaceChange": {
+    "properties": {
+     "name": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 120,
+        "minLength": 1
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Name"
+     },
+     "kind": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/PlaceKind"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "region": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Region"
+     },
+     "district": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "District"
+     },
+     "address": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 200
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Address"
+     },
+     "mapUrl": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 500,
+        "pattern": "^https://"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Mapurl"
+     },
+     "lat": {
+      "anyOf": [
+       {
+        "type": "number",
+        "maximum": 90.0,
+        "minimum": -90.0
+       },
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Lat"
+     },
+     "lng": {
+      "anyOf": [
+       {
+        "type": "number",
+        "maximum": 180.0,
+        "minimum": -180.0
+       },
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Lng"
+     },
+     "phone": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Phone"
+     },
+     "telegram": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 64
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Telegram"
+     },
+     "languages": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string",
+         "enum": [
+          "uz",
+          "ru",
+          "en",
+          "kaa"
+         ]
+        },
+        "type": "array",
+        "minItems": 1
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Languages"
+     },
+     "needs": {
+      "anyOf": [
+       {
+        "items": {
+         "$ref": "#/components/schemas/Need"
+        },
+        "type": "array",
+        "minItems": 1
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Needs"
+     },
+     "ageMin": {
+      "anyOf": [
+       {
+        "type": "integer",
+        "maximum": 30.0,
+        "minimum": 0.0
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Agemin"
+     },
+     "ageMax": {
+      "anyOf": [
+       {
+        "type": "integer",
+        "maximum": 30.0,
+        "minimum": 0.0
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Agemax"
+     },
+     "worksWithCp": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Workswithcp"
+     },
+     "priceMin": {
+      "anyOf": [
+       {
+        "type": "integer",
+        "minimum": 0.0
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Pricemin"
+     },
+     "priceMax": {
+      "anyOf": [
+       {
+        "type": "integer",
+        "minimum": 0.0
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Pricemax"
+     },
+     "checkedAt": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Checkedat"
+     },
+     "active": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Active"
+     }
+    },
+    "type": "object",
+    "title": "PlaceChange",
+    "description": "Only what is sent changes."
+   },
+   "PlaceIn": {
+    "properties": {
+     "name": {
+      "type": "string",
+      "maxLength": 120,
+      "minLength": 1,
+      "title": "Name"
+     },
+     "kind": {
+      "$ref": "#/components/schemas/PlaceKind"
+     },
+     "region": {
+      "type": "string",
+      "title": "Region"
+     },
+     "district": {
+      "type": "string",
+      "title": "District"
+     },
+     "address": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 200
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Address"
+     },
+     "mapUrl": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 500,
+        "pattern": "^https://"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Mapurl"
+     },
+     "lat": {
+      "anyOf": [
+       {
+        "type": "number",
+        "maximum": 90.0,
+        "minimum": -90.0
+       },
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Lat"
+     },
+     "lng": {
+      "anyOf": [
+       {
+        "type": "number",
+        "maximum": 180.0,
+        "minimum": -180.0
+       },
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Lng"
+     },
+     "phone": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Phone"
+     },
+     "telegram": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 64
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Telegram"
+     },
+     "languages": {
+      "items": {
+       "type": "string",
+       "enum": [
+        "uz",
+        "ru",
+        "en",
+        "kaa"
+       ]
+      },
+      "type": "array",
+      "minItems": 1,
+      "title": "Languages"
+     },
+     "needs": {
+      "items": {
+       "$ref": "#/components/schemas/Need"
+      },
+      "type": "array",
+      "minItems": 1,
+      "title": "Needs"
+     },
+     "ageMin": {
+      "type": "integer",
+      "maximum": 30.0,
+      "minimum": 0.0,
+      "title": "Agemin"
+     },
+     "ageMax": {
+      "type": "integer",
+      "maximum": 30.0,
+      "minimum": 0.0,
+      "title": "Agemax"
+     },
+     "worksWithCp": {
+      "type": "boolean",
+      "title": "Workswithcp"
+     },
+     "priceMin": {
+      "anyOf": [
+       {
+        "type": "integer",
+        "minimum": 0.0
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Pricemin"
+     },
+     "priceMax": {
+      "anyOf": [
+       {
+        "type": "integer",
+        "minimum": 0.0
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Pricemax"
+     },
+     "checkedAt": {
+      "type": "string",
+      "format": "date",
+      "title": "Checkedat"
+     },
+     "active": {
+      "type": "boolean",
+      "title": "Active",
+      "default": true
+     }
+    },
+    "type": "object",
+    "required": [
+     "name",
+     "kind",
+     "region",
+     "district",
+     "languages",
+     "needs",
+     "ageMin",
+     "ageMax",
+     "worksWithCp",
+     "checkedAt"
+    ],
+    "title": "PlaceIn"
+   },
+   "PlaceKind": {
+    "type": "string",
+    "enum": [
+     "state_centre",
+     "private_clinic",
+     "specialist"
+    ],
+    "title": "PlaceKind"
+   },
+   "PlaceOut": {
+    "properties": {
+     "name": {
+      "type": "string",
+      "maxLength": 120,
+      "minLength": 1,
+      "title": "Name"
+     },
+     "kind": {
+      "$ref": "#/components/schemas/PlaceKind"
+     },
+     "region": {
+      "type": "string",
+      "title": "Region"
+     },
+     "district": {
+      "type": "string",
+      "title": "District"
+     },
+     "address": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 200
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Address"
+     },
+     "mapUrl": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 500,
+        "pattern": "^https://"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Mapurl"
+     },
+     "lat": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Lat"
+     },
+     "lng": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Lng"
+     },
+     "phone": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Phone"
+     },
+     "telegram": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 64
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Telegram"
+     },
+     "languages": {
+      "items": {
+       "type": "string",
+       "enum": [
+        "uz",
+        "ru",
+        "en",
+        "kaa"
+       ]
+      },
+      "type": "array",
+      "minItems": 1,
+      "title": "Languages"
+     },
+     "needs": {
+      "items": {
+       "$ref": "#/components/schemas/Need"
+      },
+      "type": "array",
+      "minItems": 1,
+      "title": "Needs"
+     },
+     "ageMin": {
+      "type": "integer",
+      "maximum": 30.0,
+      "minimum": 0.0,
+      "title": "Agemin"
+     },
+     "ageMax": {
+      "type": "integer",
+      "maximum": 30.0,
+      "minimum": 0.0,
+      "title": "Agemax"
+     },
+     "worksWithCp": {
+      "type": "boolean",
+      "title": "Workswithcp"
+     },
+     "priceMin": {
+      "anyOf": [
+       {
+        "type": "integer",
+        "minimum": 0.0
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Pricemin"
+     },
+     "priceMax": {
+      "anyOf": [
+       {
+        "type": "integer",
+        "minimum": 0.0
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Pricemax"
+     },
+     "checkedAt": {
+      "type": "string",
+      "format": "date",
+      "title": "Checkedat"
+     },
+     "active": {
+      "type": "boolean",
+      "title": "Active",
+      "default": true
+     },
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     }
+    },
+    "type": "object",
+    "required": [
+     "name",
+     "kind",
+     "region",
+     "district",
+     "languages",
+     "needs",
+     "ageMin",
+     "ageMax",
+     "worksWithCp",
+     "checkedAt",
+     "id"
+    ],
+    "title": "PlaceOut"
    },
    "Placement": {
     "properties": {

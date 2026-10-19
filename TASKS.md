@@ -595,7 +595,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 
 **Server — in this order**
 
-- [ ] **Azim** — `A10.1` Table of places; an admin adds and edits places
+- [x] **Azim** — `A10.1` Table of places; an admin adds and edits places
   - Done when: a place has every field the spec lists
   - Needs: A1.7
 - [ ] **Azim** — `A10.2` Search: free state centres first, then by distance; a parent reports wrong information
