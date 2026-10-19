@@ -76,6 +76,11 @@ export const familyPlanFrom = (familyId: string, p: PlanStatus): DB["familyPlans
   paidUntil: p.paidUntil ?? undefined,
 });
 
+/** The server's plan answer in the shape of the mock's `sel.familyPlan`. */
+export const planStatusFrom = (p: PlanStatus) => ({
+  plan: p.plan, trial: p.trial, trialUsed: p.trialUsed, trialEndsAt: p.trialEndsAt ?? undefined, paidUntil: p.paidUntil ?? undefined,
+});
+
 export function familyConsentsFrom(childId: string, c: Consents): Consent[] {
   const on: ConsentScope[] = ["core", ...(c.health ? ["health" as const] : []), ...(c.movementVideos ? ["movement_videos" as const] : []), ...(c.therapistShare ? ["therapist_sharing" as const] : []), ...(c.voiceRecording ? ["voice_recording" as const] : [])];
   return on.map((scope) => ({ id: `${childId}-${scope}`, childId, scope, version: "", grantedBy: "", grantedAt: "" }));

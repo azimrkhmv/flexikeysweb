@@ -77,6 +77,8 @@ export const ADDRESSES = [
   "/api/v1/me/helper-invites",
   "/api/v1/me/helper-invites/{invite_id}/accept",
   "/api/v1/family/plan",
+  "/api/v1/family/trial",
+  "/api/v1/family/pay",
   "/api/v1/admin/users",
   "/api/v1/admin/users/{user_id}",
 ] as const satisfies readonly (keyof paths)[];

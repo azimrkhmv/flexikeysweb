@@ -5,14 +5,14 @@ import { AAC_BY_ID, CUSTOM_PREFIX } from "@/content/aac";
 import { SHOP_BY_ID } from "@/content/shop";
 import { sessionStore } from "@/lib/session";
 import { STEPS, type Answers } from "@/content/intake";
-import type { CardOut, ChildOut, ClipOut, ClipUpload, Consents, DoneOut, FormOut, PhoneStarted, PlanOut, ReviewItem, RoundOut, ShareOut } from "@/lib/server/types";
+import type { CardOut, ChildOut, ClipOut, ClipUpload, Consents, DoneOut, FormOut, PhoneStarted, PlanOut, PlanStatus, ReviewItem, RoundOut, ShareOut } from "@/lib/server/types";
 import type { Profession, TherapistAnswers } from "@/content/therapist";
 import type { Lang, UiLang } from "@/lib/translate";
-import type { AacCustomCard, Child, ChildSupport, ConsentScope, Feeling, InputProfile, InteractionEvent, Order, Roadmap, TaskDone, User, UserStatus, VideoStatus } from "@/lib/types";
+import type { AacCustomCard, Child, ChildSupport, ConsentScope, Feeling, InputProfile, InteractionEvent, Roadmap, TaskDone, User, UserStatus, VideoStatus } from "@/lib/types";
 import { queryClient } from "./client";
 import { http } from "./http";
 import {
-  CONSENT_KIND, familyChildFrom, planFrom, shareFrom,
+  CONSENT_KIND, familyChildFrom, planFrom, planStatusFrom, shareFrom,
   childFrom, childTo, eventTo, scopeTo, userFrom,
   type BChild, type BConsent, type BGoal, type BUser,
 } from "./map";
@@ -25,8 +25,6 @@ type MockExport = Awaited<ReturnType<typeof childrenApi.exportChild>>;
 // lib/api/, so pages don't change. After a write, cached reads are refetched.
 
 const CHILD_TOKEN_MS = 8 * 3600_000;
-const refreshBilling = () =>
-  Promise.all([queryClient.invalidateQueries({ queryKey: ["subscription"] }), queryClient.invalidateQueries({ queryKey: ["orders"] })]);
 const refetch = () => queryClient.invalidateQueries();
 const id = () => crypto.randomUUID();
 /** Answers the server stores: every question, plus the P39 voice note and kept hints (apps/api intake/rules.py). */
@@ -421,22 +419,18 @@ export const liveApi = {
     return true;
   },
 
-  // ------------------------------------------------------------ billing (PRD §9.18)
-  /** Creates the order and opens the provider's payment page; the provider confirms server-to-server
-   *  and the page shows the result on return (/parent/billing?order=…). */
-  async checkout(plan: "monthly" | "yearly", provider: "payme" | "click") {
-    const r = await http<{ order_id: string; redirect_url: string }>("POST", "/billing/checkout", { plan, provider });
-    window.location.assign(r.redirect_url);
-    return new Promise<Order>(() => {}); // the page is leaving for the provider ("Opening Payme…" stays)
+  // ------------------------------------------------------------ Free and Pro (apps/api billing/router.py)
+  /** POST /family/trial — the owner tries Pro for 7 days, once per family. */
+  async startTrial() {
+    const plan = await http<PlanStatus>("POST", "/family/trial", {});
+    await queryClient.invalidateQueries({ queryKey: ["family-plan"] });
+    return planStatusFrom(plan);
   },
-  async cancelSubscription() {
-    await http("POST", "/billing/cancel", {});
-    await refreshBilling();
-    return true;
-  },
-  async refreshBilling() {
-    await refreshBilling();
-    return true;
+  /** POST /family/pay — simulated until after the pilot; one payment id per tap, so a retry counts once. */
+  async payPro(months: number) {
+    const plan = await http<PlanStatus>("POST", "/family/pay", { paymentId: crypto.randomUUID(), months });
+    await queryClient.invalidateQueries({ queryKey: ["family-plan"] });
+    return planStatusFrom(plan);
   },
 
   // ------------------------------------------------------------ admin console (re-auth prompt + audit on the server)
