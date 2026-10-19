@@ -435,7 +435,7 @@ export interface paths {
         };
         /**
          * List Places
-         * @description Every place, hidden ones too, by region, district and name.
+         * @description Every place, hidden ones too: flagged ones first, then by region, district and name.
          */
         get: operations["list_places_api_v1_admin_places_get"];
         put?: never;
@@ -462,6 +462,48 @@ export interface paths {
         head?: never;
         /** Change Place */
         patch: operations["change_place_api_v1_admin_places__place_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/places": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Search
+         * @description Places that help with this need (all places without one): free state centres first, then by distance from
+         *     the parent's position, or without it the parent's district, then region, first. Hidden places never show.
+         */
+        get: operations["search_api_v1_places_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/places/{place_id}/reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Report
+         * @description A wrong price or a closed place: the place is flagged for our team. A second report by the same person
+         *     changes nothing.
+         */
+        post: operations["report_api_v1_places__place_id__reports_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/v1/children": {
@@ -2201,6 +2243,54 @@ export interface components {
              * Format: uuid
              */
             id: string;
+            /** Flaggedat */
+            flaggedAt: string | null;
+        };
+        /** PlaceView */
+        PlaceView: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Name */
+            name: string;
+            kind: components["schemas"]["PlaceKind"];
+            /** Region */
+            region: string;
+            /** District */
+            district: string;
+            /** Address */
+            address: string | null;
+            /** Mapurl */
+            mapUrl: string | null;
+            /** Phone */
+            phone: string | null;
+            /** Telegram */
+            telegram: string | null;
+            /** Languages */
+            languages: string[];
+            /** Needs */
+            needs: string[];
+            /** Agemin */
+            ageMin: number;
+            /** Agemax */
+            ageMax: number;
+            /** Workswithcp */
+            worksWithCp: boolean;
+            /** Pricemin */
+            priceMin: number | null;
+            /** Pricemax */
+            priceMax: number | null;
+            /**
+             * Checkedat
+             * Format: date
+             */
+            checkedAt: string;
+            /** Pricenotrecentlychecked */
+            priceNotRecentlyChecked: boolean;
+            /** Distancekm */
+            distanceKm: number | null;
         };
         /**
          * Placement
@@ -2307,6 +2397,17 @@ export interface components {
              */
             at: string;
         };
+        /** ReportIn */
+        ReportIn: {
+            reason: components["schemas"]["ReportReason"];
+            /** Note */
+            note?: string | null;
+        };
+        /**
+         * ReportReason
+         * @enum {string}
+         */
+        ReportReason: "wrong_price" | "closed" | "other";
         /**
          * ReviewDecision
          * @enum {string}
@@ -3497,6 +3598,74 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["PlaceOut"];
                 };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    search_api_v1_places_get: {
+        parameters: {
+            query?: {
+                need?: components["schemas"]["Need"] | null;
+                lat?: number | null;
+                lng?: number | null;
+                region?: string | null;
+                district?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlaceView"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    report_api_v1_places__place_id__reports_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                place_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReportIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {

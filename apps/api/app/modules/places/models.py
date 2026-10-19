@@ -1,10 +1,11 @@
 """Find help (spec §11): verified places, each checked by phone by our team. About 40 at launch, Tashkent first."""
 
-from datetime import date
+import uuid
+from datetime import date, datetime
 from decimal import Decimal
 from enum import StrEnum
 
-from sqlalchemy import CheckConstraint, Date, Numeric, String
+from sqlalchemy import CheckConstraint, Date, DateTime, ForeignKey, Numeric, String, UniqueConstraint
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -55,3 +56,23 @@ class Place(IdTimeMixin, Base):
     price_max: Mapped[int | None]
     checked_at: Mapped[date] = mapped_column(Date)  # when our team last checked it by phone
     active: Mapped[bool] = mapped_column(default=True)  # an admin hides a closed place instead of deleting it
+    # A parent reported wrong information; cleared when our team checks the place again (a new checked_at).
+    flagged_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class ReportReason(StrEnum):
+    wrong_price = "wrong_price"
+    closed = "closed"
+    other = "other"
+
+
+class PlaceReport(IdTimeMixin, Base):
+    """A parent says a listing is wrong. The place is flagged for our team (spec §11: within 24 hours)."""
+
+    __tablename__ = "place_reports"
+    __table_args__ = (UniqueConstraint("place_id", "user_id"),)  # one report per person and place
+
+    place_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("places.id", ondelete="CASCADE"), index=True)
+    user_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
+    reason: Mapped[ReportReason] = mapped_column(enum_column(ReportReason))
+    note: Mapped[str | None] = mapped_column(String(500))

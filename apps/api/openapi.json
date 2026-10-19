@@ -833,7 +833,7 @@
      "places"
     ],
     "summary": "List Places",
-    "description": "Every place, hidden ones too, by region, district and name.",
+    "description": "Every place, hidden ones too: flagged ones first, then by region, district and name.",
     "operationId": "list_places_api_v1_admin_places_get",
     "responses": {
      "200": {
@@ -931,6 +931,171 @@
         }
        }
       }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/places": {
+   "get": {
+    "tags": [
+     "places"
+    ],
+    "summary": "Search",
+    "description": "Places that help with this need (all places without one): free state centres first, then by distance from\nthe parent's position, or without it the parent's district, then region, first. Hidden places never show.",
+    "operationId": "search_api_v1_places_get",
+    "parameters": [
+     {
+      "name": "need",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "$ref": "#/components/schemas/Need"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Need"
+      }
+     },
+     {
+      "name": "lat",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "number"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Lat"
+      }
+     },
+     {
+      "name": "lng",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "number"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Lng"
+      }
+     },
+     {
+      "name": "region",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Region"
+      }
+     },
+     {
+      "name": "district",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "District"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/PlaceView"
+         },
+         "title": "Response Search Api V1 Places Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/places/{place_id}/reports": {
+   "post": {
+    "tags": [
+     "places"
+    ],
+    "summary": "Report",
+    "description": "A wrong price or a closed place: the place is flagged for our team. A second report by the same person\nchanges nothing.",
+    "operationId": "report_api_v1_places__place_id__reports_post",
+    "parameters": [
+     {
+      "name": "place_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Place Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ReportIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "204": {
+      "description": "Successful Response"
      },
      "422": {
       "description": "Validation Error",
@@ -6159,6 +6324,18 @@
       "type": "string",
       "format": "uuid",
       "title": "Id"
+     },
+     "flaggedAt": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Flaggedat"
      }
     },
     "type": "object",
@@ -6173,9 +6350,169 @@
      "ageMax",
      "worksWithCp",
      "checkedAt",
-     "id"
+     "id",
+     "flaggedAt"
     ],
     "title": "PlaceOut"
+   },
+   "PlaceView": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "kind": {
+      "$ref": "#/components/schemas/PlaceKind"
+     },
+     "region": {
+      "type": "string",
+      "title": "Region"
+     },
+     "district": {
+      "type": "string",
+      "title": "District"
+     },
+     "address": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Address"
+     },
+     "mapUrl": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Mapurl"
+     },
+     "phone": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Phone"
+     },
+     "telegram": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Telegram"
+     },
+     "languages": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Languages"
+     },
+     "needs": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Needs"
+     },
+     "ageMin": {
+      "type": "integer",
+      "title": "Agemin"
+     },
+     "ageMax": {
+      "type": "integer",
+      "title": "Agemax"
+     },
+     "worksWithCp": {
+      "type": "boolean",
+      "title": "Workswithcp"
+     },
+     "priceMin": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Pricemin"
+     },
+     "priceMax": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Pricemax"
+     },
+     "checkedAt": {
+      "type": "string",
+      "format": "date",
+      "title": "Checkedat"
+     },
+     "priceNotRecentlyChecked": {
+      "type": "boolean",
+      "title": "Pricenotrecentlychecked"
+     },
+     "distanceKm": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Distancekm"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "name",
+     "kind",
+     "region",
+     "district",
+     "address",
+     "mapUrl",
+     "phone",
+     "telegram",
+     "languages",
+     "needs",
+     "ageMin",
+     "ageMax",
+     "worksWithCp",
+     "priceMin",
+     "priceMax",
+     "checkedAt",
+     "priceNotRecentlyChecked",
+     "distanceKm"
+    ],
+    "title": "PlaceView"
    },
    "Placement": {
     "properties": {
@@ -6470,6 +6807,39 @@
      "at"
     ],
     "title": "ReplyOut"
+   },
+   "ReportIn": {
+    "properties": {
+     "reason": {
+      "$ref": "#/components/schemas/ReportReason"
+     },
+     "note": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 500
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Note"
+     }
+    },
+    "type": "object",
+    "required": [
+     "reason"
+    ],
+    "title": "ReportIn"
+   },
+   "ReportReason": {
+    "type": "string",
+    "enum": [
+     "wrong_price",
+     "closed",
+     "other"
+    ],
+    "title": "ReportReason"
    },
    "ReviewDecision": {
     "type": "string",
