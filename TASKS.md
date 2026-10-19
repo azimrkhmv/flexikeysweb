@@ -582,7 +582,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
   - Needs: A9.2
 - [ ] **Azim** — `A9.8` Research library: load the open research files, search them, and give the assistant only the matching passages with their source
   - Done when: an answer names the book or paper it came from; with no matching passage the assistant says it does not know
-  - Needs: A9.2
+  - Needs: A9.2, Azim's research files (2026-10-19: Azim gives the files later)
 - [ ] **Azim** — `B30` Assistant knows the child's plan, finished tasks and restrictions
   - Done when: it never suggests a forbidden exercise
   - Needs: A9.3
