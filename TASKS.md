@@ -524,10 +524,10 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `B28` Connect the helper screens to the server
   - Done when: a helper signs in with their own phone and sees the family's child
   - Needs: A8.4, B27
-- [x] **Azim** — `B29` Today: the parent may film the child doing one exercise (optional feedback clip, spec §8), only with the movement-videos consent; the therapist sees it with the movement clips and replies
+- [x] **Azim** — `B51` Today: the parent may film the child doing one exercise (optional feedback clip, spec §8), only with the movement-videos consent; the therapist sees it with the movement clips and replies
   - Done when: a feedback clip filmed on Today shows on the therapist's child page with its exercise name
   - Needs: B25
-- [x] **Azim** — `B30` Invite link for a therapist: the parent gets a link (not only a code) to send by Telegram; a therapist with a new number who opens it signs in straight into a therapist account (the server takes `inviteCode` at sign-in) and accepts in one step
+- [x] **Azim** — `B52` Invite link for a therapist: the parent gets a link (not only a code) to send by Telegram; a therapist with a new number who opens it signs in straight into a therapist account (the server takes `inviteCode` at sign-in) and accepts in one step
   - Done when: a new number opens the link, signs in, and sees the child without typing a code
   - Needs: B26
 
