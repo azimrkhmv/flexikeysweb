@@ -6,7 +6,7 @@ import uuid
 from datetime import datetime
 from enum import StrEnum
 
-from sqlalchemy import DateTime, ForeignKey, String
+from sqlalchemy import DateTime, ForeignKey, String, Text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -53,6 +53,9 @@ class KitOrder(IdTimeMixin, Base):
     address: Mapped[str | None] = mapped_column(String(300))  # courier only
     pickup_place_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("places.id", ondelete="SET NULL"))
     phone: Mapped[str] = mapped_column(String(16))  # for the courier or the centre
+    # P17a, asked when ordering (A11.2): {"answer": "yes"|"no", "which": str|None}, encrypted like health answers.
+    allergy_secret: Mapped[str] = mapped_column(Text)
+    allergy_checked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))  # our team, before shipping
     status: Mapped[KitStatus] = mapped_column(enum_column(KitStatus), default=KitStatus.placed)
     status_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     ordered_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))

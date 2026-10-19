@@ -746,7 +746,8 @@ export interface paths {
         put?: never;
         /**
          * Order
-         * @description Owner only. 422 unknown_kit, address_needed, unknown_place, invalid_phone, invalid_district.
+         * @description Owner only. 422 allergy_needed (P17a unanswered, or "yes" without which materials), unknown_kit,
+         *     address_needed, unknown_place, invalid_phone, invalid_district.
          */
         post: operations["order_api_v1_family_kit_orders_post"];
         delete?: never;
@@ -811,6 +812,7 @@ export interface paths {
         /**
          * Move
          * @description placed -> confirmed -> shipped -> delivered; cancelled before shipping. 409 invalid_status_change otherwise.
+         *     An order with material allergies is confirmed only with allergyChecked (409 allergy_not_checked).
          */
         patch: operations["move_api_v1_admin_kit_orders__order_id__patch"];
         trace?: never;
@@ -2420,6 +2422,10 @@ export interface components {
             pickupPlaceId?: string | null;
             /** Phone */
             phone: string;
+            /** Allergy */
+            allergy?: ("yes" | "no") | null;
+            /** Allergywhich */
+            allergyWhich?: string | null;
         };
         /** KitOrderOut */
         KitOrderOut: {
@@ -2447,6 +2453,15 @@ export interface components {
             pickupPlaceId: string | null;
             /** Phone */
             phone: string;
+            /**
+             * Allergy
+             * @enum {string}
+             */
+            allergy: "yes" | "no";
+            /** Allergywhich */
+            allergyWhich: string | null;
+            /** Allergychecked */
+            allergyChecked: boolean;
             status: components["schemas"]["KitStatus"];
             /**
              * Statusat
@@ -3217,6 +3232,11 @@ export interface components {
         /** StatusChange */
         StatusChange: {
             status: components["schemas"]["KitStatus"];
+            /**
+             * Allergychecked
+             * @default false
+             */
+            allergyChecked: boolean;
         };
         /** TherapistInvite */
         TherapistInvite: {

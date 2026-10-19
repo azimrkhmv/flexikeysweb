@@ -625,7 +625,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A11.1` Home Kit products, orders and delivery status
   - Done when: an order goes from placed to delivered
   - Needs: A1.1, G3 (placeholders for now)
-- [ ] **Azim** — `A11.2` The allergy question (P17a) is checked before an order is accepted
+- [x] **Azim** — `A11.2` The allergy question (P17a) is checked before an order is accepted
   - Done when: an order is refused until the question is answered
   - Needs: A11.1
 

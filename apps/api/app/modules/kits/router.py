@@ -6,7 +6,7 @@ import json
 import uuid
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends
 from pydantic import Field
@@ -14,6 +14,7 @@ from sqlalchemy import func, select, update
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.crypto import decrypt_json, encrypt_json
 from app.db import get_session
 from app.errors import AppError
 from app.modules.accounts.access import Admin
@@ -69,6 +70,9 @@ class KitOrderIn(ApiModel):
     address: str | None = Field(default=None, max_length=300)  # needed for a courier
     pickup_place_id: uuid.UUID | None = None  # needed for a pickup
     phone: str
+    # P17a "Allergies to materials (latex, rubber, dyes)?" Required to order (A11.2); "yes" names them.
+    allergy: Literal["yes", "no"] | None = None
+    allergy_which: str | None = Field(default=None, max_length=200)
 
 
 class KitOrderOut(ApiModel):
@@ -83,13 +87,20 @@ class KitOrderOut(ApiModel):
     address: str | None
     pickup_place_id: uuid.UUID | None
     phone: str
+    allergy: Literal["yes", "no"]
+    allergy_which: str | None
+    allergy_checked: bool
     status: KitStatus
     status_at: datetime
     created_at: datetime
 
 
 def _out(o: KitOrder) -> KitOrderOut:
-    return KitOrderOut.model_validate(o, from_attributes=True)
+    allergy = decrypt_json(o.allergy_secret)
+    return KitOrderOut.model_validate(
+        {**o.__dict__, "allergy": allergy["answer"], "allergy_which": allergy["which"],
+         "allergy_checked": o.allergy_checked_at is not None}
+    )  # fmt: skip
 
 
 @router.get("/kits")
@@ -107,11 +118,15 @@ async def _owner_family(db: AsyncSession, user: CurrentUser) -> uuid.UUID:
 
 @router.post("/family/kit-orders", status_code=201)
 async def order(body: KitOrderIn, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]) -> KitOrderOut:
-    """Owner only. 422 unknown_kit, address_needed, unknown_place, invalid_phone, invalid_district."""
+    """Owner only. 422 allergy_needed (P17a unanswered, or "yes" without which materials), unknown_kit,
+    address_needed, unknown_place, invalid_phone, invalid_district."""
     family_id = await _owner_family(db, user)
     child = await get_visible_child(db, user, body.child_id)
     if child.family_id != family_id:
         raise AppError(404, "not_found")
+    which = (body.allergy_which or "").strip() or None
+    if body.allergy is None or (body.allergy == "yes" and which is None):
+        raise AppError(422, "allergy_needed")  # spec: material allergies are checked before the kit is sent
     kit = await db.get(KitProduct, body.product_slug)
     if kit is None or not kit.active:
         raise AppError(422, "unknown_kit")
@@ -137,6 +152,7 @@ async def order(body: KitOrderIn, user: CurrentUser, db: Annotated[AsyncSession,
         address=body.address.strip() if body.delivery == Delivery.courier and body.address else None,
         pickup_place_id=body.pickup_place_id if body.delivery == Delivery.pickup else None,
         phone=phone,
+        allergy_secret=encrypt_json({"answer": body.allergy, "which": which if body.allergy == "yes" else None}),
         status_at=datetime.now(UTC),
         ordered_by=user.id,
     )
@@ -187,18 +203,24 @@ async def all_orders(_: Admin, db: Annotated[AsyncSession, Depends(get_session)]
 
 class StatusChange(ApiModel):
     status: KitStatus
+    allergy_checked: bool = False  # confirming an order with material allergies: our team checked the box's materials
 
 
 @admin_router.patch("/{order_id}")
 async def move(
     order_id: uuid.UUID, body: StatusChange, admin: Admin, db: Annotated[AsyncSession, Depends(get_session)]
 ) -> KitOrderOut:
-    """placed -> confirmed -> shipped -> delivered; cancelled before shipping. 409 invalid_status_change otherwise."""
+    """placed -> confirmed -> shipped -> delivered; cancelled before shipping. 409 invalid_status_change otherwise.
+    An order with material allergies is confirmed only with allergyChecked (409 allergy_not_checked)."""
     o = await db.get(KitOrder, order_id)
     if o is None:
         raise AppError(404, "not_found")
     if body.status not in NEXT.get(o.status, set()):
         raise AppError(409, "invalid_status_change", now=o.status.value)
+    if body.status == KitStatus.confirmed and decrypt_json(o.allergy_secret)["answer"] == "yes":
+        if not body.allergy_checked:
+            raise AppError(409, "allergy_not_checked")
+        o.allergy_checked_at = datetime.now(UTC)
     o.status, o.status_at = body.status, datetime.now(UTC)
     audit.record(db, admin.id, f"kit.{body.status.value}", o.child_id, order=str(o.id))
     await db.commit()

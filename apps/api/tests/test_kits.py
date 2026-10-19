@@ -28,7 +28,8 @@ def client() -> Iterator[TestClient]:
 def courier(child: str, **extra: Any) -> dict[str, Any]:
     return {
         "productSlug": "standard", "childId": child, "delivery": "courier", "region": "tashkent_city",
-        "district": "Chilonzor", "address": "Bunyodkor 1, kv 5", "phone": "+998 90 123 45 67", **extra,
+        "district": "Chilonzor", "address": "Bunyodkor 1, kv 5", "phone": "+998 90 123 45 67", "allergy": "no",
+        **extra,
     }  # fmt: skip
 
 
@@ -87,3 +88,19 @@ def test_only_the_owner_orders_for_their_own_child(client: TestClient) -> None:
     assert title(client.post(f"{ORDERS}/{order['id']}/cancel", headers=stranger)) == (404, "not_found")
     assert client.get(ORDERS, headers=stranger).json() == []
     assert title(client.get(f"{API}/admin/kit-orders", headers=owner)) == (403, "forbidden")
+
+
+def test_no_order_without_the_allergy_answer(client: TestClient) -> None:
+    """A11.2: P17a must be answered; a "yes" names the materials, and our team checks them before confirming."""
+    owner = parent(client)
+    child = add_child(client, owner)
+    for missing in ({"allergy": None}, {"allergy": "yes"}, {"allergy": "yes", "allergyWhich": " "}):
+        assert title(client.post(ORDERS, headers=owner, json=courier(child, **missing))) == (422, "allergy_needed")
+    order = client.post(ORDERS, headers=owner, json=courier(child, allergy="yes", allergyWhich="latex")).json()
+    assert (order["allergy"], order["allergyWhich"], order["allergyChecked"]) == ("yes", "latex", False)
+
+    _, admin, _ = make(client, Role.admin)
+    url = f"{API}/admin/kit-orders/{order['id']}"
+    assert title(client.patch(url, headers=admin, json={"status": "confirmed"})) == (409, "allergy_not_checked")
+    done = client.patch(url, headers=admin, json={"status": "confirmed", "allergyChecked": True}).json()
+    assert (done["status"], done["allergyChecked"]) == ("confirmed", True)
