@@ -13,6 +13,7 @@ from app.modules.assistant.safety import is_emergency
 from app.settings import settings
 from tests.test_billing_plan import on_pro
 from tests.test_children import API, add_child, parent
+from tests.test_therapist_form import share
 from tests.test_videos_register import title
 
 
@@ -113,3 +114,44 @@ def test_an_answer_with_a_forbidden_movement_is_replaced(client: TestClient, ai:
     ai.answer = "Squeeze the putty ten times with each hand."
     r = client.post(url, headers=owner, json={"text": "And for the hands?", "lang": "en"}).json()
     assert r["answer"] == ai.answer
+
+
+# A9.4: the chat is kept until deleted; the therapist gets topics and warnings only, never the chat.
+def test_the_chat_is_kept_until_deleted(client: TestClient) -> None:
+    owner = parent(client)
+    child = add_child(client, owner)
+    url = f"{API}/children/{child}/assistant/messages"
+    client.post(url, headers=owner, json={"text": "How do we do the putty exercise?", "lang": "en"})
+    chat = client.get(url, headers=owner).json()
+    assert [(m["speaker"], m["text"][:10]) for m in chat] == [("adult", "How do we "), ("assistant", "This is a ")]
+    assert client.get(url, headers=parent(client)).status_code == 404  # another family
+    assert client.delete(url, headers=owner).status_code == 204
+    assert client.get(url, headers=owner).json() == []
+
+    client.post(url, headers=owner, json={"text": "Again", "lang": "en"})
+    me = client.get(f"{API}/me", headers=owner).json()["id"]
+    assert client.delete(f"{API}/children/{child}/chats/{me}", headers=owner).status_code == 204  # the owner
+    assert client.get(url, headers=owner).json() == []
+
+
+def test_the_therapist_sees_topics_and_warnings_never_the_chat(client: TestClient, ai: FakeAi) -> None:
+    owner = parent(client)
+    child = add_child(client, owner)
+    therapist = share(client, owner, child)
+    url = f"{API}/children/{child}/assistant/messages"
+    for text in ("How do we do the putty exercise?", "He is tired and refuses the exercise", "У него судороги"):
+        client.post(url, headers=owner, json={"text": text, "lang": "en"})
+    ai.answer = "Let him jump on the bed."  # replaced: a warning
+    client.post(url, headers=owner, json={"text": "Something fun for today?", "lang": "en"})
+
+    r = client.get(f"{API}/therapist/children/{child}/assistant-summary", headers=therapist)
+    assert r.status_code == 200, r.text
+    s = r.json()
+    assert s["questions"] == 4
+    assert {t["topic"]: t["count"] for t in s["topics"]}["exercise"] == 2
+    assert sorted(w["kind"] for w in s["warnings"]) == ["emergency", "restricted"]
+    assert "putty" not in r.text and "jump" not in r.text  # never the words of the chat
+    assert client.get(f"{API}/therapist/children/{child}/assistant-summary", headers=parent(client)).status_code in (
+        403,
+        404,
+    )

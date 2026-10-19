@@ -61,6 +61,7 @@ PARTS = {
     "booking_id": str(uuid.uuid4()),
     "link_id": str(uuid.uuid4()),
     "run_id": str(uuid.uuid4()),
+    "user_id": str(uuid.uuid4()),
     "session_id": str(uuid.uuid4()),
 }
 

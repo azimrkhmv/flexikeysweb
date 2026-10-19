@@ -2382,6 +2382,178 @@
       }
      }
     }
+   },
+   "get": {
+    "tags": [
+     "assistant"
+    ],
+    "summary": "My Chat",
+    "description": "This person's chat about the child, oldest first. Kept until they (or the family's owner) delete it.",
+    "operationId": "my_chat_api_v1_children__child_id__assistant_messages_get",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/MessageOut"
+         },
+         "title": "Response My Chat Api V1 Children  Child Id  Assistant Messages Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "delete": {
+    "tags": [
+     "assistant"
+    ],
+    "summary": "Delete My Chat",
+    "description": "Deleted at once, for good.",
+    "operationId": "delete_my_chat_api_v1_children__child_id__assistant_messages_delete",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/children/{child_id}/chats/{user_id}": {
+   "delete": {
+    "tags": [
+     "assistant"
+    ],
+    "summary": "Delete Chat",
+    "description": "The family's owner deletes any adult's chat about the child (\"Everything we store\").",
+    "operationId": "delete_chat_api_v1_children__child_id__chats__user_id__delete",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     },
+     {
+      "name": "user_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "User Id"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/therapist/children/{child_id}/assistant-summary": {
+   "get": {
+    "tags": [
+     "assistant"
+    ],
+    "summary": "Summary",
+    "description": "What the family asked the assistant about this child: topics and warnings only, never the chat (spec §12).",
+    "operationId": "summary_api_v1_therapist_children__child_id__assistant_summary_get",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ChatSummary"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
    }
   },
   "/api/v1/children/{child_id}/export": {
@@ -5748,6 +5920,58 @@
     ],
     "title": "CardUpload"
    },
+   "ChatSummary": {
+    "properties": {
+     "questions": {
+      "type": "integer",
+      "title": "Questions"
+     },
+     "topics": {
+      "items": {
+       "$ref": "#/components/schemas/TopicCount"
+      },
+      "type": "array",
+      "title": "Topics"
+     },
+     "warnings": {
+      "items": {
+       "$ref": "#/components/schemas/ChatWarning"
+      },
+      "type": "array",
+      "title": "Warnings"
+     }
+    },
+    "type": "object",
+    "required": [
+     "questions",
+     "topics",
+     "warnings"
+    ],
+    "title": "ChatSummary"
+   },
+   "ChatWarning": {
+    "properties": {
+     "kind": {
+      "type": "string",
+      "enum": [
+       "emergency",
+       "restricted"
+      ],
+      "title": "Kind"
+     },
+     "at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "At"
+     }
+    },
+    "type": "object",
+    "required": [
+     "kind",
+     "at"
+    ],
+    "title": "ChatWarning"
+   },
    "ChildChange": {
     "properties": {
      "name": {
@@ -7357,6 +7581,40 @@
      "text"
     ],
     "title": "Message"
+   },
+   "MessageOut": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "speaker": {
+      "$ref": "#/components/schemas/Speaker"
+     },
+     "text": {
+      "type": "string",
+      "title": "Text"
+     },
+     "emergency": {
+      "type": "boolean",
+      "title": "Emergency"
+     },
+     "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Createdat"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "speaker",
+     "text",
+     "emergency",
+     "createdAt"
+    ],
+    "title": "MessageOut"
    },
    "MyPlace": {
     "properties": {
@@ -9588,6 +9846,14 @@
     ],
     "title": "SlotIn"
    },
+   "Speaker": {
+    "type": "string",
+    "enum": [
+     "adult",
+     "assistant"
+    ],
+    "title": "Speaker"
+   },
    "StatusChange": {
     "properties": {
      "status": {
@@ -9689,6 +9955,24 @@
     },
     "type": "object",
     "title": "Tokens"
+   },
+   "TopicCount": {
+    "properties": {
+     "topic": {
+      "type": "string",
+      "title": "Topic"
+     },
+     "count": {
+      "type": "integer",
+      "title": "Count"
+     }
+    },
+    "type": "object",
+    "required": [
+     "topic",
+     "count"
+    ],
+    "title": "TopicCount"
    },
    "TriesStored": {
     "properties": {

@@ -571,7 +571,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A9.3` Server: emergency words in 4 languages return **103** before any AI call; every answer is checked against the child's restrictions
   - Done when: tested in all 4 languages
   - Needs: A9.2
-- [ ] **Azim** — `A9.4` Server: store chats; the parent can delete them; a summary for the therapist
+- [x] **Azim** — `A9.4` Server: store chats; the parent can delete them; a summary for the therapist
   - Done when: the therapist gets topics and warnings only, never the full chat
   - Needs: A9.2
 - [ ] **Azim** — `A9.5` Server: the weekly two-sentence summary and the plan explanation, written only from stored facts
