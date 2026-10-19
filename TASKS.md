@@ -475,7 +475,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
   - Needs: A1.1
 - [ ] **Azim** — `A7.2` Free limits enforced by the server
   - Done when: a Free family meets every limit the founders listed
-  - Needs: A7.1, G3
+  - Needs: A7.1, G3 (placeholders for now)
 - [x] **Azim** — `A7.3` A simulated payment turns a family to Pro; an admin can upgrade a family by hand
   - Done when: a repeated payment message never upgrades twice; only the owner can pay
   - Needs: A7.1
@@ -496,7 +496,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 
 - [ ] **Azim** — `B21` Free and Pro screens, the 7-day trial, the Free limits, a reminder 2 days before the trial ends
   - Done when: only the owner sees the pay button
-  - Needs: G3
+  - Needs: G3 (placeholders for now)
 - [ ] **Azim** — `B22` Connect Free and Pro to the server
   - Done when: a simulated payment upgrades the family in the browser
   - Needs: A7.2, A7.3, B21
@@ -621,7 +621,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
   - Needs: G10
 - [ ] **Azim** — `A11.1` Home Kit products, orders and delivery status
   - Done when: an order goes from placed to delivered
-  - Needs: A1.1, G3
+  - Needs: A1.1, G3 (placeholders for now)
 - [ ] **Azim** — `A11.2` The allergy question (P17a) is checked before an order is accepted
   - Done when: an order is refused until the question is answered
   - Needs: A11.1
@@ -630,19 +630,19 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 
 - [ ] **Azim** — `B34` Find help screen: pick a need, see places (free first, then by distance), report wrong information
   - Done when: "I'm not sure" suggests the child's doctor or a free state centre and never guesses
-  - Needs: G2
+  - Needs: G2 (placeholders for now)
 - [ ] **Azim** — `B35` Booking screen: free times, book in person or online
   - Done when: a taken time cannot be chosen
-  - Needs: G4
+  - Needs: G4 (placeholders for now)
 - [ ] **Azim** — `B36` Clinic dashboard: publish free times, confirm or cancel, add an online link
   - Done when: a clinic sees only its own bookings
-  - Needs: G4
+  - Needs: G4 (placeholders for now)
 - [ ] **Azim** — `B37` Connect Find help, booking and the clinic dashboard to the server
   - Done when: a parent books a real free time in the browser and the clinic confirms it
   - Needs: A10.2, A10.5, B34, B35, B36
 - [ ] **Azim** — `B38` Home Kit order screen: allergy question, address, delivery or pickup
   - Done when: the order button stays off until the allergy question is answered
-  - Needs: G3
+  - Needs: G3 (placeholders for now)
 - [ ] **Azim** — `B39` Connect the Home Kit order to the server
   - Done when: an order placed in the browser appears for the admin
   - Needs: A11.2, B38
@@ -712,7 +712,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
   - Needs: —
 - [ ] **Azim** — `B43` New text for the public pages and the pricing page
   - Done when: they describe the new product, not the old 16 levels
-  - Needs: G3
+  - Needs: G3 (placeholders for now)
 - [ ] **Azim** — `B44` Native-speaker check of the Uzbek Latin, Uzbek Cyrillic and Russian text
   - Done when: a named person has signed off each language
   - Needs: —
@@ -728,6 +728,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `F1` Buy the domain name and point it at the server
   - Done when: the address opens with HTTPS
   - Needs: Q4
+  - Bought (2026-10-19): flexikeys.uz. Still to do: rent the server (Contabo, Q4) and point the domain's DNS at it
 - [ ] **Azim** — `F2` Build and release the website for production
   - Done when: the website opens at the real address and talks to the real server
   - Needs: A13.4
@@ -769,10 +770,13 @@ These are not programming. The named developer asks the right person and writes 
 - [ ] **Azim** — `G1` Get the final exercise list, approved by a physiotherapist: name, steps and safety tags for each exercise
   - Needed for: C2
 - [ ] **Azim** — `G2` Get about 40 checked places in Tashkent: name, type, district, map link, contacts, languages, ages, works with CP, price range, date checked
+  - For now (2026-10-19, Azim): build with placeholder data, clearly marked as test data and kept off production; the real data replaces it
   - Needed for: B34
 - [ ] **Azim** — `G3` Get the Pro price, the exact Free contents, the Home Kit price and the exact items in the box
+  - For now (2026-10-19, Azim): build with placeholder data, clearly marked as test data and kept off production; the real data replaces it
   - Needed for: A7.2, A11.1, B21, B38, B43
 - [ ] **Azim** — `G4` Get the partner clinics and their free times
+  - For now (2026-10-19, Azim): build with placeholder data, clearly marked as test data and kept off production; the real data replaces it
   - Needed for: B35, B36
 - [ ] **Azim** — `G5` Get the game catalogue (3 → 20 games) and the onboarding assessment document, both named as sources in the spec
   - Needed for: B16
