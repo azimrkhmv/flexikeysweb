@@ -574,7 +574,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A9.4` Server: store chats; the parent can delete them; a summary for the therapist
   - Done when: the therapist gets topics and warnings only, never the full chat
   - Needs: A9.2
-- [ ] **Azim** — `A9.5` Server: the weekly two-sentence summary and the plan explanation, written only from stored facts
+- [x] **Azim** — `A9.5` Server: the weekly two-sentence summary and the plan explanation, written only from stored facts
   - Done when: a test proves the text contains no fact that was not given
   - Needs: A9.2, A5.3
 - [ ] **Azim** — `A9.6` Server: a monthly spending limit for AI

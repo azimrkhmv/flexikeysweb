@@ -2556,6 +2556,112 @@
     }
    }
   },
+  "/api/v1/children/{child_id}/weekly-summary": {
+   "get": {
+    "tags": [
+     "assistant"
+    ],
+    "summary": "Weekly Summary",
+    "description": "The last 7 days (Tashkent), in two sentences. Free and Pro. 404 no_plan before the first plan.",
+    "operationId": "weekly_summary_api_v1_children__child_id__weekly_summary_get",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     },
+     {
+      "name": "lang",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "$ref": "#/components/schemas/Lang",
+       "default": "uz"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/WeekSummary"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/children/{child_id}/plan-explanation": {
+   "get": {
+    "tags": [
+     "assistant"
+    ],
+    "summary": "Plan Explanation",
+    "description": "Why the current plan is what it is, in two sentences. 404 no_plan before the first plan.",
+    "operationId": "plan_explanation_api_v1_children__child_id__plan_explanation_get",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     },
+     {
+      "name": "lang",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "$ref": "#/components/schemas/Lang",
+       "default": "uz"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/PlanExplanation"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/v1/children/{child_id}/export": {
    "get": {
     "tags": [
@@ -8813,6 +8919,63 @@
     "title": "Placement",
     "description": "The play check's stage 2: for each area played, can the child do it now (spec §7)."
    },
+   "PlanExplanation": {
+    "properties": {
+     "text": {
+      "type": "string",
+      "title": "Text"
+     },
+     "writtenBy": {
+      "type": "string",
+      "enum": [
+       "ai",
+       "template"
+      ],
+      "title": "Writtenby"
+     },
+     "facts": {
+      "$ref": "#/components/schemas/PlanFacts"
+     }
+    },
+    "type": "object",
+    "required": [
+     "text",
+     "writtenBy",
+     "facts"
+    ],
+    "title": "PlanExplanation"
+   },
+   "PlanFacts": {
+    "properties": {
+     "goals": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Goals"
+     },
+     "exercisesAllowed": {
+      "type": "boolean",
+      "title": "Exercisesallowed"
+     },
+     "differentExercises": {
+      "type": "integer",
+      "title": "Differentexercises"
+     },
+     "therapistInvolved": {
+      "type": "boolean",
+      "title": "Therapistinvolved"
+     }
+    },
+    "type": "object",
+    "required": [
+     "goals",
+     "exercisesAllowed",
+     "differentExercises",
+     "therapistInvolved"
+    ],
+    "title": "PlanFacts"
+   },
    "PlanOut": {
     "properties": {
      "id": {
@@ -10401,6 +10564,81 @@
      "url"
     ],
     "title": "VoiceNote"
+   },
+   "WeekFacts": {
+    "properties": {
+     "daysWithTasks": {
+      "type": "integer",
+      "title": "Dayswithtasks"
+     },
+     "exercisesDone": {
+      "type": "integer",
+      "title": "Exercisesdone"
+     },
+     "gamesDone": {
+      "type": "integer",
+      "title": "Gamesdone"
+     },
+     "feltEasy": {
+      "type": "integer",
+      "title": "Felteasy"
+     },
+     "feltOk": {
+      "type": "integer",
+      "title": "Feltok"
+     },
+     "feltHard": {
+      "type": "integer",
+      "title": "Felthard"
+     },
+     "daysPaused": {
+      "type": "integer",
+      "title": "Dayspaused"
+     }
+    },
+    "type": "object",
+    "required": [
+     "daysWithTasks",
+     "exercisesDone",
+     "gamesDone",
+     "feltEasy",
+     "feltOk",
+     "feltHard",
+     "daysPaused"
+    ],
+    "title": "WeekFacts"
+   },
+   "WeekSummary": {
+    "properties": {
+     "text": {
+      "type": "string",
+      "title": "Text"
+     },
+     "writtenBy": {
+      "type": "string",
+      "enum": [
+       "ai",
+       "template"
+      ],
+      "title": "Writtenby"
+     },
+     "weekStart": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Weekstart"
+     },
+     "facts": {
+      "$ref": "#/components/schemas/WeekFacts"
+     }
+    },
+    "type": "object",
+    "required": [
+     "text",
+     "writtenBy",
+     "weekStart",
+     "facts"
+    ],
+    "title": "WeekSummary"
    },
    "app__modules__accounts__helpers__InviteOut": {
     "properties": {

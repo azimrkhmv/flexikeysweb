@@ -37,6 +37,7 @@ allowed-confusables = ["ʻ", "ʼ"]  # Uzbek Latin letters (oʻ, gʻ, maʼ)
 "tests/**" = ["S101", "S106"]
 "tests/test_assistant_chat.py" = ["S101", "RUF001"]  # Cyrillic examples
 "app/modules/assistant/safety.py" = ["RUF001", "E501"]  # word lists in Cyrillic
+"app/modules/assistant/summaries.py" = ["RUF001", "E501"]  # fixed sentences in Cyrillic
 
 [tool.mypy]
 python_version = "3.12"
