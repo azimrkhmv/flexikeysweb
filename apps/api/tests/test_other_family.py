@@ -27,6 +27,7 @@ BODIES = {
     "FormIn": {"answers": {}},
     "ClipIn": {"kind": "movement", "storageKey": "x"},
     "ReplyIn": {"text": "x"},
+    "Question": {"text": "x", "lang": "en"},
     "BookingIn": {"slotId": str(uuid.uuid4()), "mode": "in_person"},
     "SessionChange": {"secondsPlayed": 10},
     "Placement": {"buckets": {"memory": "yes"}},

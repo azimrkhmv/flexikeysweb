@@ -2330,6 +2330,60 @@
     }
    }
   },
+  "/api/v1/children/{child_id}/assistant/messages": {
+   "post": {
+    "tags": [
+     "assistant"
+    ],
+    "summary": "Ask",
+    "description": "429 daily_limit when a Free family used today's messages; 503 ai_unavailable when the AI does not answer.",
+    "operationId": "ask_api_v1_children__child_id__assistant_messages_post",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/Question"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Answer"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/v1/children/{child_id}/export": {
    "get": {
     "tags": [
@@ -5276,6 +5330,31 @@
      "createdAt"
     ],
     "title": "AdminUser"
+   },
+   "Answer": {
+    "properties": {
+     "answer": {
+      "type": "string",
+      "title": "Answer"
+     },
+     "remainingToday": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Remainingtoday"
+     }
+    },
+    "type": "object",
+    "required": [
+     "answer",
+     "remainingToday"
+    ],
+    "title": "Answer"
    },
    "AnswersIn": {
     "properties": {
@@ -8661,6 +8740,25 @@
      "required"
     ],
     "title": "ProfileOut"
+   },
+   "Question": {
+    "properties": {
+     "text": {
+      "type": "string",
+      "maxLength": 1000,
+      "minLength": 1,
+      "title": "Text"
+     },
+     "lang": {
+      "$ref": "#/components/schemas/Lang"
+     }
+    },
+    "type": "object",
+    "required": [
+     "text",
+     "lang"
+    ],
+    "title": "Question"
    },
    "ReasonOut": {
     "properties": {

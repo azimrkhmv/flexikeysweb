@@ -9,6 +9,7 @@ from app import errors, logs, redis
 from app.db import engine
 from app.modules.accounts import admin, helpers
 from app.modules.accounts import router as accounts
+from app.modules.assistant import router as assistant
 from app.modules.auth import router as auth
 from app.modules.billing import router as billing
 from app.modules.children import consents
@@ -63,6 +64,7 @@ app.include_router(bookings.router, prefix="/api/v1")
 app.include_router(kits.router, prefix="/api/v1")
 app.include_router(kits.admin_router, prefix="/api/v1")
 app.include_router(children.router, prefix="/api/v1")
+app.include_router(assistant.router, prefix="/api/v1")
 app.include_router(privacy.router, prefix="/api/v1")
 app.include_router(privacy.me_router, prefix="/api/v1")
 app.include_router(consents.router, prefix="/api/v1")

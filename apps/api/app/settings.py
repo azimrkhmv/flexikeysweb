@@ -33,9 +33,17 @@ class Settings(BaseSettings):
     # Sign-in codes per IP address per hour (app/modules/auth/otp.py). The live browser tests sign in many times
     # from one address, so their test server raises it (.github/workflows/e2e-live.yml).
     otp_per_ip_per_hour: int = 20
+    # The assistant (A9.2): OpenRouter when its key is set (never in tests), else a pretend AI with fixed answers.
+    openrouter_api_key: str = ""
+    ai_model: str = "google/gemini-2.5-flash"  # placeholder until the blind test (E2) picks the model
+    free_ai_messages_per_day: int = 20  # per family on Free (spec §12: "about 20"); Pro has no limit
     intake_repeat_days: int = (
         90  # the questions come back every 3 months (spec)  # TASKS.md section 3: "Both numbers are settings"
     )
+
+    @property
+    def ai_provider(self) -> Literal["fake", "openrouter"]:
+        return "openrouter" if self.openrouter_api_key and self.env != "test" else "fake"
 
     @model_validator(mode="after")
     def safe_in_production(self) -> Self:
