@@ -58,6 +58,7 @@ def test_invite_accept_and_remove(client: TestClient) -> None:
     assert client.get(f"{API}/me/helper-invites", headers=helper).json() == []
     family = client.get(f"{API}/family/helpers", headers=owner).json()
     assert family["invites"] == [] and len(family["helpers"]) == 1
+    assert family["familyId"] == client.get(f"{API}/children/{child}", headers=owner).json()["familyId"]
     helper_id = family["helpers"][0]["userId"]
 
     # One helper per family (a setting).

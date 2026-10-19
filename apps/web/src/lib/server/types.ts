@@ -27,6 +27,8 @@ export type SharedChild = Schemas["SharedChild"];
 export type InviteOut = Schemas["app__modules__therapists__router__InviteOut"];
 export type FormOut = Schemas["FormOut"];
 export type ProfileOut = Schemas["ProfileOut"];
+export type Helpers = Schemas["Helpers"];
+export type InviteForMe = Schemas["InviteForMe"];
 
 /** Every address the website calls (under /api/v1, which the website proxies). */
 export const ADDRESSES = [
@@ -67,6 +69,11 @@ export const ADDRESSES = [
   "/api/v1/therapist/children/{child_id}/form",
   "/api/v1/therapist/children/{child_id}/clips",
   "/api/v1/therapist/children/{child_id}/clips/{clip_id}/replies",
+  "/api/v1/family/helpers",
+  "/api/v1/family/helpers/{user_id}",
+  "/api/v1/family/helper-invites/{invite_id}",
+  "/api/v1/me/helper-invites",
+  "/api/v1/me/helper-invites/{invite_id}/accept",
   "/api/v1/admin/users",
   "/api/v1/admin/users/{user_id}",
 ] as const satisfies readonly (keyof paths)[];

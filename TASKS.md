@@ -521,7 +521,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `B27` Helper screens: invite, accept, remove; hide owner-only buttons from a helper
   - Done when: a helper never sees the consent, sharing, delete or pay buttons
   - Needs: B2
-- [ ] **Azim** — `B28` Connect the helper screens to the server
+- [x] **Azim** — `B28` Connect the helper screens to the server
   - Done when: a helper signs in with their own phone and sees the family's child
   - Needs: A8.4, B27
 - [ ] **Azim** — `B29` Today: the parent may film the child doing one exercise (optional feedback clip, spec §8), only with the movement-videos consent; the therapist sees it with the movement clips and replies

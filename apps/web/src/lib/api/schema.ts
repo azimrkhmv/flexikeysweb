@@ -73,7 +73,7 @@ export interface DB {
   clips?: { id: string; childId: string; url: string }[];
   /** Live mode, parent: what the server says the therapists changed (GET /children/{id}/answers-in-use). */
   /** The owner's invites to a second adult (A8.4); accepted ones become a helper family member. */
-  helperInvites: { id: string; familyId: string; phone: string; at: string }[];
+  helperInvites: { id: string; familyId: string; phone: string; at: string; ownerName?: string }[];
   answersInUse?: Record<string, { updated: Record<string, { value: string | string[]; name: string; profession?: Profession; at: string }>; messages: { text: string; name: string; profession?: Profession; at: string }[] }>;
 }
 

@@ -15,12 +15,12 @@ from typing import cast
 from redis.asyncio import Redis
 
 from app.errors import AppError
+from app.settings import settings
 
 CODE_TTL = 5 * 60
 RESEND_AFTER = 60
 MAX_TRIES = 5
 PER_PHONE_PER_HOUR = 5
-PER_IP_PER_HOUR = 20
 
 
 def _hash(phone: str, code: str) -> str:
@@ -42,7 +42,7 @@ async def new_code(redis: Redis, phone: str, ip: str) -> str:
         raise AppError(429, "code_too_soon", retryAfterMs=max(wait, 1) * 1000)
     if not await _count(redis, f"otp:hour:phone:{phone}", PER_PHONE_PER_HOUR):
         raise AppError(429, "too_many_codes")
-    if not await _count(redis, f"otp:hour:ip:{ip}", PER_IP_PER_HOUR):
+    if not await _count(redis, f"otp:hour:ip:{ip}", settings.otp_per_ip_per_hour):
         raise AppError(429, "too_many_codes")
     code = f"{secrets.randbelow(900_000) + 100_000}"
     await redis.hset(f"otp:{phone}", mapping={"hash": _hash(phone, code), "tries": 0})

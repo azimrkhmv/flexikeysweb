@@ -46,6 +46,7 @@ class HelperOut(ApiModel):
 
 
 class Helpers(ApiModel):
+    family_id: uuid.UUID  # the family these are of (the person's own family first)
     helpers: list[HelperOut]
     invites: list[InviteOut]  # not yet accepted, not expired
 
@@ -81,6 +82,7 @@ async def _helpers(db: AsyncSession, family_id: uuid.UUID) -> Helpers:
         .order_by(HelperInvite.created_at)
     )
     return Helpers(
+        family_id=family_id,
         helpers=[HelperOut(user_id=u.id, name=u.name, phone=u.phone, since=m.created_at) for m, u in members],
         invites=[InviteOut(id=i.id, phone=i.phone, expires_at=i.expires_at) for i in invites],
     )

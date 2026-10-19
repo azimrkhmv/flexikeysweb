@@ -25,6 +25,9 @@ class Settings(BaseSettings):
     health_keys: str
     max_children_per_family: int = 3
     max_helpers_per_family: int = 1
+    # Sign-in codes per IP address per hour (app/modules/auth/otp.py). The live browser tests sign in many times
+    # from one address, so their test server raises it (.github/workflows/e2e-live.yml).
+    otp_per_ip_per_hour: int = 20
     intake_repeat_days: int = (
         90  # the questions come back every 3 months (spec)  # TASKS.md section 3: "Both numbers are settings"
     )

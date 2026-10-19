@@ -53,7 +53,7 @@ jobs:
           timeout 60 sh -c 'until curl -sf http://localhost:9100/minio/health/live; do sleep 1; done'
           uv sync --locked
           uv run alembic upgrade head
-          uv run uvicorn app.main:app --port 8000 > "$RUNNER_TEMP/api.log" 2>&1 &
+          OTP_PER_IP_PER_HOUR=500 uv run uvicorn app.main:app --port 8000 > "$RUNNER_TEMP/api.log" 2>&1 &
           timeout 60 sh -c 'until curl -sf http://localhost:8000/healthz; do sleep 1; done'
 
       - uses: actions/setup-node@v4

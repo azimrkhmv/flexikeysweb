@@ -384,6 +384,28 @@ export const liveApi = {
     return true;
   },
 
+  // ------------------------------------------------------------ helpers (apps/api accounts/helpers.py)
+  async inviteHelper(phone: string) {
+    const i = await http<{ id: string; phone: string; expiresAt: string }>("POST", "/family/helpers", { phone: phone.trim() });
+    await refetch();
+    return { id: i.id, familyId: "", phone: i.phone, at: i.expiresAt };
+  },
+  async removeHelper(userId: string) {
+    await http("DELETE", `/family/helpers/${userId}`);
+    await refetch();
+    return true;
+  },
+  async cancelHelperInvite(inviteId: string) {
+    await http("DELETE", `/family/helper-invites/${inviteId}`);
+    await refetch();
+    return true;
+  },
+  async acceptHelperInvite(inviteId: string) {
+    await http("POST", `/me/helper-invites/${inviteId}/accept`, {});
+    await refetch();
+    return true;
+  },
+
   // ------------------------------------------------------------ sharing (parent side, apps/api therapists/)
   /** POST /children/{id}/therapists — by phone, or a one-time link when no phone is given (its code comes once). */
   async inviteCare(childId: string, contact: string) {

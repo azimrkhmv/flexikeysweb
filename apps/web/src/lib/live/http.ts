@@ -21,6 +21,11 @@ const BY_TITLE: Record<string, string> = {
     csrf_failed: "unauthorized",
     token_reused: "unauthorized",
     invalid_phone: "invalid_phone",
+    // helpers (apps/api accounts/helpers.py)
+    owner_only: "owner_only",
+    too_many_helpers: "too_many_helpers",
+    already_member: "already_member",
+    not_a_parent: "not_a_parent",
     // therapist shares (apps/api therapists/)
     no_profile: "no_profile",
     profile_needed: "profile_needed",

@@ -4892,6 +4892,11 @@
    },
    "Helpers": {
     "properties": {
+     "familyId": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Familyid"
+     },
      "helpers": {
       "items": {
        "$ref": "#/components/schemas/HelperOut"
@@ -4909,6 +4914,7 @@
     },
     "type": "object",
     "required": [
+     "familyId",
      "helpers",
      "invites"
     ],

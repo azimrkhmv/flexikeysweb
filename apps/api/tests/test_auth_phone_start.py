@@ -10,6 +10,7 @@ from app import redis as app_redis
 from app.main import app
 from app.modules.auth import otp
 from app.modules.auth.otp import Check
+from app.settings import settings
 
 
 @pytest.fixture
@@ -65,7 +66,7 @@ async def test_at_most_5_codes_per_phone_per_hour(redis: Redis) -> None:
 
 @pytest.mark.anyio
 async def test_at_most_20_codes_per_ip_per_hour(redis: Redis) -> None:
-    for i in range(otp.PER_IP_PER_HOUR):
+    for i in range(settings.otp_per_ip_per_hour):
         await otp.new_code(redis, f"+9989030000{i:02d}", "3.3.3.3")
     with pytest.raises(Exception, match="too_many_codes"):
         await otp.new_code(redis, "+998903000099", "3.3.3.3")

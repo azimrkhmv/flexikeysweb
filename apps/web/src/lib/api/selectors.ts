@@ -266,7 +266,7 @@ export const sel = {
   }),
   /** Invites to help in another family, for this person's number. */
   helperInvitesFor: (db: DB, phone?: string) =>
-    (db.helperInvites ?? []).filter((i) => !!phone && i.phone === phone).map((i) => ({ ...i, ownerName: db.users.find((u) => u.id === sel.familyOwner(db, i.familyId))?.name ?? "" })),
+    (db.helperInvites ?? []).filter((i) => !!phone && i.phone === phone).map((i) => ({ ...i, ownerName: i.ownerName ?? db.users.find((u) => u.id === sel.familyOwner(db, i.familyId))?.name ?? "" })),
   careLinks: (db: DB, childId: string) => db.careLinks.filter((l) => l.childId === childId && l.status !== "revoked"),
   notifications: (db: DB, userId: string) => db.notifications.filter((n) => n.userId === userId).sort((a, b) => b.at.localeCompare(a.at)),
   aacStats(db: DB, childId: string) {

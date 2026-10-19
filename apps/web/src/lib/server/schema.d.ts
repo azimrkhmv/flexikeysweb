@@ -1827,6 +1827,11 @@ export interface components {
         };
         /** Helpers */
         Helpers: {
+            /**
+             * Familyid
+             * Format: uuid
+             */
+            familyId: string;
             /** Helpers */
             helpers: components["schemas"]["HelperOut"][];
             /** Invites */
