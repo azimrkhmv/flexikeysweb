@@ -22,7 +22,11 @@ export function TherapistUpdates({ child }: { child: Child }) {
     ...sel.feedbackClips(db, child.id).map(({ id: c, exerciseId }) => ({ c, about: t("parent.therapist.replyExercise", { name: sel.video(db, exerciseId)?.title[lang] ?? exerciseId }) })),
   ].flatMap(({ c, about }) => sel.clipReplies(db, child.id, c).map((r) => ({ ...r, about })));
   if (!questions.length && !messages.length && !replies.length) return null;
-  const by = (name: string, profession?: string) => (profession ? `${name}, ${t(`tform.profession.${profession}`)}` : name);
+  // A therapist whose account was deleted has no name any more; their answers still count (A12.4).
+  const by = (name: string, profession?: string) => {
+    const who = name || t("parent.therapist.former");
+    return profession ? `${who}, ${t(`tform.profession.${profession}`)}` : who;
+  };
   const words = (q: string, v: string | string[]) => (Array.isArray(v) ? v : [v]).map((o) => t(`intake.${q}.${o}`)).join(", ");
 
   return (

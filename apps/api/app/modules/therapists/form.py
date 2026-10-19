@@ -163,7 +163,7 @@ async def _therapist_rows(
     """Therapists' answers to these questions, oldest first."""
     rows = await db.execute(
         select(TherapistAnswer, User.name, TherapistProfile.profession)
-        .join(User, User.id == TherapistAnswer.therapist_id)
+        .outerjoin(User, User.id == TherapistAnswer.therapist_id)  # a deleted therapist's answers still count
         .outerjoin(TherapistProfile, TherapistProfile.user_id == TherapistAnswer.therapist_id)
         .where(TherapistAnswer.child_id == child_id, TherapistAnswer.question_id.in_(questions))
         .order_by(TherapistAnswer.updated_at)

@@ -1,6 +1,7 @@
 """A8.5: a therapist's change to restrictions, goals or exercises rebuilds the plan, and what they forbid never
 appears in it."""
 
+import uuid
 from collections.abc import Iterator
 from typing import Any
 
@@ -9,7 +10,8 @@ from fastapi.testclient import TestClient
 from sqlalchemy import delete
 
 from app.main import app
-from app.modules.accounts.models import Role
+from app.modules.accounts.models import Role, User
+from app.modules.therapists.form import rebuild_plan
 from app.modules.videos.models import Video
 from tests.test_admin_changes import make
 from tests.test_children import API, add_child, parent
@@ -81,3 +83,30 @@ def test_no_plan_yet_means_nothing_to_rebuild(client: TestClient) -> None:
     save(client, owner, child, answers)
     assert finish(client, owner, child).status_code == 200  # the first plan already follows the therapist
     assert exercises(client, owner, child) == {"look_left_right", "sit_reach_sides"}
+
+
+def test_a_deleted_therapists_restriction_stays(client: TestClient) -> None:
+    owner = parent(client)
+    child = add_child(client, owner)
+    health_consent(client, owner, child)
+    save(client, owner, child, complete(with_health=True) | {"P14": ["nothing"], "P33": ["sit"]})
+    finish(client, owner, child)
+    therapist = share(client, owner, child)
+    client.put(f"{API}/therapist/profile", headers=therapist, json=PHYSIO)
+    form(client, therapist, child, {"T6": {"items": ["prone"], "text": ""}})
+    me = client.get(f"{API}/me", headers=therapist).json()["id"]
+
+    async def delete_account(db: Any) -> None:
+        await db.delete(await db.get(User, uuid.UUID(me)))
+        await db.commit()
+
+    run(client, delete_account)
+
+    async def new_plan(db: Any) -> None:  # any later plan, for example after the next question round
+        assert await rebuild_plan(db, uuid.UUID(child))
+        await db.commit()
+
+    run(client, new_plan)
+    assert "tummy_time_reach" not in exercises(client, owner, child)  # its "no lying on the stomach" still holds
+    used = client.get(f"{API}/children/{child}/answers-in-use", headers=owner).json()
+    assert "prone" in used["answers"]["P14"] and used["updatedBy"]["P14"]["therapistName"] is None

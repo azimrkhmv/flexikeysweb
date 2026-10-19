@@ -1,6 +1,7 @@
 // Strings for the "parent" area. Same keys in en/uz/ru (checked by src/lib/i18n.test.ts).
 export const parent = {
   en: {
+    "parent.therapist.former": "a former therapist",
     "parent.sharing.copyLink": "Copy the link",
     "parent.sharing.linkCopied": "Link copied",
     "parent.sharing.telegram": "Send by Telegram",
@@ -327,6 +328,7 @@ export const parent = {
     "parent.account.typeEmail": "Type your email to confirm",
   },
   uz: {
+    "parent.therapist.former": "avvalgi mutaxassis",
     "parent.sharing.copyLink": "Havolani nusxalash",
     "parent.sharing.linkCopied": "Havola nusxalandi",
     "parent.sharing.telegram": "Telegram orqali yuborish",
@@ -653,6 +655,7 @@ export const parent = {
     "parent.account.typeEmail": "Tasdiqlash uchun emailingizni yozing",
   },
   ru: {
+    "parent.therapist.former": "бывший специалист",
     "parent.sharing.copyLink": "Скопировать ссылку",
     "parent.sharing.linkCopied": "Ссылка скопирована",
     "parent.sharing.telegram": "Отправить в Telegram",

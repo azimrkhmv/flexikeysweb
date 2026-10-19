@@ -64,7 +64,8 @@ class TherapistAnswer(IdTimeMixin, Base):
     __table_args__ = (UniqueConstraint("child_id", "therapist_id", "question_id"),)
 
     child_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("children.id", ondelete="CASCADE"), index=True)
-    therapist_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    # Empty once the therapist's account is deleted: the answers stay, so no restriction quietly leaves the plan.
+    therapist_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
     question_id: Mapped[str] = mapped_column(String(8))
     value: Mapped[Any] = mapped_column(JSONB(none_as_null=True), nullable=True)
     secret: Mapped[str | None] = mapped_column(Text)
