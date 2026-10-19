@@ -11,6 +11,8 @@ from arq import cron
 from arq.connections import RedisSettings
 
 from app.db import SessionLocal
+from app.modules.auth.sms import get_sms
+from app.modules.places import reminders
 from app.modules.play import tries
 from app.settings import settings
 
@@ -31,10 +33,18 @@ async def clean_old_tries(ctx: dict[str, Any]) -> str:
     return f"dropped {len(dropped)} months"
 
 
+async def remind_visits(ctx: dict[str, Any]) -> str:
+    """Every 5 minutes: visit reminders 1 day and 2 hours before (A10.5)."""
+    async with SessionLocal() as db:
+        sent = await reminders.send_due(db, get_sms(), datetime.now(UTC))
+    return f"sent {sent} reminders"
+
+
 class WorkerSettings:
     redis_settings = RedisSettings.from_dsn(settings.redis_url)
     functions: ClassVar[list[Any]] = []
     cron_jobs: ClassVar[list[Any]] = [
         cron(heartbeat, second=0, run_at_startup=True),
         cron(clean_old_tries, hour=22, minute=0, second=0),  # 03:00 in Tashkent
+        cron(remind_visits, minute=set(range(0, 60, 5)), second=30),
     ]

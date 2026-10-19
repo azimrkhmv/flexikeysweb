@@ -607,7 +607,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A10.4` Booking, confirm and cancel, in person or online
   - Done when: the database makes a double booking impossible
   - Needs: A10.3
-- [ ] **Azim** — `A10.5` Reminders 1 day and 2 hours before a visit
+- [x] **Azim** — `A10.5` Reminders 1 day and 2 hours before a visit
   - Done when: the reminder jobs run on time in tests
   - Needs: A10.4, A5.2
 - [ ] **Azim** — `A11.1` Home Kit products, orders and delivery status
@@ -757,6 +757,8 @@ These are not programming. The named developer asks the right person and writes 
   - Needed for: recorded voices on My Voice cards in live mode
 - [ ] **Azim** — `G9` Decide with the founders (spec §6 PROPOSAL): does an admin check each therapist's diploma by hand before their first share is active? And should a phone invite send an SMS to the therapist? Now the share works once the therapist accepts, and the parent passes the invite on by Telegram or by telling the therapist
   - Needed for: a diploma check before a share, and invite SMS
+- [ ] **Azim** — `G10` Decide: visit reminders (1 day and 2 hours before) go by SMS now (simulated until Q6). Keep SMS, or move them to Telegram or the mobile app with the other reminders (Q5)? Each real SMS costs money
+  - Needed for: real visit reminders
 - [ ] **Azim** — `G6` Get the final consent texts in 4 languages. They must say that try records are kept on the server for 90 days
   - Needed for: F5
 - [ ] **Azim** — `G7` Get the lawyer's answers: may children's health data be stored abroad, and may data be sent to AI and voice companies abroad?

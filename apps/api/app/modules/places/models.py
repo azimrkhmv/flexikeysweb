@@ -124,3 +124,6 @@ class Booking(IdTimeMixin, Base):
     status: Mapped[BookingStatus] = mapped_column(enum_column(BookingStatus), default=BookingStatus.booked)
     online_link: Mapped[str | None] = mapped_column(String(500))  # the clinic adds it for an online session
     cancelled_by: Mapped[str | None] = mapped_column(String(8))  # "family" or "clinic"
+    # Reminders sent (A10.5): 1 day and 2 hours before. Each one goes once.
+    reminded_day_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    reminded_soon_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
