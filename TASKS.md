@@ -662,7 +662,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `A13.2` Connect a real SMS provider
   - Done when: a real phone receives a real code
   - Needs: Q6
-- [ ] **Azim** — `A13.3` Production Docker files with HTTPS
+- [x] **Azim** — `A13.3` Production Docker files with HTTPS
   - Done when: the server runs on a fresh machine with HTTPS
   - Needs: Q4
 - [ ] **Azim** — `A13.4` Put the server live

@@ -1,0 +1,26 @@
+# HTTPS for the website and the server (A13.3). Caddy gets and renews the certificates itself.
+{$DOMAIN} {
+	encode zstd gzip
+	# The server: its addresses and its health check. Everything else is the website.
+	handle /api/v1/* {
+		reverse_proxy api:8000
+	}
+	handle /healthz {
+		reverse_proxy api:8000
+	}
+	handle {
+		reverse_proxy web:3000
+	}
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+		-Server
+	}
+}
+
+# Signed file links (clips, photos, voice) when MinIO runs here (`--profile storage`): S3_PUBLIC_ENDPOINT is
+# https://files.{$DOMAIN}. The Host header stays as it is, so the links' signatures still match.
+files.{$DOMAIN} {
+	reverse_proxy minio:9000
+}

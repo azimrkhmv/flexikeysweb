@@ -1,0 +1,95 @@
+# Production: everything on one machine, behind Caddy with HTTPS (A13.3).
+#   cp .env.example .env    # then put the real values in .env (never in git)
+#   docker compose up -d --build
+# Caddy gets the HTTPS certificate for DOMAIN by itself (Let's Encrypt), once DNS points at this machine (F1).
+# File storage: an S3 service (S3_* in .env), or MinIO on this machine with `--profile storage`.
+
+x-server: &server
+  build: ../apps/api
+  env_file: .env
+  environment:
+    DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+    REDIS_URL: redis://redis:6379/0
+  restart: unless-stopped
+  depends_on:
+    db: { condition: service_healthy }
+    redis: { condition: service_healthy }
+
+services:
+  caddy:
+    image: caddy:2.8.4-alpine
+    ports: ["80:80", "443:443", "443:443/udp"]
+    environment:
+      DOMAIN: ${DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data  # the certificates: keep them, or Let's Encrypt's limits are hit on restarts
+      - caddy_config:/config
+    restart: unless-stopped
+    depends_on: [api, web]
+
+  api:
+    <<: *server
+    # The database changes first, then the server. Only this service runs them.
+    command: ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --no-access-log --proxy-headers --forwarded-allow-ips='*'"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz')"]
+      interval: 5s
+      retries: 30
+
+  worker:
+    <<: *server
+    command: ["arq", "app.worker.WorkerSettings"]
+    depends_on:
+      api: { condition: service_healthy }  # after the database changes
+
+  web:
+    build:
+      context: ../apps/web
+      args:
+        NEXT_PUBLIC_SITE_URL: https://${DOMAIN}
+        NEXT_PUBLIC_API_MODE: live
+        FK_API_ORIGIN: http://api:8000
+    restart: unless-stopped
+
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes: [db:/var/lib/postgresql/data]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 2s
+      retries: 30
+
+  redis:
+    image: redis:7.4-alpine
+    command: ["redis-server", "--appendonly", "yes"]  # sign-in codes and limits survive a restart
+    volumes: [redis:/data]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      retries: 30
+
+  minio:
+    # Only with `--profile storage`. ponytail: the frozen Bitnami copy (MinIO stopped publishing images in 2025);
+    # an S3 service of the hosting company is the better home for real families' clips (A8.6).
+    profiles: [storage]
+    image: bitnamilegacy/minio:2025.4.22
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY}
+      MINIO_DEFAULT_BUCKETS: ${S3_BUCKET}
+    volumes: [minio:/bitnami/minio/data]
+    restart: unless-stopped
+
+volumes:
+  caddy_data:
+  caddy_config:
+  db:
+  redis:
+  minio:
