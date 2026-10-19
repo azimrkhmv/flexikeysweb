@@ -31,8 +31,9 @@ export const authApi = {
     });
     return net({ phone, resendAfterMs: OTP_RESEND_MS, demoCode: code }, 300);
   },
-  /** POST /auth/phone/verify — signs in, or creates a parent account the first time this number is used. */
-  async verifyCode(rawPhone: string, code: string, uiLang: UiLang) {
+  /** POST /auth/phone/verify — signs in, or creates a parent account the first time this number is used. A new
+   * number a parent invited as a therapist, or one opening an unused therapist link (`invite`), becomes a therapist. */
+  async verifyCode(rawPhone: string, code: string, uiLang: UiLang, invite?: string) {
     const phone = normalizePhone(rawPhone);
     const otp = read().otp.find((o) => o.phone === phone);
     if (!phone || !otp) throw new ApiError("code_expired");
@@ -47,7 +48,8 @@ export const authApi = {
     let user = read().users.find((u) => u.phone === phone);
     if (user?.status === "disabled") throw new ApiError("account_disabled");
     const isNew = !user;
-    user ??= { id: id(), email: "", name: "", role: "parent", status: "active", password: id(), uiLang, emailVerified: false, phone, createdAt: iso() };
+    const invited = read().careLinks.some((l) => l.status === "invited" && (l.phone === phone || (!!invite && l.code === invite.trim().toUpperCase())));
+    user ??= { id: id(), email: "", name: "", role: invited ? "therapist" : "parent", status: "active", password: id(), uiLang, emailVerified: false, phone, createdAt: iso() };
     const u = user;
     write((db) => {
       db.otp = db.otp.filter((o) => o.phone !== phone);

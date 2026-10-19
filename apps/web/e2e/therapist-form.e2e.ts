@@ -126,3 +126,26 @@ test("a feedback clip from Today reaches the therapist", async ({ page }, info) 
   await page.goto("/therapist/child/ch_ali");
   await expect(page.getByText(`Exercise: ${title}`, { exact: true })).toBeVisible();
 });
+
+// B30: a new number opens the parent's invite link, signs in, and sees the child without typing a code.
+test("a therapist link signs a new number straight into the share", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop");
+  await setup(page);
+  await loginAs(page, "Parent");
+  await page.goto("/parent/child/ch_madina#privacy");
+  await page.reload();
+  await page.getByRole("switch", { name: "Specialists: allow sharing with a therapist that I invite" }).click();
+  await page.getByRole("tab", { name: "Sharing" }).click();
+  await page.getByRole("button", { name: "Invite" }).click(); // no phone: a link
+  const code = (await page.getByRole("status").locator(".font-mono").innerText()).trim();
+  await expect(page.getByRole("link", { name: "Send by Telegram" })).toHaveAttribute("href", new RegExp(`login%3Finvite%3D${code}`));
+
+  await page.goto(`/login?invite=${code}`);
+  await page.getByLabel("Phone number").fill("+998901234599");
+  await page.getByRole("button", { name: "Send the code" }).click();
+  const sms = (await page.getByText(/Your code is \d{6}/).innerText()).match(/\d{6}/)![0];
+  await page.getByLabel("Code from the SMS").fill(sms);
+  await page.getByRole("button", { name: "Continue" }).click();
+  await expect(page).toHaveURL(/\/therapist/);
+  await expect(page.getByRole("link", { name: /Madina/ })).toBeVisible();
+});

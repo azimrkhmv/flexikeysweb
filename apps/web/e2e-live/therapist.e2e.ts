@@ -48,3 +48,31 @@ test("a therapist's change in the browser changes the parent's plan", async ({ p
   await expect(card.getByText("No lying on the stomach")).toBeVisible();
   await expect(card.getByText("Updated by Dilnoza Karimova, Physiotherapist / LFK specialist").first()).toBeVisible();
 });
+
+// B30: the parent's invite link; a new number opens it, signs in, and lands on the shared child.
+test("a therapist link signs a new number straight into the share", async ({ page, browser }) => {
+  test.setTimeout(120_000);
+  await signUp(page, newPhone("98"));
+  const child = await childStep(page, "Lola");
+  await page.goto(`/parent/child/${child}#privacy`);
+  await page.reload();
+  await page.getByRole("switch", { name: "Specialists: allow sharing with a therapist that I invite" }).click();
+  await page.getByRole("tab", { name: "Sharing" }).click();
+  await page.getByRole("button", { name: "Invite" }).click();
+  const code = (await page.getByRole("status").locator(".font-mono").innerText()).trim();
+
+  const other = await browser.newContext();
+  const th = await other.newPage();
+  await th.addInitScript(() => localStorage.setItem("fk_lang", JSON.stringify("en")));
+  await th.goto(`/login?invite=${encodeURIComponent(code)}`);
+  const english = th.getByRole("button", { name: "English" });
+  if (await english.isVisible()) await english.click();
+  await th.getByLabel("Phone number").fill(`+99893${String(Date.now()).slice(-7)}`);
+  await th.getByRole("button", { name: "Send the code" }).click();
+  const sms = (await th.getByText(/Your code is \d{6}/).innerText()).match(/\d{6}/)![0];
+  await th.getByLabel("Code from the SMS").fill(sms);
+  await th.getByRole("button", { name: "Continue" }).click();
+  await expect(th).toHaveURL(/\/therapist/);
+  await expect(th.getByRole("link", { name: /Lola/ })).toBeVisible();
+  await other.close();
+});

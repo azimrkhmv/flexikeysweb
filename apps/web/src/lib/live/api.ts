@@ -60,8 +60,8 @@ export const liveApi = {
     return { phone: r.phone, resendAfterMs: r.resendAfterMs, demoCode: r.demoCode ?? "" };
   },
   /** POST /auth/phone/verify — sets the session cookies; a new number becomes a parent with a new family. */
-  async verifyCode(rawPhone: string, code: string, uiLang: UiLang) {
-    const r = await http<{ isNew: boolean }>("POST", "/auth/phone/verify", { phone: rawPhone, code: code.trim(), lang: uiLang });
+  async verifyCode(rawPhone: string, code: string, uiLang: UiLang, invite?: string) {
+    const r = await http<{ isNew: boolean }>("POST", "/auth/phone/verify", { phone: rawPhone, code: code.trim(), lang: uiLang, inviteCode: invite || null });
     return { user: await signedIn(), isNew: r.isNew };
   },
   /** PATCH /me/signup — basic consent, city and district: required before anything else. */

@@ -1,6 +1,9 @@
 // Strings for the "parent" area. Same keys in en/uz/ru (checked by src/lib/i18n.test.ts).
 export const parent = {
   en: {
+    "parent.sharing.copyLink": "Copy the link",
+    "parent.sharing.linkCopied": "Link copied",
+    "parent.sharing.telegram": "Send by Telegram",
     "parent.therapist.replyExercise": "About your video of “{name}”",
     "today.clip.add": "Film it for the therapist (optional)",
     "today.clip.sent": "Video sent to the therapist",
@@ -324,6 +327,9 @@ export const parent = {
     "parent.account.typeEmail": "Type your email to confirm",
   },
   uz: {
+    "parent.sharing.copyLink": "Havolani nusxalash",
+    "parent.sharing.linkCopied": "Havola nusxalandi",
+    "parent.sharing.telegram": "Telegram orqali yuborish",
     "parent.therapist.replyExercise": "“{name}” videongiz haqida",
     "today.clip.add": "Mutaxassis uchun suratga oling (ixtiyoriy)",
     "today.clip.sent": "Video mutaxassisga yuborildi",
@@ -647,6 +653,9 @@ export const parent = {
     "parent.account.typeEmail": "Tasdiqlash uchun emailingizni yozing",
   },
   ru: {
+    "parent.sharing.copyLink": "Скопировать ссылку",
+    "parent.sharing.linkCopied": "Ссылка скопирована",
+    "parent.sharing.telegram": "Отправить в Telegram",
     "parent.therapist.replyExercise": "О вашем видео «{name}»",
     "today.clip.add": "Снять для специалиста (по желанию)",
     "today.clip.sent": "Видео отправлено специалисту",

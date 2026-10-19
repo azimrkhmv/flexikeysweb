@@ -61,9 +61,12 @@ export function PhoneFlow({ showDemos }: { showDemos?: boolean }) {
     };
   }, [step]);
 
-  const go = (u: User) => {
+  // A therapist's invite link (/login?invite=…, B30): signing in with it accepts the invite in the same step.
+  const invite = typeof window === "undefined" ? null : new URLSearchParams(window.location.search).get("invite");
+  const go = async (u: User) => {
     applyAccountLang(u.uiLang);
     if (sel.needsSignup(u)) return setStep("details");
+    if (invite && u.role === "therapist") await api.acceptInvite(invite).catch(() => {}); // already accepted: fine
     router.replace(safeNext(new URLSearchParams(window.location.search).get("next")) ?? homeFor(u.role));
   };
   const requestCode = async (p = phone) => {
@@ -128,8 +131,8 @@ export function PhoneFlow({ showDemos }: { showDemos?: boolean }) {
           className="space-y-4"
           onSubmit={async (e) => {
             e.preventDefault();
-            const r = await verify.run(phone, code, lang);
-            if (r) go(r.user);
+            const r = await verify.run(phone, code, lang, invite ?? undefined);
+            if (r) await go(r.user);
           }}
         >
           <p className="text-sm text-ink-2">{t("auth.phone.sentTo", { phone })}</p>

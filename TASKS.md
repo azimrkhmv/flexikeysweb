@@ -527,7 +527,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `B29` Today: the parent may film the child doing one exercise (optional feedback clip, spec §8), only with the movement-videos consent; the therapist sees it with the movement clips and replies
   - Done when: a feedback clip filmed on Today shows on the therapist's child page with its exercise name
   - Needs: B25
-- [ ] **Azim** — `B30` Invite link for a therapist: the parent gets a link (not only a code) to send by Telegram; a therapist with a new number who opens it signs in straight into a therapist account (the server takes `inviteCode` at sign-in) and accepts in one step
+- [x] **Azim** — `B30` Invite link for a therapist: the parent gets a link (not only a code) to send by Telegram; a therapist with a new number who opens it signs in straight into a therapist account (the server takes `inviteCode` at sign-in) and accepts in one step
   - Done when: a new number opens the link, signs in, and sees the child without typing a code
   - Needs: B26
 
@@ -573,7 +573,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `A9.8` Research library: load the open research files, search them, and give the assistant only the matching passages with their source
   - Done when: an answer names the book or paper it came from; with no matching passage the assistant says it does not know
   - Needs: A9.2
-- [ ] **Azim** — `B30` Assistant knows the child's plan, finished tasks and restrictions
+- [x] **Azim** — `B30` Assistant knows the child's plan, finished tasks and restrictions
   - Done when: it never suggests a forbidden exercise
   - Needs: A9.3
 - [ ] **Azim** — `B31` Assistant in the therapist dashboard; summary of the parent's chats

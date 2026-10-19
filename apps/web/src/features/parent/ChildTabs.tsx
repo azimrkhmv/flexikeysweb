@@ -347,6 +347,9 @@ function VoiceRecorder({ onChange }: { onChange: (b: Blob | null) => void }) {
 }
 
 // ---------------------------------------------------------------- sharing
+/** The link a therapist opens to sign in and accept in one step (B30). */
+const inviteLink = (code: string) => `${window.location.origin}/login?invite=${encodeURIComponent(code)}`;
+
 export function SharingTab({ childId, goTab }: { childId: string; goTab: (t: Tab) => void }) {
   const t = useT();
   const [lang] = useLang();
@@ -434,12 +437,20 @@ export function SharingTab({ childId, goTab }: { childId: string; goTab: (t: Tab
               size="sm"
               variant="outline"
               onClick={async () => {
-                await navigator.clipboard?.writeText(newCode);
+                await navigator.clipboard?.writeText(inviteLink(newCode));
                 setCopied(true);
               }}
             >
-              <Copy className="size-4" aria-hidden /> {t(copied ? "common.copied" : "common.copy")}
+              <Copy className="size-4" aria-hidden /> {t(copied ? "parent.sharing.linkCopied" : "parent.sharing.copyLink")}
             </Button>
+            <a
+              className="inline-flex h-9 items-center rounded-full border border-line px-3 text-sm font-bold text-primary"
+              href={`https://t.me/share/url?url=${encodeURIComponent(inviteLink(newCode))}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {t("parent.sharing.telegram")}
+            </a>
           </div>
         )}
       </Card>
