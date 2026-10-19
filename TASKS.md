@@ -668,9 +668,9 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A13.1` Second sign-in step for admins
   - Done when: an admin cannot act with only a stolen SMS code
   - Needs: A1.7
-- [ ] **Azim** — `A13.2` Connect a real SMS provider
+- [ ] **Azim** — `A13.2` Connect a real SMS provider (Eskiz.uz, Q6)
   - Done when: a real phone receives a real code
-  - Needs: Q6
+  - Needs: Q6, Azim's go-ahead and the Eskiz key in apps/api/.env (not yet: demo only for now)
 - [x] **Azim** — `A13.3` Production Docker files with HTTPS
   - Done when: the server runs on a fresh machine with HTTPS
   - Needs: Q4
@@ -750,6 +750,7 @@ These are not programming. The named developer asks the right person and writes 
   - Needed for: A6.3
 - [ ] **Azim** — `Q3` Ask the founders: who is the reviewing physiotherapist, and how many videos a week can they review?
   - Found; still needed: their name, phone number (for their account) and videos per week
+  - For now (2026-10-19): a placeholder reviewer (the demo's +998 90 000 00 03 "Rustam Yusupov"); the real person replaces it later
   - Needed for: C5
 - [x] **Azim** — `Q4` Ask the founders and the lawyer: hosting at Contabo, or on a server in Uzbekistan?
   - Answer: Contabo. The lawyer's check is G7, before the pilot
@@ -762,7 +763,8 @@ These are not programming. The named developer asks the right person and writes 
   - Needed for: real payments after the pilot
 - [x] **Azim** — `Q9` Ask the founders: when does the mobile app start? Recommended: after M2
   - Needed for: planning only
-- [ ] **Azim** — `Q10` Ask Shoxjahon once whether the `web-backend` server branch exists anywhere. If it is not found in a few days, stop looking
+- [x] **Azim** — `Q10` Ask Shoxjahon once whether the `web-backend` server branch exists anywhere. If it is not found in a few days, stop looking
+  - Answer (2026-10-19): dropped. We don't look for the old branch
   - Needed for: nothing; it could save work
 - [ ] **Azim** — `G1` Get the final exercise list, approved by a physiotherapist: name, steps and safety tags for each exercise
   - Needed for: C2
@@ -788,7 +790,8 @@ These are not programming. The named developer asks the right person and writes 
 - [ ] **Azim** — `G7` Get the lawyer's answers: may children's health data be stored abroad, and may data be sent to AI and voice companies abroad?
   - Needed for: A9.2, F5
 
-- [ ] **Azim** — `Q6` Compare SMS providers (Eskiz.uz and others): price and how to connect
+- [x] **Azim** — `Q6` Compare SMS providers (Eskiz.uz and others): price and how to connect
+  - Answer (2026-10-19): Eskiz.uz. Not connected yet: the demo (code on screen) is enough for now
   - Needed for: A13.2
   - For now: sign-in stays simulated (the code shows on screen) until launch
 
