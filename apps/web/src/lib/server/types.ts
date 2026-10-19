@@ -36,6 +36,7 @@ export type BookingOut = Schemas["BookingOut"];
 export type ClinicBooking = Schemas["ClinicBooking"];
 export type MyPlace = Schemas["MyPlace"];
 export type ClinicSlot = Schemas["app__modules__places__clinic__SlotOut"];
+export type KitOrderOut = Schemas["KitOrderOut"];
 
 /** Every address the website calls (under /api/v1, which the website proxies). */
 export const ADDRESSES = [
@@ -96,6 +97,10 @@ export const ADDRESSES = [
   "/api/v1/clinic/places/{place_id}/bookings",
   "/api/v1/clinic/bookings/{booking_id}/confirm",
   "/api/v1/clinic/bookings/{booking_id}/cancel",
+  "/api/v1/family/kit-orders",
+  "/api/v1/family/kit-orders/{order_id}/cancel",
+  "/api/v1/admin/kit-orders",
+  "/api/v1/admin/kit-orders/{order_id}",
   "/api/v1/admin/users",
   "/api/v1/admin/users/{user_id}",
 ] as const satisfies readonly (keyof paths)[];

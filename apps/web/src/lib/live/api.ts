@@ -5,19 +5,21 @@ import { AAC_BY_ID, CUSTOM_PREFIX } from "@/content/aac";
 import { SHOP_BY_ID } from "@/content/shop";
 import { sessionStore } from "@/lib/session";
 import { STEPS, type Answers } from "@/content/intake";
-import type { BookingOut, ClinicSlot, CardOut, ChildOut, ClipOut, ClipUpload, Consents, DoneOut, FormOut, PhoneStarted, PlanOut, PlanStatus, ReviewItem, RoundOut, ShareOut } from "@/lib/server/types";
+import type { KitOrderOut, BookingOut, ClinicSlot, CardOut, ChildOut, ClipOut, ClipUpload, Consents, DoneOut, FormOut, PhoneStarted, PlanOut, PlanStatus, ReviewItem, RoundOut, ShareOut } from "@/lib/server/types";
 import type { Profession, TherapistAnswers } from "@/content/therapist";
 import type { Lang, UiLang } from "@/lib/translate";
-import type { AacCustomCard, BookingMode, ReportReason, Slot, Child, ChildSupport, ConsentScope, Feeling, InputProfile, InteractionEvent, Roadmap, TaskDone, User, UserStatus, VideoStatus } from "@/lib/types";
+import type { AacCustomCard, KitStatus, BookingMode, ReportReason, Slot, Child, ChildSupport, ConsentScope, Feeling, InputProfile, InteractionEvent, Roadmap, TaskDone, User, UserStatus, VideoStatus } from "@/lib/types";
 import { queryClient } from "./client";
 import { http } from "./http";
 import {
-  bookingFrom, slotFrom,
+  bookingFrom, kitOrderFrom, slotFrom,
   CONSENT_KIND, familyChildFrom, planFrom, planStatusFrom, shareFrom,
   childFrom, childTo, eventTo, scopeTo, userFrom,
   type BChild, type BConsent, type BGoal, type BUser,
 } from "./map";
 import { liveChild } from "./state";
+import { KIT } from "@/content/kits";
+import type { KitOrderInput } from "@/lib/api/kits";
 import type { childrenApi } from "@/lib/api/children";
 
 type MockExport = Awaited<ReturnType<typeof childrenApi.exportChild>>;
@@ -455,6 +457,28 @@ export const liveApi = {
   async cancelBooking(childId: string, bookingId: string) {
     await http("POST", `/children/${childId}/bookings/${bookingId}/cancel`, {});
     await refetchBookings(childId);
+    return true;
+  },
+
+  // ------------------------------------------------------------ Home Kit (apps/api kits/)
+  /** POST /family/kit-orders — owner only; 422 allergy_needed, address_needed, unknown_place, invalid_phone. */
+  async orderKit(input: KitOrderInput) {
+    const o = await http<KitOrderOut>("POST", "/family/kit-orders", {
+      ...input, productSlug: KIT.slug, address: input.address?.trim() || null, pickupPlaceId: input.pickupPlaceId ?? null, allergy: input.allergy ?? null,
+      allergyWhich: input.allergyWhich?.trim() || null,
+    });
+    await queryClient.invalidateQueries({ queryKey: ["kit-orders"] });
+    return kitOrderFrom("", o);
+  },
+  async cancelKitOrder(orderId: string) {
+    await http("POST", `/family/kit-orders/${orderId}/cancel`, {});
+    await queryClient.invalidateQueries({ queryKey: ["kit-orders"] });
+    return true;
+  },
+  /** PATCH /admin/kit-orders/{id} — 409 invalid_status_change, allergy_not_checked. */
+  async moveKitOrder(orderId: string, status: KitStatus, allergyChecked = false) {
+    await http("PATCH", `/admin/kit-orders/${orderId}`, { status, allergyChecked });
+    await queryClient.invalidateQueries({ queryKey: ["admin"] });
     return true;
   },
 

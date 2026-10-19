@@ -393,6 +393,9 @@ export const sel = {
       db.familyMembers.filter((m) => m.role === "owner").map((m) => ({ familyId: m.familyId, ownerId: m.userId, ...sel.familyPlan(db, m.familyId) })),
     audit: (db: DB) => db.audit,
     flags: (db: DB) => db.flags,
+    /** Every Home Kit order: the open ones first, newest first (the server's GET /admin/kit-orders). */
+    kitOrders: (db: DB) =>
+      [...(db.kitOrders ?? [])].sort((a, b) => Number(["delivered", "cancelled"].includes(a.status)) - Number(["delivered", "cancelled"].includes(b.status)) || b.createdAt.localeCompare(a.createdAt)),
     /** AI questions asked (user turns only), with the asker's role for the usage chart. */
     aiQuestions: (db: DB) => db.aiMessages.filter((m) => m.role === "user").map((m) => ({ ...m, askerRole: sel.user(db, m.userId)?.role ?? "parent" })),
     /** AI questions per day (the given ISO dates) and per asker role. */

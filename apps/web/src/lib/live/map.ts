@@ -4,11 +4,11 @@
 import { AAC_BY_ID, CUSTOM_PREFIX } from "@/content/aac";
 import { DEFAULT_PROFILE } from "@/lib/adaptive";
 import { TRIAL_DAYS } from "@/content/plans";
-import type { BookingOut, CardOut, ChildOut, ClinicBooking, ClinicSlot, ClipOut, ConsentKind, Consents, DailyOut, FreeSlot, InUse, Me, MyPlace, PlaceView, PlanOut, PlanStatus, ReviewItem, RoundOut, ShareOut, SharedChild, UserOut } from "@/lib/server/types";
+import type { BookingOut, KitOrderOut, CardOut, ChildOut, ClinicBooking, ClinicSlot, ClipOut, ConsentKind, Consents, DailyOut, FreeSlot, InUse, Me, MyPlace, PlaceView, PlanOut, PlanStatus, ReviewItem, RoundOut, ShareOut, SharedChild, UserOut } from "@/lib/server/types";
 import type { DB } from "@/lib/api/schema";
 import type { Lang } from "@/lib/translate";
 import type { ChildSupport, ActivityKind, AgeBand, BodyArea, DailyAnswer, ExerciseVideo, FnLevel, GoalKey, IntakeAnswer, IntakeValue, L10n, PausedDay, Restriction, Roadmap, TaskDone,
-  AacCustomCard, AacEvent, Booking, Place, PlaceNeed, Slot, AccessMode, AuditLog, AdaptationChange, AdaptiveProfile, Assignment, CareLink, Child, Consent, ConsentScope, Goal,
+  AacCustomCard, AacEvent, KitOrder, Booking, Place, PlaceNeed, Slot, AccessMode, AuditLog, AdaptationChange, AdaptiveProfile, Assignment, CareLink, Child, Consent, ConsentScope, Goal,
   InteractionEvent, LearningSession, LevelProgress, Note, Notification, ParamKey, Role, SkillMastery, User,
 } from "@/lib/types";
 
@@ -389,3 +389,10 @@ export function clinicBookingFrom(b: ClinicBooking) {
     parent: { id: parent, name: "", role: "parent" as Role, status: "active" as const, uiLang: "uz" as const, phone: some(b.parentPhone), createdAt: "" },
   };
 }
+
+// ---------------------------------------------------------------- Home Kit (apps/api kits/)
+export const kitOrderFrom = (familyId: string, o: KitOrderOut): KitOrder => ({
+  id: o.id, familyId, childId: o.childId ?? "", productSlug: o.productSlug, items: o.items, priceSom: o.priceSom, delivery: o.delivery, region: o.region,
+  district: o.district, address: some(o.address), pickupPlaceId: some(o.pickupPlaceId), phone: o.phone, allergy: o.allergy, allergyWhich: some(o.allergyWhich),
+  allergyChecked: o.allergyChecked, status: o.status, statusAt: o.statusAt, createdAt: o.createdAt,
+});

@@ -7,9 +7,9 @@ import { ApiError, type ChildAuth, type DB } from "@/lib/api/schema";
 import { sessionStore } from "@/lib/session";
 import { useStore } from "@/lib/store";
 import { http } from "./http";
-import type { BookingOut, ClinicBooking, ClinicSlot, FreeSlot, MyPlace, PlaceView, CardOut, ChildOut, ClipOut, Helpers, InviteForMe, Consents, DailyOut, FormOut, InUse, InviteOut, PlanOut, PlanStatus, ProfileOut, ReviewItem, RoundOut, RoundSummary, ShareOut, SharedChild } from "@/lib/server/types";
+import type { KitOrderOut, BookingOut, ClinicBooking, ClinicSlot, FreeSlot, MyPlace, PlaceView, CardOut, ChildOut, ClipOut, Helpers, InviteForMe, Consents, DailyOut, FormOut, InUse, InviteOut, PlanOut, PlanStatus, ProfileOut, ReviewItem, RoundOut, RoundSummary, ShareOut, SharedChild } from "@/lib/server/types";
 import {
-  bookingFrom, clinicBookingFrom, myPlaceFrom, placeFrom, slotFrom,
+  kitOrderFrom, bookingFrom, clinicBookingFrom, myPlaceFrom, placeFrom, slotFrom,
   answersFrom, clipsFrom, dailyFrom, doneFrom, familyChildFrom, familyConsentsFrom, familyPlanFrom, inUseFrom, pausedFrom, planFrom, planVideosFrom, reviewVideosFrom, shareFrom, sharedChildFrom, voiceCardFrom,
   aacCardFrom, auditFrom, childFrom, notificationFrom, levelsFrom, profileFrom,
   taskFrom, userFrom,
@@ -113,10 +113,18 @@ export function useLiveDb(): DB {
 
   // ---- Find help (A10.2, A10.4): the places and their free times, only on the Find help pages
   const onHelp = role === "parent" && !child && !!pathname?.includes("/parent/help");
-  const places = useQuery({ queryKey: ["places"], enabled: onHelp, queryFn: () => http<PlaceView[]>("GET", "/places") });
+  const onKit = role === "parent" && !child && !!pathname?.includes("/parent/kit"); // pickup centres
+  const places = useQuery({ queryKey: ["places"], enabled: onHelp || onKit, queryFn: () => http<PlaceView[]>("GET", "/places") });
   // ponytail: one request per place (about 40 at launch); one "free times of these places" address when hundreds.
   const freeTimes = useQueries({
     queries: (onHelp ? (places.data ?? []) : []).map((p) => ({ queryKey: ["slots", p.id], queryFn: () => http<FreeSlot[]>("GET", `/places/${p.id}/slots`) })),
+  });
+
+  // ---- Home Kit (A11.1): the family's orders; every member sees them
+  const kitOrders = useQuery({
+    queryKey: ["kit-orders"],
+    enabled: role === "parent",
+    queryFn: () => http<KitOrderOut[]>("GET", "/family/kit-orders").catch((e) => (e instanceof ApiError && e.code === "no_family" ? [] : Promise.reject(e))),
   });
 
   // ---- clinic (A10.3): its own places, their times and bookings
@@ -138,12 +146,13 @@ export function useLiveDb(): DB {
   });
 
   // ---- admin console
-  const ADMIN = ["users", "audit", "flagList", "overview"] as const;
+  const ADMIN = ["users", "audit", "flagList", "overview", "kitOrders"] as const;
   const adminPath: Record<(typeof ADMIN)[number], string> = {
     users: "/admin/users?limit=500",
     audit: "/admin/audit-logs?limit=200",
     flagList: "/admin/feature-flags",
     overview: "/admin/overview",
+    kitOrders: "/admin/kit-orders",
   };
   const admin = useQueries({
     queries: role === "admin" ? ADMIN.map((k) => ({ queryKey: ["admin", k], queryFn: () => http<unknown>("GET", adminPath[k]) })) : [],
@@ -182,14 +191,15 @@ export function useLiveDb(): DB {
     if (signedIn !== undefined && sessionStore.get().role !== signedIn) sessionStore.set({ role: signedIn });
   }, [signedIn]);
 
-  const all = [me, kids, linked, invites, tprofile, family, familyPlan, helpInvites, places, clinicPlaces, notifications, flags, ...own, ...per, ...answers, ...review, ...views, ...admin, ...freeTimes, ...clinicViews];
+  const all = [me, kids, linked, invites, tprofile, family, familyPlan, helpInvites, places, kitOrders, clinicPlaces, notifications, flags, ...own, ...per, ...answers, ...review, ...views, ...admin, ...freeTimes, ...clinicViews];
   const stamp = all.map((q) => q.dataUpdatedAt).join();
   const loading =
     me.isPending ||
     (!!child && !!own[0]?.isPending) ||
     // The questions screen starts from the saved answers, so wait for them.
     (role === "parent" && (kids.isPending || per.some((q) => q.isPending) || answers.some((q) => q.isPending))) ||
-    (onHelp && (places.isPending || freeTimes.some((q) => q.isPending))) ||
+    ((onHelp || onKit) && places.isPending) ||
+    (onHelp && freeTimes.some((q) => q.isPending)) ||
     (role === "clinic" && (clinicPlaces.isPending || clinicViews.some((q) => q.isPending))) ||
     (role === "physio" && review.some((q) => q.isPending)) ||
     (role === "therapist" && (linked.isPending || tprofile.isPending || views.some((q) => q.isPending && q.fetchStatus !== "idle")));
@@ -229,6 +239,7 @@ export function useLiveDb(): DB {
       if (own) db.familyMembers.push({ familyId: own, userId: user!.id, role: "owner" });
       const planFamily = own ?? kids.data?.[0]?.familyId;
       if (planFamily && familyPlan.data) db.familyPlans.push(familyPlanFrom(planFamily, familyPlan.data));
+      if (planFamily) db.kitOrders.push(...(kitOrders.data ?? []).map((o) => kitOrderFrom(planFamily, o)));
       for (const familyId of new Set((kids.data ?? []).map((k) => k.familyId)))
         if (familyId !== own) db.familyMembers.push({ familyId, userId: user!.id, role: "helper" });
       for (const h of family.data?.helpers ?? []) {
@@ -295,12 +306,14 @@ export function useLiveDb(): DB {
 
     if (role === "physio") db.videos = reviewVideosFrom(review.flatMap((q) => q.data ?? []));
 
-    if (role === "admin" && user && admin[0]?.data) {
+    // ponytail: some of these lists are not on apps/api yet (A13.8); each page shows what the server answers.
+    if (role === "admin" && user && admin.some((q) => q.data)) {
       const at = (k: (typeof ADMIN)[number]) => admin[ADMIN.indexOf(k)]?.data;
       db.users = ((at("users") as BUser[] | undefined) ?? []).map(userFrom);
       if (!db.users.some((u) => u.id === user.id)) db.users.push(user);
       db.audit = ((at("audit") as BAudit[] | undefined) ?? []).map(auditFrom);
       db.flags = ((at("flagList") as { key: string; enabled: boolean; description: string | null }[] | undefined) ?? []).map((f) => ({ key: f.key, enabled: f.enabled, description: f.description ?? "" }));
+      db.kitOrders = ((at("kitOrders") as KitOrderOut[] | undefined) ?? []).map((o) => kitOrderFrom("", o));
       const ov = at("overview") as BOverview | undefined;
       if (ov)
         db.adminStats = {

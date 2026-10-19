@@ -564,6 +564,8 @@ export interface KitOrder {
   /** P17a: allergies to materials (latex, rubber, dyes); "yes" names them. Our team checks the box before sending. */
   allergy: "yes" | "no";
   allergyWhich?: string;
+  /** An order with material allergies: our team checked the box's materials before confirming it. */
+  allergyChecked?: boolean;
   status: KitStatus;
   statusAt: string;
   createdAt: string;

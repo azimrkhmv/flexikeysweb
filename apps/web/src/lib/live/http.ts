@@ -73,6 +73,13 @@ const BY_TITLE: Record<string, string> = {
     slot_booked: "slot_booked",
     online_link_needed: "online_link_needed",
     booking_cancelled: "booking_cancelled",
+    allergy_needed: "allergy_needed", // Home Kit (A11.1, A11.2)
+    unknown_kit: "unknown_kit",
+    address_needed: "address_needed",
+    unknown_place: "unknown_place",
+    too_late: "too_late",
+    allergy_not_checked: "allergy_not_checked",
+    invalid_status_change: "invalid_status_change",
 };
 
 /** Every code errorCode() can return — each has an err.* message (checked by lib/i18n.test.ts). */

@@ -8,7 +8,10 @@ import { read, write, net } from "./db";
 import { audit, requireUser } from "./guards";
 import { ApiError, id, iso } from "./schema";
 import { sel } from "./selectors";
-import type { KitDelivery, KitOrder } from "../types";
+import type { KitDelivery, KitOrder, KitStatus } from "../types";
+
+/** What an admin may move an order to next; a cancelled or delivered order stays as it is (the server's NEXT). */
+export const KIT_NEXT: Partial<Record<KitStatus, KitStatus[]>> = { placed: ["confirmed", "cancelled"], confirmed: ["shipped", "cancelled"], shipped: ["delivered"] };
 
 export interface KitOrderInput {
   childId: string;
@@ -66,6 +69,23 @@ export const kitsApi = {
     write((d) => {
       Object.assign(d.kitOrders.find((o) => o.id === orderId)!, { status: "cancelled", statusAt: iso() });
       audit(d, user.id, "kit.cancelled", order.childId);
+    });
+    return net(true);
+  },
+
+  // ------------------------------------------------------------ our team (/admin/kit-orders)
+  /** PATCH /admin/kit-orders/{id} — 409 invalid_status_change; an order with material allergies is confirmed only
+   *  once the box's materials were checked (409 allergy_not_checked). */
+  async moveKitOrder(orderId: string, status: KitStatus, allergyChecked = false) {
+    const u = requireUser(["admin"]);
+    const order = read().kitOrders.find((o) => o.id === orderId);
+    if (!order) throw new ApiError("not_found");
+    if (!KIT_NEXT[order.status]?.includes(status)) throw new ApiError("invalid_status_change");
+    if (status === "confirmed" && order.allergy === "yes" && !allergyChecked) throw new ApiError("allergy_not_checked");
+    write((d) => {
+      const o = d.kitOrders.find((x) => x.id === orderId)!;
+      Object.assign(o, { status, statusAt: iso() }, status === "confirmed" && o.allergy === "yes" ? { allergyChecked: true } : {});
+      audit(d, u.id, `kit.${status}`, o.childId);
     });
     return net(true);
   },

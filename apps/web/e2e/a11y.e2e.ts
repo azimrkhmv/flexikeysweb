@@ -31,7 +31,7 @@ test.describe("axe", () => {
     await loginAs(page, "Clinic");
     await scan(page, "/clinic");
     await loginAs(page, "Admin");
-    for (const p of ["/admin", "/admin/users", "/admin/billing", "/admin/content", "/admin/audit"]) await scan(page, p);
+    for (const p of ["/admin", "/admin/users", "/admin/billing", "/admin/kits", "/admin/content", "/admin/audit"]) await scan(page, p);
   });
 
   test("child mode start screen", async ({ page }) => {
@@ -80,7 +80,7 @@ test.describe("phone width", () => {
     Parent: ["/parent", "/parent/child/ch_ali", "/parent/child/ch_ali#aac", "/parent/children/new", "/parent/reports", "/parent/billing", "/parent/assistant", "/parent/account"],
     "Video reviewer": ["/physio"],
     Therapist: ["/therapist", "/therapist/child/ch_ali"],
-    Admin: ["/admin", "/admin/users", "/admin/billing", "/admin/content", "/admin/audit"],
+    Admin: ["/admin", "/admin/users", "/admin/billing", "/admin/kits", "/admin/content", "/admin/audit"],
   } as const;
   async function fits(page: Page, path: string) {
     await page.goto(path);

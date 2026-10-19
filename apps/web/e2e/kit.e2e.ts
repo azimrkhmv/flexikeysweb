@@ -45,3 +45,28 @@ test("pickup at a centre needs a centre", async ({ page }, info) => {
   await order.click();
   await expect(page.getByRole("listitem").filter({ hasText: "Pick up at a centre" })).toContainText("Ordered");
 });
+
+// B39: the order appears for our team; one with material allergies is confirmed only after the box was checked.
+test("the admin sees the order and confirms it after checking the materials", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop");
+  await setup(page);
+  await loginAs(page, "Parent");
+  await page.goto("/parent/kit");
+  await page.getByLabel("Yes", { exact: true }).check();
+  await page.getByLabel("Which materials?").fill("Latex");
+  await page.getByLabel("District").selectOption("Chilonzor");
+  await page.getByLabel("Street, house, flat").fill("Bunyodkor 12");
+  await page.getByRole("button", { name: "Order the Home Kit" }).click();
+  await expect(page.getByRole("status").filter({ hasText: "Our team will call you" })).toBeVisible();
+
+  await loginAs(page, "Admin");
+  await page.goto("/admin/kits");
+  const row = page.getByRole("row").filter({ hasText: "Bunyodkor 12" });
+  await expect(row).toContainText("Latex");
+  await row.getByRole("button", { name: "Confirm" }).click();
+  await expect(page.getByRole("alert").filter({ hasText: "Check the box's materials" })).toBeVisible();
+  await row.getByLabel("Materials checked").check();
+  await row.getByRole("button", { name: "Confirm" }).click();
+  await expect(row).toContainText("Confirmed");
+  await expect(row.getByRole("button", { name: "Sent" })).toBeVisible();
+});

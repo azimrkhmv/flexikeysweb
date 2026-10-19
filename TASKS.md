@@ -646,7 +646,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `B38` Home Kit order screen: allergy question, address, delivery or pickup
   - Done when: the order button stays off until the allergy question is answered
   - Needs: G3 (placeholders for now)
-- [ ] **Azim** — `B39` Connect the Home Kit order to the server
+- [x] **Azim** — `B39` Connect the Home Kit order to the server
   - Done when: an order placed in the browser appears for the admin
   - Needs: A11.2, B38
 
@@ -689,6 +689,9 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A13.7` `deploy/`: the website image is built without `FK_STORAGE_ORIGIN` (and the Dockerfile has no such build argument), so the browser's security policy blocks videos and voice notes from `files.<domain>`; also check the server's file links point at `files.<domain>`
   - Done when: with `deploy/compose.yaml` on this computer a voice note uploads and plays over HTTPS
   - Needs: —
+- [ ] **Azim** — `A13.8` Admin console addresses on `apps/api`: the list of users, the overview numbers (with service health), the audit log and the feature flags. The website's admin pages still ask the old backend's `GET /admin/users`, `/admin/overview`, `/admin/audit-logs`, `/admin/feature-flags`; `apps/api` answers 404 or 405
+  - Done when: each answers an admin (with the second step) and refuses everyone else
+  - Needs: A13.1
 - [ ] **Azim** — `F3` Security check before launch
   - Done when: no serious finding is open
   - Needs: A13.4
@@ -713,6 +716,9 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `B54` `apps/web/README.md`, "Live mode": it still describes the old backend (its repository, Google sign-in, SMTP, Mailpit, Payme/Click test keys). Rewrite it for `apps/api`
   - Done when: every step in that section works with `apps/api`
   - Needs: —
+- [ ] **Azim** — `B56` Connect the admin console's overview, users, audit log and feature flags to the server
+  - Done when: in live mode an admin sees the real users and audit log in the browser
+  - Needs: A13.8
 - [ ] **Azim** — `B43` New text for the public pages and the pricing page
   - Done when: they describe the new product, not the old 16 levels
   - Needs: G3 (placeholders for now)
