@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { seed } from "./seed";
-import { familyForNewChild } from "./guards";
+import { childRows, familyForNewChild, purgeChild } from "./guards";
 import { sel } from "./selectors";
 
 describe("sel.assignmentsFor", () => {
@@ -65,5 +65,23 @@ describe("sel.planDayOn", () => {
     expect(sel.planDayOn(db, "ch_ali", date(28))).toBe(27); // the plan ends one day later
     expect(sel.planDayOn(db, "ch_ali", date(29))).toBeNull();
     expect(sel.planDayOn(db, "ch_ali", date(-1))).toBeNull();
+  });
+});
+
+// B53: deleting a child leaves no row with its id, and the download holds every kind "Everything we store" counts.
+describe("a child's data: delete and download", () => {
+  it("covers every table, the newer ones too", () => {
+    const db = seed();
+    const at = new Date().toISOString();
+    db.tasksDone.push({ id: "t", childId: "ch_ali", roadmapId: "r", day: 0, videoId: "v", at } as (typeof db.tasksDone)[number]);
+    db.dailyAnswers.push({ childId: "ch_ali", questionId: "q", date: "2026-10-01", value: 1, at });
+    db.feedbackClips.push({ id: "c", childId: "ch_ali", exerciseId: "E01", at });
+    db.clipReplies.push({ id: "r", childId: "ch_ali", clipId: "c", therapistId: "u_therapist", text: "ok", at });
+    db.playTime.push({ childId: "ch_ali", date: "2026-10-01", seconds: 60 });
+    const rows = childRows(db, "ch_ali");
+    for (const kind of ["tasksDone", "dailyAnswers", "feedbackClips", "clipReplies", "playTime", "consents", "wallets"]) expect(rows).toHaveProperty(kind);
+    purgeChild(db, "ch_ali");
+    expect(JSON.stringify(db)).not.toContain('"childId":"ch_ali"');
+    expect(sel.child(db, "ch_ali")).toBeFalsy();
   });
 });

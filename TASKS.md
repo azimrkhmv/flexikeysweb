@@ -692,7 +692,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `B42` Remove scores and percentages from every parent screen
   - Done when: no parent screen shows a score, a percentage or a comparison of children
   - Needs: —
-- [ ] **Azim** — `B53` Demo data: deleting a child and downloading its data skip the newer tables (daily tasks done, daily answers, tries, play check, skill levels, play time, paused days, feedback clips, therapists' answers and replies)
+- [x] **Azim** — `B53` Demo data: deleting a child and downloading its data skip the newer tables (daily tasks done, daily answers, tries, play check, skill levels, play time, paused days, feedback clips, therapists' answers and replies)
   - Done when: after deleting a demo child no row with its id is left, and the download holds every table that "Everything we store" counts
   - Needs: —
 - [ ] **Azim** — `B54` `apps/web/README.md`, "Live mode": it still describes the old backend (its repository, Google sign-in, SMTP, Mailpit, Payme/Click test keys). Rewrite it for `apps/api`

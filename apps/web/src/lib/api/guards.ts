@@ -45,27 +45,23 @@ export function notify(db: DB, userId: string | null, titleKey: string, vars?: N
   if (userId) db.notifications.unshift({ id: id(), userId, titleKey, vars, read: false, at: iso() });
 }
 
+/** Every table with a `childId` column (a new table is covered without being listed here). */
+const childTables = (db: DB) =>
+  Object.entries(db).filter((e): e is [string, { childId?: string }[]] => Array.isArray(e[1]) && e[0] !== "children");
+
+/** One child's rows of every table, by table name; only tables that hold some. */
+export function childRows(db: DB, childId: string): Record<string, unknown[]> {
+  return Object.fromEntries(
+    childTables(db)
+      .map(([k, rows]) => [k, rows.filter((x) => x.childId === childId)] as const)
+      .filter(([, rows]) => rows.length > 0),
+  );
+}
+
 export function purgeChild(db: DB, childId: string) {
-  const keep = <T extends { childId?: string }>(xs: T[]) => xs.filter((x) => x.childId !== childId);
   const sessionIds = new Set(db.sessions.filter((s) => s.childId === childId).map((s) => s.id));
+  for (const [k, rows] of childTables(db)) (db as unknown as Record<string, unknown[]>)[k] = rows.filter((x) => x.childId !== childId);
   db.children = db.children.filter((c) => c.id !== childId);
-  db.consents = keep(db.consents);
-  db.profiles = keep(db.profiles);
-  db.changes = keep(db.changes);
-  db.sessions = keep(db.sessions);
   db.events = db.events.filter((e) => !sessionIds.has(e.sessionId));
-  db.mastery = keep(db.mastery);
-  db.progress = keep(db.progress);
-  db.wallets = keep(db.wallets);
-  db.assignments = db.assignments.filter((a) => a.childId !== childId);
-  db.careLinks = keep(db.careLinks);
-  db.notes = keep(db.notes);
-  db.goals = keep(db.goals);
-  db.aacEvents = keep(db.aacEvents);
-  db.aacCards = keep(db.aacCards);
-  db.aiMessages = keep(db.aiMessages);
-  db.intakeAnswers = keep(db.intakeAnswers);
-  db.intakeRounds = keep(db.intakeRounds);
-  db.roadmaps = keep(db.roadmaps);
   if (db.auth.child?.childId === childId) db.auth.child = null;
 }

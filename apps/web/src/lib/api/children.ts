@@ -3,12 +3,12 @@
 // /children/* — consent-first creation, edit, export, delete, consent changes.
 
 import { read, write, net } from "./db";
-import { requireUser, requireChildAccess, audit, purgeChild, FAMILY } from "./guards";
+import { requireUser, requireChildAccess, audit, childRows, purgeChild, FAMILY } from "./guards";
 import { ApiError, CONSENT_VERSION, DAY, id, iso, MAX_HELPERS } from "./schema";
 import { normalizePhone } from "./auth";
 import { sel } from "./selectors";
 import { REPEAT_MS, type AccessSettings } from "../playcheck";
-import type { Child, ChildSupport, ConsentScope } from "../types";
+import type { Child, ChildSupport, ConsentScope, Note } from "../types";
 
 /** The family this person owns; 403 owner_only for anyone else (a helper too). */
 function ownFamilyOrThrow(userId: string) {
@@ -120,25 +120,14 @@ export const childrenApi = {
   async exportChild(childId: string) {
     requireChildAccess(childId, ["owner", "admin"]);
     const db = read();
-    const by = <T extends { childId?: string }>(xs: T[]) => xs.filter((x) => x.childId === childId);
+    const { notes, ...rows } = childRows(db, childId);
+    const sessionIds = new Set(sel.sessions(db, childId).map((s) => s.id));
     return net({
       exportedAt: iso(),
       child: sel.child(db, childId),
-      consents: by(db.consents),
-      intakeAnswers: by(db.intakeAnswers),
-      intakeRounds: by(db.intakeRounds),
-      roadmaps: by(db.roadmaps),
-      adaptiveProfiles: by(db.profiles),
-      adaptationChanges: by(db.changes),
-      sessions: by(db.sessions),
-      mastery: by(db.mastery),
-      progress: by(db.progress),
-      wallet: sel.wallet(db, childId),
-      aacEvents: by(db.aacEvents),
-      aacCustomCards: by(db.aacCards),
-      careLinks: by(db.careLinks),
-      notesVisibleToParent: by(db.notes).filter((n) => n.visibleToParent),
-      goals: by(db.goals),
+      ...rows,
+      events: db.events.filter((e) => sessionIds.has(e.sessionId)),
+      notesVisibleToParent: ((notes ?? []) as Note[]).filter((n) => n.visibleToParent), // a therapist's own notes stay theirs
     });
   },
   /** POST /children/{id}/consent — grant or withdraw one scope. */
