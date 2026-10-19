@@ -8,6 +8,7 @@ from app.modules.billing.models import FamilyPlan
 from app.modules.children.consents import ChildConsent
 from app.modules.children.models import Child
 from app.modules.clips.models import Clip, ClipReply
+from app.modules.console.models import FeatureFlag
 from app.modules.intake.models import IntakeAnswer, IntakeRound
 from app.modules.kits.models import KitOrder, KitProduct
 from app.modules.places.models import Booking, Place, PlaceReport, Slot
@@ -44,6 +45,7 @@ __all__ = [
     "Family",
     "FamilyMember",
     "FamilyPlan",
+    "FeatureFlag",
     "FixedLevel",
     "GamePlayed",
     "GameSession",

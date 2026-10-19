@@ -795,14 +795,14 @@
     "description": "Create a physiotherapist, clinic or admin account by phone number.",
     "operationId": "add_staff_api_v1_admin_users_post",
     "requestBody": {
+     "required": true,
      "content": {
       "application/json": {
        "schema": {
         "$ref": "#/components/schemas/NewStaff"
        }
       }
-     },
-     "required": true
+     }
     },
     "responses": {
      "201": {
@@ -811,6 +811,65 @@
        "application/json": {
         "schema": {
          "$ref": "#/components/schemas/UserOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "get": {
+    "tags": [
+     "admin"
+    ],
+    "summary": "Users",
+    "description": "Everyone, newest first.",
+    "operationId": "users_api_v1_admin_users_get",
+    "parameters": [
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 500,
+       "minimum": 1,
+       "default": 100,
+       "title": "Limit"
+      }
+     },
+     {
+      "name": "offset",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "minimum": 0,
+       "default": 0,
+       "title": "Offset"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/AdminUser"
+         },
+         "title": "Response Users Api V1 Admin Users Get"
         }
        }
       }
@@ -875,6 +934,185 @@
        "application/json": {
         "schema": {
          "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/admin/overview": {
+   "get": {
+    "tags": [
+     "admin"
+    ],
+    "summary": "Overview",
+    "operationId": "overview_api_v1_admin_overview_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Overview"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/admin/audit-logs": {
+   "get": {
+    "tags": [
+     "admin"
+    ],
+    "summary": "Audit Logs",
+    "description": "Newest first; `target` keeps one person's, child's or order's entries.",
+    "operationId": "audit_logs_api_v1_admin_audit_logs_get",
+    "parameters": [
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 500,
+       "minimum": 1,
+       "default": 100,
+       "title": "Limit"
+      }
+     },
+     {
+      "name": "target",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "uuid"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Target"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/AuditOut"
+         },
+         "title": "Response Audit Logs Api V1 Admin Audit Logs Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/admin/feature-flags": {
+   "get": {
+    "tags": [
+     "admin"
+    ],
+    "summary": "Feature Flags",
+    "operationId": "feature_flags_api_v1_admin_feature_flags_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "$ref": "#/components/schemas/FlagOut"
+         },
+         "type": "array",
+         "title": "Response Feature Flags Api V1 Admin Feature Flags Get"
+        }
+       }
+      }
+     }
+    }
+   },
+   "put": {
+    "tags": [
+     "admin"
+    ],
+    "summary": "Set Flag",
+    "description": "404 for a flag that does not exist. The change goes into the audit log.",
+    "operationId": "set_flag_api_v1_admin_feature_flags_put",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/FlagChange"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/FlagOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/flags": {
+   "get": {
+    "tags": [
+     "admin"
+    ],
+    "summary": "Flags",
+    "description": "Which features are on, for every signed-in person.",
+    "operationId": "flags_api_v1_flags_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": {
+          "type": "boolean"
+         },
+         "type": "object",
+         "title": "Response Flags Api V1 Flags Get"
         }
        }
       }
@@ -4966,6 +5204,79 @@
     "title": "AccessSettings",
     "description": "The five access settings the play check finds (spec §7). Values outside the spec's ranges are refused."
    },
+   "AdminUser": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "phone": {
+      "type": "string",
+      "title": "Phone"
+     },
+     "role": {
+      "$ref": "#/components/schemas/Role"
+     },
+     "status": {
+      "$ref": "#/components/schemas/UserStatus"
+     },
+     "lang": {
+      "$ref": "#/components/schemas/Lang"
+     },
+     "region": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Region"
+     },
+     "district": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "District"
+     },
+     "name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Name"
+     },
+     "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Createdat"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "phone",
+     "role",
+     "status",
+     "lang",
+     "region",
+     "district",
+     "name",
+     "createdAt"
+    ],
+    "title": "AdminUser"
+   },
    "AnswersIn": {
     "properties": {
      "answers": {
@@ -4979,6 +5290,63 @@
      "answers"
     ],
     "title": "AnswersIn"
+   },
+   "AuditOut": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "actorId": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "uuid"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Actorid"
+     },
+     "action": {
+      "type": "string",
+      "title": "Action"
+     },
+     "targetId": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "uuid"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Targetid"
+     },
+     "data": {
+      "additionalProperties": true,
+      "type": "object",
+      "title": "Data"
+     },
+     "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Createdat"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "actorId",
+     "action",
+     "targetId",
+     "data",
+     "createdAt"
+    ],
+    "title": "AuditOut"
    },
    "BookingIn": {
     "properties": {
@@ -6052,6 +6420,47 @@
     ],
     "title": "FeelingIn"
    },
+   "FlagChange": {
+    "properties": {
+     "key": {
+      "type": "string",
+      "title": "Key"
+     },
+     "enabled": {
+      "type": "boolean",
+      "title": "Enabled"
+     }
+    },
+    "type": "object",
+    "required": [
+     "key",
+     "enabled"
+    ],
+    "title": "FlagChange"
+   },
+   "FlagOut": {
+    "properties": {
+     "key": {
+      "type": "string",
+      "title": "Key"
+     },
+     "enabled": {
+      "type": "boolean",
+      "title": "Enabled"
+     },
+     "description": {
+      "type": "string",
+      "title": "Description"
+     }
+    },
+    "type": "object",
+    "required": [
+     "key",
+     "enabled",
+     "description"
+    ],
+    "title": "FlagOut"
+   },
    "FormIn": {
     "properties": {
      "answers": {
@@ -6220,6 +6629,24 @@
     },
     "type": "object",
     "title": "HTTPValidationError"
+   },
+   "Health": {
+    "properties": {
+     "database": {
+      "type": "boolean",
+      "title": "Database"
+     },
+     "redis": {
+      "type": "boolean",
+      "title": "Redis"
+     }
+    },
+    "type": "object",
+    "required": [
+     "database",
+     "redis"
+    ],
+    "title": "Health"
    },
    "HelperIn": {
     "properties": {
@@ -7006,6 +7433,54 @@
      "skipped"
     ],
     "title": "Outcome"
+   },
+   "Overview": {
+    "properties": {
+     "users": {
+      "type": "integer",
+      "title": "Users"
+     },
+     "children": {
+      "type": "integer",
+      "title": "Children"
+     },
+     "paying": {
+      "type": "integer",
+      "title": "Paying"
+     },
+     "sessionsWeek": {
+      "type": "integer",
+      "title": "Sessionsweek"
+     },
+     "aiQuestionsByRole": {
+      "additionalProperties": {
+       "type": "integer"
+      },
+      "type": "object",
+      "title": "Aiquestionsbyrole"
+     },
+     "aiQuestionsByDay": {
+      "additionalProperties": {
+       "type": "integer"
+      },
+      "type": "object",
+      "title": "Aiquestionsbyday"
+     },
+     "health": {
+      "$ref": "#/components/schemas/Health"
+     }
+    },
+    "type": "object",
+    "required": [
+     "users",
+     "children",
+     "paying",
+     "sessionsWeek",
+     "aiQuestionsByRole",
+     "aiQuestionsByDay",
+     "health"
+    ],
+    "title": "Overview"
    },
    "PaymentIn": {
     "properties": {

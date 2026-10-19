@@ -689,7 +689,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A13.7` `deploy/`: the website image is built without `FK_STORAGE_ORIGIN` (and the Dockerfile has no such build argument), so the browser's security policy blocks videos and voice notes from `files.<domain>`; also check the server's file links point at `files.<domain>`
   - Done when: with `deploy/compose.yaml` on this computer a voice note uploads and plays over HTTPS
   - Needs: —
-- [ ] **Azim** — `A13.8` Admin console addresses on `apps/api`: the list of users, the overview numbers (with service health), the audit log and the feature flags. The website's admin pages still ask the old backend's `GET /admin/users`, `/admin/overview`, `/admin/audit-logs`, `/admin/feature-flags`; `apps/api` answers 404 or 405
+- [x] **Azim** — `A13.8` Admin console addresses on `apps/api`: the list of users, the overview numbers (with service health), the audit log and the feature flags. The website's admin pages still ask the old backend's `GET /admin/users`, `/admin/overview`, `/admin/audit-logs`, `/admin/feature-flags`; `apps/api` answers 404 or 405
   - Done when: each answers an admin (with the second step) and refuses everyone else
   - Needs: A13.1
 - [ ] **Azim** — `F3` Security check before launch

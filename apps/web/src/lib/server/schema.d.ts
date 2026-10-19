@@ -421,7 +421,11 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /**
+         * Users
+         * @description Everyone, newest first.
+         */
+        get: operations["users_api_v1_admin_users_get"];
         put?: never;
         /**
          * Add Staff
@@ -452,6 +456,84 @@ export interface paths {
          * @description Change a person's role, or disable / enable their account. Every change goes into the audit log.
          */
         patch: operations["change_user_api_v1_admin_users__user_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/admin/overview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Overview */
+        get: operations["overview_api_v1_admin_overview_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/audit-logs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Audit Logs
+         * @description Newest first; `target` keeps one person's, child's or order's entries.
+         */
+        get: operations["audit_logs_api_v1_admin_audit_logs_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/feature-flags": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Feature Flags */
+        get: operations["feature_flags_api_v1_admin_feature_flags_get"];
+        /**
+         * Set Flag
+         * @description 404 for a flag that does not exist. The change goes into the audit log.
+         */
+        put: operations["set_flag_api_v1_admin_feature_flags_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/flags": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Flags
+         * @description Which features are on, for every signed-in person.
+         */
+        get: operations["flags_api_v1_flags_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/v1/admin/places": {
@@ -1864,12 +1946,59 @@ export interface components {
             /** Releaseok */
             releaseOk: boolean;
         };
+        /** AdminUser */
+        AdminUser: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Phone */
+            phone: string;
+            role: components["schemas"]["Role"];
+            status: components["schemas"]["UserStatus"];
+            lang: components["schemas"]["Lang"];
+            /** Region */
+            region: string | null;
+            /** District */
+            district: string | null;
+            /** Name */
+            name: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
         /** AnswersIn */
         AnswersIn: {
             /** Answers */
             answers: {
                 [key: string]: unknown;
             };
+        };
+        /** AuditOut */
+        AuditOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Actorid */
+            actorId: string | null;
+            /** Action */
+            action: string;
+            /** Targetid */
+            targetId: string | null;
+            /** Data */
+            data: {
+                [key: string]: unknown;
+            };
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
         };
         /** BookingIn */
         BookingIn: {
@@ -2261,6 +2390,22 @@ export interface components {
         FeelingIn: {
             feeling: components["schemas"]["Feeling"];
         };
+        /** FlagChange */
+        FlagChange: {
+            /** Key */
+            key: string;
+            /** Enabled */
+            enabled: boolean;
+        };
+        /** FlagOut */
+        FlagOut: {
+            /** Key */
+            key: string;
+            /** Enabled */
+            enabled: boolean;
+            /** Description */
+            description: string;
+        };
         /** FormIn */
         FormIn: {
             /** Answers */
@@ -2334,6 +2479,13 @@ export interface components {
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /** Health */
+        Health: {
+            /** Database */
+            database: boolean;
+            /** Redis */
+            redis: boolean;
         };
         /** HelperIn */
         HelperIn: {
@@ -2623,6 +2775,26 @@ export interface components {
          * @enum {string}
          */
         Outcome: "correct" | "wrong" | "skipped";
+        /** Overview */
+        Overview: {
+            /** Users */
+            users: number;
+            /** Children */
+            children: number;
+            /** Paying */
+            paying: number;
+            /** Sessionsweek */
+            sessionsWeek: number;
+            /** Aiquestionsbyrole */
+            aiQuestionsByRole: {
+                [key: string]: number;
+            };
+            /** Aiquestionsbyday */
+            aiQuestionsByDay: {
+                [key: string]: number;
+            };
+            health: components["schemas"]["Health"];
+        };
         /** PaymentIn */
         PaymentIn: {
             /**
@@ -4152,6 +4324,38 @@ export interface operations {
             };
         };
     };
+    users_api_v1_admin_users_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUser"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     add_staff_api_v1_admin_users_post: {
         parameters: {
             query?: never;
@@ -4216,6 +4420,133 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    overview_api_v1_admin_overview_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Overview"];
+                };
+            };
+        };
+    };
+    audit_logs_api_v1_admin_audit_logs_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                target?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    feature_flags_api_v1_admin_feature_flags_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FlagOut"][];
+                };
+            };
+        };
+    };
+    set_flag_api_v1_admin_feature_flags_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FlagChange"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FlagOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    flags_api_v1_flags_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: boolean;
+                    };
                 };
             };
         };

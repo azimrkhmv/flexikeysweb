@@ -14,6 +14,7 @@ from app.modules.billing import router as billing
 from app.modules.children import consents
 from app.modules.children import router as children
 from app.modules.clips import router as clips
+from app.modules.console import router as console
 from app.modules.health import router as health
 from app.modules.intake import router as intake
 from app.modules.kits import router as kits
@@ -53,6 +54,8 @@ app.include_router(helpers.router, prefix="/api/v1")
 app.include_router(billing.router, prefix="/api/v1")
 app.include_router(billing.admin_router, prefix="/api/v1")
 app.include_router(admin.router, prefix="/api/v1")
+app.include_router(console.router, prefix="/api/v1")
+app.include_router(console.flags_router, prefix="/api/v1")
 app.include_router(places.admin_router, prefix="/api/v1")
 app.include_router(places.router, prefix="/api/v1")
 app.include_router(clinic.router, prefix="/api/v1")
