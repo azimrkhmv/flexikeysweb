@@ -24,7 +24,7 @@ async def test_the_scheduled_job_runs() -> None:
         await asyncio.wait_for(worker.async_run(), timeout=10)
     finally:
         await worker.close()
-    beat, clean, _reminders = WorkerSettings.cron_jobs  # reminders: tests/test_visit_reminders.py
+    beat, clean, *_ = WorkerSettings.cron_jobs  # the others: tests/test_visit_reminders.py, tests/test_delete.py
     assert beat.second == 0 and beat.minute is None  # at the start of every minute
     assert (clean.name, clean.hour, clean.minute) == ("cron:clean_old_tries", 22, 0)  # 03:00 in Tashkent (A6.2)
     assert worker.jobs_complete == 1 and worker.jobs_failed == 0

@@ -14,6 +14,7 @@ from app.db import SessionLocal
 from app.modules.auth.sms import get_sms
 from app.modules.places import reminders
 from app.modules.play import tries
+from app.modules.privacy.router import purge_files
 from app.settings import settings
 
 HEARTBEAT_KEY = "worker:heartbeat"
@@ -40,6 +41,12 @@ async def remind_visits(ctx: dict[str, Any]) -> str:
     return f"sent {sent} reminders"
 
 
+async def purge_deleted_files(ctx: dict[str, Any]) -> str:
+    """Every night: the files of deleted children leave storage (A12.2)."""
+    async with SessionLocal() as db:
+        return f"removed {await purge_files(db)} files"
+
+
 class WorkerSettings:
     redis_settings = RedisSettings.from_dsn(settings.redis_url)
     functions: ClassVar[list[Any]] = []
@@ -47,4 +54,5 @@ class WorkerSettings:
         cron(heartbeat, second=0, run_at_startup=True),
         cron(clean_old_tries, hour=22, minute=0, second=0),  # 03:00 in Tashkent
         cron(remind_visits, minute=set(range(0, 60, 5)), second=30),
+        cron(purge_deleted_files, hour=22, minute=30, second=0),  # 03:30 in Tashkent
     ]

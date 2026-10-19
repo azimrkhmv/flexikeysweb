@@ -176,7 +176,13 @@ export interface paths {
         get: operations["get_me_api_v1_me_get"];
         put?: never;
         post?: never;
-        delete?: never;
+        /**
+         * Delete Account
+         * @description A parent deletes their account: their own family, its children with everything about them, and the account
+         *     itself, at once; the files follow overnight. Helping in another family ends too. Staff and therapist accounts
+         *     are closed by an admin (403 ask_admin).
+         */
+        delete: operations["delete_account_api_v1_me_delete"];
         options?: never;
         head?: never;
         /**
@@ -720,7 +726,7 @@ export interface paths {
         post?: never;
         /**
          * Delete Child
-         * @description Deletes the child and, through the database, everything stored about them.
+         * @description Deletes the child and, through the database, everything stored about them; the files follow overnight.
          */
         delete: operations["delete_child_api_v1_children__child_id__delete"];
         options?: never;
@@ -3496,6 +3502,24 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Me"];
                 };
+            };
+        };
+    };
+    delete_account_api_v1_me_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

@@ -647,12 +647,15 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A12.1` See and download everything stored about a child
   - Done when: the file contains all personal data of the child
   - Needs: A2.7
-- [ ] **Azim** — `A12.2` Delete a child or the whole account; the data is removed for good within 30 days
+- [x] **Azim** — `A12.2` Delete a child or the whole account; the data is removed for good within 30 days
   - Done when: the data is gone from the database after the job runs
   - Needs: A12.1, A5.2
 - [ ] **Azim** — `A12.3` Delete any clip or chat; stop any share
   - Done when: each works at once
   - Needs: A8.3, A9.4
+- [ ] **Azim** — `A12.4` Deleting a therapist's account (by an admin): their answers about a child go with it today (therapist_answers cascades). Keep the restrictions (T6) and exclusions (T8) in use, so the child's plan never loses a safety rule
+  - Done when: a deleted therapist's restriction still never appears in the plan
+  - Needs: A12.2
 - [ ] **Azim** — `A13.1` Second sign-in step for admins
   - Done when: an admin cannot act with only a stolen SMS code
   - Needs: A1.7

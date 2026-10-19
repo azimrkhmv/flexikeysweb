@@ -20,6 +20,7 @@ from app.modules.play.models import (
     Try,
     VoiceCard,
 )
+from app.modules.privacy.models import StorageCleanup
 from app.modules.therapists.models import CareLink, TherapistAnswer, TherapistProfile
 from app.modules.today.models import DailyAnswer, DailyQuestion, PausedDay, TaskDone
 from app.modules.videos.models import Exercise, Video, VideoReview
@@ -58,6 +59,7 @@ __all__ = [
     "RefreshToken",
     "SkillLevel",
     "Slot",
+    "StorageCleanup",
     "TaskDone",
     "TherapistAnswer",
     "TherapistProfile",

@@ -20,6 +20,7 @@ from app.modules.accounts.models import Family, FamilyMember, Lang, MemberRole, 
 from app.modules.audit import models as audit
 from app.modules.auth.session import CurrentUser
 from app.modules.children.models import Child, Sex
+from app.modules.privacy.models import StorageCleanup
 from app.schemas import ApiModel
 from app.settings import settings
 
@@ -70,6 +71,11 @@ async def get_visible_child(db: AsyncSession, user: User, child_id: uuid.UUID) -
         raise AppError(404, "not_found")
     await require_child_access(db, user, child.family_id)
     return child
+
+
+def forget_files(db: AsyncSession, child_id: uuid.UUID) -> None:
+    """The child's files (clips, photos, voice) go from storage with the next nightly cleanup (A12.2)."""
+    db.add(StorageCleanup(prefix=f"children/{child_id}/"))
 
 
 async def require_owner(db: AsyncSession, user: User, family_id: uuid.UUID) -> None:
@@ -136,9 +142,10 @@ async def change_child(
 async def delete_child(
     child_id: uuid.UUID, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]
 ) -> None:
-    """Deletes the child and, through the database, everything stored about them."""
+    """Deletes the child and, through the database, everything stored about them; the files follow overnight."""
     child = await get_visible_child(db, user, child_id)
     await require_owner(db, user, child.family_id)
     audit.record(db, user.id, "child.deleted", child.id)
+    forget_files(db, child.id)
     await db.delete(child)
     await db.commit()

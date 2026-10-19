@@ -65,6 +65,18 @@ def exists(key: str) -> bool:
     return True
 
 
+def remove_prefix(prefix: str) -> int:
+    """Delete every file whose key starts with `prefix`; returns how many."""
+    keys = [
+        o.object_name
+        for o in internal().list_objects(settings.s3_bucket, prefix=prefix, recursive=True)
+        if o.object_name
+    ]
+    for key in keys:
+        remove(key)
+    return len(keys)
+
+
 def remove(key: str) -> None:
     """Delete a file (nothing happens if it is already gone)."""
     internal().remove_object(settings.s3_bucket, key)

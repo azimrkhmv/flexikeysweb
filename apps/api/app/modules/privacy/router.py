@@ -9,20 +9,29 @@ import uuid
 from datetime import UTC, datetime
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
-from sqlalchemy import Table, select
+from sqlalchemy import Table, delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app import models  # noqa: F401  # every table must be known here, also those no address imports yet
+from app import (
+    models,  # noqa: F401  # every table must be known here, also those no address imports yet
+    storage,
+)
 from app.crypto import decrypt_json
 from app.db import Base, get_session
+from app.errors import AppError
+from app.modules.accounts.models import Family, FamilyMember, MemberRole, Role
 from app.modules.audit import models as audit
+from app.modules.auth import session
 from app.modules.auth.session import CurrentUser
-from app.modules.children.router import get_visible_child, require_owner
+from app.modules.children.models import Child
+from app.modules.children.router import forget_files, get_visible_child, require_owner
+from app.modules.privacy.models import StorageCleanup
 
 router = APIRouter(prefix="/children", tags=["your data"])
+me_router = APIRouter(prefix="/me", tags=["your data"])
 
 
 def child_tables() -> list[tuple[Table, Table | None]]:
@@ -77,3 +86,36 @@ async def export(
     await db.commit()
     name = f"flexikeys-{child.name}-{datetime.now(UTC).date()}.json"
     return JSONResponse(jsonable_encoder(data), headers={"Content-Disposition": f'attachment; filename="{name}"'})
+
+
+@me_router.delete("", status_code=204)
+async def delete_account(user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]) -> Response:
+    """A parent deletes their account: their own family, its children with everything about them, and the account
+    itself, at once; the files follow overnight. Helping in another family ends too. Staff and therapist accounts
+    are closed by an admin (403 ask_admin)."""
+    if user.role != Role.parent:
+        raise AppError(403, "ask_admin")
+    family_id = await db.scalar(
+        select(FamilyMember.family_id).where(FamilyMember.user_id == user.id, FamilyMember.role == MemberRole.owner)
+    )
+    if family_id is not None:
+        for child_id in await db.scalars(select(Child.id).where(Child.family_id == family_id)):
+            forget_files(db, child_id)
+        await db.execute(delete(Child).where(Child.family_id == family_id))
+        await db.execute(delete(Family).where(Family.id == family_id))
+    audit.record(db, None, "user.deleted", user.id)
+    await db.delete(user)
+    await db.commit()
+    response = Response(status_code=204)
+    session.clear(response)
+    return response
+
+
+async def purge_files(db: AsyncSession) -> int:
+    """The nightly cleanup: remove the files of deleted children; returns how many files went."""
+    removed = 0
+    for job in list(await db.scalars(select(StorageCleanup))):
+        removed += storage.remove_prefix(job.prefix)
+        await db.delete(job)
+        await db.commit()  # one prefix at a time: a crash halfway redoes only what is left
+    return removed

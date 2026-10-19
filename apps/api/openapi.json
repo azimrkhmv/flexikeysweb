@@ -304,6 +304,19 @@
      }
     }
    },
+   "delete": {
+    "tags": [
+     "your data"
+    ],
+    "summary": "Delete Account",
+    "description": "A parent deletes their account: their own family, its children with everything about them, and the account\nitself, at once; the files follow overnight. Helping in another family ends too. Staff and therapist accounts\nare closed by an admin (403 ask_admin).",
+    "operationId": "delete_account_api_v1_me_delete",
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     }
+    }
+   },
    "patch": {
     "tags": [
      "me"
@@ -1791,7 +1804,7 @@
      "children"
     ],
     "summary": "Delete Child",
-    "description": "Deletes the child and, through the database, everything stored about them.",
+    "description": "Deletes the child and, through the database, everything stored about them; the files follow overnight.",
     "operationId": "delete_child_api_v1_children__child_id__delete",
     "parameters": [
      {
