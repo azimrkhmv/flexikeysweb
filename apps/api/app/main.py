@@ -21,6 +21,7 @@ from app.modules.places import router as places
 from app.modules.plans import router as plans
 from app.modules.play import cards
 from app.modules.play import router as play
+from app.modules.privacy import router as privacy
 from app.modules.therapists import form as therapist_form
 from app.modules.therapists import router as therapists
 from app.modules.today import router as today
@@ -56,6 +57,7 @@ app.include_router(places.router, prefix="/api/v1")
 app.include_router(clinic.router, prefix="/api/v1")
 app.include_router(bookings.router, prefix="/api/v1")
 app.include_router(children.router, prefix="/api/v1")
+app.include_router(privacy.router, prefix="/api/v1")
 app.include_router(consents.router, prefix="/api/v1")
 app.include_router(intake.router, prefix="/api/v1")
 app.include_router(plans.router, prefix="/api/v1")

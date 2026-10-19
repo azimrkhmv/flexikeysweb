@@ -644,7 +644,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 
 **Server — in this order**
 
-- [ ] **Azim** — `A12.1` See and download everything stored about a child
+- [x] **Azim** — `A12.1` See and download everything stored about a child
   - Done when: the file contains all personal data of the child
   - Needs: A2.7
 - [ ] **Azim** — `A12.2` Delete a child or the whole account; the data is removed for good within 30 days
