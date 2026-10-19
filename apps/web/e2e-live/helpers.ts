@@ -73,6 +73,17 @@ export async function goals(page: Page) {
 export const fromServer = (page: Page, path: string) =>
   page.evaluate((p) => fetch(`/api/v1${p}`, { headers: { "X-Auth-Transport": "cookie" } }).then((r) => r.json()), path);
 
+/** The signed-in owner's family on Pro (its 7-day trial): for what Free does not include (A7.2). */
+export async function startTrial(page: Page) {
+  const status = await page.evaluate(() =>
+    fetch("/api/v1/family/trial", {
+      method: "POST",
+      headers: { "X-Auth-Transport": "cookie", "X-CSRF-Token": document.cookie.split("; ").find((c) => c.startsWith("fk_csrf="))?.slice(8) ?? "" },
+    }).then((r) => r.status),
+  );
+  expect(status).toBe(200);
+}
+
 // ---------------------------------------------------------------- straight to the server (test setup)
 export const API = process.env.FK_API_ORIGIN ?? "http://localhost:8000";
 const SERVER_DIR = path.resolve(__dirname, "../../api");

@@ -9,6 +9,7 @@ from fastapi.testclient import TestClient
 
 from app.main import app
 from tests.test_admin_changes import audit_for
+from tests.test_billing_plan import on_pro
 from tests.test_children import API, add_child, add_helper, parent
 from tests.test_videos_register import title
 
@@ -35,6 +36,7 @@ def sign_in(client: TestClient, phone: str, invite_code: str | None = None) -> t
 def shared_child(client: TestClient) -> tuple[dict[str, str], str]:
     owner = parent(client)
     child = add_child(client, owner)
+    on_pro(client, owner)  # sharing is Pro (A7.2)
     consent = client.put(f"{API}/children/{child}/consents/therapist_share", headers=owner, json={"granted": True})
     assert consent.status_code == 200
     return owner, child
@@ -113,6 +115,8 @@ def test_only_the_owner_shares_and_only_with_the_consent(client: TestClient) -> 
     url = f"{API}/children/{child}/therapists"
     assert title(client.post(url, headers=owner, json={"phone": new_phone()})) == (403, "child_consent_required")
     client.put(f"{API}/children/{child}/consents/therapist_share", headers=owner, json={"granted": True})
+    assert title(client.post(url, headers=owner, json={})) == (403, "pro_only")  # Free does not include it (A7.2)
+    on_pro(client, owner)
     assert title(client.post(url, headers=helper, json={"phone": new_phone()})) == (403, "owner_only")
     assert client.get(url, headers=helper).status_code == 200  # a helper may see who the child is shared with
     assert title(client.post(url, headers=owner, json={"phone": "123"})) == (422, "invalid_phone")

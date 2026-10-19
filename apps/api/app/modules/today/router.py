@@ -17,6 +17,7 @@ from app.db import get_session
 from app.errors import AppError
 from app.modules.accounts.models import Lang
 from app.modules.auth.session import CurrentUser
+from app.modules.billing.router import require_pro
 from app.modules.children.router import get_visible_child
 from app.modules.plans.models import ItemKind, Plan, PlanItem
 from app.modules.plans.router import (
@@ -26,10 +27,12 @@ from app.modules.plans.router import (
     exercise_levels,
     paused_dates,
     plan_day_today,
+    require_plan_day,
 )
 from app.modules.today.models import DailyAnswer, DailyQuestion, Feeling, PausedDay, TaskDone
 from app.modules.videos.models import Video, VideoLang, servable
 from app.schemas import ApiModel
+from app.settings import settings
 
 router = APIRouter(prefix="/children", tags=["today"])
 
@@ -70,6 +73,7 @@ async def mark_done(
     """One tap: this exercise of that day of the current plan is done. Twice = once (200 with the first record).
     404 when the plan has no such exercise that day; 409 not_yet for a day still to come."""
     plan = await current_plan_of(db, user, child_id)
+    await require_plan_day(db, child_id, body.day)
     item = await db.scalar(
         select(PlanItem).where(
             PlanItem.plan_id == plan.id,
@@ -263,8 +267,9 @@ async def offline_videos(
 ) -> list[OfflineVideo]:
     """The approved videos of today and the next 6 plan days, with links that work for 7 days, so the website and the
     app can download them on Wi-Fi and play them offline (spec §8). Only physio-approved files (product rule 3).
-    `lang` defaults to the child's language."""
+    `lang` defaults to the child's language. Pro only, unless Free includes it (A7.2)."""
     plan = await current_plan_of(db, user, child_id)
+    await require_pro(db, child_id, free_allows=settings.free_offline_videos)
     lang = lang or (await get_visible_child(db, user, child_id)).lang
     today = datetime.now(TASHKENT).date()
     dates = day_dates(plan.start_date, await paused_dates(db, plan))

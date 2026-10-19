@@ -25,6 +25,7 @@ from app.modules.audit import models as audit
 from app.modules.auth.router import normalize_phone
 from app.modules.auth.session import CurrentUser
 from app.modules.auth.sms import SmsSender, get_sms
+from app.modules.billing.router import is_pro, require_pro
 from app.modules.children.consents import ConsentKind, has_consent, require_consent
 from app.modules.children.models import Child, Sex
 from app.modules.children.router import get_visible_child, require_owner
@@ -92,6 +93,7 @@ async def invite(
     child = await get_visible_child(db, user, child_id)
     await require_owner(db, user, child.family_id)
     await require_consent(db, child_id, ConsentKind.therapist_share)
+    await require_pro(db, child_id, free_allows=settings.free_therapist_sharing)
     open_links = select(CareLink).where(CareLink.child_id == child_id, CareLink.status != ShareStatus.stopped)
     if len((await db.scalars(open_links)).all()) >= MAX_OPEN:
         raise AppError(409, "too_many_shares", max=MAX_OPEN)
@@ -192,6 +194,8 @@ async def get_shared_child(db: AsyncSession, user: User, child_id: uuid.UUID) ->
     ).first()
     if user.role != Role.therapist or found is None or not await has_consent(db, child_id, ConsentKind.therapist_share):
         raise AppError(404, "not_found")
+    if not settings.free_therapist_sharing and not await is_pro(db, child_id):
+        raise AppError(403, "pro_only")  # the family is on Free now: the share waits until it is on Pro again
     return found[0], found[1]
 
 

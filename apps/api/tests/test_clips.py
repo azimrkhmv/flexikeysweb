@@ -10,6 +10,7 @@ from fastapi.testclient import TestClient
 from app import storage
 from app.main import app
 from app.modules.videos.router import load_exercises
+from tests.test_billing_plan import on_pro
 from tests.test_children import API, add_child, add_helper, parent
 from tests.test_storage import bucket  # noqa: F401 (makes the test bucket)
 from tests.test_therapist_form import share
@@ -53,6 +54,8 @@ def test_clips_need_the_consent_and_a_real_upload(client: TestClient, bucket: No
     allow(client, owner, other)
     stolen = {"kind": "movement", "storageKey": upload(client, owner, other)}  # another child's file
     assert title(client.post(f"{API}/children/{child}/clips", headers=owner, json=stolen)) == (422, "unknown_file")
+    assert title(add(client, owner, child, "feedback", exerciseId="putty_squeeze")) == (403, "pro_only")  # A7.2
+    on_pro(client, owner)
     assert title(add(client, owner, child, "feedback")) == (422, "unknown_exercise")
     assert title(add(client, owner, child, "feedback", exerciseId="nope")) == (422, "unknown_exercise")
 

@@ -23,5 +23,6 @@ test("a parent answers half the questions, stops, continues later and gets a pla
   await skip(page); // videos
   await page.getByRole("button", { name: "Make the plan" }).click();
   await expect(page.getByRole("heading", { name: "Aziz's plan is ready" })).toBeVisible();
-  expect((await fromServer(page, `/children/${childId}/plan`)).days).toHaveLength(28);
+  const plan = await fromServer(page, `/children/${childId}/plan`);
+  expect([plan.days.length, plan.freeDays]).toEqual([7, 7]); // a new family is on Free: the first week (A7.2)
 });

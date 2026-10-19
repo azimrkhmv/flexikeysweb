@@ -2384,7 +2384,7 @@
      "plans"
     ],
     "summary": "Current Plan",
-    "description": "The child's current (newest) 4-week plan, every day, and the reasons behind it.",
+    "description": "The child's current (newest) 4-week plan, every day, and the reasons behind it. On Free: the first week.",
     "operationId": "current_plan_api_v1_children__child_id__plan_get",
     "parameters": [
      {
@@ -2428,7 +2428,7 @@
      "plans"
     ],
     "summary": "Today",
-    "description": "Today's exercises and games (Tashkent date), after paused days moved the plan. On a paused day: paused, and\nnothing to do. 404 no_task_today before the plan starts or after it ends.",
+    "description": "Today's exercises and games (Tashkent date), after paused days moved the plan. On a paused day: paused, and\nnothing to do. 404 no_task_today before the plan starts or after it ends; 403 pro_only past Free's first week.",
     "operationId": "today_api_v1_children__child_id__today_get",
     "parameters": [
      {
@@ -2751,7 +2751,7 @@
      "today"
     ],
     "summary": "Offline Videos",
-    "description": "The approved videos of today and the next 6 plan days, with links that work for 7 days, so the website and the\napp can download them on Wi-Fi and play them offline (spec §8). Only physio-approved files (product rule 3).\n`lang` defaults to the child's language.",
+    "description": "The approved videos of today and the next 6 plan days, with links that work for 7 days, so the website and the\napp can download them on Wi-Fi and play them offline (spec §8). Only physio-approved files (product rule 3).\n`lang` defaults to the child's language. Pro only, unless Free includes it (A7.2).",
     "operationId": "offline_videos_api_v1_children__child_id__videos_get",
     "parameters": [
      {
@@ -7508,6 +7508,17 @@
       },
       "type": "array",
       "title": "Paused"
+     },
+     "freeDays": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Freedays"
      }
     },
     "type": "object",
@@ -7518,7 +7529,8 @@
      "exercisesAllowed",
      "days",
      "reasons",
-     "paused"
+     "paused",
+     "freeDays"
     ],
     "title": "PlanOut"
    },

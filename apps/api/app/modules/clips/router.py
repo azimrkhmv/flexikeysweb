@@ -21,12 +21,14 @@ from app.errors import AppError
 from app.modules.accounts.models import User
 from app.modules.audit import models as audit
 from app.modules.auth.session import CurrentUser
+from app.modules.billing.router import require_pro
 from app.modules.children.consents import ConsentKind, has_consent, require_consent
 from app.modules.children.router import get_visible_child
 from app.modules.clips.models import Clip, ClipKind, ClipReply
 from app.modules.therapists.router import get_shared_child
 from app.modules.videos.models import Exercise
 from app.schemas import ApiModel
+from app.settings import settings
 
 router = APIRouter(prefix="/children", tags=["clips"])
 therapist_router = APIRouter(prefix="/therapist", tags=["clips"])
@@ -110,6 +112,7 @@ async def add_clip(
     if not (body.storage_key.startswith(f"children/{child_id}/clips/") and storage.exists(body.storage_key)):
         raise AppError(422, "unknown_file")
     if body.kind == ClipKind.feedback:
+        await require_pro(db, child_id, free_allows=settings.free_therapist_sharing)
         if body.exercise_id is None or await db.get(Exercise, body.exercise_id) is None:
             raise AppError(422, "unknown_exercise")
     elif body.exercise_id is not None:

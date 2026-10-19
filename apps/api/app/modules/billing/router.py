@@ -17,6 +17,7 @@ from app.modules.accounts.models import FamilyMember, MemberRole, User
 from app.modules.audit import models as audit
 from app.modules.auth.session import CurrentUser
 from app.modules.billing.models import FamilyPlan, Payment
+from app.modules.children.models import Child
 from app.schemas import ApiModel
 from app.settings import settings
 
@@ -65,6 +66,18 @@ async def family_of(db: AsyncSession, user: User) -> tuple[uuid.UUID, MemberRole
 async def plan_of(db: AsyncSession, family_id: uuid.UUID) -> PlanStatus:
     """Free or Pro for this family now; what every Free limit (A7.2) asks."""
     return status_of(await db.get(FamilyPlan, family_id))
+
+
+async def is_pro(db: AsyncSession, child_id: uuid.UUID) -> bool:
+    """Whether this child's family is on Pro now (paid or trial)."""
+    family_id = await db.scalar(select(Child.family_id).where(Child.id == child_id))
+    return family_id is not None and (await plan_of(db, family_id)).plan == "pro"
+
+
+async def require_pro(db: AsyncSession, child_id: uuid.UUID, *, free_allows: bool = False) -> None:
+    """A Free limit (A7.2): 403 pro_only unless the family is on Pro or Free includes it (`free_allows`)."""
+    if not free_allows and not await is_pro(db, child_id):
+        raise AppError(403, "pro_only")
 
 
 @router.get("/plan")

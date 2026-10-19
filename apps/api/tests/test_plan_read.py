@@ -12,6 +12,7 @@ from sqlalchemy import update
 from app.main import app
 from app.modules.plans.models import Plan
 from app.modules.plans.router import TASHKENT
+from tests.test_billing_plan import on_pro
 from tests.test_children import API, add_child, add_helper, parent
 from tests.test_intake_rounds import complete, finish
 from tests.test_intake_save import health_consent, save
@@ -29,6 +30,7 @@ def client() -> Iterator[TestClient]:
 def family_with_plan(client: TestClient) -> tuple[dict[str, str], str]:
     owner = parent(client)
     child = add_child(client, owner)
+    on_pro(client, owner)  # the whole plan (Free sees the first week, A7.2)
     health_consent(client, owner, child)
     save(client, owner, child, complete(with_health=True))
     assert finish(client, owner, child).status_code == 200

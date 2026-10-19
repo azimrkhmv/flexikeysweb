@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { abilities, approvedVideo, childStep, goals, healthAndSafety, newPhone, signUp, skip } from "./helpers";
+import { abilities, approvedVideo, childStep, goals, healthAndSafety, newPhone, signUp, skip, startTrial } from "./helpers";
 
 // B6: the parent sees the real 4-week plan the server built, with the approved exercises in it.
 
@@ -8,6 +8,7 @@ test("a parent sees the real 4-week plan from the server", async ({ page }) => {
   await approvedVideo("putty_squeeze", "en"); // a physiotherapist approved its English video
 
   await signUp(page, newPhone("98"));
+  await startTrial(page); // all 4 weeks (Free has the first, A7.2)
   await childStep(page, "Aziz");
   await healthAndSafety(page);
   for (const step of ["talking", "hands and moving", "seeing, hearing, daily life"]) await abilities(page, step);

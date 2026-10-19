@@ -60,6 +60,7 @@ const BY_TITLE: Record<string, string> = {
     not_yet: "not_yet",
     not_todays_question: "not_todays_question",
     invalid_answer: "invalid_answer",
+    pro_only: "pro_only", // what Free does not include (A7.2)
 };
 
 /** Every code errorCode() can return — each has an err.* message (checked by lib/i18n.test.ts). */

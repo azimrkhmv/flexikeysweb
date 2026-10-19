@@ -473,7 +473,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A7.1` Free and Pro per family; 7-day trial of Pro
   - Done when: the trial ends on time; a helper gets the family's Pro access
   - Needs: A1.1
-- [ ] **Azim** — `A7.2` Free limits enforced by the server
+- [x] **Azim** — `A7.2` Free limits enforced by the server
   - Done when: a Free family meets every limit the founders listed
   - Needs: A7.1, G3 (placeholders for now)
 - [x] **Azim** — `A7.3` A simulated payment turns a family to Pro; an admin can upgrade a family by hand

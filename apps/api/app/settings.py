@@ -26,6 +26,10 @@ class Settings(BaseSettings):
     health_keys: str
     max_children_per_family: int = 3
     max_helpers_per_family: int = 1
+    # What Free includes (A7.2, spec §14; the founders' PROPOSAL, placeholders until G3). Pro has no limits.
+    free_plan_days: int = 7  # the first week of the plan
+    free_offline_videos: bool = False
+    free_therapist_sharing: bool = False  # sharing with a therapist and feedback clips
     # Sign-in codes per IP address per hour (app/modules/auth/otp.py). The live browser tests sign in many times
     # from one address, so their test server raises it (.github/workflows/e2e-live.yml).
     otp_per_ip_per_hour: int = 20

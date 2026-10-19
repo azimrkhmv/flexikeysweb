@@ -13,6 +13,7 @@ from app.db import get_session
 from app.errors import AppError
 from app.modules.accounts.models import Lang, User
 from app.modules.auth.session import CurrentUser
+from app.modules.billing.router import is_pro
 from app.modules.children.models import Child
 from app.modules.children.router import get_visible_child
 from app.modules.plans import engine
@@ -21,6 +22,7 @@ from app.modules.plans.safety import LibraryExercise, Therapist
 from app.modules.today.models import Feeling, PausedDay, TaskDone
 from app.modules.videos.models import Exercise, Video, servable
 from app.schemas import ApiModel
+from app.settings import settings
 
 TASHKENT = ZoneInfo("Asia/Tashkent")
 router = APIRouter(prefix="/children", tags=["plans"])
@@ -137,6 +139,7 @@ class PlanOut(ApiModel):
     days: list[DayOut]
     reasons: list[ReasonOut]
     paused: list[date]  # the paused days; with `days` and their `done` marks this is the week view
+    free_days: int | None  # on Free only the first free_days days are in `days` (A7.2); None on Pro
 
 
 async def current_plan_of(db: AsyncSession, user: User, child_id: uuid.UUID) -> Plan:
@@ -227,18 +230,32 @@ async def _days(db: AsyncSession, plan: Plan, only: int | None = None) -> list[D
 async def current_plan(
     child_id: uuid.UUID, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]
 ) -> PlanOut:
-    """The child's current (newest) 4-week plan, every day, and the reasons behind it."""
+    """The child's current (newest) 4-week plan, every day, and the reasons behind it. On Free: the first week."""
     plan = await current_plan_of(db, user, child_id)
+    limit = await free_days(db, child_id)
     reasons = await db.scalars(select(PlanReason).where(PlanReason.plan_id == plan.id).order_by(PlanReason.position))
     return PlanOut(
         id=plan.id,
         start_date=plan.start_date,
         engine_version=plan.engine_version,
         exercises_allowed=plan.exercises_allowed,
-        days=await _days(db, plan),
+        days=[d for d in await _days(db, plan) if limit is None or d.day < limit],
         reasons=[ReasonOut(slot=r.slot, goal=r.goal, ref=r.ref, level=r.level) for r in reasons],
         paused=await paused_dates(db, plan),
+        free_days=limit,
     )
+
+
+async def free_days(db: AsyncSession, child_id: uuid.UUID) -> int | None:
+    """How many plan days a Free family has (None on Pro)."""
+    return None if await is_pro(db, child_id) else settings.free_plan_days
+
+
+async def require_plan_day(db: AsyncSession, child_id: uuid.UUID, day: int) -> None:
+    """403 pro_only for a plan day beyond what Free includes."""
+    limit = await free_days(db, child_id)
+    if limit is not None and day >= limit:
+        raise AppError(403, "pro_only")
 
 
 async def plan_day_today(db: AsyncSession, plan: Plan) -> tuple[int | None, bool]:
@@ -255,11 +272,12 @@ async def plan_day_today(db: AsyncSession, plan: Plan) -> tuple[int | None, bool
 @router.get("/{child_id}/today")
 async def today(child_id: uuid.UUID, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]) -> TodayOut:
     """Today's exercises and games (Tashkent date), after paused days moved the plan. On a paused day: paused, and
-    nothing to do. 404 no_task_today before the plan starts or after it ends."""
+    nothing to do. 404 no_task_today before the plan starts or after it ends; 403 pro_only past Free's first week."""
     plan = await current_plan_of(db, user, child_id)
     day, paused = await plan_day_today(db, plan)
     if day is None:
         raise AppError(404, "no_task_today")
+    await require_plan_day(db, child_id, day)
     if paused:
         return TodayOut(day=day, date=datetime.now(TASHKENT).date(), exercises=[], games=[], paused=True)
     return TodayOut(**(await _days(db, plan, only=day))[0].model_dump(), paused=False)

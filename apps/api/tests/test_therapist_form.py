@@ -9,6 +9,7 @@ from fastapi.testclient import TestClient
 from app.main import app
 from app.modules.intake import router as intake_router
 from app.modules.videos.router import load_exercises
+from tests.test_billing_plan import on_pro
 from tests.test_children import API, add_child, add_helper, parent
 from tests.test_intake_rounds import complete, finish
 from tests.test_intake_save import health_consent, save
@@ -33,6 +34,7 @@ def client() -> Iterator[TestClient]:
 
 def share(client: TestClient, owner: dict[str, str], child: str) -> dict[str, str]:
     """A therapist the child is shared with."""
+    on_pro(client, owner)  # sharing is Pro (A7.2)
     client.put(f"{API}/children/{child}/consents/therapist_share", headers=owner, json={"granted": True})
     code = client.post(f"{API}/children/{child}/therapists", headers=owner, json={}).json()["code"]
     therapist, _ = sign_in(client, new_phone(), invite_code=code)

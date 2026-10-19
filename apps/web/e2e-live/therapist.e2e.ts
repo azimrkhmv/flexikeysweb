@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { abilities, childStep, goals, healthAndSafety, newPhone, signIn, signUp, skip } from "./helpers";
+import { abilities, childStep, goals, healthAndSafety, newPhone, signIn, signUp, skip, startTrial } from "./helpers";
 
 // B26: the parent invites a therapist by phone; the therapist signs in with that number, accepts, and changes a
 // restriction and the goals; the parent's plan changes, and the parent sees who changed it.
@@ -9,6 +9,7 @@ test("a therapist's change in the browser changes the parent's plan", async ({ p
   const therapistPhone = `+99893${String(Date.now()).slice(-7)}`;
 
   await signUp(page, newPhone("98"));
+  await startTrial(page); // sharing is Pro (A7.2)
   const child = await childStep(page, "Aziz");
   await healthAndSafety(page);
   for (const step of ["talking", "hands and moving", "seeing, hearing, daily life"]) await abilities(page, step);
@@ -53,6 +54,7 @@ test("a therapist's change in the browser changes the parent's plan", async ({ p
 test("a therapist link signs a new number straight into the share", async ({ page, browser }) => {
   test.setTimeout(120_000);
   await signUp(page, newPhone("98"));
+  await startTrial(page); // sharing is Pro (A7.2)
   const child = await childStep(page, "Lola");
   await page.goto(`/parent/child/${child}#privacy`);
   await page.reload();

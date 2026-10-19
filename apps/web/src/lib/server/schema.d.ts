@@ -932,7 +932,7 @@ export interface paths {
         };
         /**
          * Current Plan
-         * @description The child's current (newest) 4-week plan, every day, and the reasons behind it.
+         * @description The child's current (newest) 4-week plan, every day, and the reasons behind it. On Free: the first week.
          */
         get: operations["current_plan_api_v1_children__child_id__plan_get"];
         put?: never;
@@ -953,7 +953,7 @@ export interface paths {
         /**
          * Today
          * @description Today's exercises and games (Tashkent date), after paused days moved the plan. On a paused day: paused, and
-         *     nothing to do. 404 no_task_today before the plan starts or after it ends.
+         *     nothing to do. 404 no_task_today before the plan starts or after it ends; 403 pro_only past Free's first week.
          */
         get: operations["today_api_v1_children__child_id__today_get"];
         put?: never;
@@ -1067,7 +1067,7 @@ export interface paths {
          * Offline Videos
          * @description The approved videos of today and the next 6 plan days, with links that work for 7 days, so the website and the
          *     app can download them on Wi-Fi and play them offline (spec §8). Only physio-approved files (product rule 3).
-         *     `lang` defaults to the child's language.
+         *     `lang` defaults to the child's language. Pro only, unless Free includes it (A7.2).
          */
         get: operations["offline_videos_api_v1_children__child_id__videos_get"];
         put?: never;
@@ -2681,6 +2681,8 @@ export interface components {
             reasons: components["schemas"]["ReasonOut"][];
             /** Paused */
             paused: string[];
+            /** Freedays */
+            freeDays: number | null;
         };
         /** PlanStatus */
         PlanStatus: {

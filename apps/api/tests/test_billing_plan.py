@@ -26,6 +26,11 @@ def client() -> Iterator[TestClient]:
         yield c
 
 
+def on_pro(client: TestClient, owner: dict[str, str]) -> None:
+    """The owner's family on Pro (its trial), for tests of what Free does not include (A7.2)."""
+    assert client.post(f"{API}/family/trial", headers=owner).status_code in (200, 409)
+
+
 def test_the_rules() -> None:
     now = datetime(2026, 10, 1, tzinfo=UTC)
     assert status_of(None, now).model_dump() == {
