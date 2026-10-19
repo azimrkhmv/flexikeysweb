@@ -17,10 +17,11 @@ from app.crypto import decrypt_json, encrypt_json
 from app.db import get_session
 from app.errors import AppError
 from app.modules.accounts.models import Lang
-from app.modules.assistant.ai import Ai, get_ai
+from app.modules.assistant.ai import Ai, get_ai, over_budget
 from app.modules.assistant.models import AiPurpose, AiUsage, Chat, ChatMessage, Speaker
 from app.modules.assistant.safety import (
     EMERGENCY_ANSWER,
+    RESTING_ANSWER,
     SAFE_ANSWER,
     avoid_words,
     breaks_restriction,
@@ -119,6 +120,13 @@ async def ask(
     )
     if limit is not None and (used or 0) >= limit:
         raise AppError(429, "daily_limit")
+
+    if await over_budget(db):  # A9.6: fixed words until next month, not counted against the day
+        store(Speaker.adult, body.text, topics=topics_of(body.text))
+        store(Speaker.assistant, RESTING_ANSWER[body.lang])
+        await db.commit()
+        left = None if limit is None else limit - (used or 0)
+        return Answer(answer=RESTING_ANSWER[body.lang], emergency=False, remaining_today=left)
 
     earlier = list(
         await db.scalars(

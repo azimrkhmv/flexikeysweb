@@ -577,7 +577,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A9.5` Server: the weekly two-sentence summary and the plan explanation, written only from stored facts
   - Done when: a test proves the text contains no fact that was not given
   - Needs: A9.2, A5.3
-- [ ] **Azim** — `A9.6` Server: a monthly spending limit for AI
+- [x] **Azim** — `A9.6` Server: a monthly spending limit for AI
   - Done when: the assistant falls back to fixed answers when the limit is reached
   - Needs: A9.2
 - [ ] **Azim** — `A9.8` Research library: load the open research files, search them, and give the assistant only the matching passages with their source

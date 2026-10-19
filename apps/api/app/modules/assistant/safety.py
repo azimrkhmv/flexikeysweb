@@ -88,6 +88,19 @@ SAFE_ANSWER = {
 }
 
 
+# A9.6: the month's AI money is spent; the assistant still helps with fixed words.
+RESTING_ANSWER = {
+    Lang.en: "The assistant has used its time for this month. For an exercise, follow the video in today's task. For "
+    "anything worrying call your doctor, and 103 in an emergency.",
+    Lang.ru: "Ассистент исчерпал своё время на этот месяц. Для упражнения смотрите видео в сегодняшнем задании. Если "
+    "что-то беспокоит, позвоните врачу, а в экстренном случае — 103.",
+    Lang.uz: "Yordamchi bu oy uchun vaqtini tugatdi. Mashq uchun bugungi vazifadagi videoga qarang. Biror narsa "
+    "tashvishlantirsa, shifokoringizga, shoshilinch holatda esa 103 ga qoʻngʻiroq qiling.",
+    Lang.uz_cyrl: "Ёрдамчи бу ой учун вақтини тугатди. Машқ учун бугунги вазифадаги видеога қаранг. Бирор нарса "
+    "ташвишлантирса, шифокорингизга, шошилинч ҳолатда эса 103 га қўнғироқ қилинг.",
+}
+
+
 def is_emergency(text: str) -> bool:
     return _EMERGENCY.search(_norm(text)) is not None
 

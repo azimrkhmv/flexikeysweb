@@ -155,3 +155,15 @@ def test_the_therapist_sees_topics_and_warnings_never_the_chat(client: TestClien
         403,
         404,
     )
+
+
+# A9.6: past the month's AI money the assistant gives fixed answers; emergencies still get 103.
+def test_over_the_monthly_limit_fixed_answers(client: TestClient, ai: FakeAi, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(settings, "ai_monthly_limit_usd", 0.0)
+    owner = parent(client)
+    child = add_child(client, owner)
+    url = f"{API}/children/{child}/assistant/messages"
+    r = client.post(url, headers=owner, json={"text": "How long should we play?", "lang": "en"}).json()
+    assert r["answer"].startswith("The assistant has used its time for this month") and ai.sent == []
+    r = client.post(url, headers=owner, json={"text": "Он не дышит", "lang": "ru"}).json()
+    assert r["emergency"] is True and "103" in r["answer"]

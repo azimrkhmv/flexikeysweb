@@ -37,6 +37,7 @@ class Settings(BaseSettings):
     openrouter_api_key: str = ""
     ai_model: str = "google/gemini-2.5-flash"  # placeholder until the blind test (E2) picks the model
     free_ai_messages_per_day: int = 20  # per family on Free (spec §12: "about 20"); Pro has no limit
+    ai_monthly_limit_usd: float = 50.0  # A9.6: past this the assistant gives fixed answers until next month
     intake_repeat_days: int = (
         90  # the questions come back every 3 months (spec)  # TASKS.md section 3: "Both numbers are settings"
     )

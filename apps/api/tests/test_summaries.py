@@ -8,6 +8,7 @@ from fastapi.testclient import TestClient
 from app.main import app
 from app.modules.assistant.ai import FakeAi, get_ai
 from app.modules.assistant.summaries import WeekFacts, only_given
+from app.settings import settings
 from tests.test_children import API, add_child, parent
 from tests.test_free_limits import free_family_with_plan
 from tests.test_videos_register import title
@@ -64,3 +65,12 @@ def test_plan_explanation(client: TestClient, ai: FakeAi) -> None:
     assert title(client.get(f"{API}/children/{add_child(client, owner)}/plan-explanation", headers=owner,
                             params={"lang": "en"})) == (404, "no_plan")  # fmt: skip
     assert client.get(url, headers=parent(client), params={"lang": "en"}).status_code == 404  # another family
+
+
+def test_over_the_monthly_limit_the_fixed_sentence(
+    client: TestClient, ai: FakeAi, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(settings, "ai_monthly_limit_usd", 0.0)
+    owner, child = free_family_with_plan(client)
+    r = client.get(f"{API}/children/{child}/weekly-summary", headers=owner, params={"lang": "en"}).json()
+    assert r["writtenBy"] == "template" and ai.sent == []

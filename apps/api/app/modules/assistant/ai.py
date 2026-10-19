@@ -7,10 +7,15 @@ import json
 import logging
 import urllib.request
 from dataclasses import dataclass, field
+from datetime import UTC, datetime
 from decimal import Decimal
 from typing import Protocol
 
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.errors import AppError
+from app.modules.assistant.models import AiUsage
 from app.settings import settings
 
 log = logging.getLogger("app.ai")
@@ -65,6 +70,13 @@ class OpenRouterAi:
         except Exception as e:  # the network, the provider or an odd answer: the parent can try again
             log.warning("AI call failed: %s", type(e).__name__)
             raise AppError(503, "ai_unavailable") from None
+
+
+async def over_budget(db: AsyncSession) -> bool:
+    """A9.6: this month's AI spending (UTC month) reached AI_MONTHLY_LIMIT_USD."""
+    month = datetime.now(UTC).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    spent = await db.scalar(select(func.coalesce(func.sum(AiUsage.cost_usd), 0)).where(AiUsage.created_at >= month))
+    return Decimal(spent or 0) >= Decimal(str(settings.ai_monthly_limit_usd))
 
 
 def get_ai() -> Ai:

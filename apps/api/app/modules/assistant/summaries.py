@@ -19,7 +19,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db import get_session
 from app.errors import AppError
 from app.modules.accounts.models import Lang
-from app.modules.assistant.ai import Ai, get_ai
+from app.modules.assistant.ai import Ai, get_ai, over_budget
 from app.modules.assistant.models import AiPurpose, AiUsage
 from app.modules.auth.session import CurrentUser
 from app.modules.children.consents import ConsentKind, has_consent
@@ -116,8 +116,10 @@ async def _write(
         words["goals"] = [GOAL_WORDS.get(g, g) for g in words["goals"]]
     prompt = WRITE.format(what=what, lang=LANG_NAME[lang], facts=json.dumps(words))
     try:
+        if await over_budget(db):  # A9.6
+            raise AppError(503, "ai_over_budget")
         reply = await ai.chat([{"role": "user", "content": prompt}])
-    except AppError:  # the AI did not answer: the fixed sentence, not cached
+    except AppError:  # the AI did not answer, or the month's money is spent: the fixed sentence, not cached
         return Written(text=FALLBACK[kind][lang].format(**facts.model_dump()), written_by="template")
     purpose = AiPurpose.weekly_summary if kind == "week" else AiPurpose.plan_explanation
     db.add(
