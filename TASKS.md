@@ -518,7 +518,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A8.7` "Voice recording" consent on the server (G8): a new consent kind; a My Voice card takes a recorded voice only while it is given, and withdrawing it deletes the recorded voices
   - Done when: in live mode a card's recorded voice saves with the consent, is refused without it, and is gone after withdrawing
   - Needs: G8
-- [ ] **Azim** — `A8.8` A phone invite to a therapist sends an SMS with the invite link (G9), through the SMS sender (shown on screen until Q6)
+- [x] **Azim** — `A8.8` A phone invite to a therapist sends an SMS with the invite link (G9), through the SMS sender (shown on screen until Q6)
   - Done when: a test sees one SMS with the link per phone invite, and none for a link-only invite
   - Needs: G9
 - [x] **Azim** — `B26` Connect the therapist invite, form, exercise choice and clips to the server

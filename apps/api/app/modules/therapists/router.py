@@ -24,11 +24,13 @@ from app.modules.accounts.models import Lang, Role, User
 from app.modules.audit import models as audit
 from app.modules.auth.router import normalize_phone
 from app.modules.auth.session import CurrentUser
+from app.modules.auth.sms import SmsSender, get_sms
 from app.modules.children.consents import ConsentKind, has_consent, require_consent
 from app.modules.children.models import Child, Sex
 from app.modules.children.router import get_visible_child, require_owner
 from app.modules.therapists.models import CareLink, ShareStatus, code_hash, link_for_code
 from app.schemas import ApiModel
+from app.settings import settings
 
 router = APIRouter(prefix="/children", tags=["therapists"])
 therapist_router = APIRouter(prefix="/therapist", tags=["therapists"])
@@ -36,6 +38,14 @@ Therapist = Annotated[User, Depends(require_role(Role.therapist))]
 
 INVITE_TTL = timedelta(days=7)
 MAX_OPEN = 5  # open invites and shares per child
+# G9: a phone invite tells the therapist by SMS, in the inviting parent's language. No child's name: an SMS passes
+# through the provider. The invite waits for that number, so signing in is all the therapist does.
+INVITE_SMS = {
+    Lang.uz: "FlexiKeys: sizni bolaning terapevti sifatida taklif qilishdi. Shu raqam bilan kiring: {url}",
+    Lang.uz_cyrl: "FlexiKeys: сизни боланинг терапевти сифатида таклиф қилишди. Шу рақам билан киринг: {url}",
+    Lang.ru: "FlexiKeys: вас пригласили как терапевта ребёнка. Войдите с этим номером: {url}",  # noqa: RUF001
+    Lang.en: "FlexiKeys: a family invites you as their child's therapist. Sign in with this number: {url}",
+}
 
 
 # ---------------------------------------------------------------- the owner
@@ -71,9 +81,14 @@ async def _out(db: AsyncSession, link: CareLink) -> ShareOut:
 
 @router.post("/{child_id}/therapists", status_code=201)
 async def invite(
-    child_id: uuid.UUID, body: TherapistInvite, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]
+    child_id: uuid.UUID,
+    body: TherapistInvite,
+    user: CurrentUser,
+    db: Annotated[AsyncSession, Depends(get_session)],
+    sms: Annotated[SmsSender, Depends(get_sms)],
 ) -> ShareOut:
-    """Invite a therapist to see this child. Owner only; needs the `therapist_share` consent."""
+    """Invite a therapist to see this child. Owner only; needs the `therapist_share` consent. A phone invite sends
+    the therapist an SMS with the sign-in link; a link invite sends nothing (the parent passes the link on)."""
     child = await get_visible_child(db, user, child_id)
     await require_owner(db, user, child.family_id)
     await require_consent(db, child_id, ConsentKind.therapist_share)
@@ -105,6 +120,8 @@ async def invite(
     )
     await db.commit()
     await db.refresh(link)
+    if link.phone:
+        await sms.send(link.phone, INVITE_SMS[user.lang].format(url=f"{settings.site_url}/login"))
     return (await _out(db, link)).model_copy(update={"code": code})
 
 

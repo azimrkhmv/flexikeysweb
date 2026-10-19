@@ -1093,7 +1093,8 @@ export interface paths {
         put?: never;
         /**
          * Invite
-         * @description Invite a therapist to see this child. Owner only; needs the `therapist_share` consent.
+         * @description Invite a therapist to see this child. Owner only; needs the `therapist_share` consent. A phone invite sends
+         *     the therapist an SMS with the sign-in link; a link invite sends nothing (the parent passes the link on).
          */
         post: operations["invite_api_v1_children__child_id__therapists_post"];
         delete?: never;

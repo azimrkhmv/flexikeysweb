@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     s3_bucket: str = "flexikeys"
     jwt_secret: str  # signs access tokens; long and random outside dev
     sms_provider: Literal["fake"] = "fake"  # a real provider is added after Q6
+    site_url: str = "http://localhost:3000"  # the website, for links in SMS (deploy: https://<domain>)
     # Encrypts health answers (app/crypto.py). Comma-separated; the first one encrypts. Never in git outside dev.
     health_keys: str
     max_children_per_family: int = 3
