@@ -515,6 +515,12 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `A8.6` Movement and feedback clips encrypted at rest in storage (spec §15 "encrypted storage"), for example MinIO server-side encryption with a key kept like the health key
   - Done when: a clip file read straight from the storage disk is not watchable
   - Needs: A8.3, A2.6
+- [ ] **Azim** — `A8.7` "Voice recording" consent on the server (G8): a new consent kind; a My Voice card takes a recorded voice only while it is given, and withdrawing it deletes the recorded voices
+  - Done when: in live mode a card's recorded voice saves with the consent, is refused without it, and is gone after withdrawing
+  - Needs: G8
+- [ ] **Azim** — `A8.8` A phone invite to a therapist sends an SMS with the invite link (G9), through the SMS sender (shown on screen until Q6)
+  - Done when: a test sees one SMS with the link per phone invite, and none for a link-only invite
+  - Needs: G9
 - [x] **Azim** — `B26` Connect the therapist invite, form, exercise choice and clips to the server
   - Done when: a therapist changes a restriction in the browser and the parent's plan changes
   - Needs: A8.3, A8.5, B24, B25
@@ -610,6 +616,9 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A10.5` Reminders 1 day and 2 hours before a visit
   - Done when: the reminder jobs run on time in tests
   - Needs: A10.4, A5.2
+- [ ] **Azim** — `A10.6` Visit reminders stop going by SMS (G10): the job keeps finding due visits but sends nothing until the mobile app's notifications exist
+  - Done when: a test sees no SMS for a visit tomorrow, and the job still marks the reminder as handled
+  - Needs: G10
 - [ ] **Azim** — `A11.1` Home Kit products, orders and delivery status
   - Done when: an order goes from placed to delivered
   - Needs: A1.1, G3
@@ -765,11 +774,14 @@ These are not programming. The named developer asks the right person and writes 
   - Needed for: B35, B36
 - [ ] **Azim** — `G5` Get the game catalogue (3 → 20 games) and the onboarding assessment document, both named as sources in the spec
   - Needed for: B16
-- [ ] **Azim** — `G8` Decide: does the parent's own recorded voice on a My Voice card need its own consent? The website asks for a "voice recording" consent; the new server has no such consent yet, so in live mode cards have photos but no recorded voice
+- [x] **Azim** — `G8` Decide: does the parent's own recorded voice on a My Voice card need its own consent? The website asks for a "voice recording" consent; the new server has no such consent yet, so in live mode cards have photos but no recorded voice
+  - Answer (2026-10-19): yes, its own consent (the website's "voice recording" consent). Work: A8.7
   - Needed for: recorded voices on My Voice cards in live mode
-- [ ] **Azim** — `G9` Decide with the founders (spec §6 PROPOSAL): does an admin check each therapist's diploma by hand before their first share is active? And should a phone invite send an SMS to the therapist? Now the share works once the therapist accepts, and the parent passes the invite on by Telegram or by telling the therapist
+- [x] **Azim** — `G9` Decide with the founders (spec §6 PROPOSAL): does an admin check each therapist's diploma by hand before their first share is active? And should a phone invite send an SMS to the therapist? Now the share works once the therapist accepts, and the parent passes the invite on by Telegram or by telling the therapist
+  - Answer (2026-10-19): no diploma check for the pilot. Yes, a phone invite sends the therapist an SMS with the link. Work: A8.8
   - Needed for: a diploma check before a share, and invite SMS
-- [ ] **Azim** — `G10` Decide: visit reminders (1 day and 2 hours before) go by SMS now (simulated until Q6). Keep SMS, or move them to Telegram or the mobile app with the other reminders (Q5)? Each real SMS costs money
+- [x] **Azim** — `G10` Decide: visit reminders (1 day and 2 hours before) go by SMS now (simulated until Q6). Keep SMS, or move them to Telegram or the mobile app with the other reminders (Q5)? Each real SMS costs money
+  - Answer (2026-10-19): the mobile app, later, with the other reminders (Q5). Work: A10.6
   - Needed for: real visit reminders
 - [ ] **Azim** — `G6` Get the final consent texts in 4 languages. They must say that try records are kept on the server for 90 days
   - Needed for: F5
