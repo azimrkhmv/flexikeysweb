@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { CreditCard, House, MapPin, ScrollText, Settings, Sparkles } from "lucide-react";
+import { CreditCard, House, MapPin, Package, ScrollText, Settings, Sparkles } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { useT } from "@/lib/i18n";
 
@@ -11,6 +11,7 @@ export default function ParentLayout({ children }: { children: ReactNode }) {
     { href: "/parent", label: t("parent.nav.overview"), icon: House },
     { href: "/parent/reports", label: t("parent.nav.reports"), icon: ScrollText },
     { href: "/parent/help", label: t("parent.nav.help"), icon: MapPin },
+    { href: "/parent/kit", label: t("parent.nav.kit"), icon: Package },
     { href: "/parent/assistant", label: t("parent.nav.assistant"), icon: Sparkles },
     { href: "/parent/billing", label: t("parent.nav.billing"), icon: CreditCard },
     { href: "/parent/account", label: t("parent.nav.account"), icon: Settings },

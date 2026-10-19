@@ -15,6 +15,7 @@ import { billingApi } from "./billing";
 import { careApi } from "./care";
 import { childrenApi } from "./children";
 import { intakeApi } from "./intake";
+import { kitsApi } from "./kits";
 import { placesApi } from "./places";
 import { playApi } from "./play";
 import { liveApi } from "../live/api";
@@ -29,7 +30,7 @@ export { dbStore } from "./db";
 export { LIVE } from "./mode";
 export { sel } from "./selectors";
 
-const mockApi = { ...authApi, ...childrenApi, ...intakeApi, ...playApi, ...careApi, ...aiApi, ...billingApi, ...adminApi, ...placesApi };
+const mockApi = { ...authApi, ...childrenApi, ...intakeApi, ...playApi, ...careApi, ...aiApi, ...billingApi, ...adminApi, ...placesApi, ...kitsApi };
 
 const notConnected = Object.fromEntries(
   Object.keys(mockApi).map((k) => [k, async () => Promise.reject(new ApiError("not_available"))]),

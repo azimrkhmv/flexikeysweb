@@ -543,3 +543,28 @@ export interface Booking {
   cancelledBy?: "family" | "clinic";
   at: string;
 }
+
+/** Home Kit (spec §9, apps/api kits/): the standard box, by courier to an address or for pickup at a partner centre. */
+export type KitDelivery = "courier" | "pickup";
+export type KitStatus = "placed" | "confirmed" | "shipped" | "delivered" | "cancelled";
+export interface KitOrder {
+  id: string;
+  familyId: string;
+  childId: string;
+  productSlug: string;
+  /** The box's tools and price on the day of the order. */
+  items: string[];
+  priceSom: number;
+  delivery: KitDelivery;
+  region: string;
+  district: string;
+  address?: string;
+  pickupPlaceId?: string;
+  phone: string;
+  /** P17a: allergies to materials (latex, rubber, dyes); "yes" names them. Our team checks the box before sending. */
+  allergy: "yes" | "no";
+  allergyWhich?: string;
+  status: KitStatus;
+  statusAt: string;
+  createdAt: string;
+}

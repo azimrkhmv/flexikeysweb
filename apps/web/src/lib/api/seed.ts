@@ -127,6 +127,7 @@ export function seed(): DB {
     places: samplePlaces(now),
     placeReports: [],
     ...sampleSlots(now),
+    kitOrders: [],
     feedbackClips: [],
   };
 

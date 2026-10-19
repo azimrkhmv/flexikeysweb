@@ -323,6 +323,8 @@ export const sel = {
         return { ...b, slot, place: db.places.find((p) => p.id === slot.placeId) };
       })
       .sort((a, b) => a.slot.startsAt.localeCompare(b.slot.startsAt)),
+  /** The family's Home Kit orders, newest first (every member sees them). */
+  kitOrders: (db: DB, familyId: string | null) => (db.kitOrders ?? []).filter((o) => o.familyId === familyId).sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
   placeReported: (db: DB, placeId: string, userId: string) => (db.placeReports ?? []).some((r) => r.placeId === placeId && r.userId === userId),
   /** The helpers of a family and the invites still open (A8.4). */
   helpers: (db: DB, familyId: string | null) => ({

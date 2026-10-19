@@ -20,7 +20,7 @@ test.describe("axe", () => {
 
   test("parent area", async ({ page }) => {
     await loginAs(page, "Parent");
-    for (const p of ["/parent", "/parent/child/ch_ali", "/parent/child/ch_ali#aac", "/parent/children/new", "/parent/reports", "/parent/help", "/parent/billing", "/parent/assistant", "/parent/account"]) await scan(page, p);
+    for (const p of ["/parent", "/parent/child/ch_ali", "/parent/child/ch_ali#aac", "/parent/children/new", "/parent/reports", "/parent/help", "/parent/kit", "/parent/billing", "/parent/assistant", "/parent/account"]) await scan(page, p);
   });
 
   test("reviewer, therapist and admin areas", async ({ page }) => {

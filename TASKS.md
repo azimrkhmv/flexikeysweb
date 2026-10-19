@@ -643,7 +643,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `B37` Connect Find help, booking and the clinic dashboard to the server
   - Done when: a parent books a real free time in the browser and the clinic confirms it
   - Needs: A10.2, A10.5, B34, B35, B36
-- [ ] **Azim** — `B38` Home Kit order screen: allergy question, address, delivery or pickup
+- [x] **Azim** — `B38` Home Kit order screen: allergy question, address, delivery or pickup
   - Done when: the order button stays off until the allergy question is answered
   - Needs: G3 (placeholders for now)
 - [ ] **Azim** — `B39` Connect the Home Kit order to the server
