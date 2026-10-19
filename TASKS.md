@@ -616,7 +616,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A10.5` Reminders 1 day and 2 hours before a visit
   - Done when: the reminder jobs run on time in tests
   - Needs: A10.4, A5.2
-- [ ] **Azim** — `A10.6` Visit reminders stop going by SMS (G10): the job keeps finding due visits but sends nothing until the mobile app's notifications exist
+- [x] **Azim** — `A10.6` Visit reminders stop going by SMS (G10): the job keeps finding due visits but sends nothing until the mobile app's notifications exist
   - Done when: a test sees no SMS for a visit tomorrow, and the job still marks the reminder as handled
   - Needs: G10
 - [ ] **Azim** — `A11.1` Home Kit products, orders and delivery status

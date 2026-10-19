@@ -1,6 +1,8 @@
-"""Visit reminders (A10.5, spec §11 PROPOSAL): 1 day and 2 hours before, by SMS to the parent who booked.
-Run by the worker every 5 minutes (app/worker.py). Each reminder goes once; a cancelled visit gets none.
-SMS stays simulated until a provider is chosen (Q6)."""
+"""Visit reminders (A10.5, spec §11 PROPOSAL): 1 day and 2 hours before, to the parent who booked.
+Run by the worker every 5 minutes (app/worker.py). Each reminder is handled once; a cancelled visit gets none.
+
+G10: they will go through the mobile app's notifications, with the other reminders (Q5). Until then the job still
+finds and marks each due reminder, but sends no SMS (BY_SMS)."""
 
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
@@ -14,6 +16,7 @@ from app.modules.places.models import Booking, BookingStatus, Place, Slot
 
 TASHKENT = ZoneInfo("Asia/Tashkent")
 DAY, SOON = timedelta(hours=24), timedelta(hours=2)
+BY_SMS = False  # G10: no SMS; the mobile app sends these once it exists
 
 TEXT = {
     Lang.uz: ("FlexiKeys: ertaga {time} — {place}", "FlexiKeys: bugun {time} — {place}"),
@@ -24,7 +27,7 @@ TEXT = {
 
 
 async def send_due(db: AsyncSession, sms: SmsSender, now: datetime) -> int:
-    """Send every reminder that is due at `now`; returns how many went."""
+    """Handle every reminder that is due at `now` (sent by SMS only with BY_SMS); returns how many."""
     rows = await db.execute(
         select(Booking, Slot, Place, User)
         .join(Slot, Slot.id == Booking.slot_id)
@@ -42,10 +45,11 @@ async def send_due(db: AsyncSession, sms: SmsSender, now: datetime) -> int:
         soon = slot.starts_at - now <= SOON
         if not soon and b.reminded_day_at is not None:
             continue
-        text = TEXT[user.lang][1 if soon else 0]
-        await sms.send(
-            user.phone, text.format(time=slot.starts_at.astimezone(TASHKENT).strftime("%H:%M"), place=place.name)
-        )
+        if BY_SMS:
+            text = TEXT[user.lang][1 if soon else 0]
+            await sms.send(
+                user.phone, text.format(time=slot.starts_at.astimezone(TASHKENT).strftime("%H:%M"), place=place.name)
+            )
         if soon:
             b.reminded_soon_at = now
         b.reminded_day_at = b.reminded_day_at or now

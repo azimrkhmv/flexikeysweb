@@ -1,6 +1,7 @@
 """A10.5: visit reminders 1 day and 2 hours before, each once, never for a cancelled visit; the worker runs them
 every 5 minutes."""
 
+import uuid
 from collections.abc import Iterator
 from datetime import datetime, timedelta
 from typing import Any
@@ -10,6 +11,7 @@ from fastapi.testclient import TestClient
 
 from app.main import app
 from app.modules.places import reminders
+from app.modules.places.models import Booking
 from app.worker import WorkerSettings, remind_visits
 from tests.test_bookings import published
 from tests.test_children import API, add_child, parent
@@ -32,7 +34,9 @@ class Outbox:
         self.sent.append((phone, text))
 
 
-def test_reminders_go_a_day_and_two_hours_before_once(client: TestClient) -> None:
+def test_reminders_go_a_day_and_two_hours_before_once(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The timing, with SMS switched on (as it would be for the mobile app's notifications)."""
+    monkeypatch.setattr(reminders, "BY_SMS", True)
     _, _, slot = published(client)  # 26 hours from now
     owner = parent(client)
     phone = client.get(f"{API}/me", headers=owner).json()["phone"]
@@ -72,3 +76,23 @@ def test_reminders_go_a_day_and_two_hours_before_once(client: TestClient) -> Non
 def test_the_worker_runs_reminders_every_5_minutes() -> None:
     job = next(j for j in WorkerSettings.cron_jobs if j.coroutine is remind_visits)
     assert job.minute == set(range(0, 60, 5))
+
+
+def test_no_sms_for_now_but_the_reminder_is_handled(client: TestClient) -> None:
+    """G10: visit reminders wait for the mobile app; the job sends nothing but still marks each one once."""
+    _, _, slot = published(client)
+    owner = parent(client)
+    child = add_child(client, owner)
+    b = client.post(
+        f"{API}/children/{child}/bookings", headers=owner, json={"slotId": slot, "mode": "in_person"}
+    ).json()
+    box = Outbox()
+    handled: list[int] = []
+
+    async def go(db: Any) -> None:
+        handled.append(await reminders.send_due(db, box, datetime.fromisoformat(b["startsAt"]) - timedelta(hours=23)))
+        booking = await db.get(Booking, uuid.UUID(b["id"]))
+        assert booking.reminded_day_at is not None
+
+    run(client, go)
+    assert box.sent == [] and handled[0] >= 1

@@ -35,10 +35,10 @@ async def clean_old_tries(ctx: dict[str, Any]) -> str:
 
 
 async def remind_visits(ctx: dict[str, Any]) -> str:
-    """Every 5 minutes: visit reminders 1 day and 2 hours before (A10.5)."""
+    """Every 5 minutes: visit reminders 1 day and 2 hours before (A10.5; no SMS for now, G10)."""
     async with SessionLocal() as db:
-        sent = await reminders.send_due(db, get_sms(), datetime.now(UTC))
-    return f"sent {sent} reminders"
+        handled = await reminders.send_due(db, get_sms(), datetime.now(UTC))
+    return f"handled {handled} reminders"
 
 
 async def purge_deleted_files(ctx: dict[str, Any]) -> str:
