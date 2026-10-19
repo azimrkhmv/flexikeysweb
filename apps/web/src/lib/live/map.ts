@@ -4,7 +4,7 @@
 import { AAC_BY_ID, CUSTOM_PREFIX } from "@/content/aac";
 import { DEFAULT_PROFILE } from "@/lib/adaptive";
 import { TRIAL_DAYS } from "@/content/plans";
-import type { BookingOut, KitOrderOut, CardOut, ChildOut, ClinicBooking, ClinicSlot, ClipOut, ConsentKind, Consents, DailyOut, FreeSlot, InUse, Me, MyPlace, PlaceView, PlanOut, PlanStatus, ReviewItem, RoundOut, ShareOut, SharedChild, UserOut } from "@/lib/server/types";
+import type { AdminUser, AuditOut, BookingOut, KitOrderOut, CardOut, ChildOut, ClinicBooking, ClinicSlot, ClipOut, ConsentKind, Consents, DailyOut, FreeSlot, InUse, Me, MyPlace, PlaceView, PlanOut, PlanStatus, ReviewItem, RoundOut, ShareOut, SharedChild, UserOut } from "@/lib/server/types";
 import type { DB } from "@/lib/api/schema";
 import type { Lang } from "@/lib/translate";
 import type { ChildSupport, ActivityKind, AgeBand, BodyArea, DailyAnswer, ExerciseVideo, FnLevel, GoalKey, IntakeAnswer, IntakeValue, L10n, PausedDay, Restriction, Roadmap, TaskDone,
@@ -14,7 +14,7 @@ import type { ChildSupport, ActivityKind, AgeBand, BodyArea, DailyAnswer, Exerci
 
 // ---------------------------------------------------------------- backend shapes (subset we read)
 /** GET /me on the new server; the admin list (UserOut) has no name or consent fields. */
-export type BUser = UserOut & Partial<Pick<Me, "name" | "consentVersion" | "needsSignup" | "needsSecondStep">>;
+export type BUser = UserOut & Partial<Pick<Me, "name" | "consentVersion" | "needsSignup" | "needsSecondStep">> & Partial<Pick<AdminUser, "createdAt">>;
 export interface BChild {
   id: string; parent_id: string | null; display_name: string; learning_language: string; ui_language: string;
   birth_year: number | null; avatar_id: string | null; access_mode?: string; equipped?: Record<string, string>; created_at: string;
@@ -50,7 +50,7 @@ export function userFrom(u: BUser): User {
     district: u.region && u.district ? { region: u.region, district: u.district } : undefined,
     consentVersion: u.consentVersion ?? undefined,
     needsSecondStep: u.needsSecondStep || undefined,
-    createdAt: "",
+    createdAt: u.createdAt ?? "",
   };
 }
 
@@ -315,16 +315,11 @@ export const aacEventFrom = (childId: string, s: BAacSentence, k: number): AacEv
 // ---------------------------------------------------------------- billing
 
 // ---------------------------------------------------------------- admin console
-export interface BAudit { id: string; actor_id: string | null; action: string; resource_type: string; resource_id: string | null; payload: Record<string, unknown> | null; created_at: string }
-export interface BOverview {
-  users: number; children: number; paying: number; sessions_7d: number; ai_questions_by_role: Record<string, number>; ai_questions_by_day: Record<string, number>;
-  health: { database: boolean; redis: boolean };
-}
-/** Audit entry: the diff is the server's payload, shown compactly. */
-export const auditFrom = (a: BAudit): AuditLog => ({
-  id: a.id, actorId: a.actor_id ?? "", action: a.action, target: a.resource_id ?? a.resource_type,
-  diff: a.payload && Object.keys(a.payload).length ? Object.entries(a.payload).map(([k, v]) => `${k}: ${String(v)}`).join(", ") : undefined,
-  at: a.created_at,
+/** Audit entry (GET /admin/audit-logs): the diff is the server's data, shown compactly. */
+export const auditFrom = (a: AuditOut): AuditLog => ({
+  id: a.id, actorId: a.actorId ?? "", action: a.action, target: a.targetId ?? "",
+  diff: Object.keys(a.data).length ? Object.entries(a.data).map(([k, v]) => `${k}: ${String(v)}`).join(", ") : undefined,
+  at: a.createdAt,
 });
 
 

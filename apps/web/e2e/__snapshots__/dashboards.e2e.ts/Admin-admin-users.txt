@@ -2,7 +2,7 @@ Users
 
 Every admin action is recorded in the audit log.
 
-Search by name or email
+Search by name or phone
 All roles
 Parent
 Therapist

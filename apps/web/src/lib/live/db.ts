@@ -7,13 +7,13 @@ import { ApiError, type ChildAuth, type DB } from "@/lib/api/schema";
 import { sessionStore } from "@/lib/session";
 import { useStore } from "@/lib/store";
 import { http } from "./http";
-import type { KitOrderOut, BookingOut, ClinicBooking, ClinicSlot, FreeSlot, MyPlace, PlaceView, CardOut, ChildOut, ClipOut, Helpers, InviteForMe, Consents, DailyOut, FormOut, InUse, InviteOut, PlanOut, PlanStatus, ProfileOut, ReviewItem, RoundOut, RoundSummary, ShareOut, SharedChild } from "@/lib/server/types";
+import type { AuditOut, FlagOut, Overview, KitOrderOut, BookingOut, ClinicBooking, ClinicSlot, FreeSlot, MyPlace, PlaceView, CardOut, ChildOut, ClipOut, Helpers, InviteForMe, Consents, DailyOut, FormOut, InUse, InviteOut, PlanOut, PlanStatus, ProfileOut, ReviewItem, RoundOut, RoundSummary, ShareOut, SharedChild } from "@/lib/server/types";
 import {
   kitOrderFrom, bookingFrom, clinicBookingFrom, myPlaceFrom, placeFrom, slotFrom,
   answersFrom, clipsFrom, dailyFrom, doneFrom, familyChildFrom, familyConsentsFrom, familyPlanFrom, inUseFrom, pausedFrom, planFrom, planVideosFrom, reviewVideosFrom, shareFrom, sharedChildFrom, voiceCardFrom,
   aacCardFrom, auditFrom, childFrom, notificationFrom, levelsFrom, profileFrom,
   taskFrom, userFrom,
-  type BAacCard, type BAudit, type BOverview, type BNotification, type BChild, type BLevel,
+  type BAacCard, type BNotification, type BChild, type BLevel,
   type BProfile, type BTask, type BUser,
 } from "./map";
 import { liveChild } from "./state";
@@ -306,18 +306,17 @@ export function useLiveDb(): DB {
 
     if (role === "physio") db.videos = reviewVideosFrom(review.flatMap((q) => q.data ?? []));
 
-    // ponytail: some of these lists are not on apps/api yet (A13.8); each page shows what the server answers.
     if (role === "admin" && user && admin.some((q) => q.data)) {
       const at = (k: (typeof ADMIN)[number]) => admin[ADMIN.indexOf(k)]?.data;
       db.users = ((at("users") as BUser[] | undefined) ?? []).map(userFrom);
       if (!db.users.some((u) => u.id === user.id)) db.users.push(user);
-      db.audit = ((at("audit") as BAudit[] | undefined) ?? []).map(auditFrom);
-      db.flags = ((at("flagList") as { key: string; enabled: boolean; description: string | null }[] | undefined) ?? []).map((f) => ({ key: f.key, enabled: f.enabled, description: f.description ?? "" }));
+      db.audit = ((at("audit") as AuditOut[] | undefined) ?? []).map(auditFrom);
+      db.flags = ((at("flagList") as FlagOut[] | undefined) ?? []).map((f) => ({ key: f.key, enabled: f.enabled, description: f.description }));
       db.kitOrders = ((at("kitOrders") as KitOrderOut[] | undefined) ?? []).map((o) => kitOrderFrom("", o));
-      const ov = at("overview") as BOverview | undefined;
+      const ov = at("overview") as Overview | undefined;
       if (ov)
         db.adminStats = {
-          users: ov.users, children: ov.children, paying: ov.paying, sessions: ov.sessions_7d, aiByRole: ov.ai_questions_by_role, aiByDay: ov.ai_questions_by_day,
+          users: ov.users, children: ov.children, paying: ov.paying, sessions: ov.sessionsWeek, aiByRole: ov.aiQuestionsByRole, aiByDay: ov.aiQuestionsByDay,
           health: { db: ov.health.database, redis: ov.health.redis },
         };
     }

@@ -716,7 +716,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `B54` `apps/web/README.md`, "Live mode": it still describes the old backend (its repository, Google sign-in, SMTP, Mailpit, Payme/Click test keys). Rewrite it for `apps/api`
   - Done when: every step in that section works with `apps/api`
   - Needs: —
-- [ ] **Azim** — `B56` Connect the admin console's overview, users, audit log and feature flags to the server
+- [x] **Azim** — `B56` Connect the admin console's overview, users, audit log and feature flags to the server
   - Done when: in live mode an admin sees the real users and audit log in the browser
   - Needs: A13.8
 - [ ] **Azim** — `B43` New text for the public pages and the pricing page
