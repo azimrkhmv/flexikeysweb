@@ -13,11 +13,11 @@ import { useDismiss } from "@/lib/useDismiss";
 
 const LINKS = [
   { href: "/pricing", key: "nav.pricing" },
-  { href: "/#schools", key: "nav.schools" },
+  { href: "/#clinics", key: "nav.clinics" },
   { href: "/#therapists", key: "nav.therapists" },
 ];
 
-/** Public-page link in the current URL language: "/pricing" → "/ru/pricing", "/#schools" → "/ru#schools". */
+/** Public-page link in the current URL language: "/pricing" → "/ru/pricing", "/#clinics" → "/ru#clinics". */
 export function useLocalePath() {
   const lang = useRouteLang();
   return (path: string) => (!lang ? path : path === "/" ? `/${lang}` : path.startsWith("/#") ? `/${lang}${path.slice(1)}` : `/${lang}${path}`);
@@ -104,7 +104,7 @@ export function Footer() {
           <h2 className="font-extrabold text-ink">{t("mkt.footer.product")}</h2>
           <ul className="space-y-2">
             <li><Link href={lp("/pricing")}>{t("nav.pricing")}</Link></li>
-            <li><Link href={lp("/#schools")}>{t("nav.schools")}</Link></li>
+            <li><Link href={lp("/#clinics")}>{t("nav.clinics")}</Link></li>
             <li><Link href={lp("/#therapists")}>{t("nav.therapists")}</Link></li>
             <li><Link href="/demo">{t("mkt.hero.demo")}</Link></li>
           </ul>

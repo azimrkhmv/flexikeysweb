@@ -15,11 +15,11 @@ test.describe("public site i18n + SEO", () => {
 
   test("pages are server-rendered in the URL's language with hreflang alternates", async ({ request }) => {
     const html = await (await request.get("/ru/pricing")).text();
-    expect(html).toContain("Простые и честные цены"); // in the HTML itself, before any JavaScript
+    expect(html).toContain("Free и Pro"); // in the HTML itself, before any JavaScript
     expect(html).toMatch(/<div lang="ru">/);
     expect(html).toMatch(/<link rel="canonical" href="https:\/\/[^"]+\/ru\/pricing"/);
     for (const l of ["uz", "en", "x-default"]) expect(html).toMatch(new RegExp(`<link rel="alternate" hrefLang="${l}" href="https://[^"]+/(uz|en)/pricing"`));
-    expect(html).toMatch(/<title>Простые и честные цены · FlexiKeys<\/title>/);
+    expect(html).toMatch(/<title>Free и Pro · FlexiKeys<\/title>/);
     expect(html).toContain('property="og:locale" content="ru_RU"');
   });
 
@@ -40,7 +40,7 @@ test.describe("public site i18n + SEO", () => {
     await page.goto("/en/pricing");
     await page.getByRole("banner").getByRole("combobox").first().selectOption("ru");
     await expect(page).toHaveURL(/\/ru\/pricing$/);
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Простые и честные цены");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Free и Pro");
     await expect(page.getByRole("banner").getByRole("link", { name: "Цены" }).first()).toHaveAttribute("href", "/ru/pricing");
   });
 

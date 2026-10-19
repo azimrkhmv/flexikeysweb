@@ -3,8 +3,8 @@
 // Client-side registration of the marketing strings (a server-side import never reaches the browser).
 import "@/messages/public";
 import {
-  Check, ChevronRight, CirclePlay, CircleX, Cloud, Download, EyeOff, Gamepad2, Hand, House, MapPin, Pointer, Power, School,
-  ShieldCheck, Sparkles, Sprout, Stethoscope, Target, Timer, type LucideIcon,
+  CalendarDays, Check, ChevronRight, CirclePlay, CircleX, ClipboardList, Download, EyeOff, Hand, Hospital, House, MapPin, Pointer,
+  ShieldCheck, Sparkles, Sprout, Stethoscope, Target, Timer, Video, type LucideIcon,
 } from "lucide-react";
 import { Mascot } from "@/components/Mascot";
 import { Chip, LinkButton, TONES, type Tone } from "@/components/ui";
@@ -26,7 +26,6 @@ export function HomePage() {
         <ArchetypesTitle />
         <Archetypes />
       </section>
-      <Games />
       <Audiences />
       <Trust />
       <Closing />
@@ -148,10 +147,10 @@ function Principles() {
 }
 
 const STEPS: [LucideIcon, Tone][] = [
-  [Power, "lavender"],
-  [Gamepad2, "leaf"],
-  [Sprout, "teal"],
-  [Cloud, "sky"],
+  [ClipboardList, "lavender"],
+  [CalendarDays, "leaf"],
+  [Video, "teal"],
+  [Sprout, "sky"],
 ];
 
 function HowItWorks() {
@@ -229,54 +228,11 @@ function ArchetypesTitle() {
   );
 }
 
-const GAMES: { n: number; key: string; art: string; tone: Tone; skill: string; level: string; night?: boolean }[] = [
-  { n: 1, key: "voice", art: "🗣️💬", tone: "sky", skill: "communication", level: "start" },
-  { n: 7, key: "animals", art: "🐱🐶🐦", tone: "leaf", skill: "world", level: "basic" },
-  { n: 11, key: "light", art: "✨⭐✨", tone: "lavender", skill: "memory", level: "basic", night: true },
-  { n: 12, key: "missing", art: "🍎🧸❔", tone: "peach", skill: "memory", level: "medium" },
-  { n: 15, key: "sort", art: "🍌🚗🍎", tone: "sun", skill: "flexibility", level: "medium" },
-  { n: 18, key: "task", art: "📋☁️", tone: "teal", skill: "specialist", level: "individual" },
-  { n: 3, key: "keys", art: "⌨️🔤", tone: "sky", skill: "typing", level: "basic" },
-  { n: 5, key: "colors", art: "🟡🔵🟢", tone: "lavender", skill: "attention", level: "basic" },
-];
-
-function Games() {
-  const t = useT();
-  return (
-    <section className={section} aria-labelledby="games-title">
-      <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
-        <h2 id="games-title" className="text-3xl font-extrabold text-ink sm:text-4xl">{t("mkt.games.title")}</h2>
-        <Chip tone="gray" className="text-sm">{t("mkt.games.count", { n: GAMES.length })}</Chip>
-      </div>
-      <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {GAMES.map((g) => (
-          <li key={g.key} className="flex flex-col rounded-fk border border-line bg-surface p-4 shadow-soft">
-            <h3 className="font-extrabold text-ink">
-              <span className="text-muted">{g.n}.</span> {t(`mkt.g.${g.key}.t`)}
-            </h3>
-            <div
-              aria-hidden
-              className={`mt-3 grid h-24 place-items-center rounded-2xl text-4xl tracking-widest ${g.night ? "" : TONES[g.tone]}`}
-              style={g.night ? { background: "linear-gradient(135deg,#3b4a7c,#6070a8)" } : undefined}
-            >
-              <span className={g.night ? "fk-glow" : ""}>{g.art}</span>
-            </div>
-            <p className="mt-3 flex-1 text-sm leading-relaxed text-ink-2">{t(`mkt.g.${g.key}.d`)}</p>
-            <div className="mt-3 flex flex-wrap gap-1.5">
-              <Chip tone={g.tone}>{t(`mkt.chip.${g.skill}`)}</Chip>
-              <Chip tone={g.level === "individual" ? "gray" : g.level === "start" ? "sun" : "peach"}>{t(`mkt.chip.${g.level}`)}</Chip>
-            </div>
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
-
-const AUDIENCES: { id: string; icon: LucideIcon; tone: Tone }[] = [
-  { id: "families", icon: House, tone: "peach" },
-  { id: "schools", icon: School, tone: "sky" },
-  { id: "therapists", icon: Stethoscope, tone: "lavender" },
+// Families sign up; a therapist is invited by the family, a clinic gets its account from our team: both sign in.
+const AUDIENCES: { id: string; icon: LucideIcon; tone: Tone; href: string }[] = [
+  { id: "families", icon: House, tone: "peach", href: "/signup" },
+  { id: "therapists", icon: Stethoscope, tone: "lavender", href: "/login" },
+  { id: "clinics", icon: Hospital, tone: "sky", href: "/login" },
 ];
 
 function Audiences() {
@@ -285,7 +241,7 @@ function Audiences() {
     <section className={section} aria-labelledby="who-title">
       <SectionTitle id="who-title" title={t("mkt.who.title")} center />
       <div className="grid gap-6 lg:grid-cols-3">
-        {AUDIENCES.map(({ id, icon: Icon, tone }) => (
+        {AUDIENCES.map(({ id, icon: Icon, tone, href }) => (
           <article key={id} id={id} className="flex scroll-mt-24 flex-col rounded-fk-lg border border-line bg-surface p-6 shadow-soft sm:p-8">
             <span className={`grid size-14 place-items-center rounded-2xl ${TONES[tone]}`}>
               <Icon className="size-7" aria-hidden />
@@ -300,7 +256,7 @@ function Audiences() {
                 </li>
               ))}
             </ul>
-            <LinkButton href="/signup" variant="soft" className="mt-6 self-start">
+            <LinkButton href={href} variant="soft" className="mt-6 self-start">
               {t(`mkt.${id}.cta`)}
             </LinkButton>
           </article>

@@ -719,9 +719,12 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `B56` Connect the admin console's overview, users, audit log and feature flags to the server
   - Done when: in live mode an admin sees the real users and audit log in the browser
   - Needs: A13.8
-- [ ] **Azim** — `B43` New text for the public pages and the pricing page
+- [x] **Azim** — `B43` New text for the public pages and the pricing page
   - Done when: they describe the new product, not the old 16 levels
   - Needs: G3 (placeholders for now)
+- [ ] **Azim** — `B57` Privacy and terms pages: they still describe schools, teachers, emails and Payme/Click payments. Rewrite them for the new product with the final consent texts and the lawyer's answers
+  - Done when: they match the consents the app asks for and say where the data is stored
+  - Needs: G6, G7
 - [ ] **Azim** — `B44` Native-speaker check of the Uzbek Latin, Uzbek Cyrillic and Russian text
   - Done when: a named person has signed off each language
   - Needs: —
