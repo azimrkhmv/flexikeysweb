@@ -286,8 +286,23 @@ export const sel = {
           a.name.localeCompare(b.name),
       );
   },
+  place: (db: DB, placeId: string) => (db.places ?? []).find((p) => p.id === placeId),
   /** Checked longer than 6 months ago: "price not recently checked" (spec §11). */
   priceOld: (p: Place, now = Date.now()) => now - Date.parse(p.checkedAt) > PRICE_FRESH_DAYS * DAY,
+  /** The free times still to come, earliest first; a taken time is never listed (the server's /places/{id}/slots). */
+  freeSlots(db: DB, placeId: string, now = Date.now()) {
+    const taken = new Set((db.bookings ?? []).filter((b) => b.status !== "cancelled").map((b) => b.slotId));
+    return (db.slots ?? []).filter((s) => s.placeId === placeId && Date.parse(s.startsAt) > now && !taken.has(s.id)).sort((a, b) => a.startsAt.localeCompare(b.startsAt));
+  },
+  /** A child's bookings with their time and place, by time. */
+  bookingsOf: (db: DB, childId: string) =>
+    (db.bookings ?? [])
+      .filter((b) => b.childId === childId)
+      .map((b) => {
+        const slot = db.slots.find((s) => s.id === b.slotId)!;
+        return { ...b, slot, place: db.places.find((p) => p.id === slot.placeId) };
+      })
+      .sort((a, b) => a.slot.startsAt.localeCompare(b.slot.startsAt)),
   placeReported: (db: DB, placeId: string, userId: string) => (db.placeReports ?? []).some((r) => r.placeId === placeId && r.userId === userId),
   /** The helpers of a family and the invites still open (A8.4). */
   helpers: (db: DB, familyId: string | null) => ({

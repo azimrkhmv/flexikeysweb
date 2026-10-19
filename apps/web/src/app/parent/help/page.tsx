@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { LocateFixed, MapPin, Phone, Send } from "lucide-react";
-import { Button, Card, Chip, Empty, PageHeader, Textarea, useAction } from "@/components/ui";
+import { CalendarPlus, LocateFixed, MapPin, Phone, Send } from "lucide-react";
+import { Button, Card, Chip, Empty, LinkButton, PageHeader, Textarea, useAction } from "@/components/ui";
 import { needsFor } from "@/content/places";
 import { regionById } from "@/content/districts";
 import { fmtDate, fmtSum } from "@/lib/format";
@@ -60,6 +60,7 @@ function Report({ place }: { place: Place }) {
 function PlaceCard({ place }: { place: Place & { distanceKm?: number } }) {
   const t = useT();
   const [lang] = useLang();
+  const db = useDb();
   const price =
     place.kind === "state_centre" && place.priceMin === undefined
       ? t("help.free")
@@ -106,7 +107,54 @@ function PlaceCard({ place }: { place: Place & { distanceKm?: number } }) {
           </a>
         )}
       </div>
+      {sel.freeSlots(db, place.id).length > 0 && (
+        <LinkButton href={`/parent/help/${place.id}`} size="sm">
+          <CalendarPlus className="size-4" aria-hidden /> {t("book.cta")}
+        </LinkButton>
+      )}
       <Report place={place} />
+    </Card>
+  );
+}
+
+/** The family's visits (B35): time, place, in person or online, status; the online link once the clinic confirms. */
+function Visits() {
+  const t = useT();
+  const [lang] = useLang();
+  const db = useDb();
+  const me = sel.me(db);
+  const cancel = useAction(api.cancelBooking);
+  const visits = me ? sel.childrenOf(db, me.id).flatMap((c) => sel.bookingsOf(db, c.id).map((b) => ({ ...b, child: c }))) : [];
+  if (visits.length === 0) return null;
+  return (
+    <Card className="mb-6 space-y-3">
+      <h2 className="font-extrabold text-ink">{t("book.visits")}</h2>
+      <ul className="space-y-2">
+        {visits.map((v) => (
+          <li key={v.id} className="flex flex-wrap items-center gap-2 rounded-2xl bg-surface-2 p-3 text-sm">
+            <span className="min-w-0 flex-1">
+              <span className="block font-bold">
+                {fmtDate(v.slot.startsAt, lang, "visit")} · {v.place?.name}
+              </span>
+              <span className="block text-muted">
+                {v.child.name} · {t(`book.mode.${v.mode}`)}
+              </span>
+            </span>
+            <Chip tone={v.status === "confirmed" ? "leaf" : v.status === "booked" ? "sky" : "gray"}>{t(`book.status.${v.status}`)}</Chip>
+            {v.status === "confirmed" && v.onlineLink && (
+              <a href={v.onlineLink} target="_blank" rel="noreferrer" className="font-bold text-primary underline">
+                {t("book.join")}
+              </a>
+            )}
+            {v.status !== "cancelled" && (
+              <Button size="sm" variant="ghost" pending={cancel.pending} onClick={() => cancel.run(v.childId, v.id)}>
+                {t("book.cancel")}
+              </Button>
+            )}
+          </li>
+        ))}
+      </ul>
+      {cancel.error && <p role="alert" className="text-sm font-semibold text-[#8f3a2c]">{cancel.error}</p>}
     </Card>
   );
 }
@@ -136,6 +184,7 @@ export default function FindHelp() {
   return (
     <>
       <PageHeader title={t("help.title")} subtitle={t("help.subtitle")} />
+      <Visits />
       {sel.places(db, null, me).some((p) => p.sample) && (
         <p role="note" className="mb-4 rounded-2xl bg-sun-soft px-4 py-3 text-sm font-semibold text-ink">
           {t("help.sampleNote")}

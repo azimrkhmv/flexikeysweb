@@ -516,3 +516,28 @@ export interface Place {
   /** Demo only: a made-up place (G2). */
   sample?: boolean;
 }
+
+/** A free time a clinic publishes (apps/api Slot): booked in person, online, or either. */
+export interface Slot {
+  id: string;
+  placeId: string;
+  startsAt: string;
+  minutes: number;
+  specialist?: string;
+  inPerson: boolean;
+  online: boolean;
+}
+
+export type BookingMode = "in_person" | "online";
+/** A family's booking of one free time (apps/api Booking). The family pays the clinic directly. */
+export interface Booking {
+  id: string;
+  slotId: string;
+  childId: string;
+  bookedBy: string;
+  mode: BookingMode;
+  status: "booked" | "confirmed" | "cancelled";
+  onlineLink?: string;
+  cancelledBy?: "family" | "clinic";
+  at: string;
+}

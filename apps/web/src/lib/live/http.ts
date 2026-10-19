@@ -64,6 +64,9 @@ const BY_TITLE: Record<string, string> = {
     trial_used: "trial_used",
     no_family: "no_family",
     payments_not_available: "payments_not_available",
+    slot_taken: "slot_taken", // booking (A10.4)
+    slot_gone: "slot_gone",
+    mode_not_offered: "mode_not_offered",
 };
 
 /** Every code errorCode() can return — each has an err.* message (checked by lib/i18n.test.ts). */

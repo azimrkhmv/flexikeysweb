@@ -634,7 +634,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `B34` Find help screen: pick a need, see places (free first, then by distance), report wrong information
   - Done when: "I'm not sure" suggests the child's doctor or a free state centre and never guesses
   - Needs: G2 (placeholders for now)
-- [ ] **Azim** — `B35` Booking screen: free times, book in person or online
+- [x] **Azim** — `B35` Booking screen: free times, book in person or online
   - Done when: a taken time cannot be chosen
   - Needs: G4 (placeholders for now)
 - [ ] **Azim** — `B36` Clinic dashboard: publish free times, confirm or cancel, add an online link

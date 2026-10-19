@@ -1,7 +1,7 @@
 // Find help (spec §11): what the parent picks, and the sample places the demo shows until our team's checked list
 // exists (G2). Same names and rules as the server (apps/api app/modules/places/).
 
-import type { GoalKey, Place, PlaceNeed } from "@/lib/types";
+import type { Booking, GoalKey, Place, PlaceNeed, Slot } from "@/lib/types";
 
 export const NEEDS: PlaceNeed[] = ["speech", "movement", "learning", "checkup"];
 /** A price checked longer ago than this shows "price not recently checked" (spec §11: 6 months). */
@@ -58,4 +58,23 @@ export function samplePlaces(now: number): Place[] {
       phone: "+998901000006", needs: ["checkup"], ageMin: 0, ageMax: 18, priceMin: 200_000, priceMax: 300_000, checkedAt: daysAgo(now, 10), languages: ["ru"],
     }),
   ];
+}
+
+/** PLACEHOLDER (G4): the sample clinics' free times for the coming week, Tashkent time; one is already taken by
+ * another family, so it is never offered. */
+export function sampleSlots(now: number): { slots: Slot[]; bookings: Booking[] } {
+  const day = (n: number, hour: number) => {
+    const d = new Date(now + n * DAY);
+    return new Date(`${d.toISOString().slice(0, 10)}T${String(hour).padStart(2, "0")}:00:00+05:00`).toISOString();
+  };
+  const slots: Slot[] = [];
+  for (const n of [1, 2, 3, 5]) {
+    slots.push({ id: `sl_soz_${n}_10`, placeId: "pl_clinic_speech", startsAt: day(n, 10), minutes: 45, specialist: "Logoped", inPerson: true, online: true });
+    slots.push({ id: `sl_soz_${n}_15`, placeId: "pl_clinic_speech", startsAt: day(n, 15), minutes: 45, specialist: "Logoped", inPerson: true, online: false });
+    slots.push({ id: `sl_move_${n}_11`, placeId: "pl_clinic_move", startsAt: day(n, 11), minutes: 60, inPerson: true, online: false });
+  }
+  const bookings: Booking[] = [
+    { id: "bk_other", slotId: "sl_soz_1_10", childId: "ch_other", bookedBy: "u_parent2", mode: "in_person", status: "confirmed", at: new Date(now).toISOString() },
+  ];
+  return { slots, bookings };
 }

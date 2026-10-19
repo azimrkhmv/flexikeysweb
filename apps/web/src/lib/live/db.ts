@@ -25,7 +25,7 @@ import { liveChild } from "./state";
 const empty = (): DB => ({
   v: 1, auth: { userId: null, child: null }, users: [], familyMembers: [], children: [], consents: [], profiles: [], changes: [], sessions: [],
   events: [], mastery: [], progress: [], wallets: [], assignments: [], careLinks: [], notes: [],
-  goals: [], aacEvents: [], aacCards: [], notifications: [], audit: [], flags: [], aiMessages: [], familyPlans: [], places: [], placeReports: [],
+  goals: [], aacEvents: [], aacCards: [], notifications: [], audit: [], flags: [], aiMessages: [], familyPlans: [], places: [], placeReports: [], slots: [], bookings: [],
   otp: [], intakeAnswers: [], intakeRounds: [], videos: [], roadmaps: [], tasksDone: [], pausedDays: [], dailyAnswers: [], tries: [], accessProfiles: [], skills: [], playTime: [], therapistProfiles: [], therapistAnswers: [], clipReplies: [], helperInvites: [], feedbackClips: [],
 });
 
