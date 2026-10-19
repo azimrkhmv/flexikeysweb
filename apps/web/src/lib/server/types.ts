@@ -29,6 +29,7 @@ export type FormOut = Schemas["FormOut"];
 export type ProfileOut = Schemas["ProfileOut"];
 export type Helpers = Schemas["Helpers"];
 export type InviteForMe = Schemas["InviteForMe"];
+export type PlanStatus = Schemas["PlanStatus"];
 
 /** Every address the website calls (under /api/v1, which the website proxies). */
 export const ADDRESSES = [
@@ -75,6 +76,7 @@ export const ADDRESSES = [
   "/api/v1/family/helper-invites/{invite_id}",
   "/api/v1/me/helper-invites",
   "/api/v1/me/helper-invites/{invite_id}/accept",
+  "/api/v1/family/plan",
   "/api/v1/admin/users",
   "/api/v1/admin/users/{user_id}",
 ] as const satisfies readonly (keyof paths)[];

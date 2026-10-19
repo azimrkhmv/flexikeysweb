@@ -3,7 +3,8 @@
 
 import { AAC_BY_ID, CUSTOM_PREFIX } from "@/content/aac";
 import { DEFAULT_PROFILE } from "@/lib/adaptive";
-import type { CardOut, ChildOut, ClipOut, ConsentKind, Consents, DailyOut, InUse, Me, PlanOut, ReviewItem, RoundOut, ShareOut, SharedChild, UserOut } from "@/lib/server/types";
+import { TRIAL_DAYS } from "@/content/plans";
+import type { CardOut, ChildOut, ClipOut, ConsentKind, Consents, DailyOut, InUse, Me, PlanOut, PlanStatus, ReviewItem, RoundOut, ShareOut, SharedChild, UserOut } from "@/lib/server/types";
 import type { DB } from "@/lib/api/schema";
 import type { Lang } from "@/lib/translate";
 import type { ChildSupport, ActivityKind, AgeBand, BodyArea, DailyAnswer, ExerciseVideo, FnLevel, GoalKey, IntakeAnswer, IntakeValue, L10n, PausedDay, Restriction, Roadmap, TaskDone,
@@ -67,6 +68,13 @@ export function familyChildFrom(c: ChildOut): Child {
 
 /** The web's consent scopes the server knows; "core" is the basic consent every family gave at sign-up. */
 export const CONSENT_KIND: Partial<Record<ConsentScope, ConsentKind>> = { health: "health", movement_videos: "movement_videos", therapist_sharing: "therapist_share", voice_recording: "voice_recording" };
+
+/** The family's plan (GET /family/plan) as the mock's row: the trial's start is 7 days before it ends. */
+export const familyPlanFrom = (familyId: string, p: PlanStatus): DB["familyPlans"][number] => ({
+  familyId,
+  trialStartedAt: p.trialEndsAt ? new Date(Date.parse(p.trialEndsAt) - TRIAL_DAYS * 86_400_000).toISOString() : undefined,
+  paidUntil: p.paidUntil ?? undefined,
+});
 
 export function familyConsentsFrom(childId: string, c: Consents): Consent[] {
   const on: ConsentScope[] = ["core", ...(c.health ? ["health" as const] : []), ...(c.movementVideos ? ["movement_videos" as const] : []), ...(c.therapistShare ? ["therapist_sharing" as const] : []), ...(c.voiceRecording ? ["voice_recording" as const] : [])];

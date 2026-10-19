@@ -3,6 +3,7 @@
 // Parent intake (spec §5), roadmap (spec §8/§13) and the physio review queue (spec §8).
 
 import { dailyQuestionOn } from "@/content/daily";
+import { FREE } from "@/content/plans";
 import type { Answers } from "@/content/intake";
 import { baseLang, type Lang, type UiLang } from "../i18n";
 import { buildRoadmap } from "../roadmap";
@@ -87,6 +88,7 @@ export const intakeApi = {
   async addFeedbackClip(childId: string, exerciseId: string, file: Blob) {
     requireChildAccess(childId, FAMILY);
     if (!sel.hasConsent(read(), childId, "movement_videos")) throw new ApiError("consent_required");
+    if (!FREE.therapistSharing && !sel.isPro(read(), childId)) throw new ApiError("pro_only"); // A7.2
     const clipId = await putMedia(file);
     write((db) => {
       db.feedbackClips.push({ id: clipId, childId, exerciseId, at: iso() });

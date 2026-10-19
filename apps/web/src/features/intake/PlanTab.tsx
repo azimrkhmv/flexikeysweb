@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { ProLock } from "@/features/parent/ProLock";
 import { TherapistUpdates } from "@/features/parent/TherapistUpdates";
 import { useState } from "react";
 import { Button, Card, Chip, Empty, LinkButton, useAction } from "@/components/ui";
@@ -89,6 +90,7 @@ function Weeks({ plan }: { plan: Roadmap }) {
   const dates = sel.planDates(db, plan.childId); // moved by paused days, like the Today screen
   const current = Math.max(0, Math.min(3, Math.floor(dates.indexOf(today) / 7)));
   const [week, setWeek] = useState(current);
+  const free = sel.freeDays(db, plan.childId); // Free: the first week (A7.2)
   const fmt = (d: string) => new Date(`${d}T00:00:00`).toLocaleDateString(lang === "uz" ? "uz-Latn" : lang, { weekday: "short", day: "numeric", month: "short" });
   return (
     <section>
@@ -105,44 +107,48 @@ function Weeks({ plan }: { plan: Roadmap }) {
           </button>
         ))}
       </div>
-      <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-        {plan.days.slice(week * 7, week * 7 + 7).map((d, n) => {
-          const date = dates[week * 7 + n];
-          return (
-            <Card as="li" key={date} className={`space-y-3 p-4 ${date === today ? "ring-2 ring-teal" : ""}`}>
-              <p className="flex items-center gap-2 font-extrabold text-ink">
-                {fmt(date)} {date === today && <Chip tone="teal">{t("plan.today")}</Chip>}
-              </p>
-              {d.exercises.length > 0 && (
+      {free !== null && week * 7 >= free ? (
+        <ProLock text={t("plans.lock.weeks")} />
+      ) : (
+        <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          {plan.days.slice(week * 7, week * 7 + 7).map((d, n) => {
+            const date = dates[week * 7 + n];
+            return (
+              <Card as="li" key={date} className={`space-y-3 p-4 ${date === today ? "ring-2 ring-teal" : ""}`}>
+                <p className="flex items-center gap-2 font-extrabold text-ink">
+                  {fmt(date)} {date === today && <Chip tone="teal">{t("plan.today")}</Chip>}
+                </p>
+                {d.exercises.length > 0 && (
+                  <div>
+                    <p className="text-xs font-bold uppercase text-muted">{t("plan.exercises")}</p>
+                    <ul className="mt-1 space-y-1">
+                      {d.exercises.map((e) => {
+                        const v = sel.video(db, e.videoId);
+                        return (
+                          <li key={e.videoId} className="text-sm text-ink">
+                            {v?.title[lang] ?? e.videoId}
+                            {v?.tool && <span className="block text-xs text-muted">{t("plan.tool", { tool: t(`tool.${v.tool}`) })}</span>}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                )}
                 <div>
-                  <p className="text-xs font-bold uppercase text-muted">{t("plan.exercises")}</p>
+                  <p className="text-xs font-bold uppercase text-muted">{t("plan.games")}</p>
                   <ul className="mt-1 space-y-1">
-                    {d.exercises.map((e) => {
-                      const v = sel.video(db, e.videoId);
-                      return (
-                        <li key={e.videoId} className="text-sm text-ink">
-                          {v?.title[lang] ?? e.videoId}
-                          {v?.tool && <span className="block text-xs text-muted">{t("plan.tool", { tool: t(`tool.${v.tool}`) })}</span>}
-                        </li>
-                      );
-                    })}
+                    {d.games.map((g, k) => (
+                      <li key={k} className="text-sm text-ink">
+                        {t(`game.${g.kind}`)} · <span className="text-muted">{t("plan.minutes", { n: g.minutes })}</span>
+                      </li>
+                    ))}
                   </ul>
                 </div>
-              )}
-              <div>
-                <p className="text-xs font-bold uppercase text-muted">{t("plan.games")}</p>
-                <ul className="mt-1 space-y-1">
-                  {d.games.map((g, k) => (
-                    <li key={k} className="text-sm text-ink">
-                      {t(`game.${g.kind}`)} · <span className="text-muted">{t("plan.minutes", { n: g.minutes })}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </Card>
-          );
-        })}
-      </ul>
+              </Card>
+            );
+          })}
+        </ul>
+      )}
     </section>
   );
 }

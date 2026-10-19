@@ -22,6 +22,8 @@ export default function ParentHome() {
   const kids = sel.childrenOf(db, me.id);
   const suggestions = kids.flatMap((c) => sel.assignmentsFor(db, c.id).map((a) => ({ a, child: c })));
   const sum = (f: (c: (typeof kids)[number]) => number) => kids.reduce((a, c) => a + f(c), 0);
+  // Spec §14 PROPOSAL: the trial ends with a reminder 2 days before.
+  const trialEnds = sel.trialEndsSoon(db, sel.familyOf(db, me.id));
 
   return (
     <>
@@ -43,6 +45,15 @@ export default function ParentHome() {
           )
         }
       />
+
+      {trialEnds && (
+        <div role="status" className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-lavender bg-lavender-soft/60 p-4 text-sm font-semibold text-ink">
+          {t("plans.trialEnds", { date: fmtDate(trialEnds, lang) })}
+          <Link href="/parent/billing" className="font-extrabold underline">
+            {t("plans.lock.see")}
+          </Link>
+        </div>
+      )}
 
       {kids.length === 0 ? (
         <Card className="flex flex-col items-center gap-4 py-10 text-center">

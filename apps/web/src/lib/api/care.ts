@@ -8,6 +8,7 @@ import { ApiError, id, iso, makeCode } from "./schema";
 import { sel } from "./selectors";
 import { normalizePhone } from "./auth";
 import type { CareLink } from "../types";
+import { FREE } from "@/content/plans";
 import { FORM_IDS, REBUILDS, type Profession, type TherapistAnswers } from "@/content/therapist";
 import { buildRoadmap } from "../roadmap";
 import { planInput } from "./intake";
@@ -18,6 +19,7 @@ export const careApi = {
   async inviteCare(childId: string, contact: string) {
     const { user } = requireChildAccess(childId, ["owner"]);
     if (!sel.hasConsent(read(), childId, "therapist_sharing")) throw new ApiError("consent_required");
+    if (!FREE.therapistSharing && !sel.isPro(read(), childId)) throw new ApiError("pro_only"); // A7.2
     const phone = normalizePhone(contact); // spec P41: invite by phone number, or a link (no contact) to send
     if (!phone && contact.trim()) throw new ApiError("invalid_phone");
     const link: CareLink = { id: id(), childId, kind: "therapist", phone: phone ?? undefined, status: "invited", code: makeCode(), createdAt: iso() };

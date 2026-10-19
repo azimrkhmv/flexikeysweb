@@ -122,6 +122,7 @@ export function seed(): DB {
     therapistAnswers: [],
     clipReplies: [],
     helperInvites: [],
+    familyPlans: [{ familyId: "fam_1", trialStartedAt: iso(now - 5 * DAY) }], // the demo family's trial ends in 2 days
     feedbackClips: [],
   };
 

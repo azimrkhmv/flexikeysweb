@@ -13,7 +13,9 @@ import { fmtDate } from "@/lib/format";
 import { hasVoice, subscribeVoices } from "@/lib/audio";
 import { aacLabel, BIRTH_YEARS, download, profileLines } from "./lib";
 import { AccessPicker, AvatarGrid } from "./pickers";
+import { ProLock } from "./ProLock";
 import { SupportCard } from "./support";
+import { FREE } from "@/content/plans";
 
 export const TABS = ["plan", "progress", "changes", "aac", "sharing", "settings", "privacy"] as const;
 export type Tab = (typeof TABS)[number];
@@ -395,6 +397,8 @@ export function SharingTab({ childId, goTab }: { childId: string; goTab: (t: Tab
         </ul>
         {!canTherapist ? (
           consentHint
+        ) : !FREE.therapistSharing && !sel.isPro(db, childId) ? (
+          <ProLock text={t("plans.lock.therapist")} />
         ) : (
           <form
             className="flex flex-wrap items-end gap-2"

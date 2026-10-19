@@ -74,6 +74,8 @@ export interface DB {
   /** Live mode, parent: what the server says the therapists changed (GET /children/{id}/answers-in-use). */
   /** The owner's invites to a second adult (A8.4); accepted ones become a helper family member. */
   helperInvites: { id: string; familyId: string; phone: string; at: string; ownerName?: string }[];
+  /** Free or Pro per family (A7.1, B21): the trial's start and the end of what was paid. No row = Free. */
+  familyPlans: { familyId: string; trialStartedAt?: string; paidUntil?: string }[];
   answersInUse?: Record<string, { updated: Record<string, { value: string | string[]; name: string; profession?: Profession; at: string }>; messages: { text: string; name: string; profession?: Profession; at: string }[] }>;
 }
 
@@ -103,6 +105,6 @@ const CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"; // no 0/O/1/I/L (SEC-5)
 export const makeCode = (n = 6) => Array.from({ length: n }, () => CODE_ALPHABET[Math.floor(Math.random() * CODE_ALPHABET.length)]).join("");
 
 /** Bump when the DB shape changes: browsers holding an older shape are reseeded instead of crashing. */
-export const DB_VERSION = 15;
+export const DB_VERSION = 16;
 /** Same limit as the server (MAX_HELPERS_PER_FAMILY). */
 export const MAX_HELPERS = 1;

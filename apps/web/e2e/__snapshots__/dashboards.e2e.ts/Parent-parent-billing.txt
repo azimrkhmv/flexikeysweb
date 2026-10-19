@@ -1,42 +1,38 @@
-Subscription
+Free and Pro
 
-One family plan for all your children.
+Pro is for the whole family: every adult and every child in it.
 
-Current plan
+Your family is trying Pro until Oct 1, 2026
 
-Free Active
+Pro
 
 Free
+0 so'm
 
-0 soum
+Pro
+49 000 so'm a month
 
-Levels 1–4 for one child
-My Voice (AAC) — always free
-Progress and adaptation feed
-Family
-Monthly
-Yearly
+Questions and play check
 
-390 000 soum / year
 
-Save 34%
-All 16 levels
-All your children
-Weekly reports and PDF
-AI assistant for parents
-Pay with
-Payme
-Click
-Pay with Payme
+Exercise plan with videos	The first week	All 4 weeks
+Games	3 at a time	All, as the child is ready
+Videos saved for offline
 
-Demo: payments run in the provider's test mode. No real money is charged.
 
-A subscription opens content. It never buys coins, stars or faster progress — those are only earned by playing.
+Find help and booking
 
-During the pilot, children in a school class or linked with a therapist get full access for free.
 
-🦊 Ali: full access
-🐰 Madina: levels 1–4
-Payment history
+Assistant	About 20 messages a day	No limit
+Sharing with a therapist, and videos for them
 
-Nothing here yet
+
+Weekly summary
+
+
+The price is not final yet.
+
+Pay for 1 month
+Pay for 12 months
+
+Payment is simulated for now. Paying through Telegram comes later.

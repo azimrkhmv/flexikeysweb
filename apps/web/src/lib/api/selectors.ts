@@ -7,6 +7,7 @@ import { computeMetrics, startingProfile, withFloors } from "../adaptive";
 import { levelAfter } from "../roadmap";
 import { AREAS, startingTheta, type Area } from "../skill";
 import type { Answers } from "@/content/intake";
+import { FREE, TRIAL_DAYS, TRIAL_REMIND_DAYS } from "@/content/plans";
 import { replaces, therapistInput, type Profession } from "@/content/therapist";
 import { LANGS, type Lang } from "../i18n";
 import { DAY, iso, localDate, type DB } from "./schema";
@@ -254,6 +255,24 @@ export const sel = {
   clipUrl: (db: DB, clipId: string) => db.clips?.find((c) => c.id === clipId)?.url,
   clipReplies: (db: DB, childId: string, clipId: string) =>
     (db.clipReplies ?? []).filter((r) => r.childId === childId && r.clipId === clipId).map((r) => ({ ...r, name: r.name ?? db.users.find((u) => u.id === r.therapistId)?.name ?? "" })),
+  /** Free or Pro for this family now (the server's status_of, apps/api billing/router.py). */
+  familyPlan(db: DB, familyId: string | null, now = Date.now()) {
+    const row = (db.familyPlans ?? []).find((p) => p.familyId === familyId);
+    const trialEndsAt = row?.trialStartedAt ? iso(Date.parse(row.trialStartedAt) + TRIAL_DAYS * DAY) : undefined;
+    const paid = !!row?.paidUntil && Date.parse(row.paidUntil) > now;
+    const trial = !!trialEndsAt && Date.parse(trialEndsAt) > now;
+    return { plan: paid || trial ? ("pro" as const) : ("free" as const), trial: trial && !paid, trialUsed: !!trialEndsAt, trialEndsAt, paidUntil: row?.paidUntil };
+  },
+  /** When the family's trial ends, if that is within TRIAL_REMIND_DAYS (spec §14: a reminder 2 days before). */
+  trialEndsSoon(db: DB, familyId: string | null, now = Date.now()): string | null {
+    const p = sel.familyPlan(db, familyId, now);
+    return p.trial && p.trialEndsAt && Date.parse(p.trialEndsAt) - now <= TRIAL_REMIND_DAYS * DAY ? p.trialEndsAt : null;
+  },
+  /** The family this adult uses: their own, or the one they help. */
+  familyOf: (db: DB, userId: string) => sel.ownFamily(db, userId) ?? db.familyMembers.find((m) => m.userId === userId)?.familyId ?? null,
+  isPro: (db: DB, childId: string) => sel.familyPlan(db, sel.child(db, childId)?.familyId ?? null).plan === "pro",
+  /** How many plan days the child's family has (null on Pro): Free has the first week (A7.2). */
+  freeDays: (db: DB, childId: string): number | null => (sel.isPro(db, childId) ? null : FREE.planDays),
   /** The helpers of a family and the invites still open (A8.4). */
   helpers: (db: DB, familyId: string | null) => ({
     helpers: db.familyMembers.filter((m) => m.familyId === familyId && m.role === "helper").map((m) => db.users.find((u) => u.id === m.userId)).filter((u): u is User => !!u),

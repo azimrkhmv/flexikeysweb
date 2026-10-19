@@ -68,7 +68,14 @@ test("phone sign-up → intake with a restriction → 4-week plan without that e
   await page.getByRole("button", { name: "Make the plan" }).click();
 
   await expect(page.getByRole("heading", { name: "Aziz's plan is ready" })).toBeVisible();
-  await page.getByRole("link", { name: "See the plan" }).click();
+  const childId = await page.evaluate(() => {
+    const db = JSON.parse(localStorage.getItem("fk_db_v1")!);
+    const kid = db.children.find((c: { name: string }) => c.name === "Aziz");
+    db.familyPlans.push({ familyId: kid.familyId, trialStartedAt: new Date().toISOString() }); // all 4 weeks: Pro's trial
+    localStorage.setItem("fk_db_v1", JSON.stringify(db));
+    return kid.id as string;
+  });
+  await page.goto(`/parent/child/${childId}`);
   await expect(page.getByRole("heading", { name: "Why this plan" })).toBeVisible();
   for (let w = 1; w <= 4; w++) {
     await page.getByRole("button", { name: `Week ${w}` }).click();
@@ -172,8 +179,11 @@ test("one tap marks an exercise done; two \"hard\" in a row make it easier next 
     const today = plan.days.findIndex((d: { date: string }) => d.date === "2026-09-29");
     const videoId = plan.days[today].exercises[0].videoId;
     const later = plan.days.slice(today + 1).find((d: { exercises: { videoId: string }[] }) => d.exercises.some((e) => e.videoId === videoId));
+    db.familyPlans = [{ familyId: "fam_1", paidUntil: "2030-01-01T00:00:00Z" }]; // Pro: every plan day (A7.2)
+    localStorage.setItem("fk_db_v1", JSON.stringify(db));
     return { title: db.videos.find((v: { id: string }) => v.id === videoId).title.en as string, next: later.date as string };
   });
+  await page.reload();
   const first = page.getByRole("region", { name: "Today" }).getByRole("listitem").filter({ hasText: title });
   await first.getByRole("button", { name: "Done" }).click();
   await expect(first.getByText("Done", { exact: true })).toBeVisible();

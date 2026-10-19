@@ -6,9 +6,9 @@ import { ApiError, type ChildAuth, type DB } from "@/lib/api/schema";
 import { sessionStore } from "@/lib/session";
 import { useStore } from "@/lib/store";
 import { http } from "./http";
-import type { CardOut, ChildOut, ClipOut, Helpers, InviteForMe, Consents, DailyOut, FormOut, InUse, InviteOut, PlanOut, ProfileOut, ReviewItem, RoundOut, RoundSummary, ShareOut, SharedChild } from "@/lib/server/types";
+import type { CardOut, ChildOut, ClipOut, Helpers, InviteForMe, Consents, DailyOut, FormOut, InUse, InviteOut, PlanOut, PlanStatus, ProfileOut, ReviewItem, RoundOut, RoundSummary, ShareOut, SharedChild } from "@/lib/server/types";
 import {
-  answersFrom, clipsFrom, dailyFrom, doneFrom, familyChildFrom, familyConsentsFrom, inUseFrom, pausedFrom, planFrom, planVideosFrom, reviewVideosFrom, shareFrom, sharedChildFrom, voiceCardFrom,
+  answersFrom, clipsFrom, dailyFrom, doneFrom, familyChildFrom, familyConsentsFrom, familyPlanFrom, inUseFrom, pausedFrom, planFrom, planVideosFrom, reviewVideosFrom, shareFrom, sharedChildFrom, voiceCardFrom,
   aacCardFrom, auditFrom, orderFrom, subscriptionFrom, childFrom, notificationFrom, levelsFrom, profileFrom,
   taskFrom, userFrom,
   type BAacCard, type BAdminSub, type BAudit, type BOrder, type BOverview, type BNotification, type BChild, type BLevel,
@@ -25,7 +25,7 @@ import { liveChild } from "./state";
 const empty = (): DB => ({
   v: 1, auth: { userId: null, child: null }, users: [], familyMembers: [], children: [], consents: [], profiles: [], changes: [], sessions: [],
   events: [], mastery: [], progress: [], wallets: [], assignments: [], careLinks: [], notes: [],
-  goals: [], aacEvents: [], aacCards: [], notifications: [], subscriptions: [], orders: [], audit: [], flags: [], aiMessages: [],
+  goals: [], aacEvents: [], aacCards: [], notifications: [], subscriptions: [], orders: [], audit: [], flags: [], aiMessages: [], familyPlans: [],
   otp: [], intakeAnswers: [], intakeRounds: [], videos: [], roadmaps: [], tasksDone: [], pausedDays: [], dailyAnswers: [], tries: [], accessProfiles: [], skills: [], playTime: [], therapistProfiles: [], therapistAnswers: [], clipReplies: [], helperInvites: [], feedbackClips: [],
 });
 
@@ -100,6 +100,12 @@ export function useLiveDb(): DB {
 
   // ---- helpers (A8.4): the family this person owns, its helpers and invites; and invites to help another family
   const family = useQuery({ queryKey: ["family-helpers"], enabled: role === "parent", queryFn: () => http<Helpers>("GET", "/family/helpers") });
+  // Free or Pro (A7.1): the family this parent owns or helps; none yet before the first child.
+  const familyPlan = useQuery({
+    queryKey: ["family-plan"],
+    enabled: role === "parent",
+    queryFn: () => http<PlanStatus>("GET", "/family/plan").catch((e) => (e instanceof ApiError && e.code === "no_family" ? null : Promise.reject(e))),
+  });
   const helpInvites = useQuery({ queryKey: ["helper-invites"], enabled: role === "parent", queryFn: () => http<InviteForMe[]>("GET", "/me/helper-invites") });
 
   const subscription = useQuery({
@@ -168,7 +174,7 @@ export function useLiveDb(): DB {
     if (signedIn !== undefined && sessionStore.get().role !== signedIn) sessionStore.set({ role: signedIn });
   }, [signedIn]);
 
-  const all = [me, kids, linked, invites, tprofile, family, helpInvites, notifications, flags, subscription, orders, ...own, ...per, ...answers, ...review, ...views, ...admin];
+  const all = [me, kids, linked, invites, tprofile, family, familyPlan, helpInvites, notifications, flags, subscription, orders, ...own, ...per, ...answers, ...review, ...views, ...admin];
   const stamp = all.map((q) => q.dataUpdatedAt).join();
   const loading =
     me.isPending ||
@@ -213,6 +219,8 @@ export function useLiveDb(): DB {
       // The owner of their own family (the server says which), a helper in any other family their children come from.
       const own = family.data?.familyId ?? null;
       if (own) db.familyMembers.push({ familyId: own, userId: user!.id, role: "owner" });
+      const planFamily = own ?? kids.data?.[0]?.familyId;
+      if (planFamily && familyPlan.data) db.familyPlans.push(familyPlanFrom(planFamily, familyPlan.data));
       for (const familyId of new Set((kids.data ?? []).map((k) => k.familyId)))
         if (familyId !== own) db.familyMembers.push({ familyId, userId: user!.id, role: "helper" });
       for (const h of family.data?.helpers ?? []) {

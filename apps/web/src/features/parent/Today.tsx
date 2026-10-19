@@ -6,6 +6,8 @@ import { fmtDate } from "@/lib/format";
 import { api, sel, useDb } from "@/lib/api";
 import { localDate } from "@/lib/api/schema";
 import { dailyQuestionOn } from "@/content/daily";
+import { FREE } from "@/content/plans";
+import { ProLock } from "./ProLock";
 import { useLang, useT } from "@/lib/i18n";
 import { baseLang } from "@/lib/translate";
 import type { Child, ExerciseVideo, Feeling } from "@/lib/types";
@@ -43,6 +45,8 @@ function ChildToday({ child }: { child: Child }) {
   const today = localDate();
   const on = sel.planDayOn(db, child.id, today);
   const day = typeof on === "number" ? plan.days[on] : undefined;
+  const free = sel.freeDays(db, child.id);
+  const locked = typeof on === "number" && free !== null && on >= free; // past Free's first week (A7.2)
   const pause = useAction(api.pauseToday);
   const resume = useAction(api.resumeToday);
   return (
@@ -57,6 +61,8 @@ function ChildToday({ child }: { child: Child }) {
             {t("today.resume")}
           </Button>
         </div>
+      ) : locked ? (
+        <ProLock text={t("plans.lock.today")} />
       ) : !day ? (
         <p className="text-ink-2">
           {today < plan.startDate ? t("today.notYet", { date: fmtDate(plan.startDate, lang) }) : t("today.finished")}
@@ -172,6 +178,7 @@ function FeedbackClip({ child, exerciseId }: { child: Child; exerciseId: string 
   const add = useAction(api.addFeedbackClip);
   const remove = useAction(api.removeFeedbackClip);
   if (!sel.hasConsent(db, child.id, "movement_videos")) return null;
+  if (!FREE.therapistSharing && !sel.isPro(db, child.id)) return <p className="text-xs text-muted">{t("plans.lock.clip")}</p>;
   const mine = sel.feedbackClips(db, child.id).filter((c) => c.exerciseId === exerciseId);
   return (
     <div className="flex flex-wrap items-center gap-2">
