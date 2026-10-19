@@ -656,7 +656,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A12.4` Deleting a therapist's account (by an admin): their answers about a child go with it today (therapist_answers cascades). Keep the restrictions (T6) and exclusions (T8) in use, so the child's plan never loses a safety rule
   - Done when: a deleted therapist's restriction still never appears in the plan
   - Needs: A12.2
-- [ ] **Azim** — `A13.1` Second sign-in step for admins
+- [x] **Azim** — `A13.1` Second sign-in step for admins
   - Done when: an admin cannot act with only a stolen SMS code
   - Needs: A1.7
 - [ ] **Azim** — `A13.2` Connect a real SMS provider

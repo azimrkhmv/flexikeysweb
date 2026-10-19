@@ -82,7 +82,7 @@ def bearer(client: TestClient, role: Role) -> dict[str, str]:
         async with SessionLocal() as db:
             user = await person(db, role)
             await db.commit()
-            return tokens.access_token(user)
+            return tokens.access_token(user, mfa=role == Role.admin)  # an admin who did the second step
 
     return {"Authorization": f"Bearer {client.portal.call(make)}"}  # type: ignore[union-attr]
 
@@ -141,6 +141,7 @@ def test_first_admin_from_the_command_line() -> None:
     )
     assert r.returncode == 0, r.stderr
     assert "Admin created: +998907000030" in r.stdout
+    assert "Second sign-in step: add this key to an authenticator app:" in r.stdout  # A13.1
     again = subprocess.run(
         [sys.executable, "-m", "app.cli", "create-admin", "907000030"], capture_output=True, text=True
     )

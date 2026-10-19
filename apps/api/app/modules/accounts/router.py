@@ -5,7 +5,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from pydantic import Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -37,6 +37,7 @@ class Me(UserOut):
     name: str | None
     consent_version: str | None
     needs_signup: bool  # true until the basic consent is given: the website shows the sign-up step
+    needs_second_step: bool = False  # an admin signed in with the SMS code only: ask for the authenticator code
 
 
 def _me(user: User) -> Me:
@@ -63,8 +64,10 @@ async def basic_consent(lang: Lang = Lang.uz) -> ConsentText:
 
 
 @router.get("/me")
-async def get_me(user: SignedInUser) -> Me:
-    return _me(user)
+async def get_me(user: SignedInUser, request: Request) -> Me:
+    me = _me(user)
+    me.needs_second_step = user.role == Role.admin and not getattr(request.state, "mfa", False)
+    return me
 
 
 class Signup(ApiModel):

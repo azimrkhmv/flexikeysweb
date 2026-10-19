@@ -29,7 +29,7 @@ def _hash(token: str) -> str:
     return hashlib.sha256(token.encode()).hexdigest()
 
 
-def access_token(user: User) -> str:
+def access_token(user: User, mfa: bool = False) -> str:
     now = datetime.now(UTC)
     # ts: issue time in milliseconds, compared with users.signed_out_at ("sign out everywhere")
     claims = {
@@ -38,6 +38,7 @@ def access_token(user: User) -> str:
         "iat": now,
         "exp": now + ACCESS_TTL,
         "ts": int(now.timestamp() * 1000),
+        "mfa": mfa,  # the admin's second step was done (A13.1)
     }
     return jwt.encode(claims, settings.jwt_secret, algorithm="HS256")
 
@@ -50,20 +51,24 @@ def read_access_token(token: str) -> dict[str, object]:
         raise AppError(401, "unauthorized") from None
 
 
-async def _new_refresh(db: AsyncSession, user_id: uuid.UUID, chain_id: uuid.UUID) -> str:
+async def _new_refresh(db: AsyncSession, user_id: uuid.UUID, chain_id: uuid.UUID, mfa: bool = False) -> str:
     token = secrets.token_urlsafe(32)
     db.add(
         RefreshToken(
-            user_id=user_id, chain_id=chain_id, token_hash=_hash(token), expires_at=datetime.now(UTC) + REFRESH_TTL
+            user_id=user_id,
+            chain_id=chain_id,
+            token_hash=_hash(token),
+            expires_at=datetime.now(UTC) + REFRESH_TTL,
+            mfa=mfa,
         )
     )
     await db.flush()
     return token
 
 
-async def issue(db: AsyncSession, user: User) -> TokenPair:
+async def issue(db: AsyncSession, user: User, mfa: bool = False) -> TokenPair:
     """New sign-in on a new device: a new chain."""
-    return TokenPair(access_token(user), await _new_refresh(db, user.id, uuid.uuid4()))
+    return TokenPair(access_token(user, mfa), await _new_refresh(db, user.id, uuid.uuid4(), mfa))
 
 
 async def revoke_all(db: AsyncSession, user_id: uuid.UUID) -> None:
@@ -102,4 +107,4 @@ async def rotate(db: AsyncSession, refresh_token: str) -> TokenPair:
     if user is None or user.status != "active":
         raise AppError(401, "invalid_token")
     row.used_at = now
-    return TokenPair(access_token(user), await _new_refresh(db, user.id, row.chain_id))
+    return TokenPair(access_token(user, row.mfa), await _new_refresh(db, user.id, row.chain_id, row.mfa))

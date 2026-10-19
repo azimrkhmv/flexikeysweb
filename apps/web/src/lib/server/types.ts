@@ -37,6 +37,7 @@ export const ADDRESSES = [
   "/api/v1/auth/refresh",
   "/api/v1/auth/logout",
   "/api/v1/auth/logout-all",
+  "/api/v1/auth/second-step",
   "/api/v1/me",
   "/api/v1/me/signup",
   "/api/v1/consents/basic",

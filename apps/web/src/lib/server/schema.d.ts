@@ -125,6 +125,28 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/auth/second-step": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Second Step
+         * @description An admin's code from the authenticator app (A13.1): new tokens that may act as admin. Each code works once.
+         *     409 second_step_not_set (no authenticator yet: `uv run python -m app.cli reset-second-step <phone>` on the
+         *     server), 400 invalid_code, 429 too_many_tries.
+         */
+        post: operations["second_step_api_v1_auth_second_step_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/auth/logout-all": {
         parameters: {
             query?: never;
@@ -2297,6 +2319,11 @@ export interface components {
             consentVersion: string | null;
             /** Needssignup */
             needsSignup: boolean;
+            /**
+             * Needssecondstep
+             * @default false
+             */
+            needsSecondStep: boolean;
         };
         /** MeChange */
         MeChange: {
@@ -2854,6 +2881,11 @@ export interface components {
          * @enum {string}
          */
         RunStatus: "open" | "finished" | "stopped";
+        /** SecondStep */
+        SecondStep: {
+            /** Code */
+            code: string;
+        };
         /** SessionChange */
         SessionChange: {
             /** Secondsplayed */
@@ -3424,6 +3456,39 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    second_step_api_v1_auth_second_step_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SecondStep"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Tokens"];
+                };
             };
             /** @description Validation Error */
             422: {

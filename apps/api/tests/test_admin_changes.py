@@ -31,7 +31,7 @@ def make(client: TestClient, role: Role) -> tuple[uuid.UUID, dict[str, str], str
     async def run() -> tuple[uuid.UUID, str, str]:
         async with SessionLocal() as db:
             user = await person(db, role)
-            pair = await tokens.issue(db, user)
+            pair = await tokens.issue(db, user, mfa=role == Role.admin)  # an admin who did the second step (A13.1)
             await db.commit()
             return user.id, pair.access_token, pair.refresh_token
 

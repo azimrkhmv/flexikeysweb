@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime
 from enum import StrEnum
 
-from sqlalchemy import DateTime, Enum, ForeignKey, Index, String, UniqueConstraint, text
+from sqlalchemy import DateTime, Enum, ForeignKey, Index, String, Text, UniqueConstraint, text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db import Base, IdTimeMixin
@@ -60,6 +60,10 @@ class User(IdTimeMixin, Base):
     consent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     # "Sign out everywhere": access tokens issued before this moment are refused (app/modules/auth/session.py).
     signed_out_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    # Admins' second sign-in step (A13.1): the authenticator secret, encrypted, and the last code's time step (a
+    # code works once).
+    totp_secret: Mapped[str | None] = mapped_column(Text)
+    totp_last_step: Mapped[int | None]
 
 
 class Family(IdTimeMixin, Base):

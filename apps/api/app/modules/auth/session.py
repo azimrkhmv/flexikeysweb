@@ -94,6 +94,7 @@ async def signed_in_user(request: Request, db: Annotated[AsyncSession, Depends(g
         raise AppError(401, "unauthorized")
     if user.signed_out_at and int(str(claims["ts"])) < _ms(user.signed_out_at):
         raise AppError(401, "unauthorized")  # made before "sign out everywhere"
+    request.state.mfa = claims.get("mfa") is True  # read by the Admin check (accounts/access.py)
     return user
 
 

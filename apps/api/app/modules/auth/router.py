@@ -1,18 +1,21 @@
 import re
+import time
 import uuid
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Request, Response
 from fastapi.responses import JSONResponse
+from pydantic import Field
 from redis.asyncio import Redis
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.crypto import decrypt_json
 from app.db import get_session
 from app.errors import AppError, problem
 from app.modules.accounts.models import Family, FamilyMember, Lang, MemberRole, Role, User, UserStatus
-from app.modules.auth import otp, session, tokens
+from app.modules.auth import otp, session, tokens, totp
 from app.modules.auth.otp import Check
 from app.modules.auth.sms import SmsSender, get_sms
 from app.modules.therapists.models import link_for_code, pending_for_phone
@@ -197,6 +200,42 @@ async def logout(
     await tokens.revoke_chain(db, _refresh_token(request, body))
     await db.commit()
     session.clear(response)
+
+
+class SecondStep(ApiModel):
+    code: str = Field(pattern=r"^\d{6}$")
+
+
+SECOND_STEP_TRIES = 5  # wrong codes per 15 minutes
+
+
+@router.post("/second-step", response_model_exclude_none=True)
+async def second_step(
+    body: SecondStep,
+    user: session.CurrentUser,
+    request: Request,
+    response: Response,
+    redis: Annotated[Redis, Depends(get_redis)],
+    db: Annotated[AsyncSession, Depends(get_session)],
+) -> Tokens:
+    """An admin's code from the authenticator app (A13.1): new tokens that may act as admin. Each code works once.
+    409 second_step_not_set (no authenticator yet: `uv run python -m app.cli reset-second-step <phone>` on the
+    server), 400 invalid_code, 429 too_many_tries."""
+    if user.role != Role.admin or not user.totp_secret:
+        raise AppError(409, "second_step_not_set")
+    tries = f"totp:tries:{user.id}"
+    if int(await redis.get(tries) or 0) >= SECOND_STEP_TRIES:
+        raise AppError(429, "too_many_tries")
+    step = totp.matching_step(decrypt_json(user.totp_secret), body.code, time.time())
+    if step is None or (user.totp_last_step is not None and step <= user.totp_last_step):
+        await redis.incr(tries)
+        await redis.expire(tries, 900)
+        raise AppError(400, "invalid_code")
+    user.totp_last_step = step
+    pair = await tokens.issue(db, user, mfa=True)
+    await db.commit()
+    body_pair = session.deliver(request, response, pair)
+    return Tokens(**vars(body_pair)) if body_pair else Tokens()
 
 
 @router.post("/logout-all", status_code=204)

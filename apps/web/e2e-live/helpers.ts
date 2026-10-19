@@ -1,4 +1,5 @@
 import { execFileSync } from "node:child_process";
+import { createHmac } from "node:crypto";
 import path from "node:path";
 import { expect, type Page } from "@playwright/test";
 
@@ -79,6 +80,31 @@ const SERVER_DIR = path.resolve(__dirname, "../../api");
 /** Runs a server command (apps/api app/cli.py), e.g. create-admin; what an operator does on the server. */
 export const serverCommand = (...args: string[]) => execFileSync("uv", ["run", "python", "-m", "app.cli", ...args], { cwd: SERVER_DIR, stdio: "pipe" }).toString();
 
+/** The first admin, made on the server; returns the authenticator key it prints (A13.1). */
+export function createAdmin(phone: string): string {
+  return serverCommand("create-admin", phone).match(/authenticator app: ([A-Z2-7]+)/)![1];
+}
+
+/** The authenticator app's 6-digit code for this key now (TOTP, RFC 6238). */
+export function totpCode(key: string, at = Date.now()): string {
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+  const bits = [...key].map((c) => alphabet.indexOf(c).toString(2).padStart(5, "0")).join("");
+  const bytes = Buffer.from(bits.match(/.{8}/g)!.map((b) => parseInt(b, 2)));
+  const counter = Buffer.alloc(8);
+  counter.writeBigUInt64BE(BigInt(Math.floor(at / 30_000)));
+  const h = createHmac("sha1", bytes).update(counter).digest();
+  const o = h[h.length - 1] & 15;
+  return String((h.readUInt32BE(o) & 0x7fffffff) % 1_000_000).padStart(6, "0");
+}
+
+/** An admin signed in through the server: the SMS code, then the authenticator code. */
+export async function adminBearerFor(phone: string, key: string) {
+  const sms = await bearerFor(phone);
+  const r = await fetch(`${API}/api/v1/auth/second-step`, { method: "POST", headers: { ...sms, "Content-Type": "application/json" }, body: JSON.stringify({ code: totpCode(key) }) });
+  const { accessToken } = await r.json();
+  return { Authorization: `Bearer ${accessToken}` };
+}
+
 /** Signs a staff number in through the server's own addresses (app-style Bearer token). */
 export async function bearerFor(phone: string) {
   const call = (path: string, body: unknown, token?: string) =>
@@ -96,8 +122,7 @@ export async function bearerFor(phone: string) {
 export async function approvedVideo(exerciseId: string, lang: "uz" | "ru" | "en") {
   const adminPhone = `+99890${String(Date.now()).slice(-7)}`;
   serverCommand("load-exercises");
-  serverCommand("create-admin", adminPhone);
-  const admin = { ...(await bearerFor(adminPhone)), "Content-Type": "application/json" };
+  const admin = { ...(await adminBearerFor(adminPhone, createAdmin(adminPhone))), "Content-Type": "application/json" };
   const physioPhone = `+99897${String(Date.now() + 1).slice(-7)}`;
   await fetch(`${API}/api/v1/admin/users`, { method: "POST", headers: admin, body: JSON.stringify({ phone: physioPhone, role: "physio" }) });
   const file = { exerciseId, lang };

@@ -8,7 +8,7 @@ import uuid
 from collections.abc import Awaitable, Callable
 from typing import Annotated
 
-from fastapi import Depends
+from fastapi import Depends, Request
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -47,4 +47,13 @@ def require_role(*roles: Role) -> Callable[[User], Awaitable[User]]:
     return check
 
 
-Admin = Annotated[User, Depends(require_role(Role.admin))]
+async def admin_with_second_step(request: Request, user: CurrentUser) -> User:
+    """An admin who also did the second sign-in step (A13.1): a stolen SMS code alone is not enough."""
+    if user.role != Role.admin:
+        raise AppError(403, "forbidden")
+    if not getattr(request.state, "mfa", False):
+        raise AppError(403, "second_step_required")
+    return user
+
+
+Admin = Annotated[User, Depends(admin_with_second_step)]

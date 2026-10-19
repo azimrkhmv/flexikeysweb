@@ -61,6 +61,10 @@ export const authApi = {
     });
     return net({ user: u, isNew });
   },
+  /** Live only: demo admins have no authenticator (the server asks for it, A13.1). */
+  async verifySecondStep(_code: string): Promise<User> {
+    throw new ApiError("second_step_not_set");
+  },
   /** PATCH /users/me/signup — basic consent, city and district (spec §4: required before anything else). */
   async completeSignup(input: { name: string; region: string; district: string; consent: boolean }) {
     const u = requireUser();

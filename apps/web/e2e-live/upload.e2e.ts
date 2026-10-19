@@ -1,15 +1,18 @@
 import { expect, test } from "@playwright/test";
-import { API, bearerFor, serverCommand, signIn } from "./helpers";
+import { API, bearerFor, createAdmin, serverCommand, signIn, totpCode } from "./helpers";
 
 // B48: an admin uploads a finished video file in the browser; it waits in the physiotherapist's queue.
 
 test("an admin uploads a video file and it waits for the physiotherapist", async ({ page }) => {
   const adminPhone = `+99890${String(Date.now()).slice(-7)}`;
   serverCommand("load-exercises");
-  serverCommand("create-admin", adminPhone);
+  const key = createAdmin(adminPhone);
   const physioPhone = `+99897${String(Date.now() + 1).slice(-7)}`;
 
   await signIn(page, adminPhone);
+  // A13.1: the SMS code alone is not enough for an admin; the authenticator code comes next.
+  await page.getByLabel("Code from the authenticator app").fill(totpCode(key));
+  await page.getByRole("button", { name: "Continue" }).click();
   await expect(page).toHaveURL(/\/admin/); // signed in: the session cookies are set
   const made = await page.evaluate(async (phone) => {
     const csrf = document.cookie.split("; ").find((c) => c.startsWith("fk_csrf="))?.slice(8) ?? "";

@@ -21,6 +21,9 @@ const BY_TITLE: Record<string, string> = {
     csrf_failed: "unauthorized",
     token_reused: "unauthorized",
     invalid_phone: "invalid_phone",
+    // the admins' second sign-in step (A13.1)
+    second_step_not_set: "second_step_not_set",
+    second_step_required: "second_step_required",
     // helpers (apps/api accounts/helpers.py)
     owner_only: "owner_only",
     too_many_helpers: "too_many_helpers",

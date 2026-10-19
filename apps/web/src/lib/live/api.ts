@@ -64,6 +64,11 @@ export const liveApi = {
     const r = await http<{ isNew: boolean }>("POST", "/auth/phone/verify", { phone: rawPhone, code: code.trim(), lang: uiLang, inviteCode: invite || null });
     return { user: await signedIn(), isNew: r.isNew };
   },
+  /** POST /auth/second-step — an admin's code from the authenticator app (A13.1). */
+  async verifySecondStep(code: string) {
+    await http("POST", "/auth/second-step", { code: code.trim() });
+    return signedIn();
+  },
   /** PATCH /me/signup — basic consent, city and district: required before anything else. */
   async completeSignup(input: { name: string; region: string; district: string; consent: boolean }) {
     await http("PATCH", "/me/signup", input);

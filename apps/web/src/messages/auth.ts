@@ -1,6 +1,9 @@
 // Strings for the "auth" area. Same keys in en/uz/ru (checked by src/lib/i18n.test.ts).
 export const auth = {
   en: {
+    "auth.second.title": "One more step",
+    "auth.second.lead": "Admins also enter the 6-digit code from their authenticator app.",
+    "auth.second.code": "Code from the authenticator app",
     "auth.bubble": "Hello! Glad you're here.",
     "auth.phone.langTitle": "Choose your language",
     "auth.phone.title": "Sign in with your phone",
@@ -80,6 +83,9 @@ export const auth = {
     "auth.reset.done": "Your password was updated. You can log in now.",
   },
   uz: {
+    "auth.second.title": "Yana bir qadam",
+    "auth.second.lead": "Adminlar autentifikator ilovasidagi 6 xonali kodni ham kiritadi.",
+    "auth.second.code": "Autentifikator ilovasidagi kod",
     "auth.bubble": "Salom! Sizni koʻrganimdan xursandman.",
     "auth.phone.langTitle": "Tilni tanlang",
     "auth.phone.title": "Telefon raqamingiz bilan kiring",
@@ -159,6 +165,9 @@ export const auth = {
     "auth.reset.done": "Parolingiz yangilandi. Endi kirishingiz mumkin.",
   },
   ru: {
+    "auth.second.title": "Ещё один шаг",
+    "auth.second.lead": "Администраторы также вводят 6-значный код из приложения-аутентификатора.",
+    "auth.second.code": "Код из приложения-аутентификатора",
     "auth.bubble": "Привет! Рад тебя видеть.",
     "auth.phone.langTitle": "Выберите язык",
     "auth.phone.title": "Вход по номеру телефона",

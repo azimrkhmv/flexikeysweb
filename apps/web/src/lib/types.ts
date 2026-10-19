@@ -23,6 +23,8 @@ export interface User {
   district?: { region: string; district: string };
   /** Basic consent (account, play data) accepted at sign-up. */
   consentVersion?: string;
+  /** Live: an admin signed in with the SMS code only; the authenticator code comes next (A13.1). */
+  needsSecondStep?: boolean;
   createdAt: string;
 }
 

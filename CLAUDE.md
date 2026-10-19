@@ -24,7 +24,7 @@ and games, and does a short task each day.
   Placeholder videos (test servers only, refused in production): `uv run python -m app.cli load-placeholder-videos`;
   remake the clips after the exercise list changes: `uvx --with pillow python scripts/placeholder-videos.py` in `apps/web/`.
   Anything about a child: `await require_child_access(db, user, child.family_id)` (`app/modules/accounts/access.py`),
-  404 for everyone else. Admin only: `_: Admin`. First admin: `uv run python -m app.cli create-admin +998…`.
+  404 for everyone else. Admin only: `_: Admin`. First admin: `uv run python -m app.cli create-admin +998…` (it prints the key for the admin's authenticator app; admins sign in with the SMS code and then the authenticator code). An admin without a key, or with a lost phone: `uv run python -m app.cli reset-second-step +998…`.
   Errors: `raise AppError(409, "phone_taken")` (`app/errors.py`) — the website reads the code from `title`.
   Changed an address: `UPDATE_OPENAPI=1 uv run pytest tests/test_openapi.py` rewrites `apps/api/openapi.json`;
   `npm run typecheck` in `apps/web/` rebuilds the website's types from it (`src/lib/server/`).

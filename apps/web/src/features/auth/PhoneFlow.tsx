@@ -14,7 +14,7 @@ import type { User } from "@/lib/types";
 
 // Spec §4: language first, then phone + SMS code (no passwords), then basic consent with city and district.
 
-type Step = "lang" | "phone" | "code" | "details";
+type Step = "lang" | "phone" | "code" | "details" | "second";
 
 /** Only same-site relative paths — never "//host" or "/\host" (open redirect). */
 export const safeNext = (next: string | null) => (next && /^\/(?![/\\])/.test(next) ? next : null);
@@ -36,7 +36,7 @@ export function PhoneFlow({ showDemos }: { showDemos?: boolean }) {
   const mounted = useMounted();
   // Derived until the person moves on, so the saved language (read after hydration) decides the first screen.
   const [picked, setStep] = useState<Step | null>(null);
-  const step: Step = picked ?? (me && sel.needsSignup(me) ? "details" : chosen ? "phone" : "lang");
+  const step: Step = picked ?? (me && sel.needsSignup(me) ? "details" : me?.needsSecondStep ? "second" : chosen ? "phone" : "lang");
   const [phone, setPhone] = useState("+998 ");
   const [code, setCode] = useState("");
   const [demoCode, setDemoCode] = useState<string | null>(null);
@@ -44,6 +44,7 @@ export function PhoneFlow({ showDemos }: { showDemos?: boolean }) {
   const [now, setNow] = useState(() => Date.now());
   const send = useAction(api.requestCode);
   const verify = useAction(api.verifyCode);
+  const second = useAction(api.verifySecondStep);
 
   useEffect(() => {
     if (step !== "code") return;
@@ -66,6 +67,7 @@ export function PhoneFlow({ showDemos }: { showDemos?: boolean }) {
   const go = async (u: User) => {
     applyAccountLang(u.uiLang);
     if (sel.needsSignup(u)) return setStep("details");
+    if (u.needsSecondStep) return setStep("second");
     if (invite && u.role === "therapist") await api.acceptInvite(invite).catch(() => {}); // already accepted: fine
     router.replace(safeNext(new URLSearchParams(window.location.search).get("next")) ?? homeFor(u.role));
   };
@@ -106,6 +108,28 @@ export function PhoneFlow({ showDemos }: { showDemos?: boolean }) {
     );
 
   if (step === "details") return <Details />;
+  if (step === "second")
+    return (
+      <>
+        <AuthTitle title={t("auth.second.title")} lead={t("auth.second.lead")} />
+        <form
+          className="space-y-4"
+          onSubmit={async (e) => {
+            e.preventDefault();
+            const u = await second.run(code);
+            if (u) await go(u);
+          }}
+        >
+          <Field label={t("auth.second.code")}>
+            <Input inputMode="numeric" autoComplete="one-time-code" maxLength={6} required value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))} />
+          </Field>
+          <FormError>{second.error}</FormError>
+          <Button type="submit" size="lg" className="w-full" pending={second.pending}>
+            {t("auth.phone.verify")}
+          </Button>
+        </form>
+      </>
+    );
 
   return (
     <>

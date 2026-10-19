@@ -226,6 +226,48 @@
     }
    }
   },
+  "/api/v1/auth/second-step": {
+   "post": {
+    "tags": [
+     "auth"
+    ],
+    "summary": "Second Step",
+    "description": "An admin's code from the authenticator app (A13.1): new tokens that may act as admin. Each code works once.\n409 second_step_not_set (no authenticator yet: `uv run python -m app.cli reset-second-step <phone>` on the\nserver), 400 invalid_code, 429 too_many_tries.",
+    "operationId": "second_step_api_v1_auth_second_step_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/SecondStep"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Tokens"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/v1/auth/logout-all": {
    "post": {
     "tags": [
@@ -6185,6 +6227,11 @@
      "needsSignup": {
       "type": "boolean",
       "title": "Needssignup"
+     },
+     "needsSecondStep": {
+      "type": "boolean",
+      "title": "Needssecondstep",
+      "default": false
      }
     },
     "type": "object",
@@ -8078,6 +8125,20 @@
      "stopped"
     ],
     "title": "RunStatus"
+   },
+   "SecondStep": {
+    "properties": {
+     "code": {
+      "type": "string",
+      "pattern": "^\\d{6}$",
+      "title": "Code"
+     }
+    },
+    "type": "object",
+    "required": [
+     "code"
+    ],
+    "title": "SecondStep"
    },
    "SessionChange": {
     "properties": {

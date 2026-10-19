@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { API, bearerFor, newPhone, serverCommand, signIn } from "./helpers";
+import { adminBearerFor, API, createAdmin, newPhone, serverCommand, signIn } from "./helpers";
 
 // B5: a physiotherapist reviews a real video file in the browser (product rule 3: nothing reaches families before).
 
@@ -7,8 +7,7 @@ test("a physiotherapist watches a real video file and approves it", async ({ pag
   // Setup the way the team does it: the first admin on the server, the library, a physiotherapist account, a file.
   const adminPhone = `+99890${String(Date.now()).slice(-7)}`;
   serverCommand("load-exercises");
-  serverCommand("create-admin", adminPhone);
-  const admin = await bearerFor(adminPhone);
+  const admin = await adminBearerFor(adminPhone, createAdmin(adminPhone));
   const physioPhone = newPhone("97");
   const json = { ...admin, "Content-Type": "application/json" };
   expect((await fetch(`${API}/api/v1/admin/users`, { method: "POST", headers: json, body: JSON.stringify({ phone: physioPhone, role: "physio" }) })).status).toBe(201);
