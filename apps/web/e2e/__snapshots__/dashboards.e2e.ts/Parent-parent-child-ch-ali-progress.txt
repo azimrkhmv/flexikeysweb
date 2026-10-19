@@ -54,32 +54,26 @@ Minutes per day (last 14 days)
 
 Levels and mastery
 
-Levels open by mastery, never by time or payment of coins. The bar shows how confidently your child knows each topic.
+Levels open by mastery, never by time or payment of coins.
 
 🔤
 1. Letters
 Completed
-95%
 🔢
 2. Numbers
 Completed
-88%
 🔷
 3. Shapes
 Completed
-82%
 🎨
 4. Colors
 Completed
-72%
 👨‍👩‍👧
 5. Family
 Completed
-56%
 🐾
 6. Animals
 In progress
-49%
 🍎
 7. Fruits
 Coming next

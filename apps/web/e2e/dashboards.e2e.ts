@@ -32,6 +32,8 @@ for (const [role, paths] of Object.entries(PAGES) as [keyof typeof PAGES, string
       const main = page.locator("main").last();
       await expect(main.locator("h1").first()).toBeVisible();
       const text = (await main.innerText()).replace(/[ \t]+\n/g, "\n");
+      // Rule 1: no percentage about the child on a parent screen (a price saving or a key size is not one).
+      if (role === "Parent") expect(text.replace(/Save \d+%|\d+% larger/g, "")).not.toMatch(/\d\s?%/);
       expect(text).toMatchSnapshot(`${role.replace(" ", "_")}${path.replace(/[/#]+/g, "_")}.txt`);
     }
   });

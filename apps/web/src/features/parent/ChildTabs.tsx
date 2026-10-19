@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useRef, useState, useSyncExternalStore } from "react";
 import { Check, Clock, Coins, Copy, Download, Flame, Mic, Star, Trash } from "lucide-react";
-import { Bars, Button, Card, Chip, Empty, Field, Input, Meter, Modal, Select, Stat, Toggle, useAction } from "@/components/ui";
+import { Bars, Button, Card, Chip, Empty, Field, Input, Modal, Select, Stat, Toggle, useAction } from "@/components/ui";
 import { AAC_CATEGORIES } from "@/content/aac";
 import { LEVELS } from "@/content/levels";
 import { api, sel, useDb } from "@/lib/api";
@@ -67,12 +67,6 @@ export function ProgressTab({ childId }: { childId: string }) {
                     </span>
                     <Chip tone={state === "done" ? "leaf" : state === "open" ? "sky" : "gray"}>{t(`parent.level.${state}`)}</Chip>
                   </div>
-                  {m.attempts > 0 && (
-                    <div className="flex items-center gap-2">
-                      <Meter value={m.pKnown} label={l.title[lang]} />
-                      <span className="w-10 text-right text-xs font-bold text-ink-2">{Math.round(m.pKnown * 100)}%</span>
-                    </div>
-                  )}
                 </div>
               </li>
             );

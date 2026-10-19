@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { flushSync } from "react-dom";
 import { Printer, Sparkles } from "lucide-react";
-import { Avatar, Button, Card, Chip, Empty, Meter, PageHeader } from "@/components/ui";
+import { Avatar, Button, Card, Chip, Empty, PageHeader } from "@/components/ui";
 import { LEVEL_BY_ID } from "@/content/levels";
 import { sinceIso } from "@/features/parent/lib";
 import { fmtDate } from "@/lib/format";
@@ -54,7 +54,9 @@ function WeeklyReport({ db, child, onPrint }: { db: DB; child: Child; onPrint: (
   const sessions = sel.sessions(db, child.id).filter((s) => s.startedAt >= from);
   const minutes = sessions.reduce((a, s) => a + (s.minutes ?? 0), 0);
   const activities = sessions.reduce((a, s) => a + s.activities, 0);
-  const mastery = sel.mastery(db, child.id).filter((m) => m.attempts > 0).sort((a, b) => b.pKnown - a.pKnown);
+  // Rule 1: the topics are listed in level order, with no score, bar or ranking; only the summary words use the order.
+  const played = sel.mastery(db, child.id).filter((m) => m.attempts > 0);
+  const mastery = [...played].sort((a, b) => b.pKnown - a.pKnown);
   const changes = sel.changes(db, child.id).filter((c) => c.at >= from);
   const aac = sel.aacStats(db, child.id);
   // AI summary only with the child's AI consent and while the admin flag is on.
@@ -92,16 +94,12 @@ function WeeklyReport({ db, child, onPrint }: { db: DB; child: Child; onPrint: (
       <div className="grid gap-5 md:grid-cols-2">
         <section>
           <h3 className="mb-2 font-extrabold">{t("parent.reports.skills")}</h3>
-          {mastery.length === 0 ? (
+          {played.length === 0 ? (
             <p className="text-sm text-muted">{t("common.none")}</p>
           ) : (
-            <ul className="space-y-2">
-              {mastery.slice(0, 5).map((m) => (
-                <li key={m.skill} className="flex items-center gap-3 text-sm">
-                  <span className="w-32 truncate font-semibold">{LEVEL_BY_ID[m.skill]?.title[lang]}</span>
-                  <Meter value={m.pKnown} label={LEVEL_BY_ID[m.skill]?.title[lang] ?? m.skill} />
-                  <span className="w-10 text-right font-bold">{Math.round(m.pKnown * 100)}%</span>
-                </li>
+            <ul className="space-y-1.5 text-sm font-semibold text-ink-2">
+              {played.map((m) => (
+                <li key={m.skill}>• {LEVEL_BY_ID[m.skill]?.title[lang] ?? m.skill}</li>
               ))}
             </ul>
           )}
