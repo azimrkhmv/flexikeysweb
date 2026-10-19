@@ -601,7 +601,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A10.2` Search: free state centres first, then by distance; a parent reports wrong information
   - Done when: a price older than 6 months says "price not recently checked"; a report flags the place
   - Needs: A10.1
-- [ ] **Azim** — `A10.3` Clinic accounts and their free times
+- [x] **Azim** — `A10.3` Clinic accounts and their free times
   - Done when: a clinic sees only its own data
   - Needs: A1.7
 - [ ] **Azim** — `A10.4` Booking, confirm and cancel, in person or online

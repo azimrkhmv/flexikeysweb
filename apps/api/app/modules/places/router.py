@@ -15,6 +15,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db import get_session
 from app.errors import AppError
 from app.modules.accounts.access import Admin
+from app.modules.accounts.models import Role, User
 from app.modules.accounts.router import _check_place
 from app.modules.audit import models as audit
 from app.modules.auth.router import normalize_phone
@@ -49,6 +50,7 @@ class PlaceIn(ApiModel):
     price_max: int | None = Field(default=None, ge=0)
     checked_at: date
     active: bool = True
+    clinic_id: uuid.UUID | None = None  # the clinic account that publishes free times (role clinic)
 
 
 class PlaceChange(ApiModel):
@@ -73,9 +75,15 @@ class PlaceChange(ApiModel):
     price_max: int | None = Field(default=None, ge=0)
     checked_at: date | None = None
     active: bool | None = None
+    clinic_id: uuid.UUID | None = None
 
 
 REQUIRED = [name for name, f in PlaceIn.model_fields.items() if f.is_required() or f.default is True]
+
+
+async def _check_clinic(db: AsyncSession, p: Place) -> None:
+    if p.clinic_id is not None and (await db.get(User, p.clinic_id) or User()).role != Role.clinic:
+        raise AppError(422, "not_a_clinic")
 
 
 class PlaceOut(PlaceIn):
@@ -114,6 +122,7 @@ async def list_places(_: Admin, db: Annotated[AsyncSession, Depends(get_session)
 async def add_place(body: PlaceIn, admin: Admin, db: Annotated[AsyncSession, Depends(get_session)]) -> PlaceOut:
     place = Place(**body.model_dump())
     _check(place)
+    await _check_clinic(db, place)
     db.add(place)
     await db.flush()
     audit.record(db, admin.id, "place.created", place.id, name=place.name)
@@ -136,6 +145,7 @@ async def change_place(
     if "checked_at" in changes:
         place.flagged_at = None  # our team checked it again
     _check(place)
+    await _check_clinic(db, place)
     audit.record(db, admin.id, "place.changed", place.id, fields=sorted(changes))
     await db.commit()
     return _out(place)

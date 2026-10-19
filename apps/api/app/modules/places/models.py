@@ -58,6 +58,8 @@ class Place(IdTimeMixin, Base):
     active: Mapped[bool] = mapped_column(default=True)  # an admin hides a closed place instead of deleting it
     # A parent reported wrong information; cleared when our team checks the place again (a new checked_at).
     flagged_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    # The clinic account that publishes this place's free times (A10.3); an admin links it.
+    clinic_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), index=True)
 
 
 class ReportReason(StrEnum):
@@ -76,3 +78,20 @@ class PlaceReport(IdTimeMixin, Base):
     user_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
     reason: Mapped[ReportReason] = mapped_column(enum_column(ReportReason))
     note: Mapped[str | None] = mapped_column(String(500))
+
+
+class Slot(IdTimeMixin, Base):
+    """A free time a clinic publishes (spec §11): booked in person, online, or either."""
+
+    __tablename__ = "slots"
+    __table_args__ = (
+        CheckConstraint("minutes between 10 and 240", name="minutes"),
+        CheckConstraint("in_person or online", name="mode"),
+    )
+
+    place_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("places.id", ondelete="CASCADE"), index=True)
+    starts_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    minutes: Mapped[int]
+    specialist: Mapped[str | None] = mapped_column(String(80))  # who sees the child, when the clinic says
+    in_person: Mapped[bool]
+    online: Mapped[bool]

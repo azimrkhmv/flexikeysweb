@@ -1110,6 +1110,177 @@
     }
    }
   },
+  "/api/v1/clinic/places": {
+   "get": {
+    "tags": [
+     "clinic"
+    ],
+    "summary": "My Places",
+    "operationId": "my_places_api_v1_clinic_places_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "$ref": "#/components/schemas/MyPlace"
+         },
+         "type": "array",
+         "title": "Response My Places Api V1 Clinic Places Get"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clinic/places/{place_id}/slots": {
+   "get": {
+    "tags": [
+     "clinic"
+    ],
+    "summary": "Slots",
+    "description": "This place's free times from now on, earliest first.",
+    "operationId": "slots_api_v1_clinic_places__place_id__slots_get",
+    "parameters": [
+     {
+      "name": "place_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Place Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/app__modules__places__clinic__SlotOut"
+         },
+         "title": "Response Slots Api V1 Clinic Places  Place Id  Slots Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "clinic"
+    ],
+    "summary": "Add Slot",
+    "description": "422 slot_in_past, slot_too_far (more than 3 months ahead); 409 slot_overlaps when the same specialist (or\nthe place, when no specialist is named) already has a time then.",
+    "operationId": "add_slot_api_v1_clinic_places__place_id__slots_post",
+    "parameters": [
+     {
+      "name": "place_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Place Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/SlotIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/app__modules__places__clinic__SlotOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clinic/places/{place_id}/slots/{slot_id}": {
+   "delete": {
+    "tags": [
+     "clinic"
+    ],
+    "summary": "Delete Slot",
+    "operationId": "delete_slot_api_v1_clinic_places__place_id__slots__slot_id__delete",
+    "parameters": [
+     {
+      "name": "place_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Place Id"
+      }
+     },
+     {
+      "name": "slot_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Slot Id"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/v1/children": {
    "get": {
     "tags": [
@@ -5097,7 +5268,7 @@
      },
      "slots": {
       "items": {
-       "$ref": "#/components/schemas/SlotOut"
+       "$ref": "#/components/schemas/app__modules__play__router__SlotOut"
       },
       "type": "array",
       "title": "Slots"
@@ -5478,6 +5649,30 @@
      "text"
     ],
     "title": "Message"
+   },
+   "MyPlace": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "district": {
+      "type": "string",
+      "title": "District"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "name",
+     "district"
+    ],
+    "title": "MyPlace"
    },
    "Need": {
     "type": "string",
@@ -5957,6 +6152,18 @@
        }
       ],
       "title": "Active"
+     },
+     "clinicId": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "uuid"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Clinicid"
      }
     },
     "type": "object",
@@ -6133,6 +6340,18 @@
       "type": "boolean",
       "title": "Active",
       "default": true
+     },
+     "clinicId": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "uuid"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Clinicid"
      }
     },
     "type": "object",
@@ -6319,6 +6538,18 @@
       "type": "boolean",
       "title": "Active",
       "default": true
+     },
+     "clinicId": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "uuid"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Clinicid"
      },
      "id": {
       "type": "string",
@@ -7484,42 +7715,48 @@
     ],
     "title": "SkillOut"
    },
-   "SlotOut": {
+   "SlotIn": {
     "properties": {
-     "slot": {
+     "startsAt": {
       "type": "string",
-      "enum": [
-       "easy_win",
-       "growth",
-       "choice"
-      ],
-      "title": "Slot"
+      "format": "date-time",
+      "title": "Startsat"
      },
-     "area": {
+     "minutes": {
+      "type": "integer",
+      "maximum": 240.0,
+      "minimum": 10.0,
+      "title": "Minutes"
+     },
+     "specialist": {
       "anyOf": [
        {
-        "$ref": "#/components/schemas/SkillArea"
+        "type": "string",
+        "maxLength": 80
        },
        {
         "type": "null"
        }
-      ]
+      ],
+      "title": "Specialist"
      },
-     "games": {
-      "items": {
-       "$ref": "#/components/schemas/GameOut"
-      },
-      "type": "array",
-      "title": "Games"
+     "inPerson": {
+      "type": "boolean",
+      "title": "Inperson",
+      "default": true
+     },
+     "online": {
+      "type": "boolean",
+      "title": "Online",
+      "default": false
      }
     },
     "type": "object",
     "required": [
-     "slot",
-     "area",
-     "games"
+     "startsAt",
+     "minutes"
     ],
-    "title": "SlotOut"
+    "title": "SlotIn"
    },
    "TherapistInvite": {
     "properties": {
@@ -8058,6 +8295,92 @@
      "expiresAt"
     ],
     "title": "InviteOut"
+   },
+   "app__modules__places__clinic__SlotOut": {
+    "properties": {
+     "startsAt": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Startsat"
+     },
+     "minutes": {
+      "type": "integer",
+      "maximum": 240.0,
+      "minimum": 10.0,
+      "title": "Minutes"
+     },
+     "specialist": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 80
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Specialist"
+     },
+     "inPerson": {
+      "type": "boolean",
+      "title": "Inperson",
+      "default": true
+     },
+     "online": {
+      "type": "boolean",
+      "title": "Online",
+      "default": false
+     },
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     }
+    },
+    "type": "object",
+    "required": [
+     "startsAt",
+     "minutes",
+     "id"
+    ],
+    "title": "SlotOut"
+   },
+   "app__modules__play__router__SlotOut": {
+    "properties": {
+     "slot": {
+      "type": "string",
+      "enum": [
+       "easy_win",
+       "growth",
+       "choice"
+      ],
+      "title": "Slot"
+     },
+     "area": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/SkillArea"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "games": {
+      "items": {
+       "$ref": "#/components/schemas/GameOut"
+      },
+      "type": "array",
+      "title": "Games"
+     }
+    },
+    "type": "object",
+    "required": [
+     "slot",
+     "area",
+     "games"
+    ],
+    "title": "SlotOut"
    },
    "app__modules__therapists__router__InviteOut": {
     "properties": {

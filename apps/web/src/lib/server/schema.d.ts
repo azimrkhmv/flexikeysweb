@@ -506,6 +506,65 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/clinic/places": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My Places */
+        get: operations["my_places_api_v1_clinic_places_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clinic/places/{place_id}/slots": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Slots
+         * @description This place's free times from now on, earliest first.
+         */
+        get: operations["slots_api_v1_clinic_places__place_id__slots_get"];
+        put?: never;
+        /**
+         * Add Slot
+         * @description 422 slot_in_past, slot_too_far (more than 3 months ahead); 409 slot_overlaps when the same specialist (or
+         *     the place, when no specialist is named) already has a time then.
+         */
+        post: operations["add_slot_api_v1_clinic_places__place_id__slots_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clinic/places/{place_id}/slots/{slot_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Slot */
+        delete: operations["delete_slot_api_v1_clinic_places__place_id__slots__slot_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/children": {
         parameters: {
             query?: never;
@@ -1876,7 +1935,7 @@ export interface components {
             /** Secondslefttoday */
             secondsLeftToday: number;
             /** Slots */
-            slots: components["schemas"]["SlotOut"][];
+            slots: components["schemas"]["app__modules__play__router__SlotOut"][];
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -2012,6 +2071,18 @@ export interface components {
             /** Text */
             text: string;
         };
+        /** MyPlace */
+        MyPlace: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Name */
+            name: string;
+            /** District */
+            district: string;
+        };
         /**
          * Need
          * @description What the parent picks in plain words (spec §11); "I'm not sure" is not a need of a place.
@@ -2141,6 +2212,8 @@ export interface components {
             checkedAt?: string | null;
             /** Active */
             active?: boolean | null;
+            /** Clinicid */
+            clinicId?: string | null;
         };
         /** PlaceIn */
         PlaceIn: {
@@ -2187,6 +2260,8 @@ export interface components {
              * @default true
              */
             active: boolean;
+            /** Clinicid */
+            clinicId?: string | null;
         };
         /**
          * PlaceKind
@@ -2238,6 +2313,8 @@ export interface components {
              * @default true
              */
             active: boolean;
+            /** Clinicid */
+            clinicId?: string | null;
             /**
              * Id
              * Format: uuid
@@ -2645,16 +2722,27 @@ export interface components {
             /** Ntrials */
             nTrials: number;
         };
-        /** SlotOut */
-        SlotOut: {
+        /** SlotIn */
+        SlotIn: {
             /**
-             * Slot
-             * @enum {string}
+             * Startsat
+             * Format: date-time
              */
-            slot: "easy_win" | "growth" | "choice";
-            area: components["schemas"]["SkillArea"] | null;
-            /** Games */
-            games: components["schemas"]["GameOut"][];
+            startsAt: string;
+            /** Minutes */
+            minutes: number;
+            /** Specialist */
+            specialist?: string | null;
+            /**
+             * Inperson
+             * @default true
+             */
+            inPerson: boolean;
+            /**
+             * Online
+             * @default false
+             */
+            online: boolean;
         };
         /** TherapistInvite */
         TherapistInvite: {
@@ -2852,6 +2940,44 @@ export interface components {
              * Format: date-time
              */
             expiresAt: string;
+        };
+        /** SlotOut */
+        app__modules__places__clinic__SlotOut: {
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /** Minutes */
+            minutes: number;
+            /** Specialist */
+            specialist?: string | null;
+            /**
+             * Inperson
+             * @default true
+             */
+            inPerson: boolean;
+            /**
+             * Online
+             * @default false
+             */
+            online: boolean;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+        };
+        /** SlotOut */
+        app__modules__play__router__SlotOut: {
+            /**
+             * Slot
+             * @enum {string}
+             */
+            slot: "easy_win" | "growth" | "choice";
+            area: components["schemas"]["SkillArea"] | null;
+            /** Games */
+            games: components["schemas"]["GameOut"][];
         };
         /** InviteOut */
         app__modules__therapists__router__InviteOut: {
@@ -3659,6 +3785,122 @@ export interface operations {
                 "application/json": components["schemas"]["ReportIn"];
             };
         };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_places_api_v1_clinic_places_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyPlace"][];
+                };
+            };
+        };
+    };
+    slots_api_v1_clinic_places__place_id__slots_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                place_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["app__modules__places__clinic__SlotOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_slot_api_v1_clinic_places__place_id__slots_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                place_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SlotIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["app__modules__places__clinic__SlotOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_slot_api_v1_clinic_places__place_id__slots__slot_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                place_id: string;
+                slot_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description Successful Response */
             204: {
