@@ -674,7 +674,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `A13.6` Error alerts and uptime checks
   - Done when: an alert arrives when the server is stopped on purpose
   - Needs: A13.4
-- [ ] **Azim** — `A13.7` `deploy/`: the website image is built without `FK_STORAGE_ORIGIN` (and the Dockerfile has no such build argument), so the browser's security policy blocks videos and voice notes from `files.<domain>`; also check the server's file links point at `files.<domain>`
+- [x] **Azim** — `A13.7` `deploy/`: the website image is built without `FK_STORAGE_ORIGIN` (and the Dockerfile has no such build argument), so the browser's security policy blocks videos and voice notes from `files.<domain>`; also check the server's file links point at `files.<domain>`
   - Done when: with `deploy/compose.yaml` on this computer a voice note uploads and plays over HTTPS
   - Needs: —
 - [ ] **Azim** — `F3` Security check before launch

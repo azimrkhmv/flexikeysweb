@@ -50,6 +50,7 @@ services:
         NEXT_PUBLIC_SITE_URL: https://${DOMAIN}
         NEXT_PUBLIC_API_MODE: live
         FK_API_ORIGIN: http://api:8000
+        FK_STORAGE_ORIGIN: ${S3_PUBLIC_ENDPOINT}  # the security policy lets the browser load and upload files there
     restart: unless-stopped
 
   db:
