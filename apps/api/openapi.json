@@ -5466,7 +5466,8 @@
     "enum": [
      "health",
      "movement_videos",
-     "therapist_share"
+     "therapist_share",
+     "voice_recording"
     ],
     "title": "ConsentKind"
    },
@@ -5506,13 +5507,18 @@
      "therapistShare": {
       "type": "boolean",
       "title": "Therapistshare"
+     },
+     "voiceRecording": {
+      "type": "boolean",
+      "title": "Voicerecording"
      }
     },
     "type": "object",
     "required": [
      "health",
      "movementVideos",
-     "therapistShare"
+     "therapistShare",
+     "voiceRecording"
     ],
     "title": "Consents"
    },

@@ -1,5 +1,6 @@
 """My Voice cards the parent made (spec §11 AAC, Q2): a label, an emoji or the parent's own photo, and their recorded
-voice. On the server, so the cards are the same on every device of the family. The files go straight to storage."""
+voice. On the server, so the cards are the same on every device of the family. The files go straight to storage.
+A recorded voice needs the voice_recording consent (G8); taking it back deletes the recordings (play.models)."""
 
 import uuid
 from datetime import datetime
@@ -14,6 +15,7 @@ from app import storage
 from app.db import get_session
 from app.errors import AppError
 from app.modules.auth.session import CurrentUser
+from app.modules.children.consents import ConsentKind, require_consent
 from app.modules.children.router import get_visible_child
 from app.modules.play.models import VoiceCard
 from app.schemas import ApiModel
@@ -83,6 +85,8 @@ async def upload_link(
     child_id: uuid.UUID, body: UploadKind, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]
 ) -> CardUpload:
     await get_visible_child(db, user, child_id)
+    if body.kind == "audio":
+        await require_consent(db, child_id, ConsentKind.voice_recording)
     key = f"children/{child_id}/voice/{body.kind}-{uuid.uuid4()}"
     return CardUpload(storage_key=key, upload_url=storage.upload_url(key))
 
@@ -105,6 +109,8 @@ async def add_card(
     count = select(func.count()).select_from(VoiceCard).where(VoiceCard.child_id == child_id)
     if (await db.scalar(count) or 0) >= MAX_CARDS:
         raise AppError(409, "too_many_cards")
+    if body.audio_key:
+        await require_consent(db, child_id, ConsentKind.voice_recording)
     _check_file(child_id, body.photo_key)
     _check_file(child_id, body.audio_key)
     card = VoiceCard(child_id=child_id, made_by=user.id, **body.model_dump())
@@ -133,6 +139,8 @@ async def change_card(
     await get_visible_child(db, user, child_id)
     card = await _card(db, child_id, card_id)
     change = body.model_dump(exclude_unset=True)
+    if change.get("audio_key"):
+        await require_consent(db, child_id, ConsentKind.voice_recording)
     for field in ("photo_key", "audio_key"):
         if field in change:
             _check_file(child_id, change[field])

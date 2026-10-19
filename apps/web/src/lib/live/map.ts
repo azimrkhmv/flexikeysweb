@@ -66,10 +66,10 @@ export function familyChildFrom(c: ChildOut): Child {
 }
 
 /** The web's consent scopes the server knows; "core" is the basic consent every family gave at sign-up. */
-export const CONSENT_KIND: Partial<Record<ConsentScope, ConsentKind>> = { health: "health", movement_videos: "movement_videos", therapist_sharing: "therapist_share" };
+export const CONSENT_KIND: Partial<Record<ConsentScope, ConsentKind>> = { health: "health", movement_videos: "movement_videos", therapist_sharing: "therapist_share", voice_recording: "voice_recording" };
 
 export function familyConsentsFrom(childId: string, c: Consents): Consent[] {
-  const on: ConsentScope[] = ["core", ...(c.health ? ["health" as const] : []), ...(c.movementVideos ? ["movement_videos" as const] : []), ...(c.therapistShare ? ["therapist_sharing" as const] : [])];
+  const on: ConsentScope[] = ["core", ...(c.health ? ["health" as const] : []), ...(c.movementVideos ? ["movement_videos" as const] : []), ...(c.therapistShare ? ["therapist_sharing" as const] : []), ...(c.voiceRecording ? ["voice_recording" as const] : [])];
   return on.map((scope) => ({ id: `${childId}-${scope}`, childId, scope, version: "", grantedBy: "", grantedAt: "" }));
 }
 

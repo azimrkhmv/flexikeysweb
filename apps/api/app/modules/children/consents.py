@@ -4,7 +4,8 @@ Every feature that needs one calls `require_consent` at the moment of use, so ta
 right away:
 - health: storing and using health answers (intake, A2.4-A2.5) and the plan's health filters;
 - movement_videos: movement and feedback clips (A8.3);
-- therapist_share: a therapist seeing the child (A8.1).
+- therapist_share: a therapist seeing the child (A8.1);
+- voice_recording: the parent's own recorded voice on My Voice cards (G8). Taking it back deletes the recordings.
 """
 
 import uuid
@@ -23,6 +24,7 @@ from app.modules.accounts.models import enum_column
 from app.modules.audit import models as audit
 from app.modules.auth.session import CurrentUser
 from app.modules.children.router import get_visible_child, require_owner
+from app.modules.play.models import forget_voices
 from app.modules.therapists.models import stop_all
 from app.schemas import ApiModel
 
@@ -31,6 +33,7 @@ class ConsentKind(StrEnum):
     health = "health"
     movement_videos = "movement_videos"
     therapist_share = "therapist_share"
+    voice_recording = "voice_recording"
 
 
 class ChildConsent(IdTimeMixin, Base):
@@ -66,6 +69,7 @@ class Consents(ApiModel):
     health: bool
     movement_videos: bool
     therapist_share: bool
+    voice_recording: bool
 
 
 class ConsentChange(ApiModel):
@@ -107,6 +111,8 @@ async def set_consent(
         return await _consents(db, child_id)  # no change, nothing to log
     if kind == ConsentKind.therapist_share and not body.granted:
         await stop_all(db, child_id)
+    if kind == ConsentKind.voice_recording and not body.granted:
+        await forget_voices(db, child_id)
     audit.record(db, user.id, f"child.consent_{'given' if body.granted else 'withdrawn'}", child_id, kind=kind.value)
     await db.commit()
     return await _consents(db, child_id)

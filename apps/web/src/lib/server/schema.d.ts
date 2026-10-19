@@ -2010,7 +2010,7 @@ export interface components {
          * ConsentKind
          * @enum {string}
          */
-        ConsentKind: "health" | "movement_videos" | "therapist_share";
+        ConsentKind: "health" | "movement_videos" | "therapist_share" | "voice_recording";
         /** ConsentText */
         ConsentText: {
             /** Version */
@@ -2028,6 +2028,8 @@ export interface components {
             movementVideos: boolean;
             /** Therapistshare */
             therapistShare: boolean;
+            /** Voicerecording */
+            voiceRecording: boolean;
         };
         /** DailyIn */
         DailyIn: {

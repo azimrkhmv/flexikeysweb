@@ -15,6 +15,7 @@ from app.modules.children.models import Child
 from app.modules.privacy.router import purge_files
 from app.worker import WorkerSettings, purge_deleted_files
 from tests.test_admin_changes import make
+from tests.test_child_consents import set_consent
 from tests.test_children import API, add_child, add_helper, parent
 from tests.test_play_cards import upload
 from tests.test_storage import bucket  # noqa: F401 (makes the test bucket)
@@ -51,6 +52,7 @@ def test_a_parent_deletes_the_whole_account(client: TestClient) -> None:
     owner = parent(client)
     me = uuid.UUID(client.get(f"{API}/me", headers=owner).json()["id"])
     child = add_child(client, owner)
+    set_consent(client, owner, child, "voice_recording", True)
     key = upload(client, owner, child, "audio", b"a voice")
     helper = add_helper(client, owner)
     other = parent(client)

@@ -47,7 +47,7 @@ def test_nothing_is_given_until_the_owner_gives_it(client: TestClient) -> None:
     owner = parent(client)
     child = add_child(client, owner)
     r = client.get(f"{API}/children/{child}/consents", headers=owner)
-    assert r.json() == {"health": False, "movementVideos": False, "therapistShare": False}
+    assert r.json() == {"health": False, "movementVideos": False, "therapistShare": False, "voiceRecording": False}
     assert not any(allowed(client, child, k) for k in ConsentKind)
 
 

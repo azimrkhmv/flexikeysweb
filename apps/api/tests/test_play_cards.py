@@ -8,6 +8,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
+from tests.test_child_consents import set_consent
 from tests.test_children import API, add_child, add_helper, parent
 from tests.test_storage import bucket  # noqa: F401 (makes the test bucket)
 from tests.test_videos_register import title
@@ -33,6 +34,7 @@ def test_a_card_made_on_one_device_is_on_the_other(client: TestClient) -> None:
     owner = parent(client)
     child = add_child(client, owner)
     helper = add_helper(client, owner)  # another adult, another phone
+    set_consent(client, owner, child, "voice_recording", True)
     photo = upload(client, owner, child, "photo", b"\x89PNG grandma")
     voice = upload(client, owner, child, "audio", b"OggS hello")
     made = client.post(
@@ -58,6 +60,7 @@ def test_only_own_files_and_only_the_family(client: TestClient) -> None:
     owner = parent(client)
     child = add_child(client, owner)
     other = add_child(client, parent(client))
+    set_consent(client, owner, child, "voice_recording", True)
     card: dict[str, Any] = {"category": "food", "label": "Non", "emoji": "🍞"}
     assert title(
         client.post(
@@ -72,3 +75,27 @@ def test_only_own_files_and_only_the_family(client: TestClient) -> None:
         )
     ) == (422, "unknown_file")
     assert title(client.get(f"{API}/children/{child}/voice-cards", headers=parent(client))) == (404, "not_found")
+
+
+def test_a_recorded_voice_needs_its_own_consent(client: TestClient) -> None:
+    """G8: no recorded voice without the voice_recording consent; taking it back deletes the recordings at once."""
+    owner = parent(client)
+    child = add_child(client, owner)
+    link = f"{API}/children/{child}/voice-cards/upload-link"
+    assert title(client.post(link, headers=owner, json={"kind": "audio"})) == (403, "child_consent_required")
+    photo = upload(client, owner, child, "photo", b"\x89PNG cat")  # a photo needs only the family
+    set_consent(client, owner, child, "voice_recording", True)
+    voice = upload(client, owner, child, "audio", b"OggS mosh")
+    body = {"category": "people", "label": "Mosh", "emoji": "🐈", "photoKey": photo, "audioKey": voice}
+    card = client.post(f"{API}/children/{child}/voice-cards", headers=owner, json=body).json()
+
+    set_consent(client, owner, child, "voice_recording", False)
+    (kept,) = cards(client, owner, child)
+    assert (kept["label"], kept["audioUrl"]) == ("Mosh", None) and kept["photoUrl"]
+    assert httpx2.get(card["audioUrl"]).status_code == 404  # the recording is gone from storage
+    assert title(client.post(f"{API}/children/{child}/voice-cards", headers=owner, json=body)) == (
+        403,
+        "child_consent_required",
+    )
+    url = f"{API}/children/{child}/voice-cards/{card['id']}"
+    assert title(client.patch(url, headers=owner, json={"audioKey": voice})) == (403, "child_consent_required")

@@ -42,3 +42,33 @@ test("a card made on one device appears on another", async ({ page, browser }) =
   await page.getByRole("tab", { name: "My Voice" }).click();
   await expect(card).toHaveCount(0); // and gone on the first
 });
+
+// A8.7 (G8): a recorded voice needs the "voice recording" consent; taking it back deletes the recordings.
+test("a recorded voice needs its consent and goes when it is taken back", async ({ page }) => {
+  test.setTimeout(120_000);
+  await signUp(page, newPhone("94"));
+  const childId = await childStep(page, "Aziz");
+  await myVoice(page, childId);
+  await expect(page.getByRole("button", { name: "Record your voice" })).toHaveCount(0); // not without the consent
+
+  await page.getByRole("tab", { name: "Privacy" }).click();
+  const voice = page.getByRole("switch", { name: "Voice: allow me to record my voice for custom picture cards" });
+  await voice.click();
+  await expect(voice).toBeChecked();
+  await page.getByRole("tab", { name: "My Voice" }).click();
+  await page.getByLabel("Word on the card").fill("Mosh");
+  await page.getByRole("button", { name: "Record your voice" }).click();
+  await page.waitForTimeout(1000);
+  await page.getByRole("button", { name: "Stop recording" }).click();
+  await expect(page.getByLabel("Your voice is ready for this card")).toBeVisible();
+  await page.getByRole("button", { name: "Add card" }).click();
+  await expect(page.getByRole("listitem").filter({ hasText: "Mosh" })).toBeVisible();
+  const [made] = await fromServer(page, `/children/${childId}/voice-cards`);
+  expect(made.audioUrl).toMatch(/^https?:\/\//);
+
+  await page.getByRole("tab", { name: "Privacy" }).click();
+  await voice.click();
+  await expect(voice).not.toBeChecked();
+  const [kept] = await fromServer(page, `/children/${childId}/voice-cards`);
+  expect([kept.label, kept.audioUrl]).toEqual(["Mosh", null]); // the card stays, its recording is gone
+});

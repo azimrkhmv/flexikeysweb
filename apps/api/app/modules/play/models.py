@@ -22,9 +22,12 @@ from sqlalchemy import (
     String,
     Uuid,
     func,
+    select,
 )
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped, mapped_column
 
+from app import storage
 from app.db import Base, IdTimeMixin, TimeMixin
 from app.modules.accounts.models import enum_column
 
@@ -161,6 +164,16 @@ class VoiceCard(IdTimeMixin, Base):
     photo_key: Mapped[str | None] = mapped_column(String(256))
     audio_key: Mapped[str | None] = mapped_column(String(256))
     made_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
+
+
+async def forget_voices(db: AsyncSession, child_id: uuid.UUID) -> None:
+    """The voice_recording consent was taken back (G8): every recorded voice of the child's cards is deleted. The
+    cards stay, with their label, emoji and photo. The caller commits."""
+    for card in await db.scalars(
+        select(VoiceCard).where(VoiceCard.child_id == child_id, VoiceCard.audio_key.is_not(None))
+    ):
+        storage.remove(card.audio_key)  # type: ignore[arg-type]
+        card.audio_key = None
 
 
 class GamePlayed(TimeMixin, Base):

@@ -515,7 +515,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `A8.6` Movement and feedback clips encrypted at rest in storage (spec §15 "encrypted storage"), for example MinIO server-side encryption with a key kept like the health key
   - Done when: a clip file read straight from the storage disk is not watchable
   - Needs: A8.3, A2.6
-- [ ] **Azim** — `A8.7` "Voice recording" consent on the server (G8): a new consent kind; a My Voice card takes a recorded voice only while it is given, and withdrawing it deletes the recorded voices
+- [x] **Azim** — `A8.7` "Voice recording" consent on the server (G8): a new consent kind; a My Voice card takes a recorded voice only while it is given, and withdrawing it deletes the recorded voices
   - Done when: in live mode a card's recorded voice saves with the consent, is refused without it, and is gone after withdrawing
   - Needs: G8
 - [ ] **Azim** — `A8.8` A phone invite to a therapist sends an SMS with the invite link (G9), through the SMS sender (shown on screen until Q6)
