@@ -6,7 +6,7 @@ Every admin action is recorded in the audit log.
 Accounts
 3
 Child profiles
-0
+1
 Paying families
 10
 Sessions · 7 days

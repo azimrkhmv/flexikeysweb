@@ -55,7 +55,6 @@ export const authApi = {
       db.otp = db.otp.filter((o) => o.phone !== phone);
       if (isNew) {
         db.users.push(u);
-        db.subscriptions.push({ userId: u.id, plan: "free", status: "active" });
       }
       db.auth.userId = u.id;
     });

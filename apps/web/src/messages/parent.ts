@@ -157,7 +157,7 @@ export const parent = {
     "parent.level.done": "Completed",
     "parent.level.open": "In progress",
     "parent.level.sleeping": "Coming next",
-    "parent.level.plan": "Family plan",
+    "parent.level.plan": "Pro",
 
     "parent.changes.now": "How the app looks for your child now",
     "parent.changes.observe": "FlexiKeys adjusts itself quietly from how your child plays. You can watch every change here — the settings are chosen by the learning engine, not by hand.",
@@ -491,7 +491,7 @@ export const parent = {
     "parent.level.done": "Tugallangan",
     "parent.level.open": "Jarayonda",
     "parent.level.sleeping": "Navbatdagi",
-    "parent.level.plan": "Oilaviy tarif",
+    "parent.level.plan": "Pro",
 
     "parent.changes.now": "Ilova hozir farzandingiz uchun qanday",
     "parent.changes.observe": "FlexiKeys farzandingiz qanday oʻynashiga qarab oʻzini jimgina moslaydi. Har bir oʻzgarishni shu yerda koʻrasiz — sozlamalarni qoʻlda emas, oʻquv tizimi tanlaydi.",
@@ -825,7 +825,7 @@ export const parent = {
     "parent.level.done": "Пройден",
     "parent.level.open": "В процессе",
     "parent.level.sleeping": "Следующий",
-    "parent.level.plan": "Семейный тариф",
+    "parent.level.plan": "Pro",
 
     "parent.changes.now": "Как приложение выглядит для ребёнка сейчас",
     "parent.changes.observe": "FlexiKeys тихо подстраивается под то, как играет ребёнок. Здесь видно каждое изменение — настройки выбирает обучающая система, а не человек вручную.",

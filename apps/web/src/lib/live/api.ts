@@ -446,7 +446,7 @@ export const liveApi = {
     return true;
   },
   async grantComp(userId: string, days: number) {
-    await http("POST", `/admin/users/${userId}/comp`, { days });
+    await http("POST", `/admin/users/${userId}/pro`, { days }); // the family this parent owns
     await queryClient.invalidateQueries({ queryKey: ["admin"] });
     return true;
   },

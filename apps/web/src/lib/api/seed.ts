@@ -93,8 +93,6 @@ export function seed(): DB {
       { id: id(), userId: "u_parent", titleKey: "notif.care_invite_sent", vars: { name: "Madina" }, read: true, at: iso(now - 1 * DAY) },
       { id: id(), userId: "u_therapist", titleKey: "notif.care_invite", vars: { name: "Madina" }, read: false, at: iso(now - 1 * DAY) },
     ],
-    subscriptions: [{ userId: "u_parent", plan: "free", status: "active" }],
-    orders: [],
     audit: [
       { id: id(), actorId: "u_admin", action: "content.publish", target: "curriculum v12", at: iso(now - 3 * DAY) },
       { id: id(), actorId: "u_therapist", action: "child.read", target: "ch_ali", at: iso(now - 2 * DAY) },

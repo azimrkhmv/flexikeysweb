@@ -1,12 +1,8 @@
-Subscriptions & payments
+Free and Pro
 
-Payme and Click orders. Payments open content, never rewards or progress speed.
+Every family's plan now. Payments are simulated until after the pilot.
 
-Subscriptions
-USER	PLAN	STATUS	PAID UNTIL
-+998900000001	Free	Active	—
-Orders
-
-Nothing here yet
-
-Card data is never stored — only provider transaction IDs.
+Families
+USER	PLAN	PRO UNTIL
++998900000001	Pro (trial)	Oct 1
++998900000006	Free	—

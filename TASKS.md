@@ -500,7 +500,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `B22` Connect Free and Pro to the server
   - Done when: a simulated payment upgrades the family in the browser
   - Needs: A7.2, A7.3, B21
-- [ ] **Azim** — `B55` Old plan pieces left on the website: the old 16-level map's "Needs the Family plan" lock (`sel.entitled`) and the admin's Subscriptions page still read the old per-person subscriptions, not the family's Free/Pro. Move both to the family plan, or remove them with the old levels when G5 brings the new games
+- [x] **Azim** — `B55` Old plan pieces left on the website: the old 16-level map's "Needs the Family plan" lock (`sel.entitled`) and the admin's Subscriptions page still read the old per-person subscriptions, not the family's Free/Pro. Move both to the family plan, or remove them with the old levels when G5 brings the new games
   - Done when: no screen reads `db.subscriptions`
   - Needs: B22
 - [x] **Azim** — `B23` Therapist form T1–T11

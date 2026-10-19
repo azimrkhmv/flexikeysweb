@@ -4,7 +4,7 @@
 
 import { read, write, net } from "./db";
 import { requireUser } from "./guards";
-import { ApiError, DAY, iso } from "./schema";
+import { ApiError, DAY, iso, type DB } from "./schema";
 import { sel } from "./selectors";
 
 /** The family the signed-in adult belongs to and whether they own it (the server's family_of). */
@@ -14,6 +14,13 @@ function myFamily() {
   const familyId = sel.familyOf(db, u.id);
   if (!familyId) throw new ApiError("no_family");
   return { user: u, familyId, owner: sel.ownFamily(db, u.id) === familyId };
+}
+
+/** Inside write(): Pro for `days` more, from today or from when Pro already ends (the server's extend). */
+export function extendPro(db: DB, familyId: string, days: number) {
+  const row = db.familyPlans.find((p) => p.familyId === familyId) ?? { familyId };
+  const from = Math.max(Date.now(), row.paidUntil ? Date.parse(row.paidUntil) : 0);
+  db.familyPlans = db.familyPlans.filter((p) => p.familyId !== familyId).concat({ ...row, paidUntil: iso(from + days * DAY) });
 }
 
 export const billingApi = {
@@ -32,11 +39,7 @@ export const billingApi = {
   async payPro(months: number) {
     const { familyId, owner } = myFamily();
     if (!owner) throw new ApiError("owner_only");
-    write((db) => {
-      const row = db.familyPlans.find((p) => p.familyId === familyId) ?? { familyId };
-      const from = Math.max(Date.now(), row.paidUntil ? Date.parse(row.paidUntil) : 0);
-      db.familyPlans = db.familyPlans.filter((p) => p.familyId !== familyId).concat({ ...row, paidUntil: iso(from + months * 30 * DAY) });
-    });
+    write((db) => extendPro(db, familyId, months * 30));
     return net(sel.familyPlan(read(), familyId), 600);
   },
 };

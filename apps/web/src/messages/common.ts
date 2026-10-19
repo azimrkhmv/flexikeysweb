@@ -129,7 +129,7 @@ export const common = {
     "err.rate_limited": "Too many tries. Please wait a minute and try again.",
     "err.already_owned": "You already have this.",
     "lock.mastery": "Opens after “{level}” is finished",
-    "lock.plan": "Needs the Family plan",
+    "lock.plan": "Needs Pro",
 
     "adapt.keyScale.more": "Keys got a little bigger so taps land more easily.",
     "adapt.keyScale.less": "Keys got a little smaller — taps are landing precisely now.",
@@ -308,7 +308,7 @@ export const common = {
     "err.rate_limited": "Juda koʻp urinish. Bir daqiqa kutib, qayta urinib koʻring.",
     "err.already_owned": "Bu sizda allaqachon bor.",
     "lock.mastery": "“{level}” tugagach ochiladi",
-    "lock.plan": "Oilaviy tarif kerak",
+    "lock.plan": "Pro kerak",
 
     "adapt.keyScale.more": "Tugmalar biroz kattalashdi — bosish osonroq boʻladi.",
     "adapt.keyScale.less": "Tugmalar biroz kichraydi — bosishlar endi aniq.",
@@ -487,7 +487,7 @@ export const common = {
     "err.rate_limited": "Слишком много попыток. Подождите минуту и попробуйте снова.",
     "err.already_owned": "Это у вас уже есть.",
     "lock.mastery": "Откроется после уровня «{level}»",
-    "lock.plan": "Нужен семейный тариф",
+    "lock.plan": "Нужен Pro",
 
     "adapt.keyScale.more": "Клавиши стали чуть больше — попадать легче.",
     "adapt.keyScale.less": "Клавиши стали чуть меньше — нажатия теперь точные.",

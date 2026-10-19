@@ -11,7 +11,7 @@ import { FREE, TRIAL_DAYS, TRIAL_REMIND_DAYS } from "@/content/plans";
 import { replaces, therapistInput, type Profession } from "@/content/therapist";
 import { LANGS, type Lang } from "../i18n";
 import { DAY, iso, localDate, type DB } from "./schema";
-import type { AdaptiveProfile, Child, ConsentScope, InputProfile, LevelProgress, Roadmap, Subscription, User, VideoStatus, Wallet } from "../types";
+import type { AdaptiveProfile, Child, ConsentScope, InputProfile, LevelProgress, Roadmap, User, VideoStatus, Wallet } from "../types";
 
 // ---------------------------------------------------------------- selectors (pure)
 export const sel = {
@@ -132,19 +132,8 @@ export const sel = {
   levelProgress: (db: DB, childId: string, levelId: string): LevelProgress =>
     db.progress.find((p) => p.childId === childId && p.levelId === levelId) ?? { childId, levelId, completed: [], stars: 0 },
 
-  subscription: (db: DB, userId: string): Subscription => {
-    const s = db.subscriptions.find((x) => x.userId === userId);
-    if (s && s.plan !== "free" && s.until && s.until < iso()) return { ...s, status: "expired" };
-    return s ?? { userId, plan: "free", status: "active" };
-  },
-  /** Paid access: family subscription, or a therapist link (free during pilot). Never affects rewards. */
-  entitled(db: DB, childId: string) {
-    const c = sel.child(db, childId);
-    if (!c) return false;
-    const s = sel.subscription(db, sel.familyOwner(db, c.familyId) ?? "");
-    if (s.plan !== "free" && s.status !== "expired") return true;
-    return db.careLinks.some((l) => l.childId === childId && l.status === "active");
-  },
+  /** The old level map's paid levels open with the family's Pro (B55). Never affects rewards. */
+  entitled: (db: DB, childId: string) => sel.isPro(db, childId),
   /** done | open | sleeping (mastery gate) | plan (needs subscription — shown to the child as sleeping too). */
   levelState(db: DB, childId: string, index: number): "done" | "open" | "sleeping" | "plan" {
     const level = LEVELS[index];
@@ -325,7 +314,6 @@ export const sel = {
       ] as [string, number][]
     ).filter(([, n]) => n > 0);
   },
-  ordersOf: (db: DB, userId: string) => db.orders.filter((o) => o.userId === userId),
   /** Notes about a child: a therapist sees their own; a parent sees the ones shared with them. */
   notes: (db: DB, childId: string, by: { authorId: string } | { visibleToParent: true }) =>
     db.notes.filter((n) => n.childId === childId && ("authorId" in by ? n.authorId === by.authorId : n.visibleToParent)),
@@ -336,8 +324,9 @@ export const sel = {
   // ---- admin-only reads (/admin/*)
   admin: {
     users: (db: DB) => db.users,
-    subscriptions: (db: DB) => db.subscriptions,
-    orders: (db: DB) => db.orders,
+    /** Every family with its owner and its plan now (Free, Pro or the trial). */
+    familyPlans: (db: DB) =>
+      db.familyMembers.filter((m) => m.role === "owner").map((m) => ({ familyId: m.familyId, ownerId: m.userId, ...sel.familyPlan(db, m.familyId) })),
     audit: (db: DB) => db.audit,
     flags: (db: DB) => db.flags,
     /** AI questions asked (user turns only), with the asker's role for the usage chart. */
@@ -357,7 +346,7 @@ export const sel = {
       return {
         users: db.users.length,
         children: db.children.length,
-        paying: db.subscriptions.filter((s) => s.plan !== "free" && sel.subscription(db, s.userId).status !== "expired").length,
+        paying: db.familyMembers.filter((m) => m.role === "owner" && sel.familyPlan(db, m.familyId).plan === "pro").length,
         sessions: db.sessions.filter((s) => s.startedAt > since).length,
       };
     },

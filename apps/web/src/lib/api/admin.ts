@@ -2,9 +2,11 @@
 
 // /admin/* — every mutation is audit-logged (FR-ADM-1).
 
-import { dbStore, net, syncSession, write } from "./db";
+import { extendPro } from "./billing";
+import { dbStore, net, read, syncSession, write } from "./db";
 import { requireUser, audit, notify } from "./guards";
-import { DAY, iso } from "./schema";
+import { ApiError } from "./schema";
+import { sel } from "./selectors";
 import { seed } from "./seed";
 import type { UserStatus } from "../types";
 
@@ -31,12 +33,14 @@ export const adminApi = {
     });
     return net(true, 0);
   },
+  /** POST /admin/users/{id}/pro — the family this parent owns gets Pro for some days (e.g. after paying by hand). */
   async grantComp(userId: string, days: number) {
     const u = requireUser(["admin"]);
+    const familyId = sel.ownFamily(read(), userId);
+    if (!familyId) throw new ApiError("no_family");
     write((db) => {
-      db.subscriptions = db.subscriptions.filter((s) => s.userId !== userId);
-      db.subscriptions.push({ userId, plan: "monthly", status: "active", until: iso(Date.now() + days * DAY) });
-      audit(db, u.id, "subscription.comp", userId, `${days} days`);
+      extendPro(db, familyId, days);
+      audit(db, u.id, "plan.upgraded", familyId, `${days} days`);
     });
     return net(true);
   },

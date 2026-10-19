@@ -9,9 +9,9 @@ import { http } from "./http";
 import type { CardOut, ChildOut, ClipOut, Helpers, InviteForMe, Consents, DailyOut, FormOut, InUse, InviteOut, PlanOut, PlanStatus, ProfileOut, ReviewItem, RoundOut, RoundSummary, ShareOut, SharedChild } from "@/lib/server/types";
 import {
   answersFrom, clipsFrom, dailyFrom, doneFrom, familyChildFrom, familyConsentsFrom, familyPlanFrom, inUseFrom, pausedFrom, planFrom, planVideosFrom, reviewVideosFrom, shareFrom, sharedChildFrom, voiceCardFrom,
-  aacCardFrom, auditFrom, orderFrom, subscriptionFrom, childFrom, notificationFrom, levelsFrom, profileFrom,
+  aacCardFrom, auditFrom, childFrom, notificationFrom, levelsFrom, profileFrom,
   taskFrom, userFrom,
-  type BAacCard, type BAdminSub, type BAudit, type BOrder, type BOverview, type BNotification, type BChild, type BLevel,
+  type BAacCard, type BAudit, type BOverview, type BNotification, type BChild, type BLevel,
   type BProfile, type BTask, type BUser,
 } from "./map";
 import { liveChild } from "./state";
@@ -25,7 +25,7 @@ import { liveChild } from "./state";
 const empty = (): DB => ({
   v: 1, auth: { userId: null, child: null }, users: [], familyMembers: [], children: [], consents: [], profiles: [], changes: [], sessions: [],
   events: [], mastery: [], progress: [], wallets: [], assignments: [], careLinks: [], notes: [],
-  goals: [], aacEvents: [], aacCards: [], notifications: [], subscriptions: [], orders: [], audit: [], flags: [], aiMessages: [], familyPlans: [],
+  goals: [], aacEvents: [], aacCards: [], notifications: [], audit: [], flags: [], aiMessages: [], familyPlans: [],
   otp: [], intakeAnswers: [], intakeRounds: [], videos: [], roadmaps: [], tasksDone: [], pausedDays: [], dailyAnswers: [], tries: [], accessProfiles: [], skills: [], playTime: [], therapistProfiles: [], therapistAnswers: [], clipReplies: [], helperInvites: [], feedbackClips: [],
 });
 
@@ -108,16 +108,6 @@ export function useLiveDb(): DB {
   });
   const helpInvites = useQuery({ queryKey: ["helper-invites"], enabled: role === "parent", queryFn: () => http<InviteForMe[]>("GET", "/me/helper-invites") });
 
-  const subscription = useQuery({
-    queryKey: ["subscription"],
-    enabled: role === "parent",
-    queryFn: () => http<{ plan: string; status: string; paid_until: string | null }>("GET", "/billing/subscription"),
-  });
-  const orders = useQuery({
-    queryKey: ["orders"],
-    enabled: role === "parent" && !child,
-    queryFn: () => http<BOrder[]>("GET", "/billing/orders"),
-  });
 
   // ---- physiotherapist: the review queue, every status (the page counts each)
   const review = useQueries({
@@ -128,13 +118,11 @@ export function useLiveDb(): DB {
   });
 
   // ---- admin console
-  const ADMIN = ["users", "audit", "flagList", "subscriptions", "orders", "overview"] as const;
+  const ADMIN = ["users", "audit", "flagList", "overview"] as const;
   const adminPath: Record<(typeof ADMIN)[number], string> = {
     users: "/admin/users?limit=500",
     audit: "/admin/audit-logs?limit=200",
     flagList: "/admin/feature-flags",
-    subscriptions: "/admin/subscriptions",
-    orders: "/admin/orders",
     overview: "/admin/overview",
   };
   const admin = useQueries({
@@ -174,7 +162,7 @@ export function useLiveDb(): DB {
     if (signedIn !== undefined && sessionStore.get().role !== signedIn) sessionStore.set({ role: signedIn });
   }, [signedIn]);
 
-  const all = [me, kids, linked, invites, tprofile, family, familyPlan, helpInvites, notifications, flags, subscription, orders, ...own, ...per, ...answers, ...review, ...views, ...admin];
+  const all = [me, kids, linked, invites, tprofile, family, familyPlan, helpInvites, notifications, flags, ...own, ...per, ...answers, ...review, ...views, ...admin];
   const stamp = all.map((q) => q.dataUpdatedAt).join();
   const loading =
     me.isPending ||
@@ -190,8 +178,6 @@ export function useLiveDb(): DB {
       db.users = [user];
       db.notifications = (notifications.data ?? []).map((n) => notificationFrom(n, user.id));
       db.flags = Object.entries(flags.data ?? {}).map(([key, enabled]) => ({ key, enabled, description: "" }));
-      db.subscriptions = [subscriptionFrom(user.id, subscription.data)];
-      db.orders = (orders.data ?? []).map((o) => orderFrom(user.id, o));
     }
 
     // Child mode: the playing child's own data (works with or without an adult signed in).
@@ -266,8 +252,6 @@ export function useLiveDb(): DB {
       if (!db.users.some((u) => u.id === user.id)) db.users.push(user);
       db.audit = ((at("audit") as BAudit[] | undefined) ?? []).map(auditFrom);
       db.flags = ((at("flagList") as { key: string; enabled: boolean; description: string | null }[] | undefined) ?? []).map((f) => ({ key: f.key, enabled: f.enabled, description: f.description ?? "" }));
-      db.subscriptions = ((at("subscriptions") as BAdminSub[] | undefined) ?? []).map((s) => subscriptionFrom(s.user_id, s));
-      db.orders = ((at("orders") as (BOrder & { user_id: string })[] | undefined) ?? []).map((o) => orderFrom(o.user_id, o));
       const ov = at("overview") as BOverview | undefined;
       if (ov)
         db.adminStats = {

@@ -271,23 +271,6 @@ export interface Notification {
 
 export type Plan = "free" | "monthly" | "yearly";
 
-export interface Subscription {
-  userId: string;
-  plan: Plan;
-  status: "active" | "canceled" | "expired";
-  until?: string;
-}
-
-export interface Order {
-  id: string;
-  userId: string;
-  plan: Exclude<Plan, "free">;
-  amountTiyin: number;
-  provider: "payme" | "click";
-  state: "created" | "paid" | "canceled";
-  createdAt: string;
-}
-
 export interface AuditLog {
   id: string;
   actorId: string;

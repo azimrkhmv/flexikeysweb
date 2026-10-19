@@ -9,7 +9,7 @@ import type { DB } from "@/lib/api/schema";
 import type { Lang } from "@/lib/translate";
 import type { ChildSupport, ActivityKind, AgeBand, BodyArea, DailyAnswer, ExerciseVideo, FnLevel, GoalKey, IntakeAnswer, IntakeValue, L10n, PausedDay, Restriction, Roadmap, TaskDone,
   AacCustomCard, AacEvent, AccessMode, AuditLog, AdaptationChange, AdaptiveProfile, Assignment, CareLink, Child, Consent, ConsentScope, Goal,
-  InteractionEvent, LearningSession, LevelProgress, Note, Notification, Order, ParamKey, Role, SkillMastery, Subscription, User,
+  InteractionEvent, LearningSession, LevelProgress, Note, Notification, ParamKey, Role, SkillMastery, User,
 } from "@/lib/types";
 
 // ---------------------------------------------------------------- backend shapes (subset we read)
@@ -314,19 +314,9 @@ export const aacEventFrom = (childId: string, s: BAacSentence, k: number): AacEv
 });
 
 // ---------------------------------------------------------------- billing
-export interface BOrder { id: string; plan: string; amount_tiyin: number; provider: string; state: string; created_at: string }
-export const subscriptionFrom = (userId: string, s?: { plan: string; status: string; paid_until: string | null }): Subscription =>
-  !s || s.plan === "free"
-    ? { userId, plan: "free", status: "active" }
-    : { userId, plan: s.plan === "yearly" ? "yearly" : "monthly", status: (["active", "canceled", "expired"].includes(s.status) ? s.status : "active") as Subscription["status"], until: s.paid_until ?? undefined };
-export const orderFrom = (userId: string, o: BOrder): Order => ({
-  id: o.id, userId, plan: o.plan === "yearly" ? "yearly" : "monthly", amountTiyin: o.amount_tiyin, provider: o.provider === "click" ? "click" : "payme",
-  state: o.state === "paid" ? "paid" : o.state === "canceled" ? "canceled" : "created", createdAt: o.created_at,
-});
 
 // ---------------------------------------------------------------- admin console
 export interface BAudit { id: string; actor_id: string | null; action: string; resource_type: string; resource_id: string | null; payload: Record<string, unknown> | null; created_at: string }
-export interface BAdminSub { user_id: string; plan: string; status: string; paid_until: string | null }
 export interface BOverview {
   users: number; children: number; paying: number; sessions_7d: number; ai_questions_by_role: Record<string, number>; ai_questions_by_day: Record<string, number>;
   health: { database: boolean; redis: boolean };
