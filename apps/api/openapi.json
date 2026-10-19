@@ -2336,7 +2336,7 @@
      "assistant"
     ],
     "summary": "Ask",
-    "description": "429 daily_limit when a Free family used today's messages; 503 ai_unavailable when the AI does not answer.",
+    "description": "Emergency words (A9.3) get the fixed 103 answer first, before any limit or AI. 429 daily_limit when a Free family\nused today's messages; 503 ai_unavailable when the AI does not answer. An answer that mentions a movement the\nchild must avoid is replaced by a fixed safe answer.",
     "operationId": "ask_api_v1_children__child_id__assistant_messages_post",
     "parameters": [
      {
@@ -5337,6 +5337,10 @@
       "type": "string",
       "title": "Answer"
      },
+     "emergency": {
+      "type": "boolean",
+      "title": "Emergency"
+     },
      "remainingToday": {
       "anyOf": [
        {
@@ -5352,6 +5356,7 @@
     "type": "object",
     "required": [
      "answer",
+     "emergency",
      "remainingToday"
     ],
     "title": "Answer"

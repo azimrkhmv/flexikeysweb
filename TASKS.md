@@ -568,7 +568,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
   - Done when: a Free family gets about 20 messages a day; a test proves requests contain no child name
   - Needs: A9.1, E2, G7
   - Decision (2026-10-19, Azim): build it now with the OpenRouter key in `apps/api/.env`. The model is the setting `AI_MODEL`, a placeholder (`google/gemini-2.5-flash`) until E2 picks one. G7 must still be answered before real families use it (F5)
-- [ ] **Azim** — `A9.3` Server: emergency words in 4 languages return **103** before any AI call; every answer is checked against the child's restrictions
+- [x] **Azim** — `A9.3` Server: emergency words in 4 languages return **103** before any AI call; every answer is checked against the child's restrictions
   - Done when: tested in all 4 languages
   - Needs: A9.2
 - [ ] **Azim** — `A9.4` Server: store chats; the parent can delete them; a summary for the therapist

@@ -35,10 +35,11 @@ class FakeAi:
     """Answers with a fixed sentence and keeps what it was sent, so a test can read every request."""
 
     sent: list[list[dict[str, str]]] = field(default_factory=list)
+    answer: str = "This is a pretend answer. The real assistant is not connected here."
 
     async def chat(self, messages: list[dict[str, str]]) -> AiReply:
         self.sent.append(messages)
-        return AiReply("This is a pretend answer. The real assistant is not connected here.", "fake", 0, 0, Decimal(0))
+        return AiReply(self.answer, "fake", 0, 0, Decimal(0))
 
 
 class OpenRouterAi:

@@ -18,11 +18,13 @@ from app.errors import AppError
 from app.modules.accounts.models import Lang
 from app.modules.assistant.ai import Ai, get_ai
 from app.modules.assistant.models import AiPurpose, AiUsage, Chat, ChatMessage, Speaker
+from app.modules.assistant.safety import EMERGENCY_ANSWER, SAFE_ANSWER, avoid_words, breaks_restriction, is_emergency
 from app.modules.auth.session import CurrentUser
 from app.modules.billing.router import plan_of
 from app.modules.children.models import Child
 from app.modules.children.router import get_visible_child
 from app.modules.plans.router import TASHKENT
+from app.modules.therapists.form import child_restrictions
 from app.schemas import ApiModel
 from app.settings import settings
 
@@ -38,7 +40,8 @@ SYSTEM = (
     "You help a parent in Uzbekistan do home therapy with their child, who has cerebral palsy. The child is {age} "
     "years old. Answer in {lang}, in short plain sentences. You are not a doctor: never diagnose, never talk about "
     "medicine doses, never contradict a doctor's or therapist's advice. For a medical question give general "
-    "information, then advise seeing a doctor. Call the child 'the child'."
+    "information, then advise seeing a doctor. Call the child 'the child'. The child's doctor or therapist said to "
+    "avoid: {avoid}. Never suggest these, not even as an option."
 )
 
 
@@ -49,6 +52,7 @@ class Question(ApiModel):
 
 class Answer(ApiModel):
     answer: str
+    emergency: bool  # emergency words: the answer is the fixed 103 message, no AI was asked
     remaining_today: int | None  # messages left today on Free; empty on Pro
 
 
@@ -68,8 +72,32 @@ async def ask(
     db: Annotated[AsyncSession, Depends(get_session)],
     ai: Annotated[Ai, Depends(get_ai)],
 ) -> Answer:
-    """429 daily_limit when a Free family used today's messages; 503 ai_unavailable when the AI does not answer."""
+    """Emergency words (A9.3) get the fixed 103 answer first, before any limit or AI. 429 daily_limit when a Free family
+    used today's messages; 503 ai_unavailable when the AI does not answer. An answer that mentions a movement the
+    child must avoid is replaced by a fixed safe answer."""
     child = await get_visible_child(db, user, child_id)
+    chat = await db.scalar(
+        select(Chat).where(Chat.child_id == child.id, Chat.user_id == user.id).order_by(Chat.created_at.desc())
+    )
+    if chat is None:
+        chat = Chat(child_id=child.id, user_id=user.id)
+        db.add(chat)
+        await db.flush()
+
+    def store(speaker: Speaker, text: str, emergency: bool = False) -> None:
+        db.add(
+            ChatMessage(
+                chat_id=chat.id, speaker=speaker, text_secret=encrypt_json(text), lang=body.lang,
+                emergency=emergency, created_at=datetime.now(UTC),  # not now(): both messages share one transaction
+            )
+        )  # fmt: skip
+
+    if is_emergency(body.text):
+        store(Speaker.adult, body.text, emergency=True)
+        store(Speaker.assistant, EMERGENCY_ANSWER[body.lang], emergency=True)
+        await db.commit()
+        return Answer(answer=EMERGENCY_ANSWER[body.lang], emergency=True, remaining_today=None)
+
     limit = None if (await plan_of(db, child.family_id)).plan == "pro" else settings.free_ai_messages_per_day
     midnight = datetime.combine(datetime.now(TASHKENT).date(), time(), TASHKENT).astimezone(UTC)
     used = await db.scalar(
@@ -80,13 +108,6 @@ async def ask(
     if limit is not None and (used or 0) >= limit:
         raise AppError(429, "daily_limit")
 
-    chat = await db.scalar(
-        select(Chat).where(Chat.child_id == child.id, Chat.user_id == user.id).order_by(Chat.created_at.desc())
-    )
-    if chat is None:
-        chat = Chat(child_id=child.id, user_id=user.id)
-        db.add(chat)
-        await db.flush()
     earlier = list(
         await db.scalars(
             select(ChatMessage)
@@ -99,18 +120,18 @@ async def ask(
     age = (
         today.year - child.birth_date.year - ((today.month, today.day) < (child.birth_date.month, child.birth_date.day))
     )
-    messages = [{"role": "system", "content": SYSTEM.format(age=age, lang=LANG_NAME[body.lang])}]
+    restrictions = await child_restrictions(db, child)
+    system = SYSTEM.format(age=age, lang=LANG_NAME[body.lang], avoid=avoid_words(restrictions) or "nothing")
+    messages = [{"role": "system", "content": system}]
     for m in earlier:
         role = "user" if m.speaker == Speaker.adult else "assistant"
         messages.append({"role": role, "content": without_child(decrypt_json(m.text_secret), child)})
     messages.append({"role": "user", "content": without_child(body.text, child)})
 
-    asked_at = datetime.now(UTC)  # set here: the database's now() is the same for both messages of one request
+    store(Speaker.adult, body.text)
     reply = await ai.chat(messages)
-    for speaker, text, at in ((Speaker.adult, body.text, asked_at), (Speaker.assistant, reply.text, datetime.now(UTC))):
-        db.add(
-            ChatMessage(chat_id=chat.id, speaker=speaker, text_secret=encrypt_json(text), lang=body.lang, created_at=at)
-        )
+    answer = SAFE_ANSWER[body.lang] if breaks_restriction(reply.text, restrictions) else reply.text
+    store(Speaker.assistant, answer)
     db.add(
         AiUsage(
             family_id=child.family_id, user_id=user.id, purpose=AiPurpose.chat, model=reply.model,
@@ -118,4 +139,6 @@ async def ask(
         )
     )  # fmt: skip
     await db.commit()
-    return Answer(answer=reply.text, remaining_today=None if limit is None else max(limit - (used or 0) - 1, 0))
+    return Answer(
+        answer=answer, emergency=False, remaining_today=None if limit is None else max(limit - (used or 0) - 1, 0)
+    )

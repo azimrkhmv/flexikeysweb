@@ -32,8 +32,8 @@ from app.modules.children.models import Child
 from app.modules.children.router import get_visible_child
 from app.modules.intake.models import IntakeAnswer, IntakeRound
 from app.modules.intake.rules import QUESTIONS
-from app.modules.plans.router import create_plan
-from app.modules.plans.safety import P14_TAGS
+from app.modules.plans.router import TASHKENT, create_plan
+from app.modules.plans.safety import P14_TAGS, plan_facts
 from app.modules.plans.safety import Therapist as TherapistInput
 from app.modules.therapists.models import Profession, TherapistAnswer, TherapistProfile
 from app.modules.therapists.router import Therapist, get_shared_child
@@ -222,6 +222,24 @@ async def _latest_parent_answers(db: AsyncSession, child_id: uuid.UUID) -> dict[
         select(IntakeRound.id).where(IntakeRound.child_id == child_id).order_by(IntakeRound.number.desc()).limit(1)
     )
     return await _round_answers(db, last)
+
+
+async def child_restrictions(db: AsyncSession, child: Child) -> frozenset[str]:
+    """What the child must avoid now, by the plan's own rules: the latest answers with the therapists' put in.
+    No answers yet = every cautious restriction (product rule 2). For the assistant (A9.3)."""
+    last = await db.scalar(
+        select(IntakeRound.id)
+        .where(IntakeRound.child_id == child.id, IntakeRound.completed_at.is_not(None))
+        .order_by(IntakeRound.number.desc())
+        .limit(1)
+    )
+    health = await has_consent(db, child.id, ConsentKind.health)
+    used, _ = await answers_in_use(db, child.id, await _round_answers(db, last), health)
+    therapist = await therapist_input(db, child.id, health)
+    today = datetime.now(TASHKENT).date()
+    return plan_facts(
+        used, birth_date=child.birth_date, start_date=today, health_consent=health, therapist=therapist
+    ).restrictions
 
 
 REBUILDS = {"T2", "T5", "T6", "T7", "T8"}  # restrictions, movement level, goals, exercises
