@@ -7,7 +7,7 @@ import { Bars, Button, Card, Chip, Empty, Field, Input, Meter, Modal, Select, St
 import { AAC_CATEGORIES } from "@/content/aac";
 import { LEVELS } from "@/content/levels";
 import { api, sel, useDb } from "@/lib/api";
-import { LANGS, useLang, useT, type Lang } from "@/lib/i18n";
+import { baseLang, LANGS, useLang, useT, type Lang } from "@/lib/i18n";
 import type { AccessMode, Child, ConsentScope } from "@/lib/types";
 import { fmtDate } from "@/lib/format";
 import { hasVoice, subscribeVoices } from "@/lib/audio";
@@ -651,6 +651,63 @@ function VoiceNotice({ langs }: { langs: Lang[] }) {
   );
 }
 
+function StoredRow({ label, onDelete, pending }: { label: string; onDelete: () => void; pending: boolean }) {
+  const t = useT();
+  return (
+    <li className="flex items-center justify-between gap-3 rounded-2xl border border-line p-3">
+      <span className="text-sm font-semibold">{label}</span>
+      <Button size="sm" variant="ghost" pending={pending} onClick={onDelete} aria-label={t("parent.stored.deleteOne", { name: label })}>
+        <Trash className="size-4" aria-hidden /> {t("common.delete")}
+      </Button>
+    </li>
+  );
+}
+
+/** B40: everything we store about the child, in plain words; any one video or chat can be deleted at once. */
+function StoredCard({ child }: { child: Child }) {
+  const t = useT();
+  const [lang] = useLang();
+  const db = useDb();
+  const delClip = useAction(api.deleteClip);
+  const delChat = useAction(api.deleteChat);
+  const videos = [
+    ...sel.movementClips(db, child.id).map((id, i) => ({ id, label: t("parent.stored.movementVideo", { n: i + 1 }) })),
+    ...sel.feedbackClips(db, child.id).map((c) => ({ id: c.id, label: t("parent.stored.exerciseVideo", { name: sel.video(db, c.exerciseId)?.title[baseLang(lang)] ?? c.exerciseId }) })),
+  ];
+  const chats = sel.chats(db, child.id);
+  const error = delClip.error ?? delChat.error;
+
+  return (
+    <Card className="space-y-3">
+      <H2>{t("parent.stored.title", { name: child.name })}</H2>
+      <ul className="list-disc space-y-1 pl-5 text-sm text-ink-2">
+        <li>{t("parent.stored.profile")}</li>
+        {sel.stored(db, child.id).map(([kind, n]) => (
+          <li key={kind}>{t(`parent.stored.${kind}`, { n })}</li>
+        ))}
+      </ul>
+      {videos.length > 0 && <h3 className="pt-2 text-sm font-extrabold">{t("parent.stored.videosTitle")}</h3>}
+      <ul className="space-y-2">
+        {videos.map((v) => (
+          <StoredRow key={v.id} label={v.label} pending={delClip.pending} onDelete={() => delClip.run(child.id, v.id)} />
+        ))}
+      </ul>
+      {chats.length > 0 && <h3 className="pt-2 text-sm font-extrabold">{t("parent.stored.chatsTitle")}</h3>}
+      <ul className="space-y-2">
+        {chats.map((c) => (
+          <StoredRow
+            key={c.userId}
+            label={t("parent.stored.chat", { name: c.name, date: fmtDate(c.at, lang) })}
+            pending={delChat.pending}
+            onDelete={() => delChat.run(child.id, c.userId)}
+          />
+        ))}
+      </ul>
+      {error && <p role="alert" className="text-sm font-semibold text-[#8f3a2c]">{error}</p>}
+    </Card>
+  );
+}
+
 export function PrivacyTab({ child }: { child: Child }) {
   const t = useT();
   const [lang] = useLang();
@@ -702,6 +759,7 @@ export function PrivacyTab({ child }: { child: Child }) {
       </Card>
 
       <div className="space-y-6">
+        <StoredCard child={child} />
         <Card className="space-y-3">
           <H2>{t("parent.privacy.export")}</H2>
           <p className="text-sm text-muted">{t("parent.privacy.exportHint")}</p>

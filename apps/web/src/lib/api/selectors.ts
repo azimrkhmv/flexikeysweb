@@ -290,6 +290,33 @@ export const sel = {
   profiles: (db: DB, childId: string) => db.profiles.filter((p) => p.childId === childId),
   aacCustomCards: (db: DB, childId: string) => db.aacCards.filter((c) => c.childId === childId),
   aiMessages: (db: DB, userId: string, childId: string | null) => db.aiMessages.filter((m) => m.userId === userId && m.childId === childId),
+  /** The assistant chats about one child: one per adult who asked, newest first (B40). */
+  chats(db: DB, childId: string): { userId: string; name: string; messages: number; at: string }[] {
+    const by = new Map<string, { userId: string; name: string; messages: number; at: string }>();
+    for (const m of db.aiMessages.filter((x) => x.childId === childId)) {
+      const c = by.get(m.userId) ?? { userId: m.userId, name: sel.user(db, m.userId)?.name ?? "", messages: 0, at: m.at };
+      by.set(m.userId, { ...c, messages: c.messages + 1, at: m.at > c.at ? m.at : c.at });
+    }
+    return [...by.values()].sort((a, b) => b.at.localeCompare(a.at));
+  },
+  /** How many of each kind of thing we store about one child, in the order a parent reads them (B40). */
+  stored(db: DB, childId: string): [kind: string, n: number][] {
+    const of = <T extends { childId?: string }>(xs: T[] | undefined) => (xs ?? []).filter((x) => x.childId === childId).length;
+    return (
+      [
+        ["answers", of(db.intakeAnswers)],
+        ["plans", of(db.roadmaps)],
+        ["tasks", of(db.tasksDone)],
+        ["daily", of(db.dailyAnswers)],
+        ["tries", of(db.tries)],
+        ["videos", sel.movementClips(db, childId).length + sel.feedbackClips(db, childId).length],
+        ["chats", sel.chats(db, childId).length],
+        ["voice", of(db.aacCards)],
+        ["therapists", of(db.therapistAnswers) + of(db.clipReplies)],
+        ["consents", of(db.consents)],
+      ] as [string, number][]
+    ).filter(([, n]) => n > 0);
+  },
   ordersOf: (db: DB, userId: string) => db.orders.filter((o) => o.userId === userId),
   /** Notes about a child: a therapist sees their own; a parent sees the ones shared with them. */
   notes: (db: DB, childId: string, by: { authorId: string } | { visibleToParent: true }) =>

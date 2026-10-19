@@ -486,6 +486,11 @@ export const liveApi = {
     await refetch();
     return true;
   },
+  async deleteClip(childId: string, clipId: string) {
+    await http("DELETE", `/children/${childId}/clips/${clipId}`);
+    await refetch();
+    return true;
+  },
   async removeMovementClip(childId: string, clipId: string) {
     await http("DELETE", `/children/${childId}/clips/${clipId}`);
     await refetch();

@@ -5,7 +5,7 @@
 import { LEVEL_BY_ID } from "@/content/levels";
 import { translate, type Lang } from "../i18n";
 import { read, write, net } from "./db";
-import { requireUser, requireChildAccess, FAMILY } from "./guards";
+import { audit, requireUser, requireChildAccess, FAMILY } from "./guards";
 import { ApiError, AI_DAILY_QUOTA, id, iso, type DB } from "./schema";
 import { sel } from "./selectors";
 
@@ -44,6 +44,15 @@ export const aiApi = {
     const { user } = requireChildAccess(childId, FAMILY);
     write((db) => {
       db.aiMessages = db.aiMessages.filter((m) => !(m.userId === user.id && m.childId === childId));
+    });
+    return net(true, 0);
+  },
+  /** DELETE /children/{id}/chats/{user_id} from "Everything we store" (B40): the owner deletes one adult's chat. */
+  async deleteChat(childId: string, userId: string) {
+    const { user } = requireChildAccess(childId, ["owner"]);
+    write((db) => {
+      db.aiMessages = db.aiMessages.filter((m) => !(m.userId === userId && m.childId === childId));
+      audit(db, user.id, "chat.delete", childId);
     });
     return net(true, 0);
   },

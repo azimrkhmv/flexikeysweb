@@ -683,7 +683,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 
 **Website and content — in this order**
 
-- [ ] **Azim** — `B40` "Everything we store about your child" in plain words; delete one video or one chat
+- [x] **Azim** — `B40` "Everything we store about your child" in plain words; delete one video or one chat
   - Done when: each delete works at once on demo data
   - Needs: —
 - [ ] **Azim** — `B41` Connect seeing, downloading and deleting your data to the server
@@ -691,6 +691,9 @@ Milestones are done in order. Inside a milestone, each developer works down thei
   - Needs: A12.3, B40
 - [ ] **Azim** — `B42` Remove scores and percentages from every parent screen
   - Done when: no parent screen shows a score, a percentage or a comparison of children
+  - Needs: —
+- [ ] **Azim** — `B53` Demo data: deleting a child and downloading its data skip the newer tables (daily tasks done, daily answers, tries, play check, skill levels, play time, paused days, feedback clips, therapists' answers and replies)
+  - Done when: after deleting a demo child no row with its id is left, and the download holds every table that "Everything we store" counts
   - Needs: —
 - [ ] **Azim** — `B43` New text for the public pages and the pricing page
   - Done when: they describe the new product, not the old 16 levels

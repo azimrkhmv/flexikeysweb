@@ -102,6 +102,20 @@ export const intakeApi = {
     });
     return net(true);
   },
+  /** DELETE /children/{id}/clips/{clip_id} from "Everything we store" (B40): the owner deletes any one video, a
+   *  movement clip (P40) or a feedback clip, with the therapists' replies to it. */
+  async deleteClip(childId: string, clipId: string) {
+    const { user } = requireChildAccess(childId, ["owner"]);
+    await deleteMedia(clipId);
+    write((db) => {
+      for (const a of db.intakeAnswers)
+        if (a.childId === childId && a.questionId === "P40" && Array.isArray(a.value)) a.value = a.value.filter((x) => x !== clipId);
+      db.feedbackClips = db.feedbackClips.filter((c) => c.id !== clipId);
+      db.clipReplies = db.clipReplies.filter((r) => r.clipId !== clipId);
+      audit(db, user.id, "clip.delete", childId);
+    });
+    return net(true);
+  },
   /** GET /children/{id}/intake/{round}/voice — a link to listen to the voice note again. */
   async voiceNoteUrl(_childId: string, _round: number, key: string) {
     const blob = await getMedia(key);
