@@ -1683,6 +1683,221 @@
     }
    }
   },
+  "/api/v1/kits": {
+   "get": {
+    "tags": [
+     "home kit"
+    ],
+    "summary": "Kits",
+    "operationId": "kits_api_v1_kits_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "$ref": "#/components/schemas/KitOut"
+         },
+         "type": "array",
+         "title": "Response Kits Api V1 Kits Get"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/family/kit-orders": {
+   "get": {
+    "tags": [
+     "home kit"
+    ],
+    "summary": "Family Orders",
+    "description": "The family's orders, newest first; every member sees them.",
+    "operationId": "family_orders_api_v1_family_kit_orders_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "$ref": "#/components/schemas/KitOrderOut"
+         },
+         "type": "array",
+         "title": "Response Family Orders Api V1 Family Kit Orders Get"
+        }
+       }
+      }
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "home kit"
+    ],
+    "summary": "Order",
+    "description": "Owner only. 422 unknown_kit, address_needed, unknown_place, invalid_phone, invalid_district.",
+    "operationId": "order_api_v1_family_kit_orders_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/KitOrderIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/KitOrderOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/family/kit-orders/{order_id}/cancel": {
+   "post": {
+    "tags": [
+     "home kit"
+    ],
+    "summary": "Cancel",
+    "description": "Owner only, while the order is still placed (409 too_late after our team confirmed it).",
+    "operationId": "cancel_api_v1_family_kit_orders__order_id__cancel_post",
+    "parameters": [
+     {
+      "name": "order_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Order Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/KitOrderOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/admin/kit-orders": {
+   "get": {
+    "tags": [
+     "home kit"
+    ],
+    "summary": "All Orders",
+    "description": "Every order, the open ones first, newest first.",
+    "operationId": "all_orders_api_v1_admin_kit_orders_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "$ref": "#/components/schemas/KitOrderOut"
+         },
+         "type": "array",
+         "title": "Response All Orders Api V1 Admin Kit Orders Get"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/admin/kit-orders/{order_id}": {
+   "patch": {
+    "tags": [
+     "home kit"
+    ],
+    "summary": "Move",
+    "description": "placed -> confirmed -> shipped -> delivered; cancelled before shipping. 409 invalid_status_change otherwise.",
+    "operationId": "move_api_v1_admin_kit_orders__order_id__patch",
+    "parameters": [
+     {
+      "name": "order_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Order Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/StatusChange"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/KitOrderOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/v1/children": {
    "get": {
     "tags": [
@@ -5623,6 +5838,14 @@
     ],
     "title": "DayOut"
    },
+   "Delivery": {
+    "type": "string",
+    "enum": [
+     "courier",
+     "pickup"
+    ],
+    "title": "Delivery"
+   },
    "DoneIn": {
     "properties": {
      "day": {
@@ -6154,6 +6377,218 @@
      "game"
     ],
     "title": "ItemKind"
+   },
+   "KitOrderIn": {
+    "properties": {
+     "productSlug": {
+      "type": "string",
+      "title": "Productslug"
+     },
+     "childId": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Childid"
+     },
+     "delivery": {
+      "$ref": "#/components/schemas/Delivery"
+     },
+     "region": {
+      "type": "string",
+      "title": "Region"
+     },
+     "district": {
+      "type": "string",
+      "title": "District"
+     },
+     "address": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 300
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Address"
+     },
+     "pickupPlaceId": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "uuid"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Pickupplaceid"
+     },
+     "phone": {
+      "type": "string",
+      "title": "Phone"
+     }
+    },
+    "type": "object",
+    "required": [
+     "productSlug",
+     "childId",
+     "delivery",
+     "region",
+     "district",
+     "phone"
+    ],
+    "title": "KitOrderIn"
+   },
+   "KitOrderOut": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "productSlug": {
+      "type": "string",
+      "title": "Productslug"
+     },
+     "childId": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "uuid"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Childid"
+     },
+     "items": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Items"
+     },
+     "priceSom": {
+      "type": "integer",
+      "title": "Pricesom"
+     },
+     "delivery": {
+      "$ref": "#/components/schemas/Delivery"
+     },
+     "region": {
+      "type": "string",
+      "title": "Region"
+     },
+     "district": {
+      "type": "string",
+      "title": "District"
+     },
+     "address": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Address"
+     },
+     "pickupPlaceId": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "uuid"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Pickupplaceid"
+     },
+     "phone": {
+      "type": "string",
+      "title": "Phone"
+     },
+     "status": {
+      "$ref": "#/components/schemas/KitStatus"
+     },
+     "statusAt": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Statusat"
+     },
+     "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Createdat"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "productSlug",
+     "childId",
+     "items",
+     "priceSom",
+     "delivery",
+     "region",
+     "district",
+     "address",
+     "pickupPlaceId",
+     "phone",
+     "status",
+     "statusAt",
+     "createdAt"
+    ],
+    "title": "KitOrderOut"
+   },
+   "KitOut": {
+    "properties": {
+     "slug": {
+      "type": "string",
+      "title": "Slug"
+     },
+     "name": {
+      "additionalProperties": {
+       "type": "string"
+      },
+      "type": "object",
+      "title": "Name"
+     },
+     "items": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Items"
+     },
+     "priceSom": {
+      "type": "integer",
+      "title": "Pricesom"
+     }
+    },
+    "type": "object",
+    "required": [
+     "slug",
+     "name",
+     "items",
+     "priceSom"
+    ],
+    "title": "KitOut"
+   },
+   "KitStatus": {
+    "type": "string",
+    "enum": [
+     "placed",
+     "confirmed",
+     "shipped",
+     "delivered",
+     "cancelled"
+    ],
+    "title": "KitStatus"
    },
    "Lang": {
     "type": "string",
@@ -8480,6 +8915,18 @@
      "minutes"
     ],
     "title": "SlotIn"
+   },
+   "StatusChange": {
+    "properties": {
+     "status": {
+      "$ref": "#/components/schemas/KitStatus"
+     }
+    },
+    "type": "object",
+    "required": [
+     "status"
+    ],
+    "title": "StatusChange"
    },
    "TherapistInvite": {
     "properties": {

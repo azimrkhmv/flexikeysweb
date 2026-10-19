@@ -5,6 +5,7 @@
     uv run python -m app.cli check-health-key              can this key read every stored health answer?
     uv run python -m app.cli load-exercises                the exercise library from app/content/exercises.json
     uv run python -m app.cli load-daily-questions          the daily question list from app/content/daily.json
+    uv run python -m app.cli load-kits                     the Home Kit boxes from app/content/kits.json
     uv run python -m app.cli load-placeholder-videos       test servers only: a placeholder for every missing video
 
 In Docker: `docker compose exec api python -m app.cli ...`
@@ -24,6 +25,7 @@ from app.modules.accounts.models import Role, User
 from app.modules.auth import totp
 from app.modules.auth.router import normalize_phone
 from app.modules.intake.models import IntakeAnswer
+from app.modules.kits.router import load_kits
 from app.modules.today.router import load_daily_questions
 from app.modules.videos.router import load_exercises, load_placeholders
 
@@ -93,6 +95,12 @@ async def load_daily() -> None:
     await engine.dispose()
 
 
+async def load_kit_list() -> None:
+    async with SessionLocal() as db:
+        print(f"{await load_kits(db)} Home Kit boxes loaded.")
+    await engine.dispose()
+
+
 async def placeholder_videos() -> None:
     async with SessionLocal() as db:
         try:
@@ -114,6 +122,8 @@ if __name__ == "__main__":
             asyncio.run(load_library())
         case ["load-daily-questions"]:
             asyncio.run(load_daily())
+        case ["load-kits"]:
+            asyncio.run(load_kit_list())
         case ["load-placeholder-videos"]:
             asyncio.run(placeholder_videos())
         case _:

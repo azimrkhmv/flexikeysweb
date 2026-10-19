@@ -16,6 +16,7 @@ from app.modules.children import router as children
 from app.modules.clips import router as clips
 from app.modules.health import router as health
 from app.modules.intake import router as intake
+from app.modules.kits import router as kits
 from app.modules.places import bookings, clinic
 from app.modules.places import router as places
 from app.modules.plans import router as plans
@@ -56,6 +57,8 @@ app.include_router(places.admin_router, prefix="/api/v1")
 app.include_router(places.router, prefix="/api/v1")
 app.include_router(clinic.router, prefix="/api/v1")
 app.include_router(bookings.router, prefix="/api/v1")
+app.include_router(kits.router, prefix="/api/v1")
+app.include_router(kits.admin_router, prefix="/api/v1")
 app.include_router(children.router, prefix="/api/v1")
 app.include_router(privacy.router, prefix="/api/v1")
 app.include_router(privacy.me_router, prefix="/api/v1")

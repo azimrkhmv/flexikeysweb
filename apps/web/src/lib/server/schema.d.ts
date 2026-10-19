@@ -714,6 +714,107 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/kits": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Kits */
+        get: operations["kits_api_v1_kits_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/family/kit-orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Family Orders
+         * @description The family's orders, newest first; every member sees them.
+         */
+        get: operations["family_orders_api_v1_family_kit_orders_get"];
+        put?: never;
+        /**
+         * Order
+         * @description Owner only. 422 unknown_kit, address_needed, unknown_place, invalid_phone, invalid_district.
+         */
+        post: operations["order_api_v1_family_kit_orders_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/family/kit-orders/{order_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel
+         * @description Owner only, while the order is still placed (409 too_late after our team confirmed it).
+         */
+        post: operations["cancel_api_v1_family_kit_orders__order_id__cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/kit-orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * All Orders
+         * @description Every order, the open ones first, newest first.
+         */
+        get: operations["all_orders_api_v1_admin_kit_orders_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/kit-orders/{order_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Move
+         * @description placed -> confirmed -> shipped -> delivered; cancelled before shipping. 409 invalid_status_change otherwise.
+         */
+        patch: operations["move_api_v1_admin_kit_orders__order_id__patch"];
+        trace?: never;
+    };
     "/api/v1/children": {
         parameters: {
             query?: never;
@@ -2073,6 +2174,11 @@ export interface components {
             /** Games */
             games: components["schemas"]["GameItem"][];
         };
+        /**
+         * Delivery
+         * @enum {string}
+         */
+        Delivery: "courier" | "pickup";
         /** DoneIn */
         DoneIn: {
             /** Day */
@@ -2294,6 +2400,83 @@ export interface components {
          * @enum {string}
          */
         ItemKind: "exercise" | "game";
+        /** KitOrderIn */
+        KitOrderIn: {
+            /** Productslug */
+            productSlug: string;
+            /**
+             * Childid
+             * Format: uuid
+             */
+            childId: string;
+            delivery: components["schemas"]["Delivery"];
+            /** Region */
+            region: string;
+            /** District */
+            district: string;
+            /** Address */
+            address?: string | null;
+            /** Pickupplaceid */
+            pickupPlaceId?: string | null;
+            /** Phone */
+            phone: string;
+        };
+        /** KitOrderOut */
+        KitOrderOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Productslug */
+            productSlug: string;
+            /** Childid */
+            childId: string | null;
+            /** Items */
+            items: string[];
+            /** Pricesom */
+            priceSom: number;
+            delivery: components["schemas"]["Delivery"];
+            /** Region */
+            region: string;
+            /** District */
+            district: string;
+            /** Address */
+            address: string | null;
+            /** Pickupplaceid */
+            pickupPlaceId: string | null;
+            /** Phone */
+            phone: string;
+            status: components["schemas"]["KitStatus"];
+            /**
+             * Statusat
+             * Format: date-time
+             */
+            statusAt: string;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /** KitOut */
+        KitOut: {
+            /** Slug */
+            slug: string;
+            /** Name */
+            name: {
+                [key: string]: string;
+            };
+            /** Items */
+            items: string[];
+            /** Pricesom */
+            priceSom: number;
+        };
+        /**
+         * KitStatus
+         * @enum {string}
+         */
+        KitStatus: "placed" | "confirmed" | "shipped" | "delivered" | "cancelled";
         /**
          * Lang
          * @description The website's interface languages (apps/web/src/lib/translate.ts UiLang).
@@ -3030,6 +3213,10 @@ export interface components {
              * @default false
              */
             online: boolean;
+        };
+        /** StatusChange */
+        StatusChange: {
+            status: components["schemas"]["KitStatus"];
         };
         /** TherapistInvite */
         TherapistInvite: {
@@ -4482,6 +4669,165 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ClinicBooking"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    kits_api_v1_kits_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KitOut"][];
+                };
+            };
+        };
+    };
+    family_orders_api_v1_family_kit_orders_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KitOrderOut"][];
+                };
+            };
+        };
+    };
+    order_api_v1_family_kit_orders_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["KitOrderIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KitOrderOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    cancel_api_v1_family_kit_orders__order_id__cancel_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                order_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KitOrderOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    all_orders_api_v1_admin_kit_orders_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KitOrderOut"][];
+                };
+            };
+        };
+    };
+    move_api_v1_admin_kit_orders__order_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                order_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StatusChange"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KitOrderOut"];
                 };
             };
             /** @description Validation Error */

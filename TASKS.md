@@ -622,7 +622,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A10.6` Visit reminders stop going by SMS (G10): the job keeps finding due visits but sends nothing until the mobile app's notifications exist
   - Done when: a test sees no SMS for a visit tomorrow, and the job still marks the reminder as handled
   - Needs: G10
-- [ ] **Azim** — `A11.1` Home Kit products, orders and delivery status
+- [x] **Azim** — `A11.1` Home Kit products, orders and delivery status
   - Done when: an order goes from placed to delivered
   - Needs: A1.1, G3 (placeholders for now)
 - [ ] **Azim** — `A11.2` The allergy question (P17a) is checked before an order is accepted

@@ -21,6 +21,7 @@ and games, and does a short task each day.
   (`app/modules/auth/session.py`: cookie + CSRF for the website, Bearer token for the app).
   Exercise library (after each change to `app/content/exercises.json`): `uv run python -m app.cli load-exercises`.
   Daily questions (after each change to `app/content/daily.json`): `uv run python -m app.cli load-daily-questions`.
+  Home Kit boxes (after each change to `app/content/kits.json`): `uv run python -m app.cli load-kits`.
   Placeholder videos (test servers only, refused in production): `uv run python -m app.cli load-placeholder-videos`;
   remake the clips after the exercise list changes: `uvx --with pillow python scripts/placeholder-videos.py` in `apps/web/`.
   Anything about a child: `await require_child_access(db, user, child.family_id)` (`app/modules/accounts/access.py`),

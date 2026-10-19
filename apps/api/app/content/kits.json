@@ -1,0 +1,11 @@
+{
+  "_note": "PLACEHOLDER until G3: the price and the exact items of the standard box. Tools from the spec's catalogue (§9).",
+  "kits": [
+    {
+      "slug": "standard",
+      "name": { "uz": "Standart Home Kit", "ru": "Стандартный Home Kit", "en": "Standard Home Kit" },
+      "priceSom": 290000,
+      "items": ["putty", "tongs_pompoms", "lacing_cards", "pegboard", "foam_ball", "bean_bags", "foot_discs", "picture_cards"]
+    }
+  ]
+}
