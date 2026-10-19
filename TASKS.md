@@ -546,7 +546,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `V5` Choose speech-to-text for Uzbek and Russian
   - Done when: a test with real parent voices is good enough to use; the choice is written in section 3
   - Needs: —
-- [ ] **Azim** — `A9.1` Tables for chats, messages and AI usage
+- [x] **Azim** — `A9.1` Tables for chats, messages and AI usage
   - Done when: the database change applies and rolls back
   - Needs: A2.1
 

@@ -1,6 +1,7 @@
 """Import every module's tables here, so Alembic sees them all."""
 
 from app.modules.accounts.models import Family, FamilyMember, HelperInvite, User
+from app.modules.assistant.models import AiUsage, Chat, ChatMessage
 from app.modules.audit.models import AuditEntry
 from app.modules.auth.models import RefreshToken
 from app.modules.billing.models import FamilyPlan
@@ -24,8 +25,11 @@ from app.modules.videos.models import Exercise, Video, VideoReview
 
 __all__ = [
     "AccessProfile",
+    "AiUsage",
     "AuditEntry",
     "CareLink",
+    "Chat",
+    "ChatMessage",
     "Child",
     "ChildConsent",
     "Clip",
