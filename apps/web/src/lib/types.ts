@@ -485,3 +485,34 @@ export interface Roadmap {
   exercisesAllowed: boolean;
   createdAt: string;
 }
+
+// ---------- Find help (spec §11) ----------
+export type PlaceKind = "state_centre" | "private_clinic" | "specialist";
+export type PlaceNeed = "speech" | "movement" | "learning" | "checkup";
+export type ReportReason = "wrong_price" | "closed" | "other";
+
+/** A checked place (apps/api PlaceView). Prices in so'm for one session; none for a free state centre. */
+export interface Place {
+  id: string;
+  name: string;
+  kind: PlaceKind;
+  region: string;
+  district: string;
+  address?: string;
+  mapUrl?: string;
+  lat?: number;
+  lng?: number;
+  phone?: string;
+  telegram?: string;
+  languages: string[];
+  needs: PlaceNeed[];
+  ageMin: number;
+  ageMax: number;
+  worksWithCp: boolean;
+  priceMin?: number;
+  priceMax?: number;
+  /** YYYY-MM-DD: when our team last checked it by phone. */
+  checkedAt: string;
+  /** Demo only: a made-up place (G2). */
+  sample?: boolean;
+}

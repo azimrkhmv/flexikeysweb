@@ -52,6 +52,7 @@ export const common = {
     "lang.uz": "Uzbek",
     "lang.ru": "Russian",
     "lang.en": "English",
+    "lang.kaa": "Karakalpak",
 
     "consent.core": "Core: store my child's nickname, birth year and learning progress on servers in Uzbekistan",
     "consent.health": "Health: diagnosis, movement and safety answers, so home exercises can be made safe (stored encrypted)",
@@ -231,6 +232,7 @@ export const common = {
     "lang.uz": "Oʻzbekcha",
     "lang.ru": "Ruscha",
     "lang.en": "Inglizcha",
+    "lang.kaa": "Qoraqalpoqcha",
 
     "consent.core": "Asosiy: farzandimning taxallusi, tugʻilgan yili va oʻquv natijalarini Oʻzbekistondagi serverlarda saqlash",
     "consent.health": "Sogʻliq: uy mashqlarini xavfsiz qilish uchun tashxis, harakat va xavfsizlik javoblari (shifrlangan holda saqlanadi)",
@@ -410,6 +412,7 @@ export const common = {
     "lang.uz": "Узбекский",
     "lang.ru": "Русский",
     "lang.en": "Английский",
+    "lang.kaa": "Каракалпакский",
 
     "consent.core": "Основное: хранить никнейм, год рождения и прогресс ребёнка на серверах в Узбекистане",
     "consent.health": "Здоровье: ответы о диагнозе, движении и безопасности, чтобы домашние упражнения были безопасными (хранятся в зашифрованном виде)",

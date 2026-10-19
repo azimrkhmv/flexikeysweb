@@ -8,12 +8,20 @@ import { levelAfter } from "../roadmap";
 import { AREAS, startingTheta, type Area } from "../skill";
 import type { Answers } from "@/content/intake";
 import { FREE, TRIAL_DAYS, TRIAL_REMIND_DAYS } from "@/content/plans";
+import { PRICE_FRESH_DAYS } from "@/content/places";
 import { replaces, therapistInput, type Profession } from "@/content/therapist";
 import { LANGS, type Lang } from "../i18n";
 import { DAY, iso, localDate, type DB } from "./schema";
-import type { AdaptiveProfile, Child, ConsentScope, InputProfile, LevelProgress, Roadmap, User, VideoStatus, Wallet } from "../types";
+import type { AdaptiveProfile, Child, ConsentScope, InputProfile, LevelProgress, Place, PlaceNeed, Roadmap, User, VideoStatus, Wallet } from "../types";
 
 // ---------------------------------------------------------------- selectors (pure)
+/** Distance on the Earth's surface in km (haversine), like the server's. */
+function distanceKm(a: { lat: number; lng: number }, b: { lat: number; lng: number }) {
+  const r = (d: number) => (d * Math.PI) / 180;
+  const h = Math.sin(r(b.lat - a.lat) / 2) ** 2 + Math.cos(r(a.lat)) * Math.cos(r(b.lat)) * Math.sin(r(b.lng - a.lng) / 2) ** 2;
+  return 6371 * 2 * Math.asin(Math.sqrt(h));
+}
+
 export const sel = {
   // ---- intake, roadmap, video library (product spec 2026-10-06)
   /** Latest intake round of a child. */
@@ -262,6 +270,25 @@ export const sel = {
   isPro: (db: DB, childId: string) => sel.familyPlan(db, sel.child(db, childId)?.familyId ?? null).plan === "pro",
   /** How many plan days the child's family has (null on Pro): Free has the first week (A7.2). */
   freeDays: (db: DB, childId: string): number | null => (sel.isPro(db, childId) ? null : FREE.planDays),
+  /** Find help (B34, the server's /places): places for this need (every place without one), free state centres
+   * first, then by distance from `pos`, or else the parent's district, then region, then name. */
+  places(db: DB, need: PlaceNeed | null, me: User | null, pos?: { lat: number; lng: number }) {
+    const km = (p: Place) => (pos && p.lat !== undefined && p.lng !== undefined ? distanceKm(pos, { lat: p.lat, lng: p.lng }) : undefined);
+    return (db.places ?? [])
+      .filter((p) => !need || p.needs.includes(need))
+      .map((p) => ({ ...p, distanceKm: km(p) }))
+      .sort(
+        (a, b) =>
+          Number(a.kind !== "state_centre") - Number(b.kind !== "state_centre") ||
+          (a.distanceKm ?? Infinity) - (b.distanceKm ?? Infinity) ||
+          Number(a.district !== me?.district?.district) - Number(b.district !== me?.district?.district) ||
+          Number(a.region !== me?.district?.region) - Number(b.region !== me?.district?.region) ||
+          a.name.localeCompare(b.name),
+      );
+  },
+  /** Checked longer than 6 months ago: "price not recently checked" (spec §11). */
+  priceOld: (p: Place, now = Date.now()) => now - Date.parse(p.checkedAt) > PRICE_FRESH_DAYS * DAY,
+  placeReported: (db: DB, placeId: string, userId: string) => (db.placeReports ?? []).some((r) => r.placeId === placeId && r.userId === userId),
   /** The helpers of a family and the invites still open (A8.4). */
   helpers: (db: DB, familyId: string | null) => ({
     helpers: db.familyMembers.filter((m) => m.familyId === familyId && m.role === "helper").map((m) => db.users.find((u) => u.id === m.userId)).filter((u): u is User => !!u),

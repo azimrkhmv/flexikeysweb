@@ -2,6 +2,7 @@
 
 // Demo data: 6 accounts, 7 children and ~2 weeks of play history (deterministic apart from ids).
 
+import { samplePlaces } from "@/content/places";
 import { exerciseLibrary } from "@/content/exercises";
 import { LEVEL_BY_ID } from "@/content/levels";
 import { DEFAULT_PROFILE } from "../adaptive";
@@ -121,6 +122,8 @@ export function seed(): DB {
     clipReplies: [],
     helperInvites: [],
     familyPlans: [{ familyId: "fam_1", trialStartedAt: iso(now - 5 * DAY) }], // the demo family's trial ends in 2 days
+    places: samplePlaces(now),
+    placeReports: [],
     feedbackClips: [],
   };
 

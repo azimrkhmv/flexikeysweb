@@ -631,7 +631,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 
 **Website and content — in this order**
 
-- [ ] **Azim** — `B34` Find help screen: pick a need, see places (free first, then by distance), report wrong information
+- [x] **Azim** — `B34` Find help screen: pick a need, see places (free first, then by distance), report wrong information
   - Done when: "I'm not sure" suggests the child's doctor or a free state centre and never guesses
   - Needs: G2 (placeholders for now)
 - [ ] **Azim** — `B35` Booking screen: free times, book in person or online

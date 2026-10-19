@@ -6,7 +6,7 @@ import type { Profession, TherapistAnswers, TherapistProfile } from "@/content/t
 import type { AccessSettings } from "../playcheck";
 import type { Area } from "../skill";
 import type { TryRecord } from "../tries";
-import type { AacCustomCard, AacEvent, AdaptationChange, AiMessage, Assignment, AuditLog, CareLink, Child, Consent, DailyAnswer, ExerciseVideo, FamilyMember, FeatureFlag, IntakeAnswer, IntakeRound, Goal, InteractionEvent, LearningSession, LevelProgress, Note, Notification, PausedDay, Plan, ProfileRecord, Roadmap, SkillMastery, TaskDone, User, Wallet } from "../types";
+import type { AacCustomCard, AacEvent, AdaptationChange, AiMessage, Assignment, AuditLog, CareLink, Child, Consent, DailyAnswer, ExerciseVideo, FamilyMember, FeatureFlag, IntakeAnswer, IntakeRound, Goal, InteractionEvent, LearningSession, LevelProgress, Note, Notification, PausedDay, Place, Plan, ReportReason, ProfileRecord, Roadmap, SkillMastery, TaskDone, User, Wallet } from "../types";
 
 export interface ChildAuth {
   childId: string;
@@ -74,6 +74,9 @@ export interface DB {
   helperInvites: { id: string; familyId: string; phone: string; at: string; ownerName?: string }[];
   /** Free or Pro per family (A7.1, B21): the trial's start and the end of what was paid. No row = Free. */
   familyPlans: { familyId: string; trialStartedAt?: string; paidUntil?: string }[];
+  /** Find help (B34): the checked places, and parents' reports of wrong information (one per person and place). */
+  places: Place[];
+  placeReports: { placeId: string; userId: string; reason: ReportReason; note?: string; at: string }[];
   answersInUse?: Record<string, { updated: Record<string, { value: string | string[]; name: string; profession?: Profession; at: string }>; messages: { text: string; name: string; profession?: Profession; at: string }[] }>;
 }
 
@@ -103,6 +106,6 @@ const CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"; // no 0/O/1/I/L (SEC-5)
 export const makeCode = (n = 6) => Array.from({ length: n }, () => CODE_ALPHABET[Math.floor(Math.random() * CODE_ALPHABET.length)]).join("");
 
 /** Bump when the DB shape changes: browsers holding an older shape are reseeded instead of crashing. */
-export const DB_VERSION = 17;
+export const DB_VERSION = 18;
 /** Same limit as the server (MAX_HELPERS_PER_FAMILY). */
 export const MAX_HELPERS = 1;
