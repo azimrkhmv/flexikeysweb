@@ -8,6 +8,7 @@ a second AI check of the answer when this blocks good answers too often.
 
 import json
 import re
+from collections.abc import Iterable
 from pathlib import Path
 
 from app.modules.accounts.models import Lang
@@ -103,6 +104,12 @@ def breaks_restriction(answer: str, restrictions: frozenset[str]) -> str | None:
     """The first restriction the answer mentions, or None."""
     text = _norm(answer)
     return next((r for r in sorted(restrictions) if any(re.search(w, text) for w in RESTRICTIONS[r][1])), None)
+
+
+def names_any(answer: str, titles: Iterable[str]) -> bool:
+    """B30: the answer names one of these exercises (a title in any language)."""
+    text = _norm(answer)
+    return any(_norm(t) in text for t in titles)
 
 
 # A9.4: what a question was about, for the therapist's summary (spec §12: topics and warnings, never the chat).

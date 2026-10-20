@@ -192,7 +192,7 @@ def day_dates(start: date, paused: list[date]) -> list[date]:
     return dates
 
 
-async def _days(db: AsyncSession, plan: Plan, only: int | None = None) -> list[DayOut]:
+async def plan_days(db: AsyncSession, plan: Plan, only: int | None = None) -> list[DayOut]:
     query = select(PlanItem).where(PlanItem.plan_id == plan.id).order_by(PlanItem.day, PlanItem.position)
     if only is not None:
         query = query.where(PlanItem.day == only)
@@ -239,7 +239,7 @@ async def current_plan(
         start_date=plan.start_date,
         engine_version=plan.engine_version,
         exercises_allowed=plan.exercises_allowed,
-        days=[d for d in await _days(db, plan) if limit is None or d.day < limit],
+        days=[d for d in await plan_days(db, plan) if limit is None or d.day < limit],
         reasons=[ReasonOut(slot=r.slot, goal=r.goal, ref=r.ref, level=r.level) for r in reasons],
         paused=await paused_dates(db, plan),
         free_days=limit,
@@ -280,4 +280,4 @@ async def today(child_id: uuid.UUID, user: CurrentUser, db: Annotated[AsyncSessi
     await require_plan_day(db, child_id, day)
     if paused:
         return TodayOut(day=day, date=datetime.now(TASHKENT).date(), exercises=[], games=[], paused=True)
-    return TodayOut(**(await _days(db, plan, only=day))[0].model_dump(), paused=False)
+    return TodayOut(**(await plan_days(db, plan, only=day))[0].model_dump(), paused=False)

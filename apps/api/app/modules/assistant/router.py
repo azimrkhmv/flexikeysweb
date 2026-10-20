@@ -1,11 +1,11 @@
 """The parent's assistant chat (A9.2, spec §12). A family member asks about one child; the AI gets the question,
-the recent chat and the child's age in years, never the child's name or birth date. Free families have about 20
-messages a day, Pro has no limit."""
+the recent chat, the child's age in years and the child's plan (B30), never the child's name or birth date. Free
+families have about 20 messages a day, Pro has no limit."""
 
 import re
 import uuid
 from collections import Counter
-from datetime import UTC, datetime, time
+from datetime import UTC, datetime, time, timedelta
 from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends, Response
@@ -26,6 +26,7 @@ from app.modules.assistant.safety import (
     avoid_words,
     breaks_restriction,
     is_emergency,
+    names_any,
     topics_of,
 )  # fmt: skip
 from app.modules.audit import models as audit
@@ -33,9 +34,12 @@ from app.modules.auth.session import CurrentUser
 from app.modules.billing.router import plan_of
 from app.modules.children.models import Child
 from app.modules.children.router import get_visible_child, require_owner
-from app.modules.plans.router import TASHKENT
-from app.modules.therapists.form import child_restrictions
+from app.modules.plans.engine import DAYS
+from app.modules.plans.models import Plan
+from app.modules.plans.router import TASHKENT, free_days, plan_day_today, plan_days
+from app.modules.therapists.form import child_limits
 from app.modules.therapists.router import get_shared_child
+from app.modules.today.models import TaskDone
 from app.schemas import ApiModel
 from app.settings import settings
 
@@ -75,6 +79,38 @@ def without_child(text: str, child: Child) -> str:
     for form in (child.birth_date.isoformat(), child.birth_date.strftime("%d.%m.%Y")):
         text = text.replace(form, "[date]")
     return text
+
+
+async def plan_words(db: AsyncSession, child: Child, lang: Lang) -> str:
+    """B30: the child's plan for the AI: today's tasks (done or not), how many tasks were finished this week and the
+    plan's exercises, the only ones the AI may suggest. On Free, only the days Free includes."""
+    plan = await db.scalar(select(Plan).where(Plan.child_id == child.id).order_by(Plan.created_at.desc()).limit(1))
+    if plan is None:
+        return "The child has no plan yet (the parent has not finished the questions): suggest no exercises."
+    limit = await free_days(db, child.id)
+    days = [d for d in await plan_days(db, plan) if limit is None or d.day < limit]
+    key = "uz" if lang == Lang.uz_cyrl else lang.value
+    day, paused = await plan_day_today(db, plan)
+    today = next((d for d in days if d.day == day), None)
+    if paused:
+        words = ["Today is a rest day in the plan."]
+    elif today is None:
+        words = ["There is no task in the plan today."]
+    else:
+        tasks = [
+            f"{e.title.get(key) or e.title['en']} ({'done' if e.done else 'not done yet'})" for e in today.exercises
+        ]
+        tasks += [f"the {g.kind} game, {g.minutes} minutes" for g in today.games]
+        words = [f"Today, day {today.day + 1} of {DAYS}, the plan has: {'; '.join(tasks)}."]
+    week = datetime.now(TASHKENT).date() - timedelta(days=6)
+    finished = await db.scalar(select(func.count()).where(TaskDone.child_id == child.id, TaskDone.done_on >= week))
+    words.append(f"In the last 7 days the child finished {finished or 0} tasks.")
+    titles = dict.fromkeys(e.title.get(key) or e.title["en"] for d in days for e in d.exercises)
+    if not plan.exercises_allowed or not titles:
+        words.append("The plan has games only for now: suggest no exercises.")
+    else:
+        words.append(f"The plan's exercises: {', '.join(titles)}. Suggest no other exercise.")
+    return " ".join(words)
 
 
 @router.post("/children/{child_id}/assistant/messages")
@@ -140,8 +176,9 @@ async def ask(
     age = (
         today.year - child.birth_date.year - ((today.month, today.day) < (child.birth_date.month, child.birth_date.day))
     )
-    restrictions = await child_restrictions(db, child)
+    restrictions, forbidden = await child_limits(db, child)
     system = SYSTEM.format(age=age, lang=LANG_NAME[body.lang], avoid=avoid_words(restrictions) or "nothing")
+    system += " " + await plan_words(db, child, body.lang)
     messages = [{"role": "system", "content": system}]
     for m in earlier:
         role = "user" if m.speaker == Speaker.adult else "assistant"
@@ -150,7 +187,9 @@ async def ask(
 
     store(Speaker.adult, body.text, topics=topics_of(body.text))
     reply = await ai.chat(messages)
-    blocked = breaks_restriction(reply.text, restrictions) is not None
+    blocked = breaks_restriction(reply.text, restrictions) is not None or names_any(
+        reply.text, (t for title in forbidden.values() for t in title.values())
+    )
     answer = SAFE_ANSWER[body.lang] if blocked else reply.text
     store(Speaker.assistant, answer, topics=[RESTRICTED] if blocked else None)
     db.add(

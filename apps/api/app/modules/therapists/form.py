@@ -224,9 +224,10 @@ async def _latest_parent_answers(db: AsyncSession, child_id: uuid.UUID) -> dict[
     return await _round_answers(db, last)
 
 
-async def child_restrictions(db: AsyncSession, child: Child) -> frozenset[str]:
+async def child_limits(db: AsyncSession, child: Child) -> tuple[frozenset[str], dict[str, dict[str, str]]]:
     """What the child must avoid now, by the plan's own rules: the latest answers with the therapists' put in.
-    No answers yet = every cautious restriction (product rule 2). For the assistant (A9.3)."""
+    No answers yet = every cautious restriction (product rule 2). For the assistant (A9.3, B30): the restrictions,
+    and the title of each exercise they forbid (a restriction, a surgery's body area, or a therapist took it out)."""
     last = await db.scalar(
         select(IntakeRound.id)
         .where(IntakeRound.child_id == child.id, IntakeRound.completed_at.is_not(None))
@@ -237,9 +238,15 @@ async def child_restrictions(db: AsyncSession, child: Child) -> frozenset[str]:
     used, _ = await answers_in_use(db, child.id, await _round_answers(db, last), health)
     therapist = await therapist_input(db, child.id, health)
     today = datetime.now(TASHKENT).date()
-    return plan_facts(
-        used, birth_date=child.birth_date, start_date=today, health_consent=health, therapist=therapist
-    ).restrictions
+    facts = plan_facts(used, birth_date=child.birth_date, start_date=today, health_consent=health, therapist=therapist)
+    excluded = therapist.exclude if therapist else frozenset()
+    rows = await db.execute(select(Exercise.id, Exercise.title, Exercise.body_area, Exercise.conflicts))
+    forbidden = {
+        eid: title
+        for eid, title, area, conflicts in rows
+        if facts.restrictions.intersection(conflicts) or area in facts.surgery or eid in excluded
+    }
+    return facts.restrictions, forbidden
 
 
 REBUILDS = {"T2", "T5", "T6", "T7", "T8"}  # restrictions, movement level, goals, exercises

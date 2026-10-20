@@ -1,5 +1,6 @@
-"""A9.2, A9.3: the assistant chat. The AI never gets the child's name or birth date; Free families have a daily
-limit; emergency words get 103 first; an answer never suggests what the child must avoid."""
+"""A9.2, A9.3, B30: the assistant chat. The AI never gets the child's name or birth date; Free families have a daily
+limit; emergency words get 103 first; the AI knows the child's plan; an answer never suggests what the child must
+avoid."""
 
 from collections.abc import Iterator
 
@@ -13,6 +14,8 @@ from app.modules.assistant.safety import is_emergency
 from app.settings import settings
 from tests.test_billing_plan import on_pro
 from tests.test_children import API, add_child, parent
+from tests.test_plan_create import approved_putty  # noqa: F401
+from tests.test_plan_read import family_with_plan, move_start
 from tests.test_therapist_form import share
 from tests.test_videos_register import title
 
@@ -167,3 +170,33 @@ def test_over_the_monthly_limit_fixed_answers(client: TestClient, ai: FakeAi, mo
     assert r["answer"].startswith("The assistant has used its time for this month") and ai.sent == []
     r = client.post(url, headers=owner, json={"text": "Он не дышит", "lang": "ru"}).json()
     assert r["emergency"] is True and "103" in r["answer"]
+
+
+# B30: the assistant knows the child's plan, finished tasks and restrictions; it never suggests a forbidden exercise.
+def test_the_ai_knows_the_plan_and_what_was_done(client: TestClient, ai: FakeAi, approved_putty: None) -> None:  # noqa: F811
+    owner, child = family_with_plan(client)
+    day = next(d for d in client.get(f"{API}/children/{child}/plan", headers=owner).json()["days"] if d["exercises"])
+    move_start(client, child, day["day"])  # today is a day with the putty
+    url = f"{API}/children/{child}/assistant/messages"
+    client.post(url, headers=owner, json={"text": "What do we do today?", "lang": "ru"})
+    told = ai.sent[-1][0]["content"]
+    assert "Сжимаем пластилин (not done yet)" in told and "finished 0 tasks" in told and "Suggest no other" in told
+    assert client.post(
+        f"{API}/children/{child}/done", headers=owner, json={"day": day["day"], "exerciseId": "putty_squeeze"}
+    )
+    client.post(url, headers=owner, json={"text": "And now?", "lang": "en"})
+    told = ai.sent[-1][0]["content"]
+    assert "Squeeze the putty (done)" in told and "finished 1 tasks" in told
+
+    url = f"{API}/children/{add_child(client, owner)}/assistant/messages"
+    client.post(url, headers=owner, json={"text": "Hi", "lang": "en"})
+    assert "no plan yet" in ai.sent[-1][0]["content"]
+
+
+@pytest.mark.parametrize("answer", ["Try the Little bridge today.", "Сделайте мостик!", "Kichik koʻprik qiling."])
+def test_an_answer_naming_a_forbidden_exercise_is_replaced(answer: str, client: TestClient, ai: FakeAi) -> None:
+    owner = parent(client)
+    url = f"{API}/children/{add_child(client, owner)}/assistant/messages"  # no answers yet: every cautious restriction
+    ai.answer = answer  # "bridge" is ruled out by high_intensity, and its title has no word of the movement list
+    r = client.post(url, headers=owner, json={"text": "What else can we do?", "lang": "en"}).json()
+    assert r["answer"].startswith("I can't suggest that")
