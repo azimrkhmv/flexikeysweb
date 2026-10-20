@@ -13,7 +13,7 @@ from app.modules.assistant.ai import FakeAi, get_ai
 from app.modules.assistant.safety import is_emergency
 from app.settings import settings
 from tests.test_billing_plan import on_pro
-from tests.test_children import API, add_child, parent
+from tests.test_children import API, add_child, add_helper, parent
 from tests.test_plan_create import approved_putty  # noqa: F401
 from tests.test_plan_read import family_with_plan, move_start
 from tests.test_therapist_form import share
@@ -229,3 +229,23 @@ def test_a_shared_therapist_asks_in_their_own_chat(
     assert client.get(url, headers=other).status_code == 404
     assert client.delete(url, headers=therapist).status_code == 204
     assert client.get(url, headers=therapist).json() == []
+
+
+# B41: "Everything we store" lists every adult's chat for the owner (never the words); a helper sees only their own.
+def test_the_owner_sees_every_chat_about_the_child(client: TestClient, ai: FakeAi) -> None:
+    owner = parent(client)
+    child = add_child(client, owner)
+    helper = add_helper(client, owner)
+    therapist = share(client, owner, child)
+    url = f"{API}/children/{child}/assistant/messages"
+    for who in (owner, helper, therapist):
+        assert client.post(url, headers=who, json={"text": "A private worry", "lang": "en"}).status_code == 200
+
+    seen = client.get(f"{API}/children/{child}/chats", headers=owner)
+    assert seen.status_code == 200, seen.text
+    assert [c["messages"] for c in seen.json()] == [2, 2, 2] and "worry" not in seen.text
+    mine = client.get(f"{API}/children/{child}/chats", headers=helper).json()
+    assert len(mine) == 1
+    assert client.delete(f"{API}/children/{child}/chats/{mine[0]['userId']}", headers=owner).status_code == 204
+    assert len(client.get(f"{API}/children/{child}/chats", headers=owner).json()) == 2
+    assert client.get(f"{API}/children/{child}/chats", headers=parent(client)).status_code == 404

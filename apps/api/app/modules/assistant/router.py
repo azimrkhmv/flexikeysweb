@@ -17,7 +17,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.crypto import decrypt_json, encrypt_json
 from app.db import get_session
 from app.errors import AppError
-from app.modules.accounts.models import Lang, Role, User
+from app.modules.accounts.access import family_role
+from app.modules.accounts.models import Lang, MemberRole, Role, User
 from app.modules.assistant.ai import Ai, get_ai, over_budget
 from app.modules.assistant.models import AiPurpose, AiUsage, Chat, ChatMessage, Speaker
 from app.modules.assistant.safety import (
@@ -262,6 +263,34 @@ async def delete_my_chat(
     audit.record(db, user.id, "chat.deleted", child_id)
     await db.commit()
     return Response(status_code=204)
+
+
+class ChatOut(ApiModel):
+    user_id: uuid.UUID
+    name: str | None
+    messages: int
+    last_at: datetime
+
+
+@router.get("/children/{child_id}/chats")
+async def chats(
+    child_id: uuid.UUID, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]
+) -> list[ChatOut]:
+    """B41, "Everything we store": every adult's chat about the child for the family's owner (a helper sees only their
+    own), newest first: who, how many messages and when. Never the words."""
+    child = await get_visible_child(db, user, child_id)
+    last = func.max(ChatMessage.created_at)
+    query = (
+        select(Chat.user_id, User.name, func.count(ChatMessage.id), last)
+        .join(User, User.id == Chat.user_id)
+        .join(ChatMessage, ChatMessage.chat_id == Chat.id)
+        .where(Chat.child_id == child_id)
+        .group_by(Chat.user_id, User.name)
+        .order_by(last.desc())
+    )
+    if await family_role(db, user, child.family_id) != MemberRole.owner:
+        query = query.where(Chat.user_id == user.id)
+    return [ChatOut(user_id=u, name=n, messages=c, last_at=at) for u, n, c, at in await db.execute(query)]
 
 
 @router.delete("/children/{child_id}/chats/{user_id}", status_code=204)

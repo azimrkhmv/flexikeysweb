@@ -338,6 +338,7 @@ export const parent = {
     "parent.stored.movementVideo": "Movement video {n}",
     "parent.stored.exerciseVideo": "Video of “{name}”",
     "parent.stored.chat": "{name}'s chat · {date}",
+    "parent.stored.chatNoName": "A chat · {date}",
     "parent.stored.deleteOne": "Delete: {name}",
 
     "parent.reports.title": "Weekly reports",
@@ -721,6 +722,7 @@ export const parent = {
     "parent.stored.movementVideo": "Harakat videosi {n}",
     "parent.stored.exerciseVideo": "“{name}” videosi",
     "parent.stored.chat": "{name} suhbati · {date}",
+    "parent.stored.chatNoName": "Suhbat · {date}",
     "parent.stored.deleteOne": "Oʻchirish: {name}",
 
     "parent.reports.title": "Haftalik hisobotlar",
@@ -1104,6 +1106,7 @@ export const parent = {
     "parent.stored.movementVideo": "Видео движений {n}",
     "parent.stored.exerciseVideo": "Видео «{name}»",
     "parent.stored.chat": "Чат: {name} · {date}",
+    "parent.stored.chatNoName": "Чат · {date}",
     "parent.stored.deleteOne": "Удалить: {name}",
 
     "parent.reports.title": "Недельные отчёты",

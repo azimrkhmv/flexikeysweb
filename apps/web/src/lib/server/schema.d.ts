@@ -972,6 +972,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/children/{child_id}/chats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Chats
+         * @description B41, "Everything we store": every adult's chat about the child for the family's owner (a helper sees only their
+         *     own), newest first: who, how many messages and when. Never the words.
+         */
+        get: operations["chats_api_v1_children__child_id__chats_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/children/{child_id}/chats/{user_id}": {
         parameters: {
             query?: never;
@@ -2230,6 +2251,23 @@ export interface components {
             storageKey: string;
             /** Uploadurl */
             uploadUrl: string;
+        };
+        /** ChatOut */
+        ChatOut: {
+            /**
+             * Userid
+             * Format: uuid
+             */
+            userId: string;
+            /** Name */
+            name: string | null;
+            /** Messages */
+            messages: number;
+            /**
+             * Lastat
+             * Format: date-time
+             */
+            lastAt: string;
         };
         /** ChatSummary */
         ChatSummary: {
@@ -5673,6 +5711,37 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    chats_api_v1_children__child_id__chats_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChatOut"][];
+                };
             };
             /** @description Validation Error */
             422: {

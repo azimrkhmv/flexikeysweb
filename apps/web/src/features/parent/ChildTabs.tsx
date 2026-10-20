@@ -649,7 +649,7 @@ function StoredCard({ child }: { child: Child }) {
         {chats.map((c) => (
           <StoredRow
             key={c.userId}
-            label={t("parent.stored.chat", { name: c.name, date: fmtDate(c.at, lang) })}
+            label={c.name ? t("parent.stored.chat", { name: c.name, date: fmtDate(c.at, lang) }) : t("parent.stored.chatNoName", { date: fmtDate(c.at, lang) })}
             pending={delChat.pending}
             onDelete={() => delChat.run(child.id, c.userId)}
           />

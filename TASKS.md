@@ -708,7 +708,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `B40` "Everything we store about your child" in plain words; delete one video or one chat
   - Done when: each delete works at once on demo data
   - Needs: —
-- [ ] **Azim** — `B41` Connect seeing, downloading and deleting your data to the server
+- [x] **Azim** — `B41` Connect seeing, downloading and deleting your data to the server
   - Done when: a parent downloads their child's data in the browser
   - Needs: A12.3, B40
 - [x] **Azim** — `B42` Remove scores and percentages from every parent screen

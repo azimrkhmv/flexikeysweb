@@ -7,7 +7,7 @@ import { ApiError, type ChildAuth, type DB } from "@/lib/api/schema";
 import { sessionStore } from "@/lib/session";
 import { useStore } from "@/lib/store";
 import { http } from "./http";
-import type { ChatSummary, MessageOut, AuditOut, FlagOut, Overview, KitOrderOut, BookingOut, ClinicBooking, ClinicSlot, FreeSlot, MyPlace, PlaceView, CardOut, ChildOut, ClipOut, Helpers, InviteForMe, Consents, DailyOut, FormOut, InUse, InviteOut, PlanOut, PlanStatus, ProfileOut, ReviewItem, RoundOut, RoundSummary, ShareOut, SharedChild } from "@/lib/server/types";
+import type { ChatOut, ChatSummary, MessageOut, AuditOut, FlagOut, Overview, KitOrderOut, BookingOut, ClinicBooking, ClinicSlot, FreeSlot, MyPlace, PlaceView, CardOut, ChildOut, ClipOut, Helpers, InviteForMe, Consents, DailyOut, FormOut, InUse, InviteOut, PlanOut, PlanStatus, ProfileOut, ReviewItem, RoundOut, RoundSummary, ShareOut, SharedChild } from "@/lib/server/types";
 import {
   kitOrderFrom, bookingFrom, clinicBookingFrom, myPlaceFrom, placeFrom, slotFrom,
   answersFrom, chatFrom, clipsFrom, dailyFrom, doneFrom, familyChildFrom, familyConsentsFrom, familyPlanFrom, inUseFrom, pausedFrom, planFrom, planVideosFrom, reviewVideosFrom, shareFrom, sharedChildFrom, voiceCardFrom,
@@ -32,14 +32,14 @@ const empty = (): DB => ({
 });
 
 /** A family child's data on the new server (apps/api); each round's answers are loaded after the round list. */
-const PER_CHILD = ["consents", "rounds", "plan", "daily", "cards", "shares", "inUse", "clips", "bookings", "chat"] as const;
+const PER_CHILD = ["consents", "rounds", "plan", "daily", "cards", "shares", "inUse", "clips", "bookings", "chat", "chats"] as const;
 const REVIEW_STATUSES = ["waiting_review", "changes_requested", "rejected", "approved"] as const;
 type PerChild = (typeof PER_CHILD)[number];
 const path = (kind: PerChild, id: string) =>
   ({
     consents: `/children/${id}/consents`, rounds: `/children/${id}/intake`, plan: `/children/${id}/plan`, daily: `/children/${id}/daily`,
     cards: `/children/${id}/voice-cards`, shares: `/children/${id}/therapists`, inUse: `/children/${id}/answers-in-use`, clips: `/children/${id}/clips`, bookings: `/children/${id}/bookings`,
-    chat: `/children/${id}/assistant/messages`,
+    chat: `/children/${id}/assistant/messages`, chats: `/children/${id}/chats`,
   })[kind];
 /** "No plan yet" and "no daily question list loaded" are answers, not errors to retry. */
 const MAY_BE_MISSING: PerChild[] = ["plan", "daily"];
@@ -271,6 +271,8 @@ export function useLiveDb(): DB {
           if (!db.slots.some((s) => s.id === slot.id)) db.slots.push(slot);
         }
         db.aiMessages.push(...chatFrom(id, user!.id, (perChild(i, "chat") as MessageOut[] | undefined) ?? []));
+        const chatList = perChild(i, "chats") as ChatOut[] | undefined;
+        if (chatList) (db.chatList ??= {})[id] = chatList.map((c) => ({ userId: c.userId, name: c.name ?? "", messages: c.messages, at: c.lastAt }));
         const daily = perChild(i, "daily") as DailyOut | null | undefined;
         if (daily) db.dailyAnswers.push(...dailyFrom(id, daily));
         db.intakeRounds.push(...rounds.map((r) => ({ childId: id, round: r.number, startedAt: r.startedAt, completedAt: r.completedAt ?? undefined })));

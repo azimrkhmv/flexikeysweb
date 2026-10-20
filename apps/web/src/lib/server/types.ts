@@ -44,6 +44,7 @@ export type FlagOut = Schemas["FlagOut"];
 export type AssistantAnswer = Schemas["Answer"];
 export type MessageOut = Schemas["MessageOut"];
 export type ChatSummary = Schemas["ChatSummary"];
+export type ChatOut = Schemas["ChatOut"];
 
 /** Every address the website calls (under /api/v1, which the website proxies). */
 export const ADDRESSES = [
@@ -116,5 +117,7 @@ export const ADDRESSES = [
   "/api/v1/admin/users/{user_id}",
   "/api/v1/children/{child_id}/assistant/messages",
   "/api/v1/children/{child_id}/chats/{user_id}",
+  "/api/v1/children/{child_id}/chats",
+  "/api/v1/children/{child_id}/export",
   "/api/v1/therapist/children/{child_id}/assistant-summary",
 ] as const satisfies readonly (keyof paths)[];

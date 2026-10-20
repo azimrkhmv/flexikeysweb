@@ -353,6 +353,7 @@ export const sel = {
   aiMessages: (db: DB, userId: string, childId: string | null) => db.aiMessages.filter((m) => m.userId === userId && m.childId === childId),
   /** The assistant chats about one child: one per adult who asked, newest first (B40). */
   chats(db: DB, childId: string): { userId: string; name: string; messages: number; at: string }[] {
+    if (db.chatList?.[childId]) return db.chatList[childId]; // live: the server's list
     const by = new Map<string, { userId: string; name: string; messages: number; at: string }>();
     for (const m of db.aiMessages.filter((x) => x.childId === childId)) {
       const c = by.get(m.userId) ?? { userId: m.userId, name: sel.user(db, m.userId)?.name ?? "", messages: 0, at: m.at };

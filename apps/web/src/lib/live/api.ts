@@ -113,14 +113,14 @@ export const liveApi = {
     return true;
   },
   async deleteChild(childId: string) {
-    await http("DELETE", `/parent/children/${childId}`);
+    await http("DELETE", `/children/${childId}`);
     queryClient.removeQueries({ predicate: (q) => q.queryKey.includes(childId) });
     await refetch();
     return true;
   },
-  /** The server's export (PRD FR-CHILD-3) has its own format; the page only saves it as a JSON file. */
+  /** GET /children/{id}/export (A12.1): the server's own format; the page only saves it as a JSON file. */
   async exportChild(childId: string): Promise<MockExport> {
-    return http<MockExport>("GET", `/parent/children/${childId}/export`);
+    return http<MockExport>("GET", `/children/${childId}/export`);
   },
   // ------------------------------------------------------------ video files (admin) and their review (spec §8, rule 3)
   /** POST /admin/videos/upload-link, the file straight to storage, then POST /admin/videos: it waits for review. */
@@ -428,7 +428,7 @@ export const liveApi = {
   /** DELETE /children/{id}/chats/{user_id} — the owner deletes one adult's chat ("Everything we store"). */
   async deleteChat(childId: string, userId: string) {
     await http("DELETE", `/children/${childId}/chats/${userId}`);
-    await queryClient.invalidateQueries({ queryKey: ["chat", childId] });
+    await refetch(); // the chat list and, when it was their own, the chat
     return true;
   },
 
