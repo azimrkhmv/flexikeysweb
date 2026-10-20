@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Send, Sparkles, Trash } from "lucide-react";
+import { Phone, Send, Sparkles, Trash } from "lucide-react";
 import { Mascot } from "@/components/Mascot";
 import { Avatar, Button, Card, Empty, Input, PageHeader, useAction } from "@/components/ui";
 import { api, sel, useDb } from "@/lib/api";
@@ -85,11 +85,20 @@ function Assistant() {
                       <p>{t("parent.ai.hello")}</p>
                     </div>
                   )}
-                  {messages.map((m) => (
+                  {messages.map((m) =>
+                    m.emergency && m.role === "assistant" ? (
+                      <div key={m.id} role="alert" className="space-y-3 rounded-3xl border-2 border-[#c0573f] bg-peach-soft p-4 text-ink">
+                        <p className="text-[15px] font-bold">{m.text}</p>
+                        <a href="tel:103" className="inline-flex h-11 items-center gap-2 rounded-full bg-[#c0573f] px-5 font-extrabold text-white">
+                          <Phone className="size-5" aria-hidden /> {t("ai.call103")}
+                        </a>
+                      </div>
+                    ) : (
                     <div key={m.id} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
                       <p className={`max-w-[85%] whitespace-pre-line rounded-3xl px-4 py-3 text-[15px] ${m.role === "user" ? "rounded-br-lg bg-primary text-white" : "rounded-bl-lg bg-surface-2 text-ink"}`}>{m.text}</p>
                     </div>
-                  ))}
+                    ),
+                  )}
                   {ask.pending && (
                     <div className="flex items-center gap-2 text-sm text-muted">
                       <Mascot mood="thinking" size={48} float={false} /> {t("parent.ai.thinking")}

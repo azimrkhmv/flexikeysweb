@@ -942,6 +942,116 @@ export interface paths {
         patch: operations["change_child_api_v1_children__child_id__patch"];
         trace?: never;
     };
+    "/api/v1/children/{child_id}/assistant/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * My Chat
+         * @description This person's chat about the child, oldest first. Kept until they (or the family's owner) delete it.
+         */
+        get: operations["my_chat_api_v1_children__child_id__assistant_messages_get"];
+        put?: never;
+        /**
+         * Ask
+         * @description Emergency words (A9.3) get the fixed 103 answer first, before any limit or AI. 429 daily_limit when a Free family
+         *     used today's messages; 503 ai_unavailable when the AI does not answer. An answer that mentions a movement the
+         *     child must avoid is replaced by a fixed safe answer.
+         */
+        post: operations["ask_api_v1_children__child_id__assistant_messages_post"];
+        /**
+         * Delete My Chat
+         * @description Deleted at once, for good.
+         */
+        delete: operations["delete_my_chat_api_v1_children__child_id__assistant_messages_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/children/{child_id}/chats/{user_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete Chat
+         * @description The family's owner deletes any adult's chat about the child ("Everything we store").
+         */
+        delete: operations["delete_chat_api_v1_children__child_id__chats__user_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/therapist/children/{child_id}/assistant-summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Summary
+         * @description What the family asked the assistant about this child: topics and warnings only, never the chat (spec §12).
+         */
+        get: operations["summary_api_v1_therapist_children__child_id__assistant_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/children/{child_id}/weekly-summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Weekly Summary
+         * @description The last 7 days (Tashkent), in two sentences. Free and Pro. 404 no_plan before the first plan.
+         */
+        get: operations["weekly_summary_api_v1_children__child_id__weekly_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/children/{child_id}/plan-explanation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Plan Explanation
+         * @description Why the current plan is what it is, in two sentences. 404 no_plan before the first plan.
+         */
+        get: operations["plan_explanation_api_v1_children__child_id__plan_explanation_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/children/{child_id}/export": {
         parameters: {
             query?: never;
@@ -1970,6 +2080,15 @@ export interface components {
              */
             createdAt: string;
         };
+        /** Answer */
+        Answer: {
+            /** Answer */
+            answer: string;
+            /** Emergency */
+            emergency: boolean;
+            /** Remainingtoday */
+            remainingToday: number | null;
+        };
         /** AnswersIn */
         AnswersIn: {
             /** Answers */
@@ -2109,6 +2228,28 @@ export interface components {
             storageKey: string;
             /** Uploadurl */
             uploadUrl: string;
+        };
+        /** ChatSummary */
+        ChatSummary: {
+            /** Questions */
+            questions: number;
+            /** Topics */
+            topics: components["schemas"]["TopicCount"][];
+            /** Warnings */
+            warnings: components["schemas"]["ChatWarning"][];
+        };
+        /** ChatWarning */
+        ChatWarning: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "emergency" | "restricted";
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
         };
         /** ChildChange */
         ChildChange: {
@@ -2711,6 +2852,24 @@ export interface components {
             /** Text */
             text: string;
         };
+        /** MessageOut */
+        MessageOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            speaker: components["schemas"]["Speaker"];
+            /** Text */
+            text: string;
+            /** Emergency */
+            emergency: boolean;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
         /** MyPlace */
         MyPlace: {
             /**
@@ -3045,6 +3204,28 @@ export interface components {
                 [key: string]: "not_yet" | "with_help" | "yes";
             };
         };
+        /** PlanExplanation */
+        PlanExplanation: {
+            /** Text */
+            text: string;
+            /**
+             * Writtenby
+             * @enum {string}
+             */
+            writtenBy: "ai" | "template";
+            facts: components["schemas"]["PlanFacts"];
+        };
+        /** PlanFacts */
+        PlanFacts: {
+            /** Goals */
+            goals: string[];
+            /** Exercisesallowed */
+            exercisesAllowed: boolean;
+            /** Differentexercises */
+            differentExercises: number;
+            /** Therapistinvolved */
+            therapistInvolved: boolean;
+        };
         /** PlanOut */
         PlanOut: {
             /**
@@ -3109,6 +3290,12 @@ export interface components {
             workplace: string;
             /** Required */
             required: string[];
+        };
+        /** Question */
+        Question: {
+            /** Text */
+            text: string;
+            lang: components["schemas"]["Lang"];
         };
         /** ReasonOut */
         ReasonOut: {
@@ -3417,6 +3604,11 @@ export interface components {
              */
             online: boolean;
         };
+        /**
+         * Speaker
+         * @enum {string}
+         */
+        Speaker: "adult" | "assistant";
         /** StatusChange */
         StatusChange: {
             status: components["schemas"]["KitStatus"];
@@ -3453,6 +3645,13 @@ export interface components {
             accessToken?: string | null;
             /** Refreshtoken */
             refreshToken?: string | null;
+        };
+        /** TopicCount */
+        TopicCount: {
+            /** Topic */
+            topic: string;
+            /** Count */
+            count: number;
         };
         /** TriesStored */
         TriesStored: {
@@ -3607,6 +3806,39 @@ export interface components {
         VoiceNote: {
             /** Url */
             url: string;
+        };
+        /** WeekFacts */
+        WeekFacts: {
+            /** Dayswithtasks */
+            daysWithTasks: number;
+            /** Exercisesdone */
+            exercisesDone: number;
+            /** Gamesdone */
+            gamesDone: number;
+            /** Felteasy */
+            feltEasy: number;
+            /** Feltok */
+            feltOk: number;
+            /** Felthard */
+            feltHard: number;
+            /** Dayspaused */
+            daysPaused: number;
+        };
+        /** WeekSummary */
+        WeekSummary: {
+            /** Text */
+            text: string;
+            /**
+             * Writtenby
+             * @enum {string}
+             */
+            writtenBy: "ai" | "template";
+            /**
+             * Weekstart
+             * Format: date-time
+             */
+            weekStart: string;
+            facts: components["schemas"]["WeekFacts"];
         };
         /** InviteOut */
         app__modules__accounts__helpers__InviteOut: {
@@ -5343,6 +5575,228 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ChildOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_chat_api_v1_children__child_id__assistant_messages_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessageOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    ask_api_v1_children__child_id__assistant_messages_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Question"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Answer"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_my_chat_api_v1_children__child_id__assistant_messages_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_chat_api_v1_children__child_id__chats__user_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    summary_api_v1_therapist_children__child_id__assistant_summary_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChatSummary"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    weekly_summary_api_v1_children__child_id__weekly_summary_get: {
+        parameters: {
+            query?: {
+                lang?: components["schemas"]["Lang"];
+            };
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WeekSummary"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    plan_explanation_api_v1_children__child_id__plan_explanation_get: {
+        parameters: {
+            query?: {
+                lang?: components["schemas"]["Lang"];
+            };
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanExplanation"];
                 };
             };
             /** @description Validation Error */

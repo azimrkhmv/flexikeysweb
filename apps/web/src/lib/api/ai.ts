@@ -2,6 +2,7 @@
 
 // /ai-assistant/* — rule-based stand-ins for the LlmProvider (PRD §16).
 
+import { isEmergency } from "@/content/emergency";
 import { LEVEL_BY_ID } from "@/content/levels";
 import { translate, type Lang } from "../i18n";
 import { read, write, net } from "./db";
@@ -30,6 +31,14 @@ export const aiApi = {
   async askAssistant(childId: string, text: string, lang: Lang) {
     const { user } = requireChildAccess(childId, FAMILY);
     const db = read();
+    // Emergency words get 103 first: before the consent, the daily limit or any AI (spec §12, the server's A9.3).
+    if (isEmergency(text)) {
+      write((d) => {
+        d.aiMessages.push({ id: id(), userId: user.id, childId, role: "user", text, at: iso(), emergency: true });
+        d.aiMessages.push({ id: id(), userId: user.id, childId, role: "assistant", text: translate(lang, "ai.emergency"), at: iso(), emergency: true });
+      });
+      return net(translate(lang, "ai.emergency"), 0);
+    }
     if (!sel.hasConsent(db, childId, "ai_processing")) throw new ApiError("consent_required");
     const today = iso().slice(0, 10);
     if (db.aiMessages.filter((m) => m.userId === user.id && m.role === "user" && m.at.startsWith(today)).length >= AI_DAILY_QUOTA) throw new ApiError("quota_exceeded");

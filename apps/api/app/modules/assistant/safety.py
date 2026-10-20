@@ -6,7 +6,9 @@ apostrophe as '. ponytail: word lists, so they can over-block (an answer saying 
 a second AI check of the answer when this blocks good answers too often.
 """
 
+import json
 import re
+from pathlib import Path
 
 from app.modules.accounts.models import Lang
 
@@ -18,20 +20,7 @@ def _norm(text: str) -> str:
 
 
 # Seizure, trouble breathing, a fall with a head injury, sudden strong pain (spec §12), and fainting.
-EMERGENCY = [
-    r"seizure", r"convuls", r"can'?t breathe", r"cannot breathe", r"not breathing", r"trouble breathing", r"chok",
-    r"hit (his|her|their|the) head", r"head injur", r"fell on (his|her|their) head", r"sudden pain", r"severe pain",
-    r"strong pain", r"sharp pain", r"unconscious", r"passed out", r"faint",
-    r"судорог", r"приступ(?!а)", r"эпилеп", r"не дыш", r"задыха", r"подавил", r"ударил\w* голов", r"травм\w* голов",
-    r"упал\w* на голов", r"сильн\w* бол", r"резк\w* бол", r"остр\w* бол", r"сильно болит", r"без сознания",
-    r"потерял\w* сознани", r"обморок",
-    r"tutqanoq", r"tirishish", r"talvasa", r"nafas ololma", r"nafas olmay", r"bo'g'il", r"nafasi qis",
-    r"boshini ur", r"boshi bilan yiqil", r"boshiga uril", r"bosh jarohat", r"qattiq og'ri", r"kuchli og'ri",
-    r"to'satdan og'ri", r"hushidan ket", r"hushsiz",
-    r"тутқаноқ", r"тутканок", r"тиришиш", r"талваса", r"нафас ололма", r"нафас олмай", r"бўғил", r"нафаси қис",
-    r"бошини ур", r"боши билан йиқил", r"бошига урил", r"бош жароҳат", r"қаттиқ оғри", r"кучли оғри",
-    r"тўсатдан оғри", r"ҳушидан кет", r"ҳушсиз",
-]  # fmt: skip
+EMERGENCY: list[str] = json.loads((Path(__file__).parents[2] / "content" / "emergency.json").read_text())["words"]
 _EMERGENCY = re.compile("|".join(EMERGENCY))
 
 EMERGENCY_ANSWER = {

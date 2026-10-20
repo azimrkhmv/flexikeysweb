@@ -231,6 +231,8 @@ export const common = {
     "notif.account_approved": "Your account was verified. Welcome!",
 
     "ai.disclaimer": "This is educational guidance, not medical advice. For health or development questions, please talk to a doctor or your therapist.",
+    "ai.emergency": "Call 103 now. This can be an emergency: call an ambulance (103) or your doctor at once. Do not wait for an answer here.",
+    "ai.call103": "Call 103",
     "ai.parent.intro": "This week your child played about {minutes} minutes in total.",
     "ai.parent.strong": "Strongest area right now: {skill}.",
     "ai.parent.practice": "Good to practise together: {skill}. Try naming these things during everyday moments — at meals, on walks, at bath time.",
@@ -470,6 +472,8 @@ export const common = {
     "notif.account_approved": "Hisobingiz tasdiqlandi. Xush kelibsiz!",
 
     "ai.disclaimer": "Bu tibbiy maslahat emas, taʼlimiy tavsiya. Salomatlik yoki rivojlanish masalalari boʻyicha shifokor yoki mutaxassisingiz bilan gaplashing.",
+    "ai.emergency": "Hoziroq 103 ga qoʻngʻiroq qiling. Bu shoshilinch holat boʻlishi mumkin: tez yordam (103) chaqiring yoki darhol shifokoringizga qoʻngʻiroq qiling. Bu yerda javob kutmang.",
+    "ai.call103": "103 ga qoʻngʻiroq qilish",
     "ai.parent.intro": "Bu hafta farzandingiz jami taxminan {minutes} daqiqa oʻynadi.",
     "ai.parent.strong": "Hozirgi eng kuchli yoʻnalish: {skill}.",
     "ai.parent.practice": "Birga mashq qilish foydali: {skill}. Kundalik vaziyatlarda — ovqatlanishda, sayrda, choʻmilishda — bu narsalarni nomlab koʻring.",
@@ -709,6 +713,8 @@ export const common = {
     "notif.account_approved": "Ваш аккаунт подтверждён. Добро пожаловать!",
 
     "ai.disclaimer": "Это образовательная рекомендация, а не медицинский совет. По вопросам здоровья и развития обратитесь к врачу или вашему специалисту.",
+    "ai.emergency": "Позвоните 103 сейчас. Это может быть срочно: вызовите скорую (103) или сразу позвоните врачу. Не ждите ответа здесь.",
+    "ai.call103": "Позвонить 103",
     "ai.parent.intro": "На этой неделе ребёнок играл примерно {minutes} минут.",
     "ai.parent.strong": "Самая сильная сторона сейчас: {skill}.",
     "ai.parent.practice": "Полезно потренироваться вместе: {skill}. Называйте эти предметы в обычной жизни — за едой, на прогулке, при купании.",

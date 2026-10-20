@@ -293,6 +293,8 @@ export interface AiMessage {
   role: "user" | "assistant";
   text: string;
   at: string;
+  /** Emergency words: the answer is the fixed 103 message (spec §12). */
+  emergency?: boolean;
 }
 
 // ---------- Content ----------

@@ -561,7 +561,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 
 **Website and content — in this order**
 
-- [ ] **Azim** — `B29` Assistant screen: emergency words (seizure, trouble breathing, a fall with a head injury, sudden strong pain) show **103** before anything else
+- [x] **Azim** — `B29` Assistant screen: emergency words (seizure, trouble breathing, a fall with a head injury, sudden strong pain) show **103** before anything else
   - Done when: tested in all 4 languages
   - Needs: —
 - [x] **Azim** — `A9.2` Server: the AI provider behind one setting, with a fake one for tests; a daily message limit; the child's name and birth date are never sent
