@@ -2,6 +2,7 @@
 replies; the parent can delete any clip."""
 
 from collections.abc import Iterator
+from typing import Any
 
 import httpx2
 import pytest
@@ -9,6 +10,7 @@ from fastapi.testclient import TestClient
 
 from app import storage
 from app.main import app
+from app.modules.privacy.router import purge_files
 from app.modules.videos.router import load_exercises
 from tests.test_billing_plan import on_pro
 from tests.test_children import API, add_child, add_helper, parent
@@ -112,7 +114,38 @@ def test_the_parent_deletes_any_clip_and_its_file(client: TestClient, bucket: No
     body = {"kind": "movement", "storageKey": (key := upload(client, helper, child))}
     clip = client.post(f"{API}/children/{child}/clips", headers=helper, json=body).json()
     assert storage.exists(key)
+    assert httpx2.get(clip["url"]).status_code == 200
     assert client.delete(f"{API}/children/{child}/clips/{clip['id']}", headers=owner).status_code == 204
     assert not storage.exists(key)
+    assert httpx2.get(clip["url"]).status_code == 404  # A12.3: a link given out before stops working at once
     assert client.get(f"{API}/children/{child}/clips", headers=owner).json() == []
     assert title(client.delete(f"{API}/children/{child}/clips/{clip['id']}", headers=owner)) == (404, "not_found")
+
+
+def test_a_clip_file_storage_could_not_remove_goes_with_the_nightly_cleanup(
+    client: TestClient,
+    bucket: None,  # noqa: F811
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    owner = parent(client)
+    child = add_child(client, owner)
+    allow(client, owner, child)
+    key = upload(client, owner, child)
+    clip = client.post(
+        f"{API}/children/{child}/clips", headers=owner, json={"kind": "movement", "storageKey": key}
+    ).json()
+
+    def broken(_key: str) -> None:
+        raise ConnectionError
+
+    monkeypatch.setattr(storage, "remove", broken)
+    assert client.delete(f"{API}/children/{child}/clips/{clip['id']}", headers=owner).status_code == 204
+    assert client.get(f"{API}/children/{child}/clips", headers=owner).json() == []
+    monkeypatch.undo()
+
+    async def nightly(db: Any) -> int:
+        return await purge_files(db)
+
+    assert storage.exists(key)
+    assert run(client, nightly) >= 1
+    assert not storage.exists(key)

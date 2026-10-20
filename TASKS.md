@@ -666,7 +666,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A12.2` Delete a child or the whole account; the data is removed for good within 30 days
   - Done when: the data is gone from the database after the job runs
   - Needs: A12.1, A5.2
-- [ ] **Azim** — `A12.3` Delete any clip or chat; stop any share
+- [x] **Azim** — `A12.3` Delete any clip or chat; stop any share
   - Done when: each works at once
   - Needs: A8.3, A9.4
 - [x] **Azim** — `A12.4` Deleting a therapist's account (by an admin): their answers about a child go with it today (therapist_answers cascades). Keep the restrictions (T6) and exclusions (T8) in use, so the child's plan never loses a safety rule

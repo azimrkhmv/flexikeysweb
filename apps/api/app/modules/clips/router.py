@@ -6,6 +6,7 @@ The therapist: watch the clips of a child shared with them, and reply. Only whil
 is given; every time a therapist opens the clips it goes into the audit log.
 """
 
+import logging
 import uuid
 from datetime import datetime
 from typing import Annotated
@@ -25,11 +26,13 @@ from app.modules.billing.router import require_pro
 from app.modules.children.consents import ConsentKind, has_consent, require_consent
 from app.modules.children.router import get_visible_child
 from app.modules.clips.models import Clip, ClipKind, ClipReply
+from app.modules.privacy.models import StorageCleanup
 from app.modules.therapists.router import get_shared_child
 from app.modules.videos.models import Exercise
 from app.schemas import ApiModel
 from app.settings import settings
 
+log = logging.getLogger("app.clips")
 router = APIRouter(prefix="/children", tags=["clips"])
 therapist_router = APIRouter(prefix="/therapist", tags=["clips"])
 MAX = {ClipKind.movement: 3, ClipKind.feedback: 30}  # P40: up to 3 movement clips
@@ -139,7 +142,8 @@ async def family_clips(
 async def delete_clip(
     child_id: uuid.UUID, clip_id: uuid.UUID, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]
 ) -> Response:
-    """The clip, its replies and its file are gone."""
+    """The clip, its replies and its file are gone at once (A12.3): a link given out before stops working. If storage
+    does not answer, the file goes with the nightly cleanup instead."""
     await get_visible_child(db, user, child_id)
     clip = await db.get(Clip, clip_id)
     if clip is None or clip.child_id != child_id:
@@ -148,7 +152,12 @@ async def delete_clip(
     await db.delete(clip)
     audit.record(db, user.id, "clip.deleted", child_id, clip=str(clip_id))
     await db.commit()
-    storage.remove(key)
+    try:
+        storage.remove(key)
+    except Exception as e:  # the clip is already gone for everyone; never leave its file behind for good
+        log.warning("clip file not removed, left for the nightly cleanup: %s", type(e).__name__)
+        db.add(StorageCleanup(prefix=key))
+        await db.commit()
     return Response(status_code=204)
 
 

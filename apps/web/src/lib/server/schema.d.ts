@@ -1635,7 +1635,8 @@ export interface paths {
         post?: never;
         /**
          * Delete Clip
-         * @description The clip, its replies and its file are gone.
+         * @description The clip, its replies and its file are gone at once (A12.3): a link given out before stops working. If storage
+         *     does not answer, the file goes with the nightly cleanup instead.
          */
         delete: operations["delete_clip_api_v1_children__child_id__clips__clip_id__delete"];
         options?: never;
