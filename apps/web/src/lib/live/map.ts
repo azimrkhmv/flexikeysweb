@@ -4,7 +4,7 @@
 import { AAC_BY_ID, CUSTOM_PREFIX } from "@/content/aac";
 import { DEFAULT_PROFILE } from "@/lib/adaptive";
 import { TRIAL_DAYS } from "@/content/plans";
-import type { AdminUser, AuditOut, BookingOut, KitOrderOut, CardOut, ChildOut, ClinicBooking, ClinicSlot, ClipOut, ConsentKind, Consents, DailyOut, FreeSlot, InUse, Me, MyPlace, PlaceView, PlanOut, PlanStatus, ReviewItem, RoundOut, ShareOut, SharedChild, UserOut } from "@/lib/server/types";
+import type { MessageOut, AdminUser, AuditOut, BookingOut, KitOrderOut, CardOut, ChildOut, ClinicBooking, ClinicSlot, ClipOut, ConsentKind, Consents, DailyOut, FreeSlot, InUse, Me, MyPlace, PlaceView, PlanOut, PlanStatus, ReviewItem, RoundOut, ShareOut, SharedChild, UserOut } from "@/lib/server/types";
 import type { DB } from "@/lib/api/schema";
 import type { Lang } from "@/lib/translate";
 import type { ChildSupport, ActivityKind, AgeBand, BodyArea, DailyAnswer, ExerciseVideo, FnLevel, GoalKey, IntakeAnswer, IntakeValue, L10n, PausedDay, Restriction, Roadmap, TaskDone,
@@ -341,6 +341,10 @@ export const inUseFrom = (u: InUse): NonNullable<DB["answersInUse"]>[string] => 
 });
 
 /** Movement (P40) and feedback clips with their links and the therapists' replies. */
+/** This person's assistant chat about one child (GET /children/{id}/assistant/messages, oldest first). */
+export const chatFrom = (childId: string, userId: string, list: MessageOut[]): DB["aiMessages"] =>
+  list.map((m) => ({ id: m.id, userId, childId, role: m.speaker === "adult" ? "user" : "assistant", text: m.text, at: m.createdAt, emergency: m.emergency }));
+
 export function clipsFrom(childId: string, list: ClipOut[]) {
   return {
     clips: list.map((c) => ({ id: c.id, childId, url: c.url, exerciseId: c.kind === "feedback" ? (c.exerciseId ?? undefined) : undefined })),

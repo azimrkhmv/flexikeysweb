@@ -7,10 +7,10 @@ import { ApiError, type ChildAuth, type DB } from "@/lib/api/schema";
 import { sessionStore } from "@/lib/session";
 import { useStore } from "@/lib/store";
 import { http } from "./http";
-import type { AuditOut, FlagOut, Overview, KitOrderOut, BookingOut, ClinicBooking, ClinicSlot, FreeSlot, MyPlace, PlaceView, CardOut, ChildOut, ClipOut, Helpers, InviteForMe, Consents, DailyOut, FormOut, InUse, InviteOut, PlanOut, PlanStatus, ProfileOut, ReviewItem, RoundOut, RoundSummary, ShareOut, SharedChild } from "@/lib/server/types";
+import type { ChatSummary, MessageOut, AuditOut, FlagOut, Overview, KitOrderOut, BookingOut, ClinicBooking, ClinicSlot, FreeSlot, MyPlace, PlaceView, CardOut, ChildOut, ClipOut, Helpers, InviteForMe, Consents, DailyOut, FormOut, InUse, InviteOut, PlanOut, PlanStatus, ProfileOut, ReviewItem, RoundOut, RoundSummary, ShareOut, SharedChild } from "@/lib/server/types";
 import {
   kitOrderFrom, bookingFrom, clinicBookingFrom, myPlaceFrom, placeFrom, slotFrom,
-  answersFrom, clipsFrom, dailyFrom, doneFrom, familyChildFrom, familyConsentsFrom, familyPlanFrom, inUseFrom, pausedFrom, planFrom, planVideosFrom, reviewVideosFrom, shareFrom, sharedChildFrom, voiceCardFrom,
+  answersFrom, chatFrom, clipsFrom, dailyFrom, doneFrom, familyChildFrom, familyConsentsFrom, familyPlanFrom, inUseFrom, pausedFrom, planFrom, planVideosFrom, reviewVideosFrom, shareFrom, sharedChildFrom, voiceCardFrom,
   aacCardFrom, auditFrom, childFrom, notificationFrom, levelsFrom, profileFrom,
   taskFrom, userFrom,
   type BAacCard, type BNotification, type BChild, type BLevel,
@@ -32,13 +32,14 @@ const empty = (): DB => ({
 });
 
 /** A family child's data on the new server (apps/api); each round's answers are loaded after the round list. */
-const PER_CHILD = ["consents", "rounds", "plan", "daily", "cards", "shares", "inUse", "clips", "bookings"] as const;
+const PER_CHILD = ["consents", "rounds", "plan", "daily", "cards", "shares", "inUse", "clips", "bookings", "chat"] as const;
 const REVIEW_STATUSES = ["waiting_review", "changes_requested", "rejected", "approved"] as const;
 type PerChild = (typeof PER_CHILD)[number];
 const path = (kind: PerChild, id: string) =>
   ({
     consents: `/children/${id}/consents`, rounds: `/children/${id}/intake`, plan: `/children/${id}/plan`, daily: `/children/${id}/daily`,
     cards: `/children/${id}/voice-cards`, shares: `/children/${id}/therapists`, inUse: `/children/${id}/answers-in-use`, clips: `/children/${id}/clips`, bookings: `/children/${id}/bookings`,
+    chat: `/children/${id}/assistant/messages`,
   })[kind];
 /** "No plan yet" and "no daily question list loaded" are answers, not errors to retry. */
 const MAY_BE_MISSING: PerChild[] = ["plan", "daily"];
@@ -89,7 +90,7 @@ export function useLiveDb(): DB {
   const per = useQueries({
     queries: ids.flatMap((id) =>
       PER_CHILD.map((kind) => ({
-        queryKey: [kind, id],
+        queryKey: [kind, id], // "chat" is refetched by its key after a question (live/api.ts)
         queryFn: () =>
           http<unknown>("GET", path(kind, id)).catch((e) => (MAY_BE_MISSING.includes(kind) && e instanceof ApiError && e.code === "not_found" ? null : Promise.reject(e))),
       })),
@@ -167,6 +168,7 @@ export function useLiveDb(): DB {
     queryFn: () => http<ProfileOut>("GET", "/therapist/profile").catch((e) => (e instanceof ApiError && e.code === "no_profile" ? null : Promise.reject(e))),
   });
   const shared = role === "therapist" ? (linked.data ?? []) : [];
+  const VIEWS = 4; // queries per shared child, in this order: form, clips, chat, chat summary
   const views = useQueries({
     queries: shared.flatMap((c) => [
       { queryKey: ["therapist-form", c.id], enabled: !!tprofile.data, queryFn: () => http<unknown>("GET", `/therapist/children/${c.id}/form`) },
@@ -174,6 +176,9 @@ export function useLiveDb(): DB {
         queryKey: ["therapist-clips", c.id],
         queryFn: () => http<unknown>("GET", `/therapist/children/${c.id}/clips`).catch((e) => (e instanceof ApiError && e.code === "not_found" ? [] : Promise.reject(e))),
       },
+      // B31, B33: the therapist's own assistant chat, and the family's chats as topics and warnings only.
+      { queryKey: ["chat", c.id], queryFn: () => http<unknown>("GET", `/children/${c.id}/assistant/messages`) },
+      { queryKey: ["chat-summary", c.id], queryFn: () => http<unknown>("GET", `/therapist/children/${c.id}/assistant-summary`) },
     ]),
   });
 
@@ -265,6 +270,7 @@ export function useLiveDb(): DB {
           db.bookings.push(booking);
           if (!db.slots.some((s) => s.id === slot.id)) db.slots.push(slot);
         }
+        db.aiMessages.push(...chatFrom(id, user!.id, (perChild(i, "chat") as MessageOut[] | undefined) ?? []));
         const daily = perChild(i, "daily") as DailyOut | null | undefined;
         if (daily) db.dailyAnswers.push(...dailyFrom(id, daily));
         db.intakeRounds.push(...rounds.map((r) => ({ childId: id, round: r.number, startedAt: r.startedAt, completedAt: r.completedAt ?? undefined })));
@@ -333,11 +339,14 @@ export function useLiveDb(): DB {
         db.children.push(sharedChildFrom(c));
         db.careLinks.push({ id: `link-${c.id}`, childId: c.id, kind: "therapist", professionalId: user.id, status: "active", code: "", createdAt: c.sharedSince });
         db.consents.push({ id: `therapist-${c.id}`, childId: c.id, scope: "therapist_sharing", version: "", grantedBy: "", grantedAt: "" });
-        const form = views[k * 2]?.data as FormOut | undefined;
+        const form = views[k * VIEWS]?.data as FormOut | undefined;
         if (form) db.therapistAnswers.push({ childId: c.id, therapistId: user.id, answers: form.answers, at: "" });
-        const clips = clipsFrom(c.id, (views[k * 2 + 1]?.data as ClipOut[] | undefined) ?? []);
+        const clips = clipsFrom(c.id, (views[k * VIEWS + 1]?.data as ClipOut[] | undefined) ?? []);
         db.clips!.push(...clips.clips);
         db.clipReplies.push(...clips.replies);
+        db.aiMessages.push(...chatFrom(c.id, user.id, (views[k * VIEWS + 2]?.data as MessageOut[] | undefined) ?? []));
+        const summary = views[k * VIEWS + 3]?.data as ChatSummary | undefined;
+        if (summary) (db.chatSummaries ??= {})[c.id] = summary;
         // The server lists clips only with the movement-videos consent.
         if (clips.clips.length) db.consents.push({ id: `videos-${c.id}`, childId: c.id, scope: "movement_videos", version: "", grantedBy: "", grantedAt: "" });
       });

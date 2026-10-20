@@ -45,7 +45,6 @@ function Assistant() {
   );
 }
 
-// Live mode: not connected to the server yet (PRD Phase 5/6).
 export default function Page() {
   return <Assistant />;
 }

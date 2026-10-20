@@ -17,6 +17,7 @@ test("emergency words in 4 languages show 103 first", async ({ page }, info) => 
     const alerts = page.getByRole("alert").filter({ hasText: "103" });
     await expect(alerts).toHaveCount(i + 1);
     await expect(alerts.last().getByRole("link", { name: "Call 103" })).toHaveAttribute("href", "tel:103");
+    await expect(page.getByText("Thinking…")).toHaveCount(0); // done, so the next question is not ignored
   }
   await box.fill("How long should we play today?"); // a calm question gets an ordinary answer
   await box.press("Enter");

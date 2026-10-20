@@ -598,7 +598,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `B32` Assistant voice: a microphone button and a "read aloud" button
   - Done when: it works in 4 languages in the browser
   - Needs: A9.7
-- [ ] **Azim** — `B33` Connect the assistant screens to the server
+- [x] **Azim** — `B33` Connect the assistant screens to the server
   - Done when: a real question gets a real answer in the browser
   - Needs: A9.5, A9.9, B29, B30, B31
 
@@ -780,6 +780,8 @@ These are not programming. The named developer asks the right person and writes 
   - Needed for: real payments after the pilot
 - [x] **Azim** — `Q9` Ask the founders: when does the mobile app start? Recommended: after M2
   - Needed for: planning only
+- [ ] **Azim** — `Q11` Ask the founders and the lawyer (with G7): does the assistant need its own consent before a family's questions go to an AI company abroad? The spec's consents (§4) have none, so the server has none; the website's "AI help" switch only works in the demo
+  - Needed for: F5
 - [x] **Azim** — `Q10` Ask Shoxjahon once whether the `web-backend` server branch exists anywhere. If it is not found in a few days, stop looking
   - Answer (2026-10-19): dropped. We don't look for the old branch
   - Needed for: nothing; it could save work

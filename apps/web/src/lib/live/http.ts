@@ -80,6 +80,8 @@ const BY_TITLE: Record<string, string> = {
     too_late: "too_late",
     allergy_not_checked: "allergy_not_checked",
     invalid_status_change: "invalid_status_change",
+    daily_limit: "quota_exceeded", // the assistant's Free daily messages (A9.2)
+    ai_unavailable: "ai_unavailable",
 };
 
 /** Every code errorCode() can return — each has an err.* message (checked by lib/i18n.test.ts). */

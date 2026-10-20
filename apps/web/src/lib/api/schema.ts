@@ -82,6 +82,8 @@ export interface DB {
   bookings: Booking[];
   /** Home Kit orders (B38) per family. */
   kitOrders: KitOrder[];
+  /** Live only: the therapist's summary of the family's assistant chats, per child (B31, B33). */
+  chatSummaries?: Record<string, { questions: number; topics: { topic: string; count: number }[]; warnings: { kind: "emergency" | "restricted"; at: string }[] }>;
   answersInUse?: Record<string, { updated: Record<string, { value: string | string[]; name: string; profession?: Profession; at: string }>; messages: { text: string; name: string; profession?: Profession; at: string }[] }>;
 }
 

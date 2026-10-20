@@ -362,7 +362,8 @@ export const sel = {
   },
   /** The therapist's summary of the family's assistant chats: topics and warnings, never the chat (spec §12, B31).
    *  The server's GET /therapist/children/{id}/assistant-summary. */
-  chatSummary(db: DB, childId: string): { questions: number; topics: { topic: string; count: number }[]; warnings: { kind: "emergency" | "restricted"; at: string }[] } {
+  chatSummary(db: DB, childId: string): NonNullable<DB["chatSummaries"]>[string] {
+    if (db.chatSummaries?.[childId]) return db.chatSummaries[childId]; // live: the server's summary
     const asked = db.aiMessages.filter((m) => m.childId === childId && m.role === "user" && ["owner", "helper"].includes(sel.access(db, m.userId, childId) ?? ""));
     const counts = new Map<string, number>();
     asked.flatMap((m) => m.topics ?? ["other"]).forEach((t) => counts.set(t, (counts.get(t) ?? 0) + 1));

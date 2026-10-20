@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Phone, Send, Sparkles, Trash } from "lucide-react";
 import { Mascot } from "@/components/Mascot";
 import { Button, Card, Input, useAction } from "@/components/ui";
-import { api, sel, useDb } from "@/lib/api";
+import { api, LIVE, sel, useDb } from "@/lib/api";
 import { useLang, useT } from "@/lib/i18n";
 
 const SUGGESTED = ["parent.ai.q1", "parent.ai.q2", "parent.ai.q3"];
@@ -29,7 +29,8 @@ export function AssistantChat({ childId, needConsent }: { childId: string; needC
 
   if (!me) return null;
   const enabled = sel.flag(db, "ai_assistant", true);
-  const consent = sel.hasConsent(db, childId, "ai_processing");
+  // The server has no AI consent: the spec's consents (§4) have none, and Q11 asks whether one is needed.
+  const consent = LIVE || sel.hasConsent(db, childId, "ai_processing");
 
   const send = async (q: string) => {
     if (!q.trim()) return;

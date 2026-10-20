@@ -5,7 +5,7 @@ import { AAC_BY_ID, CUSTOM_PREFIX } from "@/content/aac";
 import { SHOP_BY_ID } from "@/content/shop";
 import { sessionStore } from "@/lib/session";
 import { STEPS, type Answers } from "@/content/intake";
-import type { KitOrderOut, BookingOut, ClinicSlot, CardOut, ChildOut, ClipOut, ClipUpload, Consents, DoneOut, FormOut, PhoneStarted, PlanOut, PlanStatus, ReviewItem, RoundOut, ShareOut } from "@/lib/server/types";
+import type { AssistantAnswer, KitOrderOut, BookingOut, ClinicSlot, CardOut, ChildOut, ClipOut, ClipUpload, Consents, DoneOut, FormOut, PhoneStarted, PlanOut, PlanStatus, ReviewItem, RoundOut, ShareOut } from "@/lib/server/types";
 import type { Profession, TherapistAnswers } from "@/content/therapist";
 import type { Lang, UiLang } from "@/lib/translate";
 import type { AacCustomCard, KitStatus, BookingMode, ReportReason, Slot, Child, ChildSupport, ConsentScope, Feeling, InputProfile, InteractionEvent, Roadmap, TaskDone, User, UserStatus, VideoStatus } from "@/lib/types";
@@ -412,17 +412,23 @@ export const liveApi = {
     return true;
   },
 
-  // ------------------------------------------------------------ AI assistant & helper (PRD §16)
-  /** Needs the AI consent; daily quota on the server. Without an AI provider it answers with the
-   *  built-in summary of the child's own data. */
+  // ------------------------------------------------------------ AI assistant (apps/api assistant/router.py, B33)
+  /** POST /children/{id}/assistant/messages — a family member or a shared therapist, each in their own chat.
+   *  Emergency words get the fixed 103 answer; 429 daily_limit on Free. */
   async askAssistant(childId: string, text: string, lang: Lang) {
-    const r = await http<{ message: { content: string } }>("POST", "/ai-assistant/chat", { child_id: childId, message: text, ui_language: lang });
-    await queryClient.invalidateQueries({ queryKey: ["aiMessages", childId] });
-    return r.message.content;
+    const r = await http<AssistantAnswer>("POST", `/children/${childId}/assistant/messages`, { text, lang });
+    await queryClient.invalidateQueries({ queryKey: ["chat", childId] });
+    return r.answer;
   },
   async clearAssistant(childId: string) {
-    await http("DELETE", `/ai-assistant/children/${childId}/messages`);
-    await queryClient.invalidateQueries({ queryKey: ["aiMessages", childId] });
+    await http("DELETE", `/children/${childId}/assistant/messages`);
+    await queryClient.invalidateQueries({ queryKey: ["chat", childId] });
+    return true;
+  },
+  /** DELETE /children/{id}/chats/{user_id} — the owner deletes one adult's chat ("Everything we store"). */
+  async deleteChat(childId: string, userId: string) {
+    await http("DELETE", `/children/${childId}/chats/${userId}`);
+    await queryClient.invalidateQueries({ queryKey: ["chat", childId] });
     return true;
   },
 

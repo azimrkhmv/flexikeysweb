@@ -47,7 +47,7 @@ export default function TherapistChild() {
       <div className="mb-6 space-y-6">
         <TherapistForm childId={id} />
         <Clips childId={id} />
-        {!LIVE && <TherapistAssistant childId={id} />}
+        <TherapistAssistant childId={id} />
       </div>
 
       {/* ponytail: the older cards below read the earlier server's addresses; the new server has none of them yet. */}
