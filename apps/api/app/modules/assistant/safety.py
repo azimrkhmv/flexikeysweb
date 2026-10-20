@@ -113,21 +113,7 @@ def names_any(answer: str, titles: Iterable[str]) -> bool:
 
 
 # A9.4: what a question was about, for the therapist's summary (spec §12: topics and warnings, never the chat).
-TOPICS: dict[str, list[str]] = {
-    "exercise": [r"exercis", r"stretch", r"how (do|to) (i|we)? ?do", r"упражнен", r"растяж", r"как делать", r"mashq", r"машқ"],
-    "plan": [r"\bplan", r"\btask", r"\bweek", r"\bnext\b", r"план", r"задани", r"недел", r"дальше", r"reja", r"vazifa",
-             r"hafta", r"keyingi", r"режа", r"вазифа", r"ҳафта", r"кейинги"],
-    "refuses_or_tired": [r"refus", r"tired", r"doesn'?t want", r"won'?t", r"\bcr(y|ies)", r"upset", r"отказ", r"устал",
-                         r"не хочет", r"плач", r"каприз", r"charcha", r"istamay", r"xohlamay", r"yig'la", r"чарча",
-                         r"истамай", r"хоҳламай", r"йиғла"],
-    "home_kit": [r"\bkit\b", r"putty", r"tongs", r"pegboard", r"набор", r"пластилин", r"plastilin", r"quti", r"қути"],
-    "app_help": [r"\bapp\b", r"log ?in", r"sign in", r"button", r"doesn'?t work", r"приложени", r"не работает",
-                 r"войти", r"кнопк", r"ilova", r"ishlamay", r"tugma", r"илова", r"ишламай", r"тугма"],
-    "booking": [r"\bbook", r"specialist", r"clinic", r"запис", r"специалист", r"клиник", r"yozil", r"mutaxassis",
-                r"klinika", r"ёзил", r"мутахассис", r"клиника"],
-    "medical": [r"medic", r"\bpills?\b", r"\bdose", r"diagnos", r"doctor", r"лекарств", r"\bдоз", r"диагноз", r"врач",
-                r"таблет", r"\bdori", r"doza", r"tashxis", r"shifokor", r"\bдори", r"доза", r"ташхис", r"шифокор"],
-}  # fmt: skip
+TOPICS: dict[str, list[str]] = json.loads((Path(__file__).parents[2] / "content" / "topics.json").read_text())["topics"]
 
 
 def topics_of(text: str) -> list[str]:

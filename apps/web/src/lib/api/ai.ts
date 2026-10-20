@@ -3,6 +3,7 @@
 // /ai-assistant/* — rule-based stand-ins for the LlmProvider (PRD §16).
 
 import { isEmergency } from "@/content/emergency";
+import { topicsOf } from "@/content/topics";
 import { LEVEL_BY_ID } from "@/content/levels";
 import { translate, type Lang } from "../i18n";
 import { read, write, net } from "./db";
@@ -27,14 +28,16 @@ export const aiApi = {
     return net(HINTS.filter(([re]) => re.test(text)).map(([, h]) => h), 200);
   },
   // ------------------------------------------------------------ AI (/ai-assistant/*)
-  /** POST /ai-assistant/chat — pseudonymized context, consent-gated, quota-limited (PRD §16). */
+  /** POST /ai-assistant/chat — pseudonymized context, consent-gated, quota-limited (PRD §16). The family and a
+   *  shared therapist ask (spec §6, §12); each question keeps its topics for the therapist's summary (B31). */
   async askAssistant(childId: string, text: string, lang: Lang) {
-    const { user } = requireChildAccess(childId, FAMILY);
+    const { user } = requireChildAccess(childId, [...FAMILY, "therapist"]);
+    const topics = topicsOf(text);
     const db = read();
     // Emergency words get 103 first: before the consent, the daily limit or any AI (spec §12, the server's A9.3).
     if (isEmergency(text)) {
       write((d) => {
-        d.aiMessages.push({ id: id(), userId: user.id, childId, role: "user", text, at: iso(), emergency: true });
+        d.aiMessages.push({ id: id(), userId: user.id, childId, role: "user", text, at: iso(), emergency: true, topics });
         d.aiMessages.push({ id: id(), userId: user.id, childId, role: "assistant", text: translate(lang, "ai.emergency"), at: iso(), emergency: true });
       });
       return net(translate(lang, "ai.emergency"), 0);
@@ -44,13 +47,13 @@ export const aiApi = {
     if (db.aiMessages.filter((m) => m.userId === user.id && m.role === "user" && m.at.startsWith(today)).length >= AI_DAILY_QUOTA) throw new ApiError("quota_exceeded");
     const answer = stubAssistant(db, childId, text, lang);
     write((d) => {
-      d.aiMessages.push({ id: id(), userId: user.id, childId, role: "user", text, at: iso() });
+      d.aiMessages.push({ id: id(), userId: user.id, childId, role: "user", text, at: iso(), topics });
       d.aiMessages.push({ id: id(), userId: user.id, childId, role: "assistant", text: answer, at: iso() });
     });
     return net(answer, 700);
   },
   async clearAssistant(childId: string) {
-    const { user } = requireChildAccess(childId, FAMILY);
+    const { user } = requireChildAccess(childId, [...FAMILY, "therapist"]);
     write((db) => {
       db.aiMessages = db.aiMessages.filter((m) => !(m.userId === user.id && m.childId === childId));
     });

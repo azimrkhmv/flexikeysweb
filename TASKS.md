@@ -586,8 +586,11 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `B30` Assistant knows the child's plan, finished tasks and restrictions
   - Done when: it never suggests a forbidden exercise
   - Needs: A9.3
-- [ ] **Azim** — `B31` Assistant in the therapist dashboard; summary of the parent's chats
+- [x] **Azim** — `B31` Assistant in the therapist dashboard; summary of the parent's chats
   - Done when: the therapist never sees the full chat
+  - Needs: A9.4
+- [ ] **Azim** — `A9.9` Server: a shared therapist asks the assistant about the child in their own chat (spec §6, §12); the assistant summary counts only the family's chats
+  - Done when: a shared therapist gets an answer; another therapist gets 404; the therapist's questions are not in the family's summary
   - Needs: A9.4
 - [ ] **Azim** — `A9.7` Server: speak a question and hear the answer
   - Done when: it works in 4 languages
@@ -597,7 +600,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
   - Needs: A9.7
 - [ ] **Azim** — `B33` Connect the assistant screens to the server
   - Done when: a real question gets a real answer in the browser
-  - Needs: A9.5, B29, B30, B31
+  - Needs: A9.5, A9.9, B29, B30, B31
 
 ### M6 — Find help, booking, Home Kit
 

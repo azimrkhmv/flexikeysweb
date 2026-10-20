@@ -8,6 +8,7 @@ import { aacCard } from "@/content/aac";
 import { LEVELS } from "@/content/levels";
 import { Avatar, Button, Card, Chip, Empty, Field, Input, PageHeader, Select, Textarea, Toggle, useAction } from "@/components/ui";
 import { SupportCard } from "@/features/parent/support";
+import { TherapistAssistant } from "@/features/therapist/Assistant";
 import { Clips } from "@/features/therapist/Clips";
 import { TherapistForm } from "@/features/therapist/Form";
 import { AdaptationLog, MotorMetrics, LevelLabel, LevelOptions, LockNote, MasteryList, MinutesChart, NotFound, SectionTitle, SessionsList, useMe, useNow } from "@/features/pro/shared";
@@ -46,6 +47,7 @@ export default function TherapistChild() {
       <div className="mb-6 space-y-6">
         <TherapistForm childId={id} />
         <Clips childId={id} />
+        {!LIVE && <TherapistAssistant childId={id} />}
       </div>
 
       {/* ponytail: the older cards below read the earlier server's addresses; the new server has none of them yet. */}

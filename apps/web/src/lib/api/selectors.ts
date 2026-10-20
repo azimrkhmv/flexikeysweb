@@ -360,6 +360,18 @@ export const sel = {
     }
     return [...by.values()].sort((a, b) => b.at.localeCompare(a.at));
   },
+  /** The therapist's summary of the family's assistant chats: topics and warnings, never the chat (spec §12, B31).
+   *  The server's GET /therapist/children/{id}/assistant-summary. */
+  chatSummary(db: DB, childId: string): { questions: number; topics: { topic: string; count: number }[]; warnings: { kind: "emergency" | "restricted"; at: string }[] } {
+    const asked = db.aiMessages.filter((m) => m.childId === childId && m.role === "user" && ["owner", "helper"].includes(sel.access(db, m.userId, childId) ?? ""));
+    const counts = new Map<string, number>();
+    asked.flatMap((m) => m.topics ?? ["other"]).forEach((t) => counts.set(t, (counts.get(t) ?? 0) + 1));
+    return {
+      questions: asked.length,
+      topics: [...counts].map(([topic, count]) => ({ topic, count })).sort((a, b) => b.count - a.count),
+      warnings: asked.filter((m) => m.emergency).map((m) => ({ kind: "emergency" as const, at: m.at })).sort((a, b) => b.at.localeCompare(a.at)),
+    };
+  },
   /** How many of each kind of thing we store about one child, in the order a parent reads them (B40). */
   stored(db: DB, childId: string): [kind: string, n: number][] {
     const of = <T extends { childId?: string }>(xs: T[] | undefined) => (xs ?? []).filter((x) => x.childId === childId).length;

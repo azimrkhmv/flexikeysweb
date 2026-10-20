@@ -295,6 +295,8 @@ export interface AiMessage {
   at: string;
   /** Emergency words: the answer is the fixed 103 message (spec §12). */
   emergency?: boolean;
+  /** A question's topics, for the therapist's summary (B31). */
+  topics?: string[];
 }
 
 // ---------- Content ----------
