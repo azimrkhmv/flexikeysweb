@@ -1,6 +1,7 @@
-"""The parent's assistant chat (A9.2, spec §12). A family member asks about one child; the AI gets the question,
-the recent chat, the child's age in years and the child's plan (B30), never the child's name or birth date. Free
-families have about 20 messages a day, Pro has no limit."""
+"""The assistant chat (A9.2, spec §12). A family member, or a therapist the child is shared with (A9.9), asks about
+one child in their own chat; the AI gets the question, the recent chat, the child's age in years and the child's plan
+(B30), never the child's name or birth date. Free families have about 20 messages a day, Pro has no limit; a
+therapist's questions are not counted against the family."""
 
 import re
 import uuid
@@ -16,7 +17,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.crypto import decrypt_json, encrypt_json
 from app.db import get_session
 from app.errors import AppError
-from app.modules.accounts.models import Lang
+from app.modules.accounts.models import Lang, Role, User
 from app.modules.assistant.ai import Ai, get_ai, over_budget
 from app.modules.assistant.models import AiPurpose, AiUsage, Chat, ChatMessage, Speaker
 from app.modules.assistant.safety import (
@@ -54,7 +55,7 @@ LANG_NAME = {
     Lang.en: "English",
 }
 SYSTEM = (
-    "You help a parent in Uzbekistan do home therapy with their child, who has cerebral palsy. The child is {age} "
+    "You help {who} in Uzbekistan with a child's home therapy; the child has cerebral palsy. The child is {age} "
     "years old. Answer in {lang}, in short plain sentences. You are not a doctor: never diagnose, never talk about "
     "medicine doses, never contradict a doctor's or therapist's advice. For a medical question give general "
     "information, then advise seeing a doctor. Call the child 'the child'. The child's doctor or therapist said to "
@@ -79,6 +80,15 @@ def without_child(text: str, child: Child) -> str:
     for form in (child.birth_date.isoformat(), child.birth_date.strftime("%d.%m.%Y")):
         text = text.replace(form, "[date]")
     return text
+
+
+async def asking_about(db: AsyncSession, user: User, child_id: uuid.UUID) -> Child:
+    """The child this person may ask about: a family member's child, or a child shared with this therapist now.
+    404 for everyone else."""
+    if user.role == Role.therapist:
+        child, _ = await get_shared_child(db, user, child_id)
+        return child
+    return await get_visible_child(db, user, child_id)
 
 
 async def plan_words(db: AsyncSession, child: Child, lang: Lang) -> str:
@@ -124,7 +134,7 @@ async def ask(
     """Emergency words (A9.3) get the fixed 103 answer first, before any limit or AI. 429 daily_limit when a Free family
     used today's messages; 503 ai_unavailable when the AI does not answer. An answer that mentions a movement the
     child must avoid is replaced by a fixed safe answer."""
-    child = await get_visible_child(db, user, child_id)
+    child = await asking_about(db, user, child_id)
     chat = await db.scalar(
         select(Chat).where(Chat.child_id == child.id, Chat.user_id == user.id).order_by(Chat.created_at.desc())
     )
@@ -147,7 +157,9 @@ async def ask(
         await db.commit()
         return Answer(answer=EMERGENCY_ANSWER[body.lang], emergency=True, remaining_today=None)
 
-    limit = None if (await plan_of(db, child.family_id)).plan == "pro" else settings.free_ai_messages_per_day
+    therapist = user.role == Role.therapist
+    pro = (await plan_of(db, child.family_id)).plan == "pro"
+    limit = None if therapist or pro else settings.free_ai_messages_per_day
     midnight = datetime.combine(datetime.now(TASHKENT).date(), time(), TASHKENT).astimezone(UTC)
     used = await db.scalar(
         select(func.count()).where(
@@ -177,7 +189,8 @@ async def ask(
         today.year - child.birth_date.year - ((today.month, today.day) < (child.birth_date.month, child.birth_date.day))
     )
     restrictions, forbidden = await child_limits(db, child)
-    system = SYSTEM.format(age=age, lang=LANG_NAME[body.lang], avoid=avoid_words(restrictions) or "nothing")
+    who = "a therapist who guides the family" if therapist else "a parent"
+    system = SYSTEM.format(who=who, age=age, lang=LANG_NAME[body.lang], avoid=avoid_words(restrictions) or "nothing")
     system += " " + await plan_words(db, child, body.lang)
     messages = [{"role": "system", "content": system}]
     for m in earlier:
@@ -194,7 +207,8 @@ async def ask(
     store(Speaker.assistant, answer, topics=[RESTRICTED] if blocked else None)
     db.add(
         AiUsage(
-            family_id=child.family_id, user_id=user.id, purpose=AiPurpose.chat, model=reply.model,
+            family_id=None if therapist else child.family_id,  # a therapist's question is not the family's
+            user_id=user.id, purpose=AiPurpose.chat, model=reply.model,
             input_tokens=reply.input_tokens, output_tokens=reply.output_tokens, cost_usd=reply.cost_usd,
         )
     )  # fmt: skip
@@ -220,7 +234,7 @@ async def my_chat(
     child_id: uuid.UUID, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]
 ) -> list[MessageOut]:
     """This person's chat about the child, oldest first. Kept until they (or the family's owner) delete it."""
-    await get_visible_child(db, user, child_id)
+    await asking_about(db, user, child_id)
     rows = await db.scalars(
         select(ChatMessage)
         .join(Chat, Chat.id == ChatMessage.chat_id)
@@ -243,7 +257,7 @@ async def delete_my_chat(
     child_id: uuid.UUID, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]
 ) -> Response:
     """Deleted at once, for good."""
-    await get_visible_child(db, user, child_id)
+    await asking_about(db, user, child_id)
     await _delete_chats(db, child_id, user.id)
     audit.record(db, user.id, "chat.deleted", child_id)
     await db.commit()
@@ -283,13 +297,15 @@ class ChatSummary(ApiModel):
 async def summary(
     child_id: uuid.UUID, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]
 ) -> ChatSummary:
-    """What the family asked the assistant about this child: topics and warnings only, never the chat (spec §12)."""
+    """What the family asked the assistant about this child: topics and warnings only, never the chat (spec §12).
+    Therapists' own chats about the child are not part of it (A9.9)."""
     await get_shared_child(db, user, child_id)
     rows = (
         await db.execute(
             select(ChatMessage.speaker, ChatMessage.topics, ChatMessage.emergency, ChatMessage.created_at)
             .join(Chat, Chat.id == ChatMessage.chat_id)
-            .where(Chat.child_id == child_id)
+            .join(User, User.id == Chat.user_id)
+            .where(Chat.child_id == child_id, User.role != Role.therapist)
         )
     ).all()
     asked = [r for r in rows if r.speaker == Speaker.adult]

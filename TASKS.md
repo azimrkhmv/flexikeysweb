@@ -589,7 +589,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `B31` Assistant in the therapist dashboard; summary of the parent's chats
   - Done when: the therapist never sees the full chat
   - Needs: A9.4
-- [ ] **Azim** — `A9.9` Server: a shared therapist asks the assistant about the child in their own chat (spec §6, §12); the assistant summary counts only the family's chats
+- [x] **Azim** — `A9.9` Server: a shared therapist asks the assistant about the child in their own chat (spec §6, §12); the assistant summary counts only the family's chats
   - Done when: a shared therapist gets an answer; another therapist gets 404; the therapist's questions are not in the family's summary
   - Needs: A9.4
 - [ ] **Azim** — `A9.7` Server: speak a question and hear the answer

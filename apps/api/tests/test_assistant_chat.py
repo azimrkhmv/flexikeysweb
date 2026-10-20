@@ -200,3 +200,32 @@ def test_an_answer_naming_a_forbidden_exercise_is_replaced(answer: str, client: 
     ai.answer = answer  # "bridge" is ruled out by high_intensity, and its title has no word of the movement list
     r = client.post(url, headers=owner, json={"text": "What else can we do?", "lang": "en"}).json()
     assert r["answer"].startswith("I can't suggest that")
+
+
+# A9.9: a shared therapist asks the assistant in their own chat; it is not part of the family's summary.
+def test_a_shared_therapist_asks_in_their_own_chat(
+    client: TestClient, ai: FakeAi, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(settings, "free_ai_messages_per_day", 0)
+    owner = parent(client)
+    child = add_child(client, owner)
+    therapist = share(client, owner, child)
+    url = f"{API}/children/{child}/assistant/messages"
+    client.post(url, headers=owner, json={"text": "How do we do the putty exercise?", "lang": "en"})
+
+    r = client.post(url, headers=therapist, json={"text": "What is next in the plan?", "lang": "ru"})
+    assert r.status_code == 200, r.text
+    assert r.json()["remainingToday"] is None  # not counted against the family
+    assert "a therapist who guides the family" in ai.sent[-1][0]["content"]
+    assert client.get(url, headers=therapist).json()[0]["text"] == "What is next in the plan?"
+    assert len(client.get(url, headers=owner).json()) == 2  # the parent's chat only: their question and the answer
+
+    s = client.get(f"{API}/therapist/children/{child}/assistant-summary", headers=therapist).json()
+    assert s["questions"] == 1 and "plan" not in [t["topic"] for t in s["topics"]]  # the family's question only
+
+    family = parent(client)
+    other = share(client, family, add_child(client, family))  # a therapist of another family's child
+    assert client.post(url, headers=other, json={"text": "Hi", "lang": "en"}).status_code == 404
+    assert client.get(url, headers=other).status_code == 404
+    assert client.delete(url, headers=therapist).status_code == 204
+    assert client.get(url, headers=therapist).json() == []

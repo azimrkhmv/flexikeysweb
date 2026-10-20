@@ -1002,6 +1002,7 @@ export interface paths {
         /**
          * Summary
          * @description What the family asked the assistant about this child: topics and warnings only, never the chat (spec §12).
+         *     Therapists' own chats about the child are not part of it (A9.9).
          */
         get: operations["summary_api_v1_therapist_children__child_id__assistant_summary_get"];
         put?: never;
