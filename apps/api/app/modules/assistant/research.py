@@ -20,9 +20,9 @@ from pathlib import Path
 from app.modules.accounts.models import Lang
 
 MAX_ENTRIES = 3
-# Not for families now: home massage is a later feature (founders, 2026-10-22; FA7), and the draft exercise cards are
-# not approved (only the approved exercise library is suggested).
-LEFT_OUT = ("KB-MAS-", "KB-EX-")
+# Not for families now: home massage is a later feature (founders, 2026-10-22; FA7: its section and its rule), and the
+# draft exercise cards are not approved (only the approved exercise library is suggested).
+LEFT_OUT = ("KB-MAS-", "KB-CONF-05", "KB-EX-")
 _ENTRY = re.compile(r"^### (KB-[A-Z]+-\d+) — (.+)$", re.M)
 _FIELD = re.compile(r"^\*\*([^*\n]+):\*\*", re.M)  # **Tags:**, **For families:**, **FlexiKeys rule:** ...
 _SOURCE = re.compile(r"^\| (S\d+) \| (.+?) — \[?([^\]|]+)\]?(?:\([^)]*\))?.*?\| (\d{4}|[^|]+?) \|", re.M)

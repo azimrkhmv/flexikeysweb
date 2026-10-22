@@ -96,6 +96,7 @@ def test_the_library_is_read_from_the_knowledge_base(library: None) -> None:
     assert entries["KB-HAND-01"].tags == "CP · MACS I–III · ages 2+"
     assert entries["KB-SAFE-01"].sources == ("Team protocol (pending physio sign-off)",)
     assert "KB-TECH-02" not in research.for_asker(entries, therapist=False)  # "not for parents"
+    assert "KB-CONF-05".startswith(research.LEFT_OUT)  # "What massage does": home massage is later (FA7)
 
 
 def test_an_answer_uses_only_the_matching_passage_and_names_its_papers(
@@ -110,6 +111,7 @@ def test_an_answer_uses_only_the_matching_passage_and_names_its_papers(
     assert "KB-TECH-02" not in str(finder)  # a parent's question: entries "not for parents" are not offered
     assert "Play games that need both hands" in answerer[0]["content"]
     assert "Stop if your child has pain" not in answerer[0]["content"]  # only the matching passage
+    assert "never suggest home massage" in answerer[0]["content"]  # FA7
 
 
 def test_with_no_matching_passage_it_does_not_know(library: None, client: TestClient, ai: FakeAi) -> None:

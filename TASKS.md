@@ -848,8 +848,15 @@ the database fields never shift.
 - [ ] **Azim** — `FA6` Who can start: delay or not sure gets the limited plan (not only when one side is weaker)
   - Done when: each launch group gets its plan: CP and DCD full; delay or not sure limited; autism games and My Voice; Down syndrome through the therapist
   - Needs: Q14 (what the limited plan is)
-- [ ] **Azim** — `FA7` Home massage out of the first release: L9's massage areas stay stored, no massage anywhere a parent sees
-  - Done when: no parent screen or plan mentions massage
+- [x] **Azim** — `FA7` Home massage out of the first release: L9's massage areas stay stored, no massage anywhere a parent sees
+  - Done when: no plan item or assistant answer suggests home massage
+  - Note: the plan has no massage exercise; the assistant never gets the knowledge base's massage section or its
+    massage rule (KB-MAS-*, KB-CONF-05) and is told not to suggest it. The questionnaire's touch and massage questions
+    (AU8, E8, and "Massage" as a therapy now in I1) stay as the CEO's set has them; they only feed the later massage
+    feature. L9's massage areas are only stored
+- [ ] **Azim** — `FA9` The assistant's instructions say "the child has cerebral palsy"; with DCD, delay, autism and Down
+  syndrome children (founders, 2026-10-22) they should name the child's own condition from the answers
+  - Done when: a DCD child's chat does not call the child's condition cerebral palsy
 - [ ] **Azim** — `FA8` Home Kit optional: a family without the kit gets exercises with household things
   - Done when: a plan for a family without the kit has no kit-only tool
 - [ ] **Azim** — `Q14` Ask the founders 4 follow-ups to their answers of 22 Oct
