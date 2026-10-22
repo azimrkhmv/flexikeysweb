@@ -409,6 +409,7 @@ export const sel = {
   // ---- admin-only reads (/admin/*)
   admin: {
     users: (db: DB) => db.users,
+    feedback: (db: DB) => db.feedback ?? [],
     /** Every family with its owner and its plan now (Free, Pro or the trial). */
     familyPlans: (db: DB) =>
       db.familyMembers.filter((m) => m.role === "owner").map((m) => ({ familyId: m.familyId, ownerId: m.userId, ...sel.familyPlan(db, m.familyId) })),

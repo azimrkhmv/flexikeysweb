@@ -7,7 +7,7 @@ import { ApiError, type ChildAuth, type DB } from "@/lib/api/schema";
 import { sessionStore } from "@/lib/session";
 import { useStore } from "@/lib/store";
 import { http } from "./http";
-import type { ChatOut, ChatSummary, MessageOut, PlanReasons, AuditOut, FlagOut, Overview, KitOrderOut, BookingOut, ClinicBooking, ClinicSlot, FreeSlot, MyPlace, PlaceView, CardOut, ChildOut, ClipOut, Helpers, InviteForMe, Consents, DailyOut, FormOut, InUse, InviteOut, PlanOut, PlanStatus, ProfileOut, ReviewItem, RoundOut, RoundSummary, ShareOut, SharedChild } from "@/lib/server/types";
+import type { ChatOut, ChatSummary, MessageOut, PlanReasons, FeedbackOut, AuditOut, FlagOut, Overview, KitOrderOut, BookingOut, ClinicBooking, ClinicSlot, FreeSlot, MyPlace, PlaceView, CardOut, ChildOut, ClipOut, Helpers, InviteForMe, Consents, DailyOut, FormOut, InUse, InviteOut, PlanOut, PlanStatus, ProfileOut, ReviewItem, RoundOut, RoundSummary, ShareOut, SharedChild } from "@/lib/server/types";
 import {
   kitOrderFrom, bookingFrom, clinicBookingFrom, myPlaceFrom, placeFrom, slotFrom,
   answersFrom, chatFrom, clipsFrom, dailyFrom, doneFrom, familyChildFrom, familyConsentsFrom, familyPlanFrom, inUseFrom, pausedFrom, planFrom, planVideosFrom, reviewVideosFrom, shareFrom, sharedChildFrom, voiceCardFrom,
@@ -147,13 +147,14 @@ export function useLiveDb(): DB {
   });
 
   // ---- admin console
-  const ADMIN = ["users", "audit", "flagList", "overview", "kitOrders"] as const;
+  const ADMIN = ["users", "audit", "flagList", "overview", "kitOrders", "feedback"] as const;
   const adminPath: Record<(typeof ADMIN)[number], string> = {
     users: "/admin/users?limit=500",
     audit: "/admin/audit-logs?limit=200",
     flagList: "/admin/feature-flags",
     overview: "/admin/overview",
     kitOrders: "/admin/kit-orders",
+    feedback: "/admin/feedback",
   };
   const admin = useQueries({
     queries: role === "admin" ? ADMIN.map((k) => ({ queryKey: ["admin", k], queryFn: () => http<unknown>("GET", adminPath[k]) })) : [],
@@ -323,6 +324,7 @@ export function useLiveDb(): DB {
       db.users = ((at("users") as BUser[] | undefined) ?? []).map(userFrom);
       if (!db.users.some((u) => u.id === user.id)) db.users.push(user);
       db.audit = ((at("audit") as AuditOut[] | undefined) ?? []).map(auditFrom);
+      db.feedback = ((at("feedback") as FeedbackOut[] | undefined) ?? []).map((f) => ({ id: f.id, userId: null, phone: f.phone, name: f.name, page: f.page, text: f.text, at: f.createdAt }));
       db.flags = ((at("flagList") as FlagOut[] | undefined) ?? []).map((f) => ({ key: f.key, enabled: f.enabled, description: f.description }));
       db.kitOrders = ((at("kitOrders") as KitOrderOut[] | undefined) ?? []).map((o) => kitOrderFrom("", o));
       const ov = at("overview") as Overview | undefined;

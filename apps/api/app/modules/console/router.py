@@ -6,7 +6,8 @@ import uuid
 from datetime import UTC, date, datetime, timedelta
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Response
+from pydantic import Field
 from sqlalchemy import Select, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -21,7 +22,7 @@ from app.modules.auth.router import UserOut
 from app.modules.auth.session import CurrentUser
 from app.modules.billing.models import FamilyPlan
 from app.modules.children.models import Child
-from app.modules.console.models import FLAGS, FeatureFlag
+from app.modules.console.models import FLAGS, FeatureFlag, Feedback
 from app.modules.health.router import CHECKS, _run
 from app.modules.play.models import GameSession
 from app.schemas import ApiModel
@@ -156,3 +157,42 @@ async def set_flag(body: FlagChange, admin: Admin, db: Annotated[AsyncSession, D
     audit.record(db, admin.id, "flag.changed", None, key=body.key, enabled=body.enabled)
     await db.commit()
     return FlagOut(key=body.key, enabled=body.enabled, description=FLAGS[body.key][1])
+
+
+class FeedbackIn(ApiModel):
+    text: str = Field(min_length=1, max_length=2000)
+    page: str = Field(default="", max_length=200)
+
+
+class FeedbackOut(ApiModel):
+    id: uuid.UUID
+    phone: str | None  # who sent it; None once the account is deleted
+    name: str | None
+    page: str
+    text: str
+    created_at: datetime
+
+
+@flags_router.post("/feedback", status_code=204)
+async def send_feedback(
+    body: FeedbackIn, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]
+) -> Response:
+    """Anyone signed in tells the team something (the pilot's feedback box)."""
+    db.add(Feedback(user_id=user.id, page=body.page, text=body.text.strip()))
+    await db.commit()
+    return Response(status_code=204)
+
+
+@router.get("/feedback")
+async def feedback(_: Admin, db: Annotated[AsyncSession, Depends(get_session)]) -> list[FeedbackOut]:
+    """Every message, newest first."""
+    rows = await db.execute(
+        select(Feedback, User.phone, User.name)
+        .outerjoin(User, User.id == Feedback.user_id)
+        .order_by(Feedback.created_at.desc())
+        .limit(500)
+    )
+    return [
+        FeedbackOut(id=f.id, phone=phone, name=name, page=f.page, text=f.text, created_at=f.created_at)
+        for f, phone, name in rows
+    ]

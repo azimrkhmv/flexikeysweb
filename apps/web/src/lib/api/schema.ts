@@ -41,6 +41,8 @@ export interface DB {
   notifications: Notification[];
   audit: AuditLog[];
   flags: FeatureFlag[];
+  /** The pilot's "Send feedback" box; admins read it (live: GET /admin/feedback). */
+  feedback?: { id: string; userId: string | null; phone?: string | null; name?: string | null; page: string; text: string; at: string }[];
   aiMessages: AiMessage[];
   /** Spec 2026-10-06. MOCK ONLY: the last SMS code per phone (the server never returns it). */
   otp: { phone: string; code: string; sentAt: number; tries: number }[];

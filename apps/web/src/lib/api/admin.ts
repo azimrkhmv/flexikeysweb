@@ -11,6 +11,15 @@ import { seed } from "./seed";
 import type { UserStatus } from "../types";
 
 export const adminApi = {
+  /** POST /feedback — the pilot's "Send feedback" box, anyone signed in. */
+  async sendFeedback(text: string, page: string) {
+    const u = requireUser();
+    if (!text.trim()) throw new ApiError("invalid_answer");
+    write((db) => {
+      (db.feedback ??= []).unshift({ id: crypto.randomUUID(), userId: u.id, page, text: text.trim().slice(0, 2000), at: new Date().toISOString() });
+    });
+    return net(true);
+  },
   // ------------------------------------------------------------ admin (/admin/*) — every mutation audited (FR-ADM-1)
   async setUserStatus(userId: string, status: UserStatus) {
     const u = requireUser(["admin"]);

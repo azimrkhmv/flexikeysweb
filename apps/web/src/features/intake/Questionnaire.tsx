@@ -126,6 +126,7 @@ export function QuestionnaireWizard({ childId: initialChild, version }: { childI
               <div key={q.id} id={`q-${q.id}`} className="scroll-mt-24">
                 <Card className={`p-5 ${mark ? "ring-4 ring-sun" : ""}`}>
                   <Question q={q} answers={answers} set={set} childId={childId} />
+                  {q.id === "A1" && <p className="mt-2 text-xs text-muted">{t("intake.A1.nickname")}</p>}
                   {mark && <p className="mt-3 text-sm font-bold text-ink">{t("intake.answerThis")}</p>}
                 </Card>
               </div>

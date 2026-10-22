@@ -1,6 +1,7 @@
 "use client";
 
 import "@/messages/adult";
+import { FeedbackBox, TestBanner } from "./Pilot";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
@@ -134,6 +135,7 @@ function Shell({ me, nav, children }: { me: User; nav: NavItem[]; children: Reac
             </div>
           </header>
           <main className="pt-2 lg:pt-4">
+            <TestBanner />
             {me.status === "pending_verification" && (
               <div role="status" className="mb-6 rounded-2xl border border-sun bg-sun-soft p-4 text-sm font-semibold text-[#7a5a0c]">
                 {t("err.pending_verification")}
@@ -144,6 +146,7 @@ function Shell({ me, nav, children }: { me: User; nav: NavItem[]; children: Reac
         </div>
       </div>
 
+      {me.role !== "admin" && <FeedbackBox />}
       <nav aria-label={t("nav.menu")} className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden">
         <ul className="flex overflow-x-auto">
           {nav.map(({ href, label, icon: Icon }) => (

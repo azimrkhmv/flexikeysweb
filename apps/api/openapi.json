@@ -1094,6 +1094,32 @@
     }
    }
   },
+  "/api/v1/admin/feedback": {
+   "get": {
+    "tags": [
+     "admin"
+    ],
+    "summary": "Feedback",
+    "description": "Every message, newest first.",
+    "operationId": "feedback_api_v1_admin_feedback_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "$ref": "#/components/schemas/FeedbackOut"
+         },
+         "type": "array",
+         "title": "Response Feedback Api V1 Admin Feedback Get"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/v1/flags": {
    "get": {
     "tags": [
@@ -1113,6 +1139,41 @@
          },
          "type": "object",
          "title": "Response Flags Api V1 Flags Get"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/feedback": {
+   "post": {
+    "tags": [
+     "admin"
+    ],
+    "summary": "Send Feedback",
+    "description": "Anyone signed in tells the team something (the pilot's feedback box).",
+    "operationId": "send_feedback_api_v1_feedback_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/FeedbackIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
         }
        }
       }
@@ -7006,6 +7067,81 @@
      "watchUrl"
     ],
     "title": "FamilyVideo"
+   },
+   "FeedbackIn": {
+    "properties": {
+     "text": {
+      "type": "string",
+      "maxLength": 2000,
+      "minLength": 1,
+      "title": "Text"
+     },
+     "page": {
+      "type": "string",
+      "maxLength": 200,
+      "title": "Page",
+      "default": ""
+     }
+    },
+    "type": "object",
+    "required": [
+     "text"
+    ],
+    "title": "FeedbackIn"
+   },
+   "FeedbackOut": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "phone": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Phone"
+     },
+     "name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Name"
+     },
+     "page": {
+      "type": "string",
+      "title": "Page"
+     },
+     "text": {
+      "type": "string",
+      "title": "Text"
+     },
+     "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Createdat"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "phone",
+     "name",
+     "page",
+     "text",
+     "createdAt"
+    ],
+    "title": "FeedbackOut"
    },
    "Feeling": {
     "type": "string",

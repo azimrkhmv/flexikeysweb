@@ -348,6 +348,11 @@ export const liveApi = {
     await refetch();
     return true;
   },
+  /** POST /feedback — the pilot's "Send feedback" box. */
+  async sendFeedback(text: string, page: string) {
+    await http("POST", "/feedback", { text: text.trim(), page });
+    return true;
+  },
   /** PUT /therapist/children/{id}/form — only the changed answers; an emptied one is sent as null (removed). */
   async saveTherapistForm(childId: string, answers: TherapistAnswers) {
     const body = Object.fromEntries(Object.entries(answers).map(([k, v]) => [k, v ?? null]));
