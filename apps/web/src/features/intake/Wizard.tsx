@@ -155,10 +155,11 @@ function firstOpenStep(a: Answers, health: boolean) {
 /** Spec step 19 — "The plan is ready". No scores, no percentages. */
 export function Ready({ name, plan, minutes, childId }: { name: string; plan: Roadmap; minutes: number; childId: string }) {
   const t = useT();
+  const held = sel.hasConsent(useDb(), childId, "health"); // games only although the health answers were given
   return (
     <div className="mx-auto max-w-2xl text-center">
       <h1 className="text-3xl font-extrabold text-ink">{t("intake.ready.title", { name })}</h1>
-      <p className="mt-3 text-lg text-ink-2">{plan.exercisesAllowed ? t("intake.ready.lead", { min: minutes }) : t("intake.ready.gamesOnly")}</p>
+      <p className="mt-3 text-lg text-ink-2">{plan.exercisesAllowed ? t("intake.ready.lead", { min: minutes }) : t(held ? "intake.ready.held" : "intake.ready.gamesOnly")}</p>
       <p className="mt-4 rounded-2xl bg-sky-soft px-4 py-3 text-sm font-semibold text-ink">{t("intake.ready.playcheck")}</p>
       <div className="mt-6 flex justify-center gap-3">
         <LinkButton href={`/parent/child/${childId}`} size="lg">{t("intake.ready.open")}</LinkButton>

@@ -64,6 +64,9 @@ export function PlanTab({ child }: { child: Child }) {
 /** Two or three plain sentences from the rules' structured reasons (the AI rewrite comes with the assistant). */
 function Why({ plan }: { plan: Roadmap }) {
   const t = useT();
+  const db = useDb();
+  // Games only: either no health consent, or an answer a therapist must look at first (a red flag, IQ3).
+  const held = sel.hasConsent(db, plan.childId, "health");
   const goals = [...new Set(plan.reasons.map((r) => r.goal))];
   const minutes = plan.days[0] ? plan.days[0].games.reduce((s, g) => s + g.minutes, 0) * 2 : 10;
   return (
@@ -77,7 +80,7 @@ function Why({ plan }: { plan: Roadmap }) {
           {plan.reasons.some((r) => r.source) && <p className="text-ink-2">{t("plan.why.research")}</p>}
         </>
       ) : (
-        <p className="text-ink-2">{t("plan.why.gamesOnly")}</p>
+        <p className="text-ink-2">{t(held ? "plan.why.held" : "plan.why.gamesOnly")}</p>
       )}
     </Card>
   );
