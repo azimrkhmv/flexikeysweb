@@ -1,0 +1,9915 @@
+{
+ "_note": "The CEO's parent intake questionnaire (16 Oct 2026, @Abdulloh Ochilov; therapist-reviewed), as data. Source of truth for the server (app/modules/intake/questionnaire.py) and the website (a copy in apps/web/src/content/backend/questionnaire.json, checked by questionnaire.test.ts). Question numbers never change and are never reused. `show` holds display rules R1-R19 and the follow-ups as one condition; `option_show` hides single options. Conditions: {q, in} (any of these answers), {q, answered}, {q, min/max} (numbers), {fact, in/min/max} with facts age (years), gmfcs, macs, cfcs (1-5, from C10/L2, D1, G2), {all}, {any}, {not}, and {ref} to a named rule in `defs`. `note` marks the team's drafts and open points for the physio.",
+ "version": "2026-10-16",
+ "steps": [
+  "A",
+  "B",
+  "CP",
+  "DCD",
+  "DD",
+  "DS",
+  "AU",
+  "C",
+  "D",
+  "E",
+  "F",
+  "G",
+  "H",
+  "I",
+  "J",
+  "K",
+  "L"
+ ],
+ "defs": {
+  "AUTISM_ONLY": {
+   "all": [
+    {
+     "q": "B1",
+     "in": [
+      "autism"
+     ]
+    },
+    {
+     "not": {
+      "q": "B1",
+      "in": [
+       "cp",
+       "dcd",
+       "developmental_delay",
+       "no_diagnosis",
+       "not_sure",
+       "other",
+       "down_syndrome"
+      ]
+     }
+    }
+   ]
+  },
+  "MOTOR_PROBLEM": {
+   "any": [
+    {
+     "q": "C3",
+     "in": [
+      "cant_sit",
+      "hands_under_10s",
+      "hands_5min",
+      "free_few_min"
+     ]
+    },
+    {
+     "q": "C4",
+     "in": [
+      "doesnt_move",
+      "rolls",
+      "belly_crawl",
+      "bottom_scoot"
+     ]
+    },
+    {
+     "q": "C5",
+     "in": [
+      "cant",
+      "stander",
+      "trunk_support",
+      "bar_two_hands",
+      "one_hand",
+      "alone_under_10s",
+      "alone_10_60s"
+     ]
+    },
+    {
+     "q": "C6",
+     "in": [
+      "doesnt_step",
+      "gait_trainer",
+      "adult_trunk",
+      "walker_two_hands",
+      "one_hand",
+      "alone_few_m"
+     ]
+    },
+    {
+     "q": "E1",
+     "in": [
+      "stiff",
+      "floppy",
+      "changes"
+     ]
+    }
+   ]
+  },
+  "R5_MOTOR": {
+   "any": [
+    {
+     "not": {
+      "ref": "AUTISM_ONLY"
+     }
+    },
+    {
+     "ref": "MOTOR_PROBLEM"
+    }
+   ]
+  },
+  "R6": {
+   "any": [
+    {
+     "fact": "gmfcs",
+     "in": [
+      4,
+      5
+     ]
+    },
+    {
+     "q": "C3",
+     "in": [
+      "cant_sit"
+     ]
+    }
+   ]
+  },
+  "R7": {
+   "fact": "gmfcs",
+   "in": [
+    3
+   ]
+  },
+  "R8": {
+   "fact": "gmfcs",
+   "in": [
+    1,
+    2
+   ]
+  },
+  "WALKS": {
+   "q": "C6",
+   "in": [
+    "walker_two_hands",
+    "one_hand",
+    "alone_few_m",
+    "alone_7m"
+   ]
+  },
+  "STANDS": {
+   "q": "C5",
+   "in": [
+    "trunk_support",
+    "bar_two_hands",
+    "one_hand",
+    "alone_under_10s",
+    "alone_10_60s",
+    "alone_over_1min"
+   ]
+  },
+  "UNDER_4": {
+   "fact": "age",
+   "max": 3
+  },
+  "AGE_5": {
+   "fact": "age",
+   "min": 5
+  },
+  "module_cp": {
+   "q": "B1",
+   "in": [
+    "cp"
+   ]
+  },
+  "ONE_SIDE": {
+   "any": [
+    {
+     "q": "CP2",
+     "in": [
+      "one_side"
+     ]
+    },
+    {
+     "q": "B3",
+     "in": [
+      "right_side",
+      "left_side"
+     ]
+    }
+   ]
+  },
+  "module_dcd": {
+   "q": "B1",
+   "in": [
+    "dcd"
+   ]
+  },
+  "SCHOOL": {
+   "q": "H7",
+   "in": [
+    "regular",
+    "inclusive",
+    "special"
+   ]
+  },
+  "module_delay": {
+   "q": "B1",
+   "in": [
+    "developmental_delay",
+    "no_diagnosis",
+    "not_sure",
+    "other"
+   ]
+  },
+  "module_ds": {
+   "q": "B1",
+   "in": [
+    "down_syndrome"
+   ]
+  },
+  "module_au": {
+   "q": "B1",
+   "in": [
+    "autism"
+   ]
+  },
+  "VISION": {
+   "any": [
+    {
+     "q": "B7",
+     "in": [
+      "vision"
+     ]
+    },
+    {
+     "q": "F5",
+     "in": [
+      "glasses",
+      "eyes_turn",
+      "small_things",
+      "impairment"
+     ]
+    }
+   ]
+  },
+  "MV_OPTIONAL": {
+   "all": [
+    {
+     "q": "G1",
+     "in": [
+      "sentences"
+     ]
+    },
+    {
+     "fact": "cfcs",
+     "in": [
+      1,
+      2
+     ]
+    }
+   ]
+  },
+  "G2_SHOW": {
+   "any": [
+    {
+     "not": {
+      "q": "B1",
+      "answered": true
+     }
+    },
+    {
+     "q": "B1",
+     "in": [
+      "cp",
+      "down_syndrome",
+      "autism"
+     ]
+    },
+    {
+     "all": [
+      {
+       "q": "B1",
+       "in": [
+        "dcd"
+       ]
+      },
+      {
+       "q": "G3",
+       "in": [
+        "sometimes",
+        "rarely",
+        "never"
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "questions": [
+  {
+   "id": "A1",
+   "step": "A",
+   "kind": "text",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "A",
+    "MV"
+   ],
+   "text": {
+    "en": "What is your child's name (or the name you call them)?"
+   },
+   "option_text": null
+  },
+  {
+   "id": "A2",
+   "step": "A",
+   "kind": "date",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "All"
+   ],
+   "text": {
+    "en": "Date of birth"
+   },
+   "option_text": null
+  },
+  {
+   "id": "A3",
+   "step": "A",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "boy",
+    "girl"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "V"
+   ],
+   "text": {
+    "en": "Boy or girl?"
+   },
+   "option_text": {
+    "en": {
+     "boy": "Boy",
+     "girl": "Girl"
+    }
+   }
+  },
+  {
+   "id": "A4",
+   "step": "A",
+   "kind": "number",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": "cm",
+   "range": [
+    40,
+    220
+   ],
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "V",
+    "E",
+    "M",
+    "T"
+   ],
+   "text": {
+    "en": "Height"
+   },
+   "option_text": null
+  },
+  {
+   "id": "A4_kg",
+   "step": "A",
+   "kind": "number",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": "kg",
+   "range": [
+    3,
+    150
+   ],
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "V",
+    "E",
+    "M",
+    "T"
+   ],
+   "text": {
+    "en": "Weight"
+   },
+   "option_text": null
+  },
+  {
+   "id": "A5",
+   "step": "A",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "mother",
+    "father",
+    "grandparent",
+    "other_caregiver"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "A"
+   ],
+   "text": {
+    "en": "Who is filling this in?"
+   },
+   "option_text": {
+    "en": {
+     "mother": "Mother",
+     "father": "Father",
+     "grandparent": "Grandparent",
+     "other_caregiver": "Other caregiver"
+    }
+   }
+  },
+  {
+   "id": "A6",
+   "step": "A",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "uz",
+    "ru",
+    "en"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": true,
+   "feeds": [
+    "All"
+   ],
+   "text": {
+    "en": "App language"
+   },
+   "option_text": {
+    "en": {
+     "uz": "Uzbek",
+     "ru": "Russian",
+     "en": "English"
+    }
+   },
+   "note": "Chosen at sign-up (language first, spec §4); Uzbek Cyrillic is open with the CEO."
+  },
+  {
+   "id": "A7",
+   "step": "A",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "uzbek",
+    "russian",
+    "other"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "MV"
+   ],
+   "text": {
+    "en": "Language you speak with your child at home"
+   },
+   "option_text": {
+    "en": {
+     "uzbek": "Uzbek",
+     "russian": "Russian",
+     "other": "Other"
+    }
+   }
+  },
+  {
+   "id": "A8",
+   "step": "A",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": true,
+   "feeds": [
+    "R"
+   ],
+   "text": {
+    "en": "City / region"
+   },
+   "option_text": null,
+   "note": "Chosen at sign-up from the district list (content/districts.ts)."
+  },
+  {
+   "id": "A9",
+   "step": "A",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "only_me",
+    "two",
+    "three_plus"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "How many adults can help with exercises at home?"
+   },
+   "option_text": {
+    "en": {
+     "only_me": "Only me",
+     "two": "2",
+     "three_plus": "3+"
+    }
+   }
+  },
+  {
+   "id": "A10",
+   "step": "A",
+   "kind": "number",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": [
+    0,
+    15
+   ],
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "G",
+    "A"
+   ],
+   "text": {
+    "en": "Brothers or sisters at home? How many?"
+   },
+   "option_text": null
+  },
+  {
+   "id": "A10_ages",
+   "step": "A",
+   "kind": "text",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "q": "A10",
+    "min": 1
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "G",
+    "A"
+   ],
+   "text": {
+    "en": "Their ages"
+   },
+   "option_text": null
+  },
+  {
+   "id": "B1",
+   "step": "B",
+   "kind": "multi",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "cp",
+    "dcd",
+    "developmental_delay",
+    "down_syndrome",
+    "autism",
+    "other",
+    "no_diagnosis",
+    "not_sure"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "All"
+   ],
+   "text": {
+    "en": "Has a doctor given your child a diagnosis?"
+   },
+   "option_text": {
+    "en": {
+     "cp": "Cerebral palsy",
+     "dcd": "Coordination disorder (DCD)",
+     "developmental_delay": "Developmental delay",
+     "down_syndrome": "Down syndrome",
+     "autism": "Autism",
+     "other": "Other",
+     "no_diagnosis": "No diagnosis yet",
+     "not_sure": "Not sure"
+    }
+   }
+  },
+  {
+   "id": "B3",
+   "step": "B",
+   "kind": "single",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "right_side",
+    "left_side",
+    "mostly_legs",
+    "whole_body",
+    "not_sure"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": "body",
+   "signup": false,
+   "feeds": [
+    "E",
+    "M",
+    "V"
+   ],
+   "text": {
+    "en": "Which parts of the body are most affected?"
+   },
+   "option_text": {
+    "en": {
+     "right_side": "Right side",
+     "left_side": "Left side",
+     "mostly_legs": "Mostly legs",
+     "whole_body": "Whole body",
+     "not_sure": "Not sure"
+    }
+   }
+  },
+  {
+   "id": "B4",
+   "step": "B",
+   "kind": "months",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "A"
+   ],
+   "text": {
+    "en": "Age when diagnosed"
+   },
+   "option_text": null
+  },
+  {
+   "id": "B5",
+   "step": "B",
+   "kind": "single",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "on_time",
+    "32_36",
+    "28_31",
+    "before_28",
+    "dont_know"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "A",
+    "T"
+   ],
+   "text": {
+    "en": "Was your child born early?"
+   },
+   "option_text": {
+    "en": {
+     "on_time": "On time",
+     "32_36": "32–36 weeks",
+     "28_31": "28–31 weeks",
+     "before_28": "Before 28 weeks",
+     "dont_know": "Don't know"
+    }
+   }
+  },
+  {
+   "id": "B6",
+   "step": "B",
+   "kind": "single",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "no",
+    "controlled",
+    "still",
+    "not_sure"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "S",
+    "G"
+   ],
+   "text": {
+    "en": "Does your child have seizures (epilepsy)?"
+   },
+   "option_text": {
+    "en": {
+     "no": "No",
+     "controlled": "Yes, controlled with medicine",
+     "still": "Yes, still happening",
+     "not_sure": "Not sure"
+    }
+   }
+  },
+  {
+   "id": "B6_often",
+   "step": "B",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "daily",
+    "weekly",
+    "monthly",
+    "rarely"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "q": "B6",
+    "in": [
+     "controlled",
+     "still"
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "S"
+   ],
+   "text": {
+    "en": "How often?"
+   },
+   "option_text": {
+    "en": {
+     "daily": "Every day",
+     "weekly": "Every week",
+     "monthly": "Every month",
+     "rarely": "Rarely"
+    }
+   },
+   "note": "R17 follow-up; answer options are the team's draft, to be checked by the physio."
+  },
+  {
+   "id": "B6_triggers",
+   "step": "B",
+   "kind": "multi",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "flashing_light",
+    "tiredness",
+    "fever",
+    "loud_sounds",
+    "not_known"
+   ],
+   "max": null,
+   "exclusive": "not_known",
+   "show": {
+    "q": "B6",
+    "in": [
+     "controlled",
+     "still"
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "S",
+    "G"
+   ],
+   "text": {
+    "en": "What can start a seizure?"
+   },
+   "option_text": {
+    "en": {
+     "flashing_light": "Flashing light",
+     "tiredness": "Tiredness",
+     "fever": "Fever",
+     "loud_sounds": "Loud sounds",
+     "not_known": "Not known"
+    }
+   },
+   "note": "R17 follow-up; options other than flashing light are the team's draft."
+  },
+  {
+   "id": "B7",
+   "step": "B",
+   "kind": "multi",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "vision",
+    "hearing",
+    "intellectual",
+    "hip",
+    "spine",
+    "heart",
+    "breathing",
+    "reflux",
+    "shunt",
+    "none"
+   ],
+   "max": null,
+   "exclusive": "none",
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "S",
+    "G"
+   ],
+   "text": {
+    "en": "Other conditions a doctor confirmed"
+   },
+   "option_text": {
+    "en": {
+     "vision": "Vision problem",
+     "hearing": "Hearing problem",
+     "intellectual": "Intellectual disability",
+     "hip": "Hip problem",
+     "spine": "Curved spine",
+     "heart": "Heart",
+     "breathing": "Breathing",
+     "reflux": "Reflux",
+     "shunt": "Hydrocephalus (shunt)",
+     "none": "None"
+    }
+   }
+  },
+  {
+   "id": "B8",
+   "step": "B",
+   "kind": "single",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "yes",
+    "no"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "S"
+   ],
+   "text": {
+    "en": "Has your child had surgery?"
+   },
+   "option_text": {
+    "en": {
+     "yes": "Yes",
+     "no": "No"
+    }
+   }
+  },
+  {
+   "id": "B8_type",
+   "step": "B",
+   "kind": "multi",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "hip",
+    "tendon",
+    "spine",
+    "shunt",
+    "other"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "q": "B8",
+    "in": [
+     "yes"
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "S"
+   ],
+   "text": {
+    "en": "What kind of surgery?"
+   },
+   "option_text": {
+    "en": {
+     "hip": "Hip",
+     "tendon": "Tendon",
+     "spine": "Spine",
+     "shunt": "Shunt",
+     "other": "Other"
+    }
+   }
+  },
+  {
+   "id": "B8_date",
+   "step": "B",
+   "kind": "date",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "q": "B8",
+    "in": [
+     "yes"
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "S"
+   ],
+   "text": {
+    "en": "When was the last surgery?"
+   },
+   "option_text": null
+  },
+  {
+   "id": "B10",
+   "step": "B",
+   "kind": "longtext",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "A",
+    "S"
+   ],
+   "text": {
+    "en": "Medicines your child takes now"
+   },
+   "option_text": null
+  },
+  {
+   "id": "B10_photo",
+   "step": "B",
+   "kind": "file",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "A",
+    "S"
+   ],
+   "text": {
+    "en": "Or a photo of the prescription"
+   },
+   "option_text": null
+  },
+  {
+   "id": "B11",
+   "step": "B",
+   "kind": "multi",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "gait_trainer",
+    "rollator",
+    "walker",
+    "u_support",
+    "crutches",
+    "quad_cane",
+    "cane",
+    "hip_orthosis",
+    "knee_orthosis",
+    "afo",
+    "insoles",
+    "ortho_shoes",
+    "hand_splint",
+    "stander",
+    "wheelchair",
+    "special_chair",
+    "glasses",
+    "hearing_aid",
+    "none"
+   ],
+   "max": null,
+   "exclusive": "none",
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "V",
+    "M"
+   ],
+   "text": {
+    "en": "Devices your child uses"
+   },
+   "option_text": {
+    "en": {
+     "gait_trainer": "Gait trainer",
+     "rollator": "Rollator or frame",
+     "walker": "Walker",
+     "u_support": "U-shaped support",
+     "crutches": "Crutches",
+     "quad_cane": "Quad cane",
+     "cane": "Cane",
+     "hip_orthosis": "Hip orthosis",
+     "knee_orthosis": "Knee orthosis",
+     "afo": "Ankle-foot orthosis (AFO)",
+     "insoles": "Insoles",
+     "ortho_shoes": "Orthopedic shoes",
+     "hand_splint": "Hand splint",
+     "stander": "Stander",
+     "wheelchair": "Wheelchair",
+     "special_chair": "Special chair",
+     "glasses": "Glasses",
+     "hearing_aid": "Hearing aid",
+     "none": "None"
+    }
+   }
+  },
+  {
+   "id": "B11_details",
+   "step": "B",
+   "kind": "longtext",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "q": "B11",
+      "answered": true
+     },
+     {
+      "not": {
+       "q": "B11",
+       "in": [
+        "none"
+       ]
+      }
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "V",
+    "M"
+   ],
+   "text": {
+    "en": "Sizes, and when each was last fitted"
+   },
+   "option_text": null
+  },
+  {
+   "id": "B13",
+   "step": "B",
+   "kind": "file",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "A"
+   ],
+   "text": {
+    "en": "Upload doctor's documents (conclusion, discharge summary)"
+   },
+   "option_text": null
+  },
+  {
+   "id": "CP1",
+   "step": "CP",
+   "kind": "single",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "spastic",
+    "dyskinetic",
+    "ataxic",
+    "mixed",
+    "dont_know"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "module_cp"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "M",
+    "G"
+   ],
+   "text": {
+    "en": "What type of CP did the doctor say?"
+   },
+   "option_text": {
+    "en": {
+     "spastic": "Stiff muscles (spastic)",
+     "dyskinetic": "Uncontrolled movements (dyskinetic)",
+     "ataxic": "Shaky, poor balance (ataxic)",
+     "mixed": "Mixed",
+     "dont_know": "Don't know"
+    }
+   }
+  },
+  {
+   "id": "CP2",
+   "step": "CP",
+   "kind": "single",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "one_side",
+    "legs",
+    "three_limbs",
+    "whole_body"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "module_cp"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": "body_parts",
+   "signup": false,
+   "feeds": [
+    "E",
+    "M",
+    "V"
+   ],
+   "text": {
+    "en": "Which picture shows where your child's body is affected?"
+   },
+   "option_text": {
+    "en": {
+     "one_side": "One side",
+     "legs": "Mostly legs",
+     "three_limbs": "Three limbs",
+     "whole_body": "Whole body"
+    }
+   }
+  },
+  {
+   "id": "CP3",
+   "step": "CP",
+   "kind": "single",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "yes",
+    "no"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "module_cp"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "S"
+   ],
+   "text": {
+    "en": "Has your child had Botox injections?"
+   },
+   "option_text": {
+    "en": {
+     "yes": "Yes",
+     "no": "No"
+    }
+   }
+  },
+  {
+   "id": "CP3_date",
+   "step": "CP",
+   "kind": "date",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "module_cp"
+     },
+     {
+      "q": "CP3",
+      "in": [
+       "yes"
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "S"
+   ],
+   "text": {
+    "en": "Date of the last injection"
+   },
+   "option_text": null
+  },
+  {
+   "id": "CP3_muscles",
+   "step": "CP",
+   "kind": "multi",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "head_neck",
+    "shoulders",
+    "back",
+    "hips",
+    "left_arm",
+    "right_arm",
+    "left_hand",
+    "right_hand",
+    "left_leg",
+    "right_leg",
+    "left_foot",
+    "right_foot"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "module_cp"
+     },
+     {
+      "q": "CP3",
+      "in": [
+       "yes"
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": "body",
+   "signup": false,
+   "feeds": [
+    "E",
+    "S"
+   ],
+   "text": {
+    "en": "Which muscles?"
+   },
+   "option_text": {
+    "en": {
+     "head_neck": "Head and neck",
+     "shoulders": "Shoulders",
+     "back": "Back",
+     "hips": "Hips",
+     "left_arm": "Left arm",
+     "right_arm": "Right arm",
+     "left_hand": "Left hand",
+     "right_hand": "Right hand",
+     "left_leg": "Left leg",
+     "right_leg": "Right leg",
+     "left_foot": "Left foot",
+     "right_foot": "Right foot"
+    }
+   }
+  },
+  {
+   "id": "CP4",
+   "step": "CP",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "yes",
+    "no",
+    "dont_know"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "module_cp"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "S"
+   ],
+   "text": {
+    "en": "Hip X-ray in the last 12 months?"
+   },
+   "option_text": {
+    "en": {
+     "yes": "Yes",
+     "no": "No",
+     "dont_know": "Don't know"
+    }
+   }
+  },
+  {
+   "id": "CP4_text",
+   "step": "CP",
+   "kind": "text",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "module_cp"
+     },
+     {
+      "q": "CP4",
+      "in": [
+       "yes"
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "S"
+   ],
+   "text": {
+    "en": "What did the doctor say?"
+   },
+   "option_text": null
+  },
+  {
+   "id": "CP5",
+   "step": "CP",
+   "kind": "multi",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "head_neck",
+    "shoulders",
+    "back",
+    "hips",
+    "left_arm",
+    "right_arm",
+    "left_hand",
+    "right_hand",
+    "left_leg",
+    "right_leg",
+    "left_foot",
+    "right_foot"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "module_cp"
+     },
+     {
+      "q": "CP1",
+      "in": [
+       "spastic",
+       "mixed"
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": "body",
+   "signup": false,
+   "feeds": [
+    "M",
+    "E"
+   ],
+   "text": {
+    "en": "Which muscles feel tightest?"
+   },
+   "option_text": {
+    "en": {
+     "head_neck": "Head and neck",
+     "shoulders": "Shoulders",
+     "back": "Back",
+     "hips": "Hips",
+     "left_arm": "Left arm",
+     "right_arm": "Right arm",
+     "left_hand": "Left hand",
+     "right_hand": "Right hand",
+     "left_leg": "Left leg",
+     "right_leg": "Right leg",
+     "left_foot": "Left foot",
+     "right_foot": "Right foot"
+    }
+   }
+  },
+  {
+   "id": "CP6",
+   "step": "CP",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "yes",
+    "sometimes",
+    "no"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "module_cp"
+     },
+     {
+      "q": "CP1",
+      "in": [
+       "spastic",
+       "mixed"
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "M",
+    "A"
+   ],
+   "text": {
+    "en": "Does the tightness get worse when your child is upset, cold or tired?"
+   },
+   "option_text": {
+    "en": {
+     "yes": "Yes",
+     "sometimes": "Sometimes",
+     "no": "No"
+    }
+   }
+  },
+  {
+   "id": "CP7",
+   "step": "CP",
+   "kind": "multi",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "tiptoes",
+    "knees_together",
+    "legs_cross",
+    "no"
+   ],
+   "max": null,
+   "exclusive": "no",
+   "show": {
+    "all": [
+     {
+      "ref": "module_cp"
+     },
+     {
+      "q": "CP1",
+      "in": [
+       "spastic"
+      ]
+     },
+     {
+      "ref": "WALKS"
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "V"
+   ],
+   "text": {
+    "en": "Does your child walk on tiptoes, or with knees touching or crossing?"
+   },
+   "option_text": {
+    "en": {
+     "tiptoes": "Tiptoes",
+     "knees_together": "Knees together",
+     "legs_cross": "Legs cross",
+     "no": "No"
+    }
+   }
+  },
+  {
+   "id": "CP8",
+   "step": "CP",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "yes",
+    "no"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "module_cp"
+     },
+     {
+      "q": "CP1",
+      "in": [
+       "spastic",
+       "mixed"
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "M"
+   ],
+   "text": {
+    "en": "Has your child used night splints or casts?"
+   },
+   "option_text": {
+    "en": {
+     "yes": "Yes",
+     "no": "No"
+    }
+   }
+  },
+  {
+   "id": "CP8_text",
+   "step": "CP",
+   "kind": "text",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "module_cp"
+     },
+     {
+      "q": "CP1",
+      "in": [
+       "spastic",
+       "mixed"
+      ]
+     },
+     {
+      "q": "CP8",
+      "in": [
+       "yes"
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "M"
+   ],
+   "text": {
+    "en": "Which, and when?"
+   },
+   "option_text": null
+  },
+  {
+   "id": "CP9",
+   "step": "CP",
+   "kind": "multi",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "excited",
+    "reaching",
+    "tired",
+    "always"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "module_cp"
+     },
+     {
+      "q": "CP1",
+      "in": [
+       "dyskinetic",
+       "mixed"
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "G",
+    "E"
+   ],
+   "text": {
+    "en": "When do the extra movements get stronger?"
+   },
+   "option_text": {
+    "en": {
+     "excited": "Excited",
+     "reaching": "Trying to reach",
+     "tired": "Tired",
+     "always": "Always"
+    }
+   }
+  },
+  {
+   "id": "CP10",
+   "step": "CP",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "often",
+    "sometimes",
+    "never"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "module_cp"
+     },
+     {
+      "q": "CP1",
+      "in": [
+       "dyskinetic",
+       "mixed"
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "M",
+    "S"
+   ],
+   "text": {
+    "en": "Does your child's body twist or arch backwards?"
+   },
+   "option_text": {
+    "en": {
+     "often": "Often",
+     "sometimes": "Sometimes",
+     "never": "Never"
+    }
+   }
+  },
+  {
+   "id": "CP11",
+   "step": "CP",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "supported_sitting",
+    "side_lying",
+    "held",
+    "nothing"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "module_cp"
+     },
+     {
+      "q": "CP1",
+      "in": [
+       "dyskinetic",
+       "mixed"
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "M"
+   ],
+   "text": {
+    "en": "Which position calms the movements best?"
+   },
+   "option_text": {
+    "en": {
+     "supported_sitting": "Supported sitting",
+     "side_lying": "Lying on side",
+     "held": "Being held",
+     "nothing": "Nothing helps"
+    }
+   }
+  },
+  {
+   "id": "CP12",
+   "step": "CP",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "yes",
+    "a_little",
+    "no"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "module_cp"
+     },
+     {
+      "q": "CP1",
+      "in": [
+       "ataxic",
+       "mixed"
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "G",
+    "E"
+   ],
+   "text": {
+    "en": "Do the hands shake more as they get close to a toy?"
+   },
+   "option_text": {
+    "en": {
+     "yes": "Yes",
+     "a_little": "A little",
+     "no": "No"
+    }
+   }
+  },
+  {
+   "id": "CP13",
+   "step": "CP",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "yes",
+    "no"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "module_cp"
+     },
+     {
+      "q": "CP1",
+      "in": [
+       "ataxic"
+      ]
+     },
+     {
+      "ref": "WALKS"
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "Does your child walk with feet wide apart?"
+   },
+   "option_text": {
+    "en": {
+     "yes": "Yes",
+     "no": "No"
+    }
+   }
+  },
+  {
+   "id": "CP14",
+   "step": "CP",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "yes",
+    "a_little",
+    "no"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "module_cp"
+     },
+     {
+      "q": "CP1",
+      "in": [
+       "ataxic",
+       "mixed"
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "MV"
+   ],
+   "text": {
+    "en": "Is your child's speech slow or unclear?"
+   },
+   "option_text": {
+    "en": {
+     "yes": "Yes",
+     "a_little": "A little",
+     "no": "No"
+    }
+   }
+  },
+  {
+   "id": "CP15",
+   "step": "CP",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "often",
+    "sometimes",
+    "never"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "module_cp"
+     },
+     {
+      "ref": "ONE_SIDE"
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "G"
+   ],
+   "text": {
+    "en": "Does your child forget or ignore the weaker hand?"
+   },
+   "option_text": {
+    "en": {
+     "often": "Often",
+     "sometimes": "Sometimes",
+     "never": "Never"
+    }
+   }
+  },
+  {
+   "id": "CP16",
+   "step": "CP",
+   "kind": "multi",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "nothing_yet",
+    "holds_put",
+    "grasps",
+    "lets_go"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "module_cp"
+     },
+     {
+      "ref": "ONE_SIDE"
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "G"
+   ],
+   "text": {
+    "en": "What can the weaker hand do?"
+   },
+   "option_text": {
+    "en": {
+     "nothing_yet": "Nothing yet",
+     "holds_put": "Holds what I put in it",
+     "grasps": "Grasps alone",
+     "lets_go": "Lets go on purpose"
+    }
+   }
+  },
+  {
+   "id": "CP17",
+   "step": "CP",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "yes",
+    "no"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "module_cp"
+     },
+     {
+      "ref": "ONE_SIDE"
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "Has your child done therapy with a mitt on the stronger hand?"
+   },
+   "option_text": {
+    "en": {
+     "yes": "Yes",
+     "no": "No"
+    }
+   }
+  },
+  {
+   "id": "CP17_text",
+   "step": "CP",
+   "kind": "text",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "module_cp"
+     },
+     {
+      "ref": "ONE_SIDE"
+     },
+     {
+      "q": "CP17",
+      "in": [
+       "yes"
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "When, and for how long?"
+   },
+   "option_text": null
+  },
+  {
+   "id": "CP18",
+   "step": "CP",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "left",
+    "right",
+    "same"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "module_cp"
+     },
+     {
+      "q": "CP2",
+      "in": [
+       "legs",
+       "one_side"
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "V"
+   ],
+   "text": {
+    "en": "Which leg is weaker?"
+   },
+   "option_text": {
+    "en": {
+     "left": "Left",
+     "right": "Right",
+     "same": "About the same"
+    }
+   }
+  },
+  {
+   "id": "CP18_lean",
+   "step": "CP",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "yes",
+    "no"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "module_cp"
+     },
+     {
+      "q": "CP2",
+      "in": [
+       "legs",
+       "one_side"
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "V"
+   ],
+   "text": {
+    "en": "Does your child lean to one side when sitting?"
+   },
+   "option_text": {
+    "en": {
+     "yes": "Yes",
+     "no": "No"
+    }
+   }
+  },
+  {
+   "id": "CP19",
+   "step": "CP",
+   "kind": "multi",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "back",
+    "side",
+    "stomach",
+    "special_seat",
+    "standing_frame",
+    "held"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "module_cp"
+     },
+     {
+      "fact": "gmfcs",
+      "in": [
+       4,
+       5
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "Where does your child spend the day?"
+   },
+   "option_text": {
+    "en": {
+     "back": "Lying on back",
+     "side": "Side",
+     "stomach": "Stomach",
+     "special_seat": "Special seat",
+     "standing_frame": "Standing frame",
+     "held": "Held"
+    }
+   }
+  },
+  {
+   "id": "CP19_time",
+   "step": "CP",
+   "kind": "text",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "module_cp"
+     },
+     {
+      "fact": "gmfcs",
+      "in": [
+       4,
+       5
+      ]
+     },
+     {
+      "q": "CP19",
+      "answered": true
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "About how long in each?"
+   },
+   "option_text": null
+  },
+  {
+   "id": "CP20",
+   "step": "CP",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "often",
+    "sometimes",
+    "never"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "module_cp"
+     },
+     {
+      "fact": "gmfcs",
+      "in": [
+       4,
+       5
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "S"
+   ],
+   "text": {
+    "en": "Does your child's head drop forward when tired?"
+   },
+   "option_text": {
+    "en": {
+     "often": "Often",
+     "sometimes": "Sometimes",
+     "never": "Never"
+    }
+   }
+  },
+  {
+   "id": "CP21",
+   "step": "CP",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "yes",
+    "no"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "module_cp"
+     },
+     {
+      "fact": "gmfcs",
+      "in": [
+       4,
+       5
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "R"
+   ],
+   "text": {
+    "en": "Does your child have a special seat or sleep support at home?"
+   },
+   "option_text": {
+    "en": {
+     "yes": "Yes",
+     "no": "No"
+    }
+   }
+  },
+  {
+   "id": "CP21_photo",
+   "step": "CP",
+   "kind": "file",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "module_cp"
+     },
+     {
+      "fact": "gmfcs",
+      "in": [
+       4,
+       5
+      ]
+     },
+     {
+      "q": "CP21",
+      "in": [
+       "yes"
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "R"
+   ],
+   "text": {
+    "en": "A photo of it"
+   },
+   "option_text": null
+  },
+  {
+   "id": "DCD1",
+   "step": "DCD",
+   "kind": "single",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "much_worse",
+    "bit_worse",
+    "same"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "module_dcd"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "G"
+   ],
+   "text": {
+    "en": "Compared to children the same age, how does your child catch a ball?"
+   },
+   "option_text": {
+    "en": {
+     "much_worse": "Much worse",
+     "bit_worse": "A bit worse",
+     "same": "About the same"
+    }
+   },
+   "note": "Wording compares children; the review suggests softer wording."
+  },
+  {
+   "id": "DCD2",
+   "step": "DCD",
+   "kind": "single",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "much_worse",
+    "bit_worse",
+    "same"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "module_dcd"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "Throwing and kicking a ball"
+   },
+   "option_text": {
+    "en": {
+     "much_worse": "Much worse",
+     "bit_worse": "A bit worse",
+     "same": "About the same"
+    }
+   }
+  },
+  {
+   "id": "DCD3",
+   "step": "DCD",
+   "kind": "single",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "much_worse",
+    "bit_worse",
+    "same"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "module_dcd"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "Running, jumping, riding a bike or scooter"
+   },
+   "option_text": {
+    "en": {
+     "much_worse": "Much worse",
+     "bit_worse": "A bit worse",
+     "same": "About the same"
+    }
+   }
+  },
+  {
+   "id": "DCD4",
+   "step": "DCD",
+   "kind": "single",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "much_worse",
+    "bit_worse",
+    "same"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "module_dcd"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "G"
+   ],
+   "text": {
+    "en": "Using scissors, spoon and fork"
+   },
+   "option_text": {
+    "en": {
+     "much_worse": "Much worse",
+     "bit_worse": "A bit worse",
+     "same": "About the same"
+    }
+   }
+  },
+  {
+   "id": "DCD5",
+   "step": "DCD",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "often",
+    "sometimes",
+    "rarely"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "module_dcd"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "S"
+   ],
+   "text": {
+    "en": "Does your child bump into things or drop things often?"
+   },
+   "option_text": {
+    "en": {
+     "often": "Often",
+     "sometimes": "Sometimes",
+     "rarely": "Rarely"
+    }
+   }
+  },
+  {
+   "id": "DCD6",
+   "step": "DCD",
+   "kind": "single",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "much_worse",
+    "bit_worse",
+    "same"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "module_dcd"
+     },
+     {
+      "ref": "AGE_5"
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "G"
+   ],
+   "text": {
+    "en": "Handwriting: speed and neatness"
+   },
+   "option_text": {
+    "en": {
+     "much_worse": "Much worse",
+     "bit_worse": "A bit worse",
+     "same": "About the same"
+    }
+   }
+  },
+  {
+   "id": "DCD7",
+   "step": "DCD",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "yes",
+    "no"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "module_dcd"
+     },
+     {
+      "ref": "AGE_5"
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "G"
+   ],
+   "text": {
+    "en": "Does your child get tired fast when writing or drawing?"
+   },
+   "option_text": {
+    "en": {
+     "yes": "Yes",
+     "no": "No"
+    }
+   }
+  },
+  {
+   "id": "DCD8",
+   "step": "DCD",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "alone",
+    "with_help",
+    "cannot"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "module_dcd"
+     },
+     {
+      "ref": "AGE_5"
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "Buttons and shoelaces"
+   },
+   "option_text": {
+    "en": {
+     "alone": "Alone",
+     "with_help": "With help",
+     "cannot": "Cannot"
+    }
+   }
+  },
+  {
+   "id": "DCD9",
+   "step": "DCD",
+   "kind": "multi",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "slow_copying",
+    "messy_work",
+    "pe",
+    "none"
+   ],
+   "max": null,
+   "exclusive": "none",
+   "show": {
+    "all": [
+     {
+      "ref": "module_dcd"
+     },
+     {
+      "ref": "SCHOOL"
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "A",
+    "E"
+   ],
+   "text": {
+    "en": "Has a teacher mentioned slow copying, messy work or problems in PE class?"
+   },
+   "option_text": {
+    "en": {
+     "slow_copying": "Slow copying",
+     "messy_work": "Messy work",
+     "pe": "Problems in PE class",
+     "none": "No"
+    }
+   }
+  },
+  {
+   "id": "DCD9_text",
+   "step": "DCD",
+   "kind": "text",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "module_dcd"
+     },
+     {
+      "ref": "SCHOOL"
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "A",
+    "E"
+   ],
+   "text": {
+    "en": "Anything else the teacher said"
+   },
+   "option_text": null
+  },
+  {
+   "id": "DCD10",
+   "step": "DCD",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "often",
+    "sometimes",
+    "never"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "module_dcd"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "A",
+    "E"
+   ],
+   "text": {
+    "en": "Does your child avoid games or sports because of clumsiness?"
+   },
+   "option_text": {
+    "en": {
+     "often": "Often",
+     "sometimes": "Sometimes",
+     "never": "Never"
+    }
+   }
+  },
+  {
+   "id": "DCD11",
+   "step": "DCD",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "confident",
+    "neutral",
+    "cant"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "module_dcd"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "A",
+    "G"
+   ],
+   "text": {
+    "en": "How does your child talk about their own abilities?"
+   },
+   "option_text": {
+    "en": {
+     "confident": "Confident",
+     "neutral": "Neutral",
+     "cant": "Often says \"I can't\""
+    }
+   }
+  },
+  {
+   "id": "DCD12",
+   "step": "DCD",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "yes",
+    "no",
+    "not_sure"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "module_dcd"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "G"
+   ],
+   "text": {
+    "en": "Has a doctor also mentioned attention problems?"
+   },
+   "option_text": {
+    "en": {
+     "yes": "Yes",
+     "no": "No",
+     "not_sure": "Not sure"
+    }
+   }
+  },
+  {
+   "id": "DD1",
+   "step": "DD",
+   "kind": "multi",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "holds_head",
+    "rolls",
+    "sits",
+    "crawls",
+    "stands",
+    "walks",
+    "first_words",
+    "points",
+    "follows",
+    "none"
+   ],
+   "max": null,
+   "exclusive": "none",
+   "show": {
+    "ref": "module_delay"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": "milestones",
+   "signup": false,
+   "feeds": [
+    "E",
+    "G"
+   ],
+   "text": {
+    "en": "Which of these can your child do now?"
+   },
+   "option_text": {
+    "en": {
+     "holds_head": "Holds the head up",
+     "rolls": "Rolls over",
+     "sits": "Sits without help",
+     "crawls": "Crawls",
+     "stands": "Stands holding on",
+     "walks": "Walks",
+     "first_words": "Says first words",
+     "points": "Points",
+     "follows": "Follows a simple instruction",
+     "none": "None of these yet"
+    }
+   },
+   "note": "TEMPORARY list: the questionnaire asks for a picture checklist per age band; the physio supplies it."
+  },
+  {
+   "id": "DD2",
+   "step": "DD",
+   "kind": "months",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "module_delay"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "A",
+    "T"
+   ],
+   "text": {
+    "en": "At what age did your child hold the head up?"
+   },
+   "option_text": null
+  },
+  {
+   "id": "DD2_sit",
+   "step": "DD",
+   "kind": "months",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "module_delay"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "A",
+    "T"
+   ],
+   "text": {
+    "en": "At what age did your child sit?"
+   },
+   "option_text": null
+  },
+  {
+   "id": "DD2_walk",
+   "step": "DD",
+   "kind": "months",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "module_delay"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "A",
+    "T"
+   ],
+   "text": {
+    "en": "At what age did your child walk?"
+   },
+   "option_text": null
+  },
+  {
+   "id": "DD2_word",
+   "step": "DD",
+   "kind": "months",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "module_delay"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "A",
+    "T"
+   ],
+   "text": {
+    "en": "At what age did your child say a first word?"
+   },
+   "option_text": null
+  },
+  {
+   "id": "DD3",
+   "step": "DD",
+   "kind": "single",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "yes",
+    "no"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "module_delay"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "R",
+    "A"
+   ],
+   "text": {
+    "en": "Has a doctor or therapist examined your child's development?"
+   },
+   "option_text": {
+    "en": {
+     "yes": "Yes",
+     "no": "No"
+    }
+   }
+  },
+  {
+   "id": "DD3_files",
+   "step": "DD",
+   "kind": "file",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "module_delay"
+     },
+     {
+      "q": "DD3",
+      "in": [
+       "yes"
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "R",
+    "A"
+   ],
+   "text": {
+    "en": "Upload the report"
+   },
+   "option_text": null
+  },
+  {
+   "id": "DD4",
+   "step": "DD",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "yes",
+    "no",
+    "not_sure"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "module_delay"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "S",
+    "R"
+   ],
+   "text": {
+    "en": "Does one side of the body seem weaker or used less?"
+   },
+   "option_text": {
+    "en": {
+     "yes": "Yes",
+     "no": "No",
+     "not_sure": "Not sure"
+    }
+   }
+  },
+  {
+   "id": "DD5",
+   "step": "DD",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "usually",
+    "sometimes",
+    "rarely"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "module_delay"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "R",
+    "MV"
+   ],
+   "text": {
+    "en": "Does your child respond to their name and look at you when you talk?"
+   },
+   "option_text": {
+    "en": {
+     "usually": "Usually",
+     "sometimes": "Sometimes",
+     "rarely": "Rarely"
+    }
+   }
+  },
+  {
+   "id": "DD6",
+   "step": "DD",
+   "kind": "text",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "q": "B1",
+    "in": [
+     "other"
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "A"
+   ],
+   "text": {
+    "en": "What did the doctor call it?"
+   },
+   "option_text": null
+  },
+  {
+   "id": "DS1",
+   "step": "DS",
+   "kind": "single",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "normal",
+    "problem",
+    "not_checked",
+    "dont_know"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "module_ds"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "S"
+   ],
+   "text": {
+    "en": "Has a doctor checked your child's neck bones?"
+   },
+   "option_text": {
+    "en": {
+     "normal": "Yes, normal",
+     "problem": "Yes, problem found",
+     "not_checked": "Not checked",
+     "dont_know": "Don't know"
+    }
+   }
+  },
+  {
+   "id": "DS2",
+   "step": "DS",
+   "kind": "single",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "yes",
+    "no"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "module_ds"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "S",
+    "E"
+   ],
+   "text": {
+    "en": "Does your child have a heart condition or had heart surgery?"
+   },
+   "option_text": {
+    "en": {
+     "yes": "Yes",
+     "no": "No"
+    }
+   }
+  },
+  {
+   "id": "DS2_text",
+   "step": "DS",
+   "kind": "text",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "module_ds"
+     },
+     {
+      "q": "DS2",
+      "in": [
+       "yes"
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "S",
+    "E"
+   ],
+   "text": {
+    "en": "What, and when?"
+   },
+   "option_text": null
+  },
+  {
+   "id": "DS3",
+   "step": "DS",
+   "kind": "single",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "a_lot",
+    "a_little",
+    "no"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "module_ds"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "M"
+   ],
+   "text": {
+    "en": "Do your child's joints bend further than usual?"
+   },
+   "option_text": {
+    "en": {
+     "a_lot": "A lot",
+     "a_little": "A little",
+     "no": "No"
+    }
+   }
+  },
+  {
+   "id": "DS4",
+   "step": "DS",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "yes",
+    "no"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "module_ds"
+     },
+     {
+      "ref": "STANDS"
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "Do the feet look flat or turn outward when standing?"
+   },
+   "option_text": {
+    "en": {
+     "yes": "Yes",
+     "no": "No"
+    }
+   }
+  },
+  {
+   "id": "DS5",
+   "step": "DS",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "often",
+    "sometimes",
+    "rarely"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "module_ds"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "G"
+   ],
+   "text": {
+    "en": "Does your child get tired or sleepy quickly during play?"
+   },
+   "option_text": {
+    "en": {
+     "often": "Often",
+     "sometimes": "Sometimes",
+     "rarely": "Rarely"
+    }
+   }
+  },
+  {
+   "id": "DS6",
+   "step": "DS",
+   "kind": "multi",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "chewing",
+    "drooling",
+    "neither"
+   ],
+   "max": null,
+   "exclusive": "neither",
+   "show": {
+    "ref": "module_ds"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "MV"
+   ],
+   "text": {
+    "en": "Does your child have trouble chewing, or drool a lot?"
+   },
+   "option_text": {
+    "en": {
+     "chewing": "Trouble chewing",
+     "drooling": "Drools a lot",
+     "neither": "Neither"
+    }
+   }
+  },
+  {
+   "id": "DS7",
+   "step": "DS",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "yes",
+    "no"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "module_ds"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "MV"
+   ],
+   "text": {
+    "en": "Does your child use signs or gestures to communicate?"
+   },
+   "option_text": {
+    "en": {
+     "yes": "Yes",
+     "no": "No"
+    }
+   }
+  },
+  {
+   "id": "DS7_which",
+   "step": "DS",
+   "kind": "text",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "module_ds"
+     },
+     {
+      "q": "DS7",
+      "in": [
+       "yes"
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "MV"
+   ],
+   "text": {
+    "en": "Which ones?"
+   },
+   "option_text": null
+  },
+  {
+   "id": "AU1",
+   "step": "AU",
+   "kind": "multi",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "loud",
+    "light",
+    "crowds",
+    "textures",
+    "touch",
+    "none"
+   ],
+   "max": null,
+   "exclusive": "none",
+   "show": {
+    "ref": "module_au"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "G",
+    "M"
+   ],
+   "text": {
+    "en": "Which of these upset your child?"
+   },
+   "option_text": {
+    "en": {
+     "loud": "Loud sounds",
+     "light": "Bright or flashing light",
+     "crowds": "Crowds",
+     "textures": "Certain textures",
+     "touch": "Being touched",
+     "none": "None"
+    }
+   }
+  },
+  {
+   "id": "AU2",
+   "step": "AU",
+   "kind": "longtext",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "module_au"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "A",
+    "MV"
+   ],
+   "text": {
+    "en": "What calms your child?"
+   },
+   "option_text": null
+  },
+  {
+   "id": "AU3",
+   "step": "AU",
+   "kind": "single",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "photos",
+    "drawings",
+    "cartoons",
+    "not_sure"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "module_au"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "MV",
+    "G"
+   ],
+   "text": {
+    "en": "Which pictures does your child understand best?"
+   },
+   "option_text": {
+    "en": {
+     "photos": "Real photos",
+     "drawings": "Simple drawings",
+     "cartoons": "Cartoons",
+     "not_sure": "Not sure"
+    }
+   }
+  },
+  {
+   "id": "AU4",
+   "step": "AU",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "yes",
+    "sometimes",
+    "no"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "module_au"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "MV"
+   ],
+   "text": {
+    "en": "Does your child understand that a picture stands for a real thing?"
+   },
+   "option_text": {
+    "en": {
+     "yes": "Yes",
+     "sometimes": "Sometimes",
+     "no": "No"
+    }
+   }
+  },
+  {
+   "id": "AU5",
+   "step": "AU",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "often",
+    "sometimes",
+    "no"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "module_au"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "G",
+    "E"
+   ],
+   "text": {
+    "en": "Repeated movements like hand flapping or rocking?"
+   },
+   "option_text": {
+    "en": {
+     "often": "Often",
+     "sometimes": "Sometimes",
+     "no": "No"
+    }
+   }
+  },
+  {
+   "id": "AU6",
+   "step": "AU",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "fine",
+    "upset_copes",
+    "very_upset"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "module_au"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "A",
+    "E"
+   ],
+   "text": {
+    "en": "How does your child react when the daily routine changes?"
+   },
+   "option_text": {
+    "en": {
+     "fine": "Fine",
+     "upset_copes": "Upset but copes",
+     "very_upset": "Very upset"
+    }
+   }
+  },
+  {
+   "id": "AU7",
+   "step": "AU",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "daily",
+    "weekly",
+    "rarely",
+    "never"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "module_au"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "A"
+   ],
+   "text": {
+    "en": "How often are there meltdowns?"
+   },
+   "option_text": {
+    "en": {
+     "daily": "Every day",
+     "weekly": "Every week",
+     "rarely": "Rarely",
+     "never": "Never"
+    }
+   }
+  },
+  {
+   "id": "AU7_text",
+   "step": "AU",
+   "kind": "text",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "module_au"
+     },
+     {
+      "q": "AU7",
+      "in": [
+       "daily",
+       "weekly",
+       "rarely"
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "A"
+   ],
+   "text": {
+    "en": "What usually starts them?"
+   },
+   "option_text": null
+  },
+  {
+   "id": "AU8",
+   "step": "AU",
+   "kind": "multi",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "head_neck",
+    "shoulders",
+    "back",
+    "hips",
+    "left_arm",
+    "right_arm",
+    "left_hand",
+    "right_hand",
+    "left_leg",
+    "right_leg",
+    "left_foot",
+    "right_foot"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "module_au"
+     },
+     {
+      "q": "AU1",
+      "in": [
+       "touch"
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": "body",
+   "signup": false,
+   "feeds": [
+    "M"
+   ],
+   "text": {
+    "en": "Where on the body does your child accept touch or massage?"
+   },
+   "option_text": {
+    "en": {
+     "head_neck": "Head and neck",
+     "shoulders": "Shoulders",
+     "back": "Back",
+     "hips": "Hips",
+     "left_arm": "Left arm",
+     "right_arm": "Right arm",
+     "left_hand": "Left hand",
+     "right_hand": "Right hand",
+     "left_leg": "Left leg",
+     "right_leg": "Right leg",
+     "left_foot": "Left foot",
+     "right_foot": "Right foot"
+    }
+   }
+  },
+  {
+   "id": "C14",
+   "step": "C",
+   "kind": "single",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "cant_lift",
+    "lifts_briefly",
+    "forearms",
+    "straight_arms",
+    "reaches_one_arm"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "any": [
+       {
+        "not": {
+         "q": "B1",
+         "answered": true
+        }
+       },
+       {
+        "q": "B1",
+        "in": [
+         "cp",
+         "developmental_delay",
+         "no_diagnosis",
+         "not_sure",
+         "other",
+         "down_syndrome",
+         "autism"
+        ]
+       }
+      ]
+     },
+     {
+      "ref": "R5_MOTOR"
+     },
+     {
+      "not": {
+       "ref": "R8"
+      }
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "V"
+   ],
+   "text": {
+    "en": "Lying on the tummy, what can your child do?"
+   },
+   "option_text": {
+    "en": {
+     "cant_lift": "Can't lift head",
+     "lifts_briefly": "Lifts head briefly",
+     "forearms": "Leans on forearms, chest up",
+     "straight_arms": "Leans on straight arms",
+     "reaches_one_arm": "Reaches for a toy, leaning on one arm"
+    }
+   }
+  },
+  {
+   "id": "C2",
+   "step": "C",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "no",
+    "back_to_side",
+    "back_to_tummy",
+    "tummy_to_back",
+    "both_ways"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "any": [
+       {
+        "not": {
+         "q": "B1",
+         "answered": true
+        }
+       },
+       {
+        "q": "B1",
+        "in": [
+         "cp",
+         "developmental_delay",
+         "no_diagnosis",
+         "not_sure",
+         "other",
+         "down_syndrome",
+         "autism"
+        ]
+       }
+      ]
+     },
+     {
+      "ref": "R5_MOTOR"
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "Rolling"
+   },
+   "option_text": {
+    "en": {
+     "no": "Doesn't roll",
+     "back_to_side": "Back to side",
+     "back_to_tummy": "Back to tummy",
+     "tummy_to_back": "Tummy to back",
+     "both_ways": "Both ways, both sides"
+    }
+   }
+  },
+  {
+   "id": "C2_side",
+   "step": "C",
+   "kind": "single",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "right",
+    "left",
+    "same"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "any": [
+       {
+        "not": {
+         "q": "B1",
+         "answered": true
+        }
+       },
+       {
+        "q": "B1",
+        "in": [
+         "cp",
+         "developmental_delay",
+         "no_diagnosis",
+         "not_sure",
+         "other",
+         "down_syndrome",
+         "autism"
+        ]
+       }
+      ]
+     },
+     {
+      "ref": "R5_MOTOR"
+     },
+     {
+      "q": "C2",
+      "answered": true
+     },
+     {
+      "not": {
+       "q": "C2",
+       "in": [
+        "no"
+       ]
+      }
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "Is one side harder?"
+   },
+   "option_text": {
+    "en": {
+     "right": "Right",
+     "left": "Left",
+     "same": "Same"
+    }
+   }
+  },
+  {
+   "id": "C1",
+   "step": "C",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "no",
+    "briefly",
+    "steady"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "any": [
+       {
+        "not": {
+         "q": "B1",
+         "answered": true
+        }
+       },
+       {
+        "q": "B1",
+        "in": [
+         "cp",
+         "developmental_delay",
+         "no_diagnosis",
+         "not_sure",
+         "other",
+         "down_syndrome",
+         "autism"
+        ]
+       }
+      ]
+     },
+     {
+      "ref": "R5_MOTOR"
+     },
+     {
+      "not": {
+       "ref": "R8"
+      }
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "V",
+    "S"
+   ],
+   "text": {
+    "en": "When you hold your child upright, can they hold their head up?"
+   },
+   "option_text": {
+    "en": {
+     "no": "No",
+     "briefly": "Only briefly",
+     "steady": "Yes, steady"
+    }
+   }
+  },
+  {
+   "id": "C13",
+   "step": "C",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "shoulders",
+    "armpits",
+    "below_shoulder_blades",
+    "lower_ribs",
+    "waist",
+    "hips",
+    "no_support"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "any": [
+       {
+        "not": {
+         "q": "B1",
+         "answered": true
+        }
+       },
+       {
+        "q": "B1",
+        "in": [
+         "cp",
+         "developmental_delay",
+         "no_diagnosis",
+         "not_sure",
+         "other",
+         "down_syndrome",
+         "autism"
+        ]
+       }
+      ]
+     },
+     {
+      "ref": "R5_MOTOR"
+     },
+     {
+      "not": {
+       "ref": "R8"
+      }
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": "satco",
+   "signup": false,
+   "feeds": [
+    "E",
+    "V"
+   ],
+   "text": {
+    "en": "Where do you need to hold your child so they sit up straight?"
+   },
+   "option_text": {
+    "en": {
+     "shoulders": "Shoulders",
+     "armpits": "Armpits",
+     "below_shoulder_blades": "Below shoulder blades",
+     "lower_ribs": "Lower ribs",
+     "waist": "Waist",
+     "hips": "Hips",
+     "no_support": "No support needed"
+    }
+   }
+  },
+  {
+   "id": "C3",
+   "step": "C",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "cant_sit",
+    "hands_under_10s",
+    "hands_5min",
+    "free_few_min",
+    "free_30min"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "any": [
+     {
+      "not": {
+       "q": "B1",
+       "answered": true
+      }
+     },
+     {
+      "q": "B1",
+      "in": [
+       "cp",
+       "developmental_delay",
+       "no_diagnosis",
+       "not_sure",
+       "other",
+       "down_syndrome",
+       "autism"
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "V"
+   ],
+   "text": {
+    "en": "How long can your child sit without your hands, on the floor or a stool?"
+   },
+   "option_text": {
+    "en": {
+     "cant_sit": "Can't sit",
+     "hands_under_10s": "Leaning on hands, under 10 sec",
+     "hands_5min": "Leaning on hands, up to 5 min",
+     "free_few_min": "Hands free, a few minutes",
+     "free_30min": "Hands free, 30 min or more"
+    }
+   }
+  },
+  {
+   "id": "C15",
+   "step": "C",
+   "kind": "multi",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "lean_forward",
+    "reach_left",
+    "reach_right",
+    "reach_above",
+    "bend_floor",
+    "turn"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "any": [
+       {
+        "not": {
+         "q": "B1",
+         "answered": true
+        }
+       },
+       {
+        "q": "B1",
+        "in": [
+         "cp",
+         "developmental_delay",
+         "no_diagnosis",
+         "not_sure",
+         "other",
+         "down_syndrome",
+         "autism"
+        ]
+       }
+      ]
+     },
+     {
+      "ref": "R5_MOTOR"
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "While sitting, can your child..."
+   },
+   "option_text": {
+    "en": {
+     "lean_forward": "Lean forward and come back",
+     "reach_left": "Reach a toy at the left side",
+     "reach_right": "Reach at the right side",
+     "reach_above": "Reach above the head",
+     "bend_floor": "Bend to the floor and come back",
+     "turn": "Turn without falling"
+    }
+   }
+  },
+  {
+   "id": "C16",
+   "step": "C",
+   "kind": "single",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "cant",
+    "with_help",
+    "push_up",
+    "easily"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "any": [
+       {
+        "not": {
+         "q": "B1",
+         "answered": true
+        }
+       },
+       {
+        "q": "B1",
+        "in": [
+         "cp",
+         "developmental_delay",
+         "no_diagnosis",
+         "not_sure",
+         "other",
+         "down_syndrome",
+         "autism"
+        ]
+       }
+      ]
+     },
+     {
+      "ref": "R5_MOTOR"
+     },
+     {
+      "not": {
+       "ref": "R8"
+      }
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "From lying down to sitting"
+   },
+   "option_text": {
+    "en": {
+     "cant": "Can't",
+     "with_help": "With my help",
+     "push_up": "Pushing up on hands, alone",
+     "easily": "Easily, without hands"
+    }
+   }
+  },
+  {
+   "id": "C4",
+   "step": "C",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "doesnt_move",
+    "rolls",
+    "belly_crawl",
+    "bottom_scoot",
+    "crawls_2m",
+    "crawls_stairs"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "any": [
+     {
+      "not": {
+       "q": "B1",
+       "answered": true
+      }
+     },
+     {
+      "q": "B1",
+      "in": [
+       "cp",
+       "developmental_delay",
+       "no_diagnosis",
+       "not_sure",
+       "other",
+       "down_syndrome",
+       "autism"
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "How does your child move on the floor?"
+   },
+   "option_text": {
+    "en": {
+     "doesnt_move": "Doesn't move",
+     "rolls": "Rolls",
+     "belly_crawl": "Belly crawl",
+     "bottom_scoot": "Bottom scoot",
+     "crawls_2m": "Crawls on hands and knees, 2 m or more",
+     "crawls_stairs": "Crawls up stairs"
+    }
+   }
+  },
+  {
+   "id": "C17",
+   "step": "C",
+   "kind": "single",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "cant",
+    "hands_knees_10s",
+    "kneel_holding",
+    "kneel_free",
+    "half_kneel_stand"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "any": [
+       {
+        "not": {
+         "q": "B1",
+         "answered": true
+        }
+       },
+       {
+        "q": "B1",
+        "in": [
+         "cp",
+         "developmental_delay",
+         "no_diagnosis",
+         "not_sure",
+         "other",
+         "down_syndrome",
+         "autism"
+        ]
+       }
+      ]
+     },
+     {
+      "ref": "R5_MOTOR"
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "Kneeling"
+   },
+   "option_text": {
+    "en": {
+     "cant": "Can't",
+     "hands_knees_10s": "On hands and knees, 10 sec",
+     "kneel_holding": "Upright kneeling, holding on",
+     "kneel_free": "Upright kneeling, hands free",
+     "half_kneel_stand": "One knee down, stands up from there"
+    }
+   }
+  },
+  {
+   "id": "C18",
+   "step": "C",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "cant",
+    "full_help",
+    "pulls",
+    "alone_hands",
+    "alone_free"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "any": [
+       {
+        "not": {
+         "q": "B1",
+         "answered": true
+        }
+       },
+       {
+        "q": "B1",
+        "in": [
+         "cp",
+         "developmental_delay",
+         "no_diagnosis",
+         "not_sure",
+         "other",
+         "down_syndrome",
+         "autism"
+        ]
+       }
+      ]
+     },
+     {
+      "ref": "R5_MOTOR"
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "Getting up from a chair or stool"
+   },
+   "option_text": {
+    "en": {
+     "cant": "Can't",
+     "full_help": "With my full help",
+     "pulls": "Pulling on furniture or a bar",
+     "alone_hands": "Alone, hands on knees or chair",
+     "alone_free": "Alone, hands free"
+    }
+   }
+  },
+  {
+   "id": "C19",
+   "step": "C",
+   "kind": "single",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "drops",
+    "with_help",
+    "holding",
+    "squats",
+    "picks_toy"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "R5_MOTOR"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "Sitting down from standing, and squatting"
+   },
+   "option_text": {
+    "en": {
+     "drops": "Drops or falls",
+     "with_help": "With my help",
+     "holding": "Holding furniture, controlled",
+     "squats": "Squats and stands up alone",
+     "picks_toy": "Picks a toy off the floor and stands, hands free"
+    }
+   }
+  },
+  {
+   "id": "C5",
+   "step": "C",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "cant",
+    "stander",
+    "trunk_support",
+    "bar_two_hands",
+    "one_hand",
+    "alone_under_10s",
+    "alone_10_60s",
+    "alone_over_1min"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "any": [
+     {
+      "not": {
+       "q": "B1",
+       "answered": true
+      }
+     },
+     {
+      "q": "B1",
+      "in": [
+       "cp",
+       "developmental_delay",
+       "no_diagnosis",
+       "not_sure",
+       "other",
+       "down_syndrome",
+       "autism"
+      ]
+     }
+    ]
+   },
+   "option_show": {
+    "stander": {
+     "not": {
+      "ref": "R8"
+     }
+    }
+   },
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "V"
+   ],
+   "text": {
+    "en": "Standing"
+   },
+   "option_text": {
+    "en": {
+     "cant": "Can't",
+     "stander": "Only in a stander",
+     "trunk_support": "With trunk support",
+     "bar_two_hands": "Holding a bar with both hands",
+     "one_hand": "Holding with one hand",
+     "alone_under_10s": "Alone, under 10 sec",
+     "alone_10_60s": "Alone, 10–60 sec",
+     "alone_over_1min": "Alone, over 1 min"
+    }
+   }
+  },
+  {
+   "id": "C5_minutes",
+   "step": "C",
+   "kind": "number",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "any": [
+       {
+        "not": {
+         "q": "B1",
+         "answered": true
+        }
+       },
+       {
+        "q": "B1",
+        "in": [
+         "cp",
+         "developmental_delay",
+         "no_diagnosis",
+         "not_sure",
+         "other",
+         "down_syndrome",
+         "autism"
+        ]
+       }
+      ]
+     },
+     {
+      "q": "C5",
+      "in": [
+       "stander"
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": "min",
+   "range": [
+    0,
+    600
+   ],
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "V"
+   ],
+   "text": {
+    "en": "Minutes a day in the stander"
+   },
+   "option_text": null
+  },
+  {
+   "id": "C20",
+   "step": "C",
+   "kind": "multi",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "shift_weight",
+    "turn_upper",
+    "reach_above",
+    "bend_floor",
+    "one_leg",
+    "kick"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "R5_MOTOR"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "While standing, can your child..."
+   },
+   "option_text": {
+    "en": {
+     "shift_weight": "Shift weight foot to foot",
+     "turn_upper": "Turn the upper body",
+     "reach_above": "Reach above the head",
+     "bend_floor": "Bend to the floor",
+     "one_leg": "Stand on one leg",
+     "kick": "Kick a ball"
+    }
+   }
+  },
+  {
+   "id": "C20_leg",
+   "step": "C",
+   "kind": "single",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "left",
+    "right",
+    "both"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "R5_MOTOR"
+     },
+     {
+      "q": "C20",
+      "in": [
+       "one_leg"
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "On which leg?"
+   },
+   "option_text": {
+    "en": {
+     "left": "Left",
+     "right": "Right",
+     "both": "Both"
+    }
+   }
+  },
+  {
+   "id": "C20_foot",
+   "step": "C",
+   "kind": "single",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "left",
+    "right",
+    "both"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "R5_MOTOR"
+     },
+     {
+      "q": "C20",
+      "in": [
+       "kick"
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "With which foot?"
+   },
+   "option_text": {
+    "en": {
+     "left": "Left",
+     "right": "Right",
+     "both": "Both"
+    }
+   }
+  },
+  {
+   "id": "C6",
+   "step": "C",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "doesnt_step",
+    "gait_trainer",
+    "adult_trunk",
+    "walker_two_hands",
+    "one_hand",
+    "alone_few_m",
+    "alone_7m"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "V"
+   ],
+   "text": {
+    "en": "How does your child walk?"
+   },
+   "option_text": {
+    "en": {
+     "doesnt_step": "Doesn't step",
+     "gait_trainer": "Steps only in a gait trainer",
+     "adult_trunk": "A few steps with an adult holding the trunk",
+     "walker_two_hands": "With a walker or both hands held",
+     "one_hand": "Holding one hand",
+     "alone_few_m": "Alone, a few meters",
+     "alone_7m": "Alone, 7 m or more"
+    }
+   }
+  },
+  {
+   "id": "C7",
+   "step": "C",
+   "kind": "single",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "under_7m",
+    "7_100m",
+    "100_300m",
+    "over_300m"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "R5_MOTOR"
+     },
+     {
+      "not": {
+       "ref": "R6"
+      }
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "R"
+   ],
+   "text": {
+    "en": "Longest distance your child walks"
+   },
+   "option_text": {
+    "en": {
+     "under_7m": "Under 7 m",
+     "7_100m": "7–100 m",
+     "100_300m": "100–300 m",
+     "over_300m": "Over 300 m"
+    }
+   }
+  },
+  {
+   "id": "C7_help",
+   "step": "C",
+   "kind": "single",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "alone",
+    "one_hand",
+    "walker",
+    "stroller"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "R5_MOTOR"
+     },
+     {
+      "not": {
+       "ref": "R6"
+      }
+     },
+     {
+      "q": "C7",
+      "answered": true
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "R"
+   ],
+   "text": {
+    "en": "With what help?"
+   },
+   "option_text": {
+    "en": {
+     "alone": "Alone",
+     "one_hand": "One hand held",
+     "walker": "Walker",
+     "stroller": "Stroller or wheelchair outside"
+    }
+   }
+  },
+  {
+   "id": "C21",
+   "step": "C",
+   "kind": "single",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "needs_help",
+    "starts_alone",
+    "stops_alone"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "R5_MOTOR"
+     },
+     {
+      "not": {
+       "ref": "R6"
+      }
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "Starting and stopping"
+   },
+   "option_text": {
+    "en": {
+     "needs_help": "Needs help to start",
+     "starts_alone": "Starts alone from standing",
+     "stops_alone": "Stops and keeps standing alone"
+    }
+   }
+  },
+  {
+   "id": "C22",
+   "step": "C",
+   "kind": "multi",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "turns",
+    "circle",
+    "backward_help",
+    "backward_alone"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "R5_MOTOR"
+     },
+     {
+      "not": {
+       "ref": "R6"
+      }
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "Turning and walking backward"
+   },
+   "option_text": {
+    "en": {
+     "turns": "Turns while walking",
+     "circle": "Walks in a circle",
+     "backward_help": "Walks backward with help",
+     "backward_alone": "Walks backward alone"
+    }
+   }
+  },
+  {
+   "id": "C8",
+   "step": "C",
+   "kind": "single",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "cant",
+    "adult_help",
+    "rail_one_foot",
+    "alone_one_foot",
+    "alternating"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "R5_MOTOR"
+     },
+     {
+      "not": {
+       "ref": "R6"
+      }
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "Stairs up"
+   },
+   "option_text": {
+    "en": {
+     "cant": "Can't",
+     "adult_help": "With adult help",
+     "rail_one_foot": "Holding a rail, one foot at a time",
+     "alone_one_foot": "Alone, one foot at a time",
+     "alternating": "Alone, alternating feet"
+    }
+   }
+  },
+  {
+   "id": "C23",
+   "step": "C",
+   "kind": "single",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "cant",
+    "adult_help",
+    "rail_one_foot",
+    "alone_one_foot",
+    "alternating"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "R5_MOTOR"
+     },
+     {
+      "not": {
+       "ref": "R6"
+      }
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "Stairs down"
+   },
+   "option_text": {
+    "en": {
+     "cant": "Can't",
+     "adult_help": "With adult help",
+     "rail_one_foot": "Holding a rail, one foot at a time",
+     "alone_one_foot": "Alone, one foot at a time",
+     "alternating": "Alone, alternating feet"
+    }
+   }
+  },
+  {
+   "id": "C24",
+   "step": "C",
+   "kind": "multi",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "grass",
+    "step_over_help",
+    "step_over_alone",
+    "slope_up",
+    "slope_down"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "R5_MOTOR"
+     },
+     {
+      "not": {
+       "ref": "R6"
+      }
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "Outside surfaces"
+   },
+   "option_text": {
+    "en": {
+     "grass": "Walks on grass or uneven ground",
+     "step_over_help": "Steps over a 10–15 cm object with help",
+     "step_over_alone": "Steps over a 10–15 cm object alone",
+     "slope_up": "Walks up a slope",
+     "slope_down": "Walks down a slope"
+    }
+   }
+  },
+  {
+   "id": "C9",
+   "step": "C",
+   "kind": "multi",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "runs",
+    "jumps_both",
+    "jumps_forward",
+    "jumps_down",
+    "hops",
+    "none"
+   ],
+   "max": null,
+   "exclusive": "none",
+   "show": {
+    "all": [
+     {
+      "ref": "R5_MOTOR"
+     },
+     {
+      "all": [
+       {
+        "not": {
+         "ref": "R6"
+        }
+       },
+       {
+        "not": {
+         "ref": "R7"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "Running and jumping"
+   },
+   "option_text": {
+    "en": {
+     "runs": "Runs",
+     "jumps_both": "Jumps with both feet",
+     "jumps_forward": "Jumps forward",
+     "jumps_down": "Jumps down a step",
+     "hops": "Hops on one foot",
+     "none": "None of these yet"
+    }
+   }
+  },
+  {
+   "id": "C9_foot",
+   "step": "C",
+   "kind": "single",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "left",
+    "right",
+    "both"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "R5_MOTOR"
+     },
+     {
+      "all": [
+       {
+        "not": {
+         "ref": "R6"
+        }
+       },
+       {
+        "not": {
+         "ref": "R7"
+        }
+       }
+      ]
+     },
+     {
+      "q": "C9",
+      "in": [
+       "hops"
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "Hops on which foot?"
+   },
+   "option_text": {
+    "en": {
+     "left": "Left",
+     "right": "Right",
+     "both": "Both"
+    }
+   }
+  },
+  {
+   "id": "C10",
+   "step": "C",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "i",
+    "ii",
+    "iii",
+    "iv",
+    "v"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "any": [
+       {
+        "not": {
+         "q": "B1",
+         "answered": true
+        }
+       },
+       {
+        "q": "B1",
+        "in": [
+         "cp"
+        ]
+       }
+      ]
+     },
+     {
+      "ref": "R5_MOTOR"
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": "gmfcs",
+   "signup": false,
+   "feeds": [
+    "E",
+    "V",
+    "T"
+   ],
+   "text": {
+    "en": "Which picture looks most like your child?"
+   },
+   "option_text": {
+    "en": {
+     "i": "Level I",
+     "ii": "Level II",
+     "iii": "Level III",
+     "iv": "Level IV",
+     "v": "Level V"
+    }
+   }
+  },
+  {
+   "id": "C11",
+   "step": "C",
+   "kind": "single",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "rarely",
+    "few_week",
+    "every_day",
+    "many_day"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "R5_MOTOR"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "S",
+    "E"
+   ],
+   "text": {
+    "en": "How often does your child fall?"
+   },
+   "option_text": {
+    "en": {
+     "rarely": "Rarely",
+     "few_week": "A few times a week",
+     "every_day": "Every day",
+     "many_day": "Many times a day"
+    }
+   }
+  },
+  {
+   "id": "C12",
+   "step": "C",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "yes",
+    "no"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "S"
+   ],
+   "text": {
+    "en": "Has your child stopped doing something they could do before?"
+   },
+   "option_text": {
+    "en": {
+     "yes": "Yes",
+     "no": "No"
+    }
+   },
+   "note": "Red flag: asked of every child, whatever the diagnosis (not hidden by R5)."
+  },
+  {
+   "id": "C12_text",
+   "step": "C",
+   "kind": "text",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "q": "C12",
+    "in": [
+     "yes"
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "S"
+   ],
+   "text": {
+    "en": "What, and when?"
+   },
+   "option_text": null
+  },
+  {
+   "id": "C25",
+   "step": "C",
+   "kind": "single",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "usual",
+    "better",
+    "worse"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "R5_MOTOR"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "T"
+   ],
+   "text": {
+    "en": "Are these answers how your child usually moves?"
+   },
+   "option_text": {
+    "en": {
+     "usual": "Yes",
+     "better": "Better than usual",
+     "worse": "Worse than usual (ill, tired, after surgery)"
+    }
+   }
+  },
+  {
+   "id": "D1",
+   "step": "D",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "i",
+    "ii",
+    "iii",
+    "iv",
+    "v"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "any": [
+       {
+        "not": {
+         "q": "B1",
+         "answered": true
+        }
+       },
+       {
+        "q": "B1",
+        "in": [
+         "cp"
+        ]
+       }
+      ]
+     },
+     {
+      "ref": "R5_MOTOR"
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": "macs",
+   "signup": false,
+   "feeds": [
+    "G",
+    "E"
+   ],
+   "text": {
+    "en": "Which picture looks most like how your child handles objects?"
+   },
+   "option_text": {
+    "en": {
+     "i": "Level I",
+     "ii": "Level II",
+     "iii": "Level III",
+     "iv": "Level IV",
+     "v": "Level V"
+    }
+   },
+   "note": "Mini-MACS pictures under age 4 (R15)."
+  },
+  {
+   "id": "D2",
+   "step": "D",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "right",
+    "left",
+    "same",
+    "neither"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "R5_MOTOR"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "G",
+    "E"
+   ],
+   "text": {
+    "en": "Which hand does your child use more?"
+   },
+   "option_text": {
+    "en": {
+     "right": "Right",
+     "left": "Left",
+     "same": "Both the same",
+     "neither": "Neither yet"
+    }
+   }
+  },
+  {
+   "id": "D3",
+   "step": "D",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "always",
+    "sometimes",
+    "rarely",
+    "never"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "R5_MOTOR"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "Does the other hand help (holds paper, holds a cup with two hands)?"
+   },
+   "option_text": {
+    "en": {
+     "always": "Always",
+     "sometimes": "Sometimes",
+     "rarely": "Rarely",
+     "never": "Never"
+    }
+   }
+  },
+  {
+   "id": "D4",
+   "step": "D",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "thumb_finger",
+    "whole_hand",
+    "cannot"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "R5_MOTOR"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "G",
+    "E"
+   ],
+   "text": {
+    "en": "How does your child pick up a small thing, like a raisin?"
+   },
+   "option_text": {
+    "en": {
+     "thumb_finger": "Thumb and finger",
+     "whole_hand": "Whole hand",
+     "cannot": "Cannot pick it up"
+    }
+   }
+  },
+  {
+   "id": "D5",
+   "step": "D",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "easily",
+    "effort",
+    "no"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "R5_MOTOR"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "G",
+    "E"
+   ],
+   "text": {
+    "en": "Can your child let go of a toy on purpose?"
+   },
+   "option_text": {
+    "en": {
+     "easily": "Easily",
+     "effort": "With effort",
+     "no": "No"
+    }
+   }
+  },
+  {
+   "id": "D6",
+   "step": "D",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "yes",
+    "no"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "R5_MOTOR"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "G",
+    "MV"
+   ],
+   "text": {
+    "en": "Can your child point with one finger?"
+   },
+   "option_text": {
+    "en": {
+     "yes": "Yes",
+     "no": "No"
+    }
+   }
+  },
+  {
+   "id": "D7",
+   "step": "D",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "accurately",
+    "big_only",
+    "with_help",
+    "not_yet"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "R5_MOTOR"
+   },
+   "option_show": {
+    "with_help": {
+     "not": {
+      "fact": "macs",
+      "in": [
+       1,
+       2
+      ]
+     }
+    }
+   },
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "G"
+   ],
+   "text": {
+    "en": "Can your child tap a picture on a phone or tablet?"
+   },
+   "option_text": {
+    "en": {
+     "accurately": "Yes, accurately",
+     "big_only": "Only big pictures",
+     "with_help": "With my help",
+     "not_yet": "Not yet"
+    }
+   }
+  },
+  {
+   "id": "D8",
+   "step": "D",
+   "kind": "single",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "yes",
+    "sometimes",
+    "no"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "R5_MOTOR"
+     },
+     {
+      "not": {
+       "q": "D7",
+       "in": [
+        "not_yet"
+       ]
+      }
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "G"
+   ],
+   "text": {
+    "en": "Can your child swipe or drag on a screen?"
+   },
+   "option_text": {
+    "en": {
+     "yes": "Yes",
+     "sometimes": "Sometimes",
+     "no": "No"
+    }
+   }
+  },
+  {
+   "id": "D9",
+   "step": "D",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "no",
+    "a_little",
+    "a_lot"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "R5_MOTOR"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "G",
+    "E"
+   ],
+   "text": {
+    "en": "Do the hands shake or move on their own when reaching?"
+   },
+   "option_text": {
+    "en": {
+     "no": "No",
+     "a_little": "A little",
+     "a_lot": "A lot"
+    }
+   }
+  },
+  {
+   "id": "D10",
+   "step": "D",
+   "kind": "single",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "never",
+    "sometimes",
+    "most"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "R5_MOTOR"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "M",
+    "S"
+   ],
+   "text": {
+    "en": "Is the hand often in a fist, or the thumb inside the palm?"
+   },
+   "option_text": {
+    "en": {
+     "never": "Never",
+     "sometimes": "Sometimes",
+     "most": "Most of the time"
+    }
+   }
+  },
+  {
+   "id": "D10_hand",
+   "step": "D",
+   "kind": "single",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "left",
+    "right",
+    "both"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "R5_MOTOR"
+     },
+     {
+      "q": "D10",
+      "in": [
+       "sometimes",
+       "most"
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "M",
+    "S"
+   ],
+   "text": {
+    "en": "Which hand?"
+   },
+   "option_text": {
+    "en": {
+     "left": "Left",
+     "right": "Right",
+     "both": "Both"
+    }
+   }
+  },
+  {
+   "id": "D11",
+   "step": "D",
+   "kind": "single",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "fingers",
+    "fist",
+    "cant"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "R5_MOTOR"
+     },
+     {
+      "all": [
+       {
+        "not": {
+         "fact": "macs",
+         "in": [
+          4,
+          5
+         ]
+        }
+       },
+       {
+        "not": {
+         "ref": "UNDER_4"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "G",
+    "E"
+   ],
+   "text": {
+    "en": "How does your child hold a pencil or crayon?"
+   },
+   "option_text": {
+    "en": {
+     "fingers": "Fingers",
+     "fist": "Whole fist",
+     "cant": "Can't hold yet"
+    }
+   }
+  },
+  {
+   "id": "D12",
+   "step": "D",
+   "kind": "single",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "yes",
+    "with_help",
+    "no"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "R5_MOTOR"
+     },
+     {
+      "all": [
+       {
+        "not": {
+         "fact": "macs",
+         "in": [
+          4,
+          5
+         ]
+        }
+       },
+       {
+        "not": {
+         "ref": "UNDER_4"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "Can your child hold a spoon or cup alone?"
+   },
+   "option_text": {
+    "en": {
+     "yes": "Yes",
+     "with_help": "With help",
+     "no": "No"
+    }
+   }
+  },
+  {
+   "id": "D13",
+   "step": "D",
+   "kind": "single",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "yes",
+    "with_help",
+    "no"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "R5_MOTOR"
+     },
+     {
+      "all": [
+       {
+        "not": {
+         "fact": "macs",
+         "in": [
+          4,
+          5
+         ]
+        }
+       },
+       {
+        "not": {
+         "ref": "UNDER_4"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "Can your child do buttons or zippers?"
+   },
+   "option_text": {
+    "en": {
+     "yes": "Yes",
+     "with_help": "With help",
+     "no": "No"
+    }
+   }
+  },
+  {
+   "id": "E1",
+   "step": "E",
+   "kind": "single",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "stiff",
+    "floppy",
+    "changes",
+    "normal",
+    "dont_know"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "M",
+    "E"
+   ],
+   "text": {
+    "en": "How does your child's body feel when you move their arms and legs?"
+   },
+   "option_text": {
+    "en": {
+     "stiff": "Stiff",
+     "floppy": "Floppy, soft",
+     "changes": "Changes during the day",
+     "normal": "Normal",
+     "dont_know": "Don't know"
+    }
+   }
+  },
+  {
+   "id": "E2",
+   "step": "E",
+   "kind": "multi",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "head_neck",
+    "shoulders",
+    "back",
+    "hips",
+    "left_arm",
+    "right_arm",
+    "left_hand",
+    "right_hand",
+    "left_leg",
+    "right_leg",
+    "left_foot",
+    "right_foot"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "q": "E1",
+    "in": [
+     "stiff",
+     "changes"
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": "body",
+   "signup": false,
+   "feeds": [
+    "M",
+    "E"
+   ],
+   "text": {
+    "en": "Where is it stiffest?"
+   },
+   "option_text": {
+    "en": {
+     "head_neck": "Head and neck",
+     "shoulders": "Shoulders",
+     "back": "Back",
+     "hips": "Hips",
+     "left_arm": "Left arm",
+     "right_arm": "Right arm",
+     "left_hand": "Left hand",
+     "right_hand": "Right hand",
+     "left_leg": "Left leg",
+     "right_leg": "Right leg",
+     "left_foot": "Left foot",
+     "right_foot": "Right foot"
+    }
+   }
+  },
+  {
+   "id": "E3",
+   "step": "E",
+   "kind": "single",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "never",
+    "sometimes",
+    "often"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "S",
+    "M"
+   ],
+   "text": {
+    "en": "Does your child show pain when moving, dressing, or changing diapers?"
+   },
+   "option_text": {
+    "en": {
+     "never": "Never",
+     "sometimes": "Sometimes",
+     "often": "Often"
+    }
+   }
+  },
+  {
+   "id": "E4",
+   "step": "E",
+   "kind": "multi",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "head_neck",
+    "shoulders",
+    "back",
+    "hips",
+    "left_arm",
+    "right_arm",
+    "left_hand",
+    "right_hand",
+    "left_leg",
+    "right_leg",
+    "left_foot",
+    "right_foot"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "q": "E3",
+    "in": [
+     "sometimes",
+     "often"
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": "body",
+   "signup": false,
+   "feeds": [
+    "S",
+    "M"
+   ],
+   "text": {
+    "en": "Where is the pain?"
+   },
+   "option_text": {
+    "en": {
+     "head_neck": "Head and neck",
+     "shoulders": "Shoulders",
+     "back": "Back",
+     "hips": "Hips",
+     "left_arm": "Left arm",
+     "right_arm": "Right arm",
+     "left_hand": "Left hand",
+     "right_hand": "Right hand",
+     "left_leg": "Left leg",
+     "right_leg": "Right leg",
+     "left_foot": "Left foot",
+     "right_foot": "Right foot"
+    }
+   }
+  },
+  {
+   "id": "E5",
+   "step": "E",
+   "kind": "multi",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "elbow",
+    "wrist",
+    "hip",
+    "knee",
+    "ankle",
+    "none"
+   ],
+   "max": null,
+   "exclusive": "none",
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": "body",
+   "signup": false,
+   "feeds": [
+    "E",
+    "M"
+   ],
+   "text": {
+    "en": "Are there joints that won't straighten all the way?"
+   },
+   "option_text": {
+    "en": {
+     "elbow": "Elbow",
+     "wrist": "Wrist",
+     "hip": "Hip",
+     "knee": "Knee",
+     "ankle": "Ankle",
+     "none": "None"
+    }
+   }
+  },
+  {
+   "id": "E6",
+   "step": "E",
+   "kind": "single",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "yes",
+    "no"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "S",
+    "M"
+   ],
+   "text": {
+    "en": "Any skin problems: wounds, sores, rashes, easy bruising?"
+   },
+   "option_text": {
+    "en": {
+     "yes": "Yes",
+     "no": "No"
+    }
+   }
+  },
+  {
+   "id": "E6_where",
+   "step": "E",
+   "kind": "multi",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "head_neck",
+    "shoulders",
+    "back",
+    "hips",
+    "left_arm",
+    "right_arm",
+    "left_hand",
+    "right_hand",
+    "left_leg",
+    "right_leg",
+    "left_foot",
+    "right_foot"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "q": "E6",
+    "in": [
+     "yes"
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": "body",
+   "signup": false,
+   "feeds": [
+    "S",
+    "M"
+   ],
+   "text": {
+    "en": "Where?"
+   },
+   "option_text": {
+    "en": {
+     "head_neck": "Head and neck",
+     "shoulders": "Shoulders",
+     "back": "Back",
+     "hips": "Hips",
+     "left_arm": "Left arm",
+     "right_arm": "Right arm",
+     "left_hand": "Left hand",
+     "right_hand": "Right hand",
+     "left_leg": "Left leg",
+     "right_leg": "Right leg",
+     "left_foot": "Left foot",
+     "right_foot": "Right foot"
+    }
+   }
+  },
+  {
+   "id": "E7",
+   "step": "E",
+   "kind": "single",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "yes",
+    "no"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "S",
+    "M"
+   ],
+   "text": {
+    "en": "Has your child ever broken a bone, or did a doctor say the bones are weak?"
+   },
+   "option_text": {
+    "en": {
+     "yes": "Yes",
+     "no": "No"
+    }
+   }
+  },
+  {
+   "id": "E7_when",
+   "step": "E",
+   "kind": "text",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "q": "E7",
+    "in": [
+     "yes"
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "S",
+    "M"
+   ],
+   "text": {
+    "en": "When?"
+   },
+   "option_text": null
+  },
+  {
+   "id": "E7_where",
+   "step": "E",
+   "kind": "multi",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "head_neck",
+    "shoulders",
+    "back",
+    "hips",
+    "left_arm",
+    "right_arm",
+    "left_hand",
+    "right_hand",
+    "left_leg",
+    "right_leg",
+    "left_foot",
+    "right_foot"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "q": "E7",
+    "in": [
+     "yes"
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": "body",
+   "signup": false,
+   "feeds": [
+    "S",
+    "M"
+   ],
+   "text": {
+    "en": "Where?"
+   },
+   "option_text": {
+    "en": {
+     "head_neck": "Head and neck",
+     "shoulders": "Shoulders",
+     "back": "Back",
+     "hips": "Hips",
+     "left_arm": "Left arm",
+     "right_arm": "Right arm",
+     "left_hand": "Left hand",
+     "right_hand": "Right hand",
+     "left_leg": "Left leg",
+     "right_leg": "Right leg",
+     "left_foot": "Left foot",
+     "right_foot": "Right foot"
+    }
+   }
+  },
+  {
+   "id": "E8",
+   "step": "E",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "likes",
+    "neutral",
+    "resists",
+    "very_sensitive"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "M"
+   ],
+   "text": {
+    "en": "Does your child like being touched or massaged?"
+   },
+   "option_text": {
+    "en": {
+     "likes": "Likes it",
+     "neutral": "Neutral",
+     "resists": "Cries or resists",
+     "very_sensitive": "Very sensitive to touch"
+    }
+   }
+  },
+  {
+   "id": "E9",
+   "step": "E",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "no",
+    "sometimes",
+    "yes"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "S"
+   ],
+   "text": {
+    "en": "Does your child get tired or short of breath quickly when active?"
+   },
+   "option_text": {
+    "en": {
+     "no": "No",
+     "sometimes": "Sometimes",
+     "yes": "Yes"
+    }
+   }
+  },
+  {
+   "id": "E10",
+   "step": "E",
+   "kind": "single",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "never",
+    "sometimes",
+    "often",
+    "tube_fed"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "S"
+   ],
+   "text": {
+    "en": "Does your child cough or choke while eating or drinking?"
+   },
+   "option_text": {
+    "en": {
+     "never": "Never",
+     "sometimes": "Sometimes",
+     "often": "Often",
+     "tube_fed": "Tube-fed"
+    }
+   }
+  },
+  {
+   "id": "E11",
+   "step": "E",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "through",
+    "wakes_1_2",
+    "wakes_many"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "A"
+   ],
+   "text": {
+    "en": "How does your child sleep?"
+   },
+   "option_text": {
+    "en": {
+     "through": "Sleeps through",
+     "wakes_1_2": "Wakes 1–2 times",
+     "wakes_many": "Wakes many times"
+    }
+   }
+  },
+  {
+   "id": "E12",
+   "step": "E",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "back",
+    "side",
+    "stomach",
+    "changes"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "A"
+   ],
+   "text": {
+    "en": "Usual sleeping position"
+   },
+   "option_text": {
+    "en": {
+     "back": "Back",
+     "side": "Side",
+     "stomach": "Stomach",
+     "changes": "Changes"
+    }
+   }
+  },
+  {
+   "id": "E13",
+   "step": "E",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "yes",
+    "no"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "S",
+    "M"
+   ],
+   "text": {
+    "en": "Any metal plates, pumps or devices under the skin?"
+   },
+   "option_text": {
+    "en": {
+     "yes": "Yes",
+     "no": "No"
+    }
+   }
+  },
+  {
+   "id": "E13_where",
+   "step": "E",
+   "kind": "text",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "q": "E13",
+    "in": [
+     "yes"
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "S",
+    "M"
+   ],
+   "text": {
+    "en": "Where?"
+   },
+   "option_text": null
+  },
+  {
+   "id": "F1",
+   "step": "F",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "yes",
+    "gesture",
+    "no"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "G",
+    "E"
+   ],
+   "text": {
+    "en": "Does your child follow a simple instruction, like \"give me the ball\"?"
+   },
+   "option_text": {
+    "en": {
+     "yes": "Yes",
+     "gesture": "Only with a gesture",
+     "no": "No"
+    }
+   }
+  },
+  {
+   "id": "F2",
+   "step": "F",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "yes",
+    "sometimes",
+    "no"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "G",
+    "E"
+   ],
+   "text": {
+    "en": "A two-step instruction, like \"take the ball and put it in the box\"?"
+   },
+   "option_text": {
+    "en": {
+     "yes": "Yes",
+     "sometimes": "Sometimes",
+     "no": "No"
+    }
+   }
+  },
+  {
+   "id": "F3",
+   "step": "F",
+   "kind": "multi",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "colors",
+    "shapes",
+    "animals",
+    "numbers",
+    "letters",
+    "none"
+   ],
+   "max": null,
+   "exclusive": "none",
+   "show": null,
+   "option_show": {
+    "numbers": {
+     "not": {
+      "ref": "UNDER_4"
+     }
+    },
+    "letters": {
+     "not": {
+      "ref": "UNDER_4"
+     }
+    }
+   },
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "G"
+   ],
+   "text": {
+    "en": "What does your child know?"
+   },
+   "option_text": {
+    "en": {
+     "colors": "Colors",
+     "shapes": "Shapes",
+     "animals": "Animals",
+     "numbers": "Numbers",
+     "letters": "Letters",
+     "none": "None yet"
+    }
+   }
+  },
+  {
+   "id": "F4",
+   "step": "F",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "under_1",
+    "1_5",
+    "5_15",
+    "over_15"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "G",
+    "E"
+   ],
+   "text": {
+    "en": "How long does your child stay with one toy or game?"
+   },
+   "option_text": {
+    "en": {
+     "under_1": "Under 1 min",
+     "1_5": "1–5 min",
+     "5_15": "5–15 min",
+     "over_15": "Over 15 min"
+    }
+   }
+  },
+  {
+   "id": "F5",
+   "step": "F",
+   "kind": "multi",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "normal",
+    "glasses",
+    "eyes_turn",
+    "small_things",
+    "impairment"
+   ],
+   "max": null,
+   "exclusive": "normal",
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "G"
+   ],
+   "text": {
+    "en": "How is your child's vision?"
+   },
+   "option_text": {
+    "en": {
+     "normal": "Normal",
+     "glasses": "Wears glasses",
+     "eyes_turn": "Eyes turn in or out",
+     "small_things": "Struggles to see small things",
+     "impairment": "Doctor said vision impairment"
+    }
+   }
+  },
+  {
+   "id": "F5_help",
+   "step": "F",
+   "kind": "multi",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "bigger",
+    "contrast",
+    "colours",
+    "not_sure"
+   ],
+   "max": null,
+   "exclusive": "not_sure",
+   "show": {
+    "ref": "VISION"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "G"
+   ],
+   "text": {
+    "en": "What helps your child see pictures better?"
+   },
+   "option_text": {
+    "en": {
+     "bigger": "Bigger pictures",
+     "contrast": "Strong contrast",
+     "colours": "Certain colours",
+     "not_sure": "Not sure"
+    }
+   },
+   "note": "R18 asks for size, contrast and color follow-ups; this wording is the team's draft for the physio."
+  },
+  {
+   "id": "F6",
+   "step": "F",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "normal",
+    "hearing_aid",
+    "hard",
+    "deaf"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "G",
+    "MV"
+   ],
+   "text": {
+    "en": "How is your child's hearing?"
+   },
+   "option_text": {
+    "en": {
+     "normal": "Normal",
+     "hearing_aid": "Hearing aid",
+     "hard": "Hard of hearing",
+     "deaf": "Deaf"
+    }
+   }
+  },
+  {
+   "id": "F7",
+   "step": "F",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "no",
+    "a_little",
+    "a_lot"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "G",
+    "S"
+   ],
+   "text": {
+    "en": "Do loud sounds or flashing lights upset your child?"
+   },
+   "option_text": {
+    "en": {
+     "no": "No",
+     "a_little": "A little",
+     "a_lot": "A lot"
+    }
+   }
+  },
+  {
+   "id": "F8",
+   "step": "F",
+   "kind": "single",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "none",
+    "under_1h",
+    "1_2h",
+    "over_2h"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "G",
+    "A"
+   ],
+   "text": {
+    "en": "How much time a day does your child use a phone, tablet or TV?"
+   },
+   "option_text": {
+    "en": {
+     "none": "None",
+     "under_1h": "Under 1 hr",
+     "1_2h": "1–2 hrs",
+     "over_2h": "Over 2 hrs"
+    }
+   }
+  },
+  {
+   "id": "F9",
+   "step": "F",
+   "kind": "multi",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "cartoons",
+    "music",
+    "animals",
+    "cars",
+    "balls",
+    "water",
+    "other"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "G",
+    "MV"
+   ],
+   "text": {
+    "en": "What does your child love?"
+   },
+   "option_text": {
+    "en": {
+     "cartoons": "Cartoons",
+     "music": "Music",
+     "animals": "Animals",
+     "cars": "Cars",
+     "balls": "Balls",
+     "water": "Water",
+     "other": "Other"
+    }
+   }
+  },
+  {
+   "id": "F9_character",
+   "step": "F",
+   "kind": "text",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "G",
+    "MV"
+   ],
+   "text": {
+    "en": "Favorite character"
+   },
+   "option_text": null
+  },
+  {
+   "id": "F10",
+   "step": "F",
+   "kind": "single",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "tries_again",
+    "upset_continues",
+    "gives_up",
+    "cries"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "G"
+   ],
+   "text": {
+    "en": "What happens when something doesn't work out for your child?"
+   },
+   "option_text": {
+    "en": {
+     "tries_again": "Tries again",
+     "upset_continues": "Gets upset but continues",
+     "gives_up": "Gives up",
+     "cries": "Cries or gets angry"
+    }
+   },
+   "note": "Questionnaire wording: \"when your child fails at something\"; softened for parents."
+  },
+  {
+   "id": "F11",
+   "step": "F",
+   "kind": "single",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "yes",
+    "no"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "G"
+   ],
+   "text": {
+    "en": "If you hide a toy while they watch, can they find it?"
+   },
+   "option_text": {
+    "en": {
+     "yes": "Yes",
+     "no": "No"
+    }
+   }
+  },
+  {
+   "id": "G1",
+   "step": "G",
+   "kind": "multi",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "sentences",
+    "single_words",
+    "sounds_gestures",
+    "face_crying",
+    "looking",
+    "picture_cards"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "MV",
+    "A"
+   ],
+   "text": {
+    "en": "How does your child mostly communicate?"
+   },
+   "option_text": {
+    "en": {
+     "sentences": "Sentences",
+     "single_words": "Single words",
+     "sounds_gestures": "Sounds and gestures",
+     "face_crying": "Face and crying",
+     "looking": "Looking at things",
+     "picture_cards": "Picture cards or device"
+    }
+   }
+  },
+  {
+   "id": "G2",
+   "step": "G",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "i",
+    "ii",
+    "iii",
+    "iv",
+    "v"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "G2_SHOW"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": "cfcs",
+   "signup": false,
+   "feeds": [
+    "MV"
+   ],
+   "text": {
+    "en": "Which picture matches how your child communicates with family and with strangers?"
+   },
+   "option_text": {
+    "en": {
+     "i": "Level I",
+     "ii": "Level II",
+     "iii": "Level III",
+     "iv": "Level IV",
+     "v": "Level V"
+    }
+   }
+  },
+  {
+   "id": "G3",
+   "step": "G",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "mostly",
+    "sometimes",
+    "rarely",
+    "never"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "MV"
+   ],
+   "text": {
+    "en": "Do people outside the family understand your child?"
+   },
+   "option_text": {
+    "en": {
+     "mostly": "Mostly",
+     "sometimes": "Sometimes",
+     "rarely": "Rarely",
+     "never": "Never"
+    }
+   }
+  },
+  {
+   "id": "G4",
+   "step": "G",
+   "kind": "multi",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "words",
+    "nod",
+    "smile",
+    "looks_away",
+    "sounds",
+    "no_clear_way"
+   ],
+   "max": null,
+   "exclusive": "no_clear_way",
+   "show": {
+    "not": {
+     "ref": "MV_OPTIONAL"
+    }
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "MV"
+   ],
+   "text": {
+    "en": "How does your child say \"yes\" and \"no\"?"
+   },
+   "option_text": {
+    "en": {
+     "words": "Words",
+     "nod": "Nod or shake head",
+     "smile": "Smile",
+     "looks_away": "Looks away",
+     "sounds": "Sounds",
+     "no_clear_way": "No clear way yet"
+    }
+   }
+  },
+  {
+   "id": "G5",
+   "step": "G",
+   "kind": "single",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "yes",
+    "no"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "not": {
+     "ref": "MV_OPTIONAL"
+    }
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "MV"
+   ],
+   "text": {
+    "en": "Has your child used picture cards before?"
+   },
+   "option_text": {
+    "en": {
+     "yes": "Yes",
+     "no": "No"
+    }
+   }
+  },
+  {
+   "id": "G6",
+   "step": "G",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "finger",
+    "whole_hand",
+    "looks",
+    "points_held"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "not": {
+     "ref": "MV_OPTIONAL"
+    }
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "MV",
+    "G"
+   ],
+   "text": {
+    "en": "How can your child choose a card?"
+   },
+   "option_text": {
+    "en": {
+     "finger": "Taps with a finger",
+     "whole_hand": "Taps with whole hand",
+     "looks": "Looks at it",
+     "points_held": "Points while I hold the phone"
+    }
+   }
+  },
+  {
+   "id": "G7",
+   "step": "G",
+   "kind": "multi",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "hungry",
+    "thirsty",
+    "toilet",
+    "pain",
+    "tired",
+    "play",
+    "parent",
+    "hot_cold",
+    "scared",
+    "happy",
+    "bored"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "not": {
+     "ref": "MV_OPTIONAL"
+    }
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "MV"
+   ],
+   "text": {
+    "en": "What does your child most need to tell you?"
+   },
+   "option_text": {
+    "en": {
+     "hungry": "Hungry",
+     "thirsty": "Thirsty",
+     "toilet": "Toilet",
+     "pain": "Pain",
+     "tired": "Tired",
+     "play": "Want to play",
+     "parent": "Want mom or dad",
+     "hot_cold": "Too hot or cold",
+     "scared": "Scared",
+     "happy": "Happy",
+     "bored": "Bored"
+    }
+   }
+  },
+  {
+   "id": "G8",
+   "step": "G",
+   "kind": "longtext",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "not": {
+     "ref": "MV_OPTIONAL"
+    }
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "MV",
+    "A"
+   ],
+   "text": {
+    "en": "Words or sounds your child uses, and what they mean"
+   },
+   "option_text": null
+  },
+  {
+   "id": "G9",
+   "step": "G",
+   "kind": "longtext",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "not": {
+     "ref": "MV_OPTIONAL"
+    }
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "MV"
+   ],
+   "text": {
+    "en": "Names of family members and pets for cards"
+   },
+   "option_text": null
+  },
+  {
+   "id": "G10",
+   "step": "G",
+   "kind": "single",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "yes",
+    "some_words",
+    "no"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "not": {
+     "ref": "MV_OPTIONAL"
+    }
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "MV"
+   ],
+   "text": {
+    "en": "Can your child read?"
+   },
+   "option_text": {
+    "en": {
+     "yes": "Yes",
+     "some_words": "Some words",
+     "no": "No"
+    }
+   }
+  },
+  {
+   "id": "H1",
+   "step": "H",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "self",
+    "some_help",
+    "i_feed",
+    "tube"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "MV"
+   ],
+   "text": {
+    "en": "How does your child eat?"
+   },
+   "option_text": {
+    "en": {
+     "self": "Feeds self",
+     "some_help": "With some help",
+     "i_feed": "I feed them",
+     "tube": "Tube"
+    }
+   }
+  },
+  {
+   "id": "H2",
+   "step": "H",
+   "kind": "single",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "alone",
+    "helps",
+    "no"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "Does your child help with dressing?"
+   },
+   "option_text": {
+    "en": {
+     "alone": "Dresses alone",
+     "helps": "Helps (pushes arm in)",
+     "no": "Doesn't help"
+    }
+   }
+  },
+  {
+   "id": "H3",
+   "step": "H",
+   "kind": "single",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "trained",
+    "partly",
+    "diapers"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "MV",
+    "A"
+   ],
+   "text": {
+    "en": "Toilet"
+   },
+   "option_text": {
+    "en": {
+     "trained": "Trained",
+     "partly": "Partly",
+     "diapers": "Diapers"
+    }
+   }
+  },
+  {
+   "id": "H4",
+   "step": "H",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "lying",
+    "chair",
+    "floor",
+    "moving"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "Where does your child spend most of the day?"
+   },
+   "option_text": {
+    "en": {
+     "lying": "Lying down",
+     "chair": "In a chair or stroller",
+     "floor": "Sitting on the floor",
+     "moving": "Moving around"
+    }
+   }
+  },
+  {
+   "id": "H5",
+   "step": "H",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "morning",
+    "midday",
+    "afternoon",
+    "evening"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "A"
+   ],
+   "text": {
+    "en": "When is your child most calm and active?"
+   },
+   "option_text": {
+    "en": {
+     "morning": "Morning",
+     "midday": "Midday",
+     "afternoon": "Afternoon",
+     "evening": "Evening"
+    }
+   }
+  },
+  {
+   "id": "H6",
+   "step": "H",
+   "kind": "time",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "A"
+   ],
+   "text": {
+    "en": "Usual wake-up time"
+   },
+   "option_text": null
+  },
+  {
+   "id": "H6_nap",
+   "step": "H",
+   "kind": "time",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "A"
+   ],
+   "text": {
+    "en": "Usual nap time"
+   },
+   "option_text": null
+  },
+  {
+   "id": "H6_bed",
+   "step": "H",
+   "kind": "time",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "A"
+   ],
+   "text": {
+    "en": "Usual bedtime"
+   },
+   "option_text": null
+  },
+  {
+   "id": "H7",
+   "step": "H",
+   "kind": "single",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "regular",
+    "inclusive",
+    "special",
+    "home_only"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "not": {
+     "ref": "UNDER_4"
+    }
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "A",
+    "E"
+   ],
+   "text": {
+    "en": "Does your child go to kindergarten or school?"
+   },
+   "option_text": {
+    "en": {
+     "regular": "Regular",
+     "inclusive": "Inclusive",
+     "special": "Special",
+     "home_only": "Home only"
+    }
+   }
+  },
+  {
+   "id": "H7_hours",
+   "step": "H",
+   "kind": "number",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "not": {
+       "ref": "UNDER_4"
+      }
+     },
+     {
+      "ref": "SCHOOL"
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": "h",
+   "range": [
+    0,
+    12
+   ],
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "A",
+    "E"
+   ],
+   "text": {
+    "en": "Hours a day"
+   },
+   "option_text": null
+  },
+  {
+   "id": "H8",
+   "step": "H",
+   "kind": "single",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "often",
+    "sometimes",
+    "rarely"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "A",
+    "G"
+   ],
+   "text": {
+    "en": "Does your child play with other children?"
+   },
+   "option_text": {
+    "en": {
+     "often": "Often",
+     "sometimes": "Sometimes",
+     "rarely": "Rarely"
+    }
+   }
+  },
+  {
+   "id": "I1",
+   "step": "I",
+   "kind": "multi",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "physio",
+    "massage",
+    "ot",
+    "speech",
+    "psychologist",
+    "water",
+    "none"
+   ],
+   "max": null,
+   "exclusive": "none",
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "M",
+    "R"
+   ],
+   "text": {
+    "en": "What therapy does your child get now?"
+   },
+   "option_text": {
+    "en": {
+     "physio": "Physio (LFK)",
+     "massage": "Massage",
+     "ot": "Occupational therapy",
+     "speech": "Speech therapy",
+     "psychologist": "Psychologist",
+     "water": "Water therapy",
+     "none": "None"
+    }
+   }
+  },
+  {
+   "id": "I2",
+   "step": "I",
+   "kind": "text",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "q": "I1",
+      "answered": true
+     },
+     {
+      "not": {
+       "q": "I1",
+       "in": [
+        "none"
+       ]
+      }
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "R"
+   ],
+   "text": {
+    "en": "Where? (center name)"
+   },
+   "option_text": null
+  },
+  {
+   "id": "I3",
+   "step": "I",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "weekly",
+    "courses",
+    "rarely",
+    "never"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "How often?"
+   },
+   "option_text": {
+    "en": {
+     "weekly": "Weekly",
+     "courses": "Courses a few times a year",
+     "rarely": "Rarely",
+     "never": "Never"
+    }
+   }
+  },
+  {
+   "id": "I3_days",
+   "step": "I",
+   "kind": "number",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "q": "I3",
+    "in": [
+     "courses"
+    ]
+   },
+   "option_show": null,
+   "unit": "days",
+   "range": [
+    1,
+    60
+   ],
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "How many days is each course?"
+   },
+   "option_text": null
+  },
+  {
+   "id": "I4",
+   "step": "I",
+   "kind": "longtext",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "Exercises your therapist gave you for home"
+   },
+   "option_text": null
+  },
+  {
+   "id": "I4_files",
+   "step": "I",
+   "kind": "file",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "Or a video of them"
+   },
+   "option_text": null
+  },
+  {
+   "id": "I5",
+   "step": "I",
+   "kind": "longtext",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "A",
+    "E"
+   ],
+   "text": {
+    "en": "What has helped most so far? What didn't help?"
+   },
+   "option_text": null
+  },
+  {
+   "id": "I6",
+   "step": "I",
+   "kind": "single",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "under_500k",
+    "500k_1m",
+    "1m_3m",
+    "over_3m",
+    "prefer_not"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "R"
+   ],
+   "text": {
+    "en": "Monthly budget for rehab (optional)"
+   },
+   "option_text": {
+    "en": {
+     "under_500k": "Under 500,000 UZS",
+     "500k_1m": "500,000–1,000,000 UZS",
+     "1m_3m": "1–3 million UZS",
+     "over_3m": "Over 3 million UZS",
+     "prefer_not": "Prefer not to say"
+    }
+   },
+   "note": "The questionnaire says \"ranges in UZS\"; these ranges are the team's draft."
+  },
+  {
+   "id": "I7",
+   "step": "I",
+   "kind": "single",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "district",
+    "city",
+    "other_cities",
+    "abroad"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "R"
+   ],
+   "text": {
+    "en": "How far can you travel for rehab?"
+   },
+   "option_text": {
+    "en": {
+     "district": "My district only",
+     "city": "Across the city",
+     "other_cities": "Other cities",
+     "abroad": "Abroad"
+    }
+   }
+  },
+  {
+   "id": "I8",
+   "step": "I",
+   "kind": "multi",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "state",
+    "private",
+    "uzbek_doctor",
+    "russian_doctor"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "R"
+   ],
+   "text": {
+    "en": "Preferred center type"
+   },
+   "option_text": {
+    "en": {
+     "state": "State",
+     "private": "Private",
+     "uzbek_doctor": "Doctor speaks Uzbek",
+     "russian_doctor": "Doctor speaks Russian"
+    }
+   }
+  },
+  {
+   "id": "I9",
+   "step": "I",
+   "kind": "multi",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "walker",
+    "wheelchair",
+    "braces",
+    "standing_frame",
+    "special_chair",
+    "none"
+   ],
+   "max": null,
+   "exclusive": "none",
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "R",
+    "A"
+   ],
+   "text": {
+    "en": "Equipment you need but don't have"
+   },
+   "option_text": {
+    "en": {
+     "walker": "Walker",
+     "wheelchair": "Wheelchair",
+     "braces": "Braces",
+     "standing_frame": "Standing frame",
+     "special_chair": "Special chair",
+     "none": "None"
+    }
+   }
+  },
+  {
+   "id": "J1",
+   "step": "J",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "10",
+    "20",
+    "30",
+    "45"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "How much time a day can you give to exercises?"
+   },
+   "option_text": {
+    "en": {
+     "10": "10 min",
+     "20": "20 min",
+     "30": "30 min",
+     "45": "45+ min"
+    }
+   }
+  },
+  {
+   "id": "J2",
+   "step": "J",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "2_3",
+    "4_5",
+    "every_day"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "How many days a week?"
+   },
+   "option_text": {
+    "en": {
+     "2_3": "2–3",
+     "4_5": "4–5",
+     "every_day": "Every day"
+    }
+   }
+  },
+  {
+   "id": "J3",
+   "step": "J",
+   "kind": "single",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "large",
+    "small",
+    "very_little"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "Space at home for floor exercises"
+   },
+   "option_text": {
+    "en": {
+     "large": "Large",
+     "small": "Small",
+     "very_little": "Very little"
+    }
+   }
+  },
+  {
+   "id": "J4",
+   "step": "J",
+   "kind": "multi",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "floor_mat",
+    "exercise_ball",
+    "mirror",
+    "table_chair",
+    "low_bench",
+    "stairs",
+    "bath",
+    "none"
+   ],
+   "max": null,
+   "exclusive": "none",
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "What do you have at home?"
+   },
+   "option_text": {
+    "en": {
+     "floor_mat": "Floor mat",
+     "exercise_ball": "Exercise ball",
+     "mirror": "Mirror",
+     "table_chair": "Small table and chair",
+     "low_bench": "Low bench",
+     "stairs": "Stairs",
+     "bath": "Bath",
+     "none": "None"
+    }
+   }
+  },
+  {
+   "id": "J5",
+   "step": "J",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "easily",
+    "effort",
+    "no"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "M"
+   ],
+   "text": {
+    "en": "Can you lift and carry your child safely?"
+   },
+   "option_text": {
+    "en": {
+     "easily": "Easily",
+     "effort": "With effort",
+     "no": "No"
+    }
+   }
+  },
+  {
+   "id": "J6",
+   "step": "J",
+   "kind": "scale",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": [
+    1,
+    5
+   ],
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "A"
+   ],
+   "text": {
+    "en": "How confident are you doing exercises at home?"
+   },
+   "option_text": null
+  },
+  {
+   "id": "J7",
+   "step": "J",
+   "kind": "multi",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "video",
+    "pictures",
+    "text",
+    "voice"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "A",
+    "V"
+   ],
+   "text": {
+    "en": "How do you learn best?"
+   },
+   "option_text": {
+    "en": {
+     "video": "Video",
+     "pictures": "Pictures",
+     "text": "Text",
+     "voice": "Voice messages"
+    }
+   }
+  },
+  {
+   "id": "J8",
+   "step": "J",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "android",
+    "iphone",
+    "tablet"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "G"
+   ],
+   "text": {
+    "en": "Your device"
+   },
+   "option_text": {
+    "en": {
+     "android": "Android",
+     "iphone": "iPhone",
+     "tablet": "Tablet"
+    }
+   }
+  },
+  {
+   "id": "J8_internet",
+   "step": "J",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "stable",
+    "sometimes",
+    "rarely"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "G"
+   ],
+   "text": {
+    "en": "Your internet"
+   },
+   "option_text": {
+    "en": {
+     "stable": "Stable",
+     "sometimes": "Sometimes",
+     "rarely": "Rarely"
+    }
+   }
+  },
+  {
+   "id": "J9",
+   "step": "J",
+   "kind": "multi",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "sit",
+    "stand",
+    "walk",
+    "hands_eat",
+    "hold",
+    "communicate",
+    "tablet",
+    "less_pain",
+    "school",
+    "other"
+   ],
+   "max": 3,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "G",
+    "MV",
+    "T"
+   ],
+   "text": {
+    "en": "Your top 3 goals for the next 3 months"
+   },
+   "option_text": {
+    "en": {
+     "sit": "Sit alone",
+     "stand": "Stand",
+     "walk": "Walk",
+     "hands_eat": "Use hands to eat",
+     "hold": "Hold things",
+     "communicate": "Communicate needs",
+     "tablet": "Play on tablet",
+     "less_pain": "Less pain or stiffness",
+     "school": "Get ready for school",
+     "other": "Other"
+    }
+   }
+  },
+  {
+   "id": "J9_other",
+   "step": "J",
+   "kind": "text",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "q": "J9",
+    "in": [
+     "other"
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "G",
+    "MV",
+    "T"
+   ],
+   "text": {
+    "en": "Your other goal"
+   },
+   "option_text": null
+  },
+  {
+   "id": "J10",
+   "step": "J",
+   "kind": "longtext",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "A"
+   ],
+   "text": {
+    "en": "What is hardest for you day to day?"
+   },
+   "option_text": null
+  },
+  {
+   "id": "J11",
+   "step": "J",
+   "kind": "single",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "regularly",
+    "sometimes",
+    "no"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "A",
+    "E"
+   ],
+   "text": {
+    "en": "Does anyone help you care for your child?"
+   },
+   "option_text": {
+    "en": {
+     "regularly": "Yes, regularly",
+     "sometimes": "Sometimes",
+     "no": "No"
+    }
+   }
+  },
+  {
+   "id": "K1",
+   "step": "K",
+   "kind": "media",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "T"
+   ],
+   "text": {
+    "en": "Baseline video tasks (recommended)"
+   },
+   "option_text": null,
+   "note": "The 11 video tasks and the recording rules come from section K; which tasks show follows C and D answers."
+  },
+  {
+   "id": "L1",
+   "step": "L",
+   "kind": "date",
+   "required": false,
+   "health": false,
+   "audience": "therapist",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "T",
+    "R"
+   ],
+   "text": {
+    "en": "Assessment date"
+   },
+   "option_text": null
+  },
+  {
+   "id": "L1_center",
+   "step": "L",
+   "kind": "text",
+   "required": false,
+   "health": false,
+   "audience": "therapist",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "T",
+    "R"
+   ],
+   "text": {
+    "en": "Therapist and center"
+   },
+   "option_text": null
+  },
+  {
+   "id": "L2",
+   "step": "L",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "therapist",
+   "options": [
+    "i",
+    "ii",
+    "iii",
+    "iv",
+    "v"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "V",
+    "T"
+   ],
+   "text": {
+    "en": "GMFCS level"
+   },
+   "option_text": {
+    "en": {
+     "i": "I",
+     "ii": "II",
+     "iii": "III",
+     "iv": "IV",
+     "v": "V"
+    }
+   }
+  },
+  {
+   "id": "L3_A",
+   "step": "L",
+   "kind": "number",
+   "required": false,
+   "health": true,
+   "audience": "therapist",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": "%",
+   "range": [
+    0,
+    100
+   ],
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "T"
+   ],
+   "text": {
+    "en": "GMFM score: lying and rolling"
+   },
+   "option_text": null
+  },
+  {
+   "id": "L3_B",
+   "step": "L",
+   "kind": "number",
+   "required": false,
+   "health": true,
+   "audience": "therapist",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": "%",
+   "range": [
+    0,
+    100
+   ],
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "T"
+   ],
+   "text": {
+    "en": "GMFM score: sitting"
+   },
+   "option_text": null
+  },
+  {
+   "id": "L3_C",
+   "step": "L",
+   "kind": "number",
+   "required": false,
+   "health": true,
+   "audience": "therapist",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": "%",
+   "range": [
+    0,
+    100
+   ],
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "T"
+   ],
+   "text": {
+    "en": "GMFM score: crawling and kneeling"
+   },
+   "option_text": null
+  },
+  {
+   "id": "L3_D",
+   "step": "L",
+   "kind": "number",
+   "required": false,
+   "health": true,
+   "audience": "therapist",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": "%",
+   "range": [
+    0,
+    100
+   ],
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "T"
+   ],
+   "text": {
+    "en": "GMFM score: standing"
+   },
+   "option_text": null
+  },
+  {
+   "id": "L3_E",
+   "step": "L",
+   "kind": "number",
+   "required": false,
+   "health": true,
+   "audience": "therapist",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": "%",
+   "range": [
+    0,
+    100
+   ],
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "T"
+   ],
+   "text": {
+    "en": "GMFM score: walking, running, jumping"
+   },
+   "option_text": null
+  },
+  {
+   "id": "L3",
+   "step": "L",
+   "kind": "number",
+   "required": false,
+   "health": true,
+   "audience": "therapist",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": "%",
+   "range": [
+    0,
+    100
+   ],
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "T"
+   ],
+   "text": {
+    "en": "GMFM total score"
+   },
+   "option_text": null,
+   "note": "Therapist only: never shown to the parent (rule 1)."
+  },
+  {
+   "id": "L4",
+   "step": "L",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "therapist",
+   "options": [
+    "head",
+    "upper_chest",
+    "mid_chest",
+    "lower_chest",
+    "upper_waist",
+    "lower_waist",
+    "full_trunk"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "V"
+   ],
+   "text": {
+    "en": "Trunk control level (SATCo), static"
+   },
+   "option_text": {
+    "en": {
+     "head": "Head",
+     "upper_chest": "Upper chest",
+     "mid_chest": "Mid chest",
+     "lower_chest": "Lower chest",
+     "upper_waist": "Upper waist",
+     "lower_waist": "Lower waist",
+     "full_trunk": "Full trunk"
+    }
+   }
+  },
+  {
+   "id": "L4_active",
+   "step": "L",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "therapist",
+   "options": [
+    "head",
+    "upper_chest",
+    "mid_chest",
+    "lower_chest",
+    "upper_waist",
+    "lower_waist",
+    "full_trunk"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "V"
+   ],
+   "text": {
+    "en": "Trunk control level (SATCo), active"
+   },
+   "option_text": {
+    "en": {
+     "head": "Head",
+     "upper_chest": "Upper chest",
+     "mid_chest": "Mid chest",
+     "lower_chest": "Lower chest",
+     "upper_waist": "Upper waist",
+     "lower_waist": "Lower waist",
+     "full_trunk": "Full trunk"
+    }
+   }
+  },
+  {
+   "id": "L4_reactive",
+   "step": "L",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "therapist",
+   "options": [
+    "head",
+    "upper_chest",
+    "mid_chest",
+    "lower_chest",
+    "upper_waist",
+    "lower_waist",
+    "full_trunk"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "V"
+   ],
+   "text": {
+    "en": "Trunk control level (SATCo), reactive"
+   },
+   "option_text": {
+    "en": {
+     "head": "Head",
+     "upper_chest": "Upper chest",
+     "mid_chest": "Mid chest",
+     "lower_chest": "Lower chest",
+     "upper_waist": "Upper waist",
+     "lower_waist": "Lower waist",
+     "full_trunk": "Full trunk"
+    }
+   }
+  },
+  {
+   "id": "L5",
+   "step": "L",
+   "kind": "longtext",
+   "required": false,
+   "health": true,
+   "audience": "therapist",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "T"
+   ],
+   "text": {
+    "en": "Current step and goal for each skill area А–Р, with dates"
+   },
+   "option_text": null
+  },
+  {
+   "id": "L6",
+   "step": "L",
+   "kind": "longtext",
+   "required": false,
+   "health": true,
+   "audience": "therapist",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "V",
+    "R"
+   ],
+   "text": {
+    "en": "Walking aids and orthoses, with sizes"
+   },
+   "option_text": null
+  },
+  {
+   "id": "L7",
+   "step": "L",
+   "kind": "single",
+   "required": false,
+   "health": false,
+   "audience": "therapist",
+   "options": [
+    "yes",
+    "no"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "T"
+   ],
+   "text": {
+    "en": "Was the child's performance typical that day?"
+   },
+   "option_text": {
+    "en": {
+     "yes": "Yes",
+     "no": "No"
+    }
+   }
+  },
+  {
+   "id": "L7_text",
+   "step": "L",
+   "kind": "text",
+   "required": false,
+   "health": false,
+   "audience": "therapist",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "q": "L7",
+    "in": [
+     "no"
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "T"
+   ],
+   "text": {
+    "en": "Comment"
+   },
+   "option_text": null
+  },
+  {
+   "id": "L8",
+   "step": "L",
+   "kind": "text",
+   "required": false,
+   "health": true,
+   "audience": "therapist",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "G",
+    "E"
+   ],
+   "text": {
+    "en": "Hand function score"
+   },
+   "option_text": null,
+   "note": "The center confirms which test it uses."
+  },
+  {
+   "id": "L9",
+   "step": "L",
+   "kind": "longtext",
+   "required": false,
+   "health": true,
+   "audience": "therapist",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "S",
+    "E",
+    "M"
+   ],
+   "text": {
+    "en": "Restrictions: movements to avoid, maximum effort, massage areas to skip"
+   },
+   "option_text": null
+  },
+  {
+   "id": "L9_areas",
+   "step": "L",
+   "kind": "multi",
+   "required": false,
+   "health": true,
+   "audience": "therapist",
+   "options": [
+    "head_neck",
+    "shoulders",
+    "back",
+    "hips",
+    "left_arm",
+    "right_arm",
+    "left_hand",
+    "right_hand",
+    "left_leg",
+    "right_leg",
+    "left_foot",
+    "right_foot"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": "body",
+   "signup": false,
+   "feeds": [
+    "M"
+   ],
+   "text": {
+    "en": "Massage areas to skip"
+   },
+   "option_text": {
+    "en": {
+     "head_neck": "Head and neck",
+     "shoulders": "Shoulders",
+     "back": "Back",
+     "hips": "Hips",
+     "left_arm": "Left arm",
+     "right_arm": "Right arm",
+     "left_hand": "Left hand",
+     "right_hand": "Right hand",
+     "left_leg": "Left leg",
+     "right_leg": "Right leg",
+     "left_foot": "Left foot",
+     "right_foot": "Right foot"
+    }
+   }
+  }
+ ]
+}

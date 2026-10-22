@@ -768,9 +768,18 @@ Source: `FlexiKeys Parent Intake Questionnaire.pdf` (174 parent questions, L1–
 R1–R19, red flags). Same IDs as the CTO package (`dataset/cto/`, checked: all 183 match). Keep the question numbers:
 the database fields never shift.
 
-- [ ] **Azim** — `IQ1` The questionnaire as data: every question, answer option, required mark, section and module, and the display rules R1–R19 and follow-ups written as rules the website and the server both read
+- [x] **Azim** — `IQ1` The questionnaire as data: every question, answer option, required mark, section and module, and the display rules R1–R19 and follow-ups written as rules the website and the server both read
   - Done when: a shared case file proves the website and the server show the same questions for at least 8 sample children (one-sided CP walking, CP GMFCS V, Down syndrome not sitting, autism only, DCD, delay, two diagnoses, under 4); every unclear rule is listed under the task for the therapist
   - Needs: —
+  - For the therapist and the CEO (how IQ1 read the unclear points; each is one line to change in `questionnaire.json`):
+    1. R5, autism only: C3–C6 and C12 are always asked; the rest of C and D open when C3–C6 are below the top step or E1 is stiff, floppy or changing ("a motor problem" is our reading)
+    2. Two diagnoses: a question one diagnosis hides is still asked when another chosen diagnosis needs it
+    3. "Walks" (CP7, CP13) = C6 with a walker or better; "stands" (DS4) = C5 with trunk support or better
+    4. The rules' "Show" column only describes; questions are hidden only by "Hide" (so E5 is asked of everyone)
+    5. C12 (lost a skill) is asked of every child, whatever the diagnosis
+    6. DD1's milestone checklist is a temporary list until the physio gives the pictures per age band
+    7. Drafts to check: seizure follow-ups (R17), the vision follow-up (R18), the budget ranges in I6, device sizes as one text (B11), day positions as one text (CP19), the body-map list of 12 parts
+    8. F10 says "when something doesn't work out" instead of "fails"; A6 and A8 stay at sign-up; K1 is the baseline video
 - [ ] **Azim** — `IQ2` Server: save and check answers to the new questions (new kinds: number, body map, picture choice, milestone checklist, scale, time, file), health answers encrypted, "finished" by the new display rules; a round remembers which questionnaire it used, so old rounds stay readable
   - Done when: a round of the new questionnaire can be saved, continued and finished for each sample child; an old P-round still opens
   - Needs: IQ1
