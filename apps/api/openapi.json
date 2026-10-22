@@ -9383,6 +9383,17 @@
      "level": {
       "type": "integer",
       "title": "Level"
+     },
+     "source": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Source"
      }
     },
     "type": "object",
@@ -9390,7 +9401,8 @@
      "slot",
      "goal",
      "ref",
-     "level"
+     "level",
+     "source"
     ],
     "title": "ReasonOut"
    },

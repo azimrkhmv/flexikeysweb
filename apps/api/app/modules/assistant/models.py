@@ -48,6 +48,7 @@ class AiPurpose(StrEnum):
     weekly_summary = "weekly_summary"
     plan_explanation = "plan_explanation"
     therapist_summary = "therapist_summary"
+    plan = "plan"  # A4.6: the AI choosing a plan
 
 
 class AiUsage(IdTimeMixin, Base):

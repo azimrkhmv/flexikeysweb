@@ -20,6 +20,7 @@ from app import storage
 from app.crypto import decrypt_json, encrypt_json
 from app.db import get_session
 from app.errors import AppError
+from app.modules.assistant.ai import Ai, get_ai
 from app.modules.auth.session import CurrentUser
 from app.modules.children.consents import ConsentKind, has_consent, require_consent
 from app.modules.children.router import get_visible_child
@@ -154,7 +155,11 @@ async def list_rounds(
 
 @router.post("/{child_id}/intake/{number}/finish")
 async def finish_round(
-    child_id: uuid.UUID, number: int, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]
+    child_id: uuid.UUID,
+    number: int,
+    user: CurrentUser,
+    db: Annotated[AsyncSession, Depends(get_session)],
+    ai: Annotated[Ai, Depends(get_ai)],
 ) -> RoundOut:
     """Close the round once every required question has an answer ("Not sure" counts), and build the plan (A4.4)."""
     child = await get_visible_child(db, user, child_id)
@@ -174,7 +179,9 @@ async def finish_round(
     rules = rules_view(r.questionnaire, answers, today)  # the CEO's questionnaire read as P answers (IQ3)
     used, _ = await answers_in_use(db, child_id, rules, health)  # a therapist's answer wins (A8.2)
     therapist = await therapist_input(db, child_id, health)
-    await create_plan(db, child, r.id, used, health, therapist)  # in the same transaction: always a plan with a round
+    await create_plan(
+        db, child, r.id, used, health, therapist, ai
+    )  # in the same transaction: always a plan with a round
     await db.commit()
     return await _out(db, r)
 

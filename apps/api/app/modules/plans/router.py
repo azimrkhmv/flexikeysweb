@@ -12,11 +12,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db import get_session
 from app.errors import AppError
 from app.modules.accounts.models import User
+from app.modules.assistant.ai import Ai, over_budget
+from app.modules.assistant.models import AiPurpose, AiUsage
 from app.modules.auth.session import CurrentUser
 from app.modules.billing.router import is_pro
 from app.modules.children.models import Child
 from app.modules.children.router import get_visible_child
-from app.modules.plans import engine
+from app.modules.plans import ai_plan, engine
 from app.modules.plans.models import FixedLevel, ItemKind, Plan, PlanItem, PlanReason
 from app.modules.plans.safety import LibraryExercise, Therapist
 from app.modules.today.models import Feeling, PausedDay, TaskDone
@@ -56,25 +58,34 @@ async def create_plan(
     answers: dict[str, Any],
     health_consent: bool,
     therapist: Therapist | None = None,
+    ai: Ai | None = None,
 ) -> Plan:
     """Build the 4-week plan from the round's answers (and what the child's therapists set) and add it, with its
     items and reasons, to the session. Starts today in Tashkent. Older plans stay as the child's history; the newest
     is the current one."""
     start = datetime.now(TASHKENT).date()
+    exercises = await library(db)
+    lang = child.lang.value
+    choice, sources = None, dict[str, str]()
+    if ai is not None and settings.ai_plan and not await over_budget(db):  # A4.6, inside the rules
+        titles = {i: t.get("en", i) for i, t in await db.execute(select(Exercise.id, Exercise.title))}
+        choice, calls, sources = await ai_plan.choose(
+            ai, answers, exercises, titles, birth_date=child.birth_date, start_date=start, lang=lang,
+            health_consent=health_consent, therapist=therapist,
+        )  # fmt: skip
+        if calls:
+            tokens_in, tokens_out, cost = ai_plan.cost(calls)
+            db.add(AiUsage(family_id=child.family_id, purpose=AiPurpose.plan, model=calls[-1].model,
+                           input_tokens=tokens_in, output_tokens=tokens_out, cost_usd=cost))  # fmt: skip
     built = engine.build_plan(
-        answers,
-        await library(db),
-        birth_date=child.birth_date,
-        start_date=start,
-        lang=child.lang.value,
-        health_consent=health_consent,
-        therapist=therapist,
-    )
+        answers, exercises, birth_date=child.birth_date, start_date=start, lang=lang, health_consent=health_consent,
+        therapist=therapist, choice=choice,
+    )  # fmt: skip
     plan = Plan(
         child_id=child.id,
         round_id=round_id,
         start_date=start,
-        engine_version=engine.ENGINE_VERSION,
+        engine_version=engine.ENGINE_VERSION + ("+ai" if built.ai else ""),
         exercises_allowed=built.exercises_allowed,
     )
     db.add(plan)
@@ -89,7 +100,15 @@ async def create_plan(
             for i, (kind, minutes) in enumerate(day.games)
         )
     db.add_all(
-        PlanReason(plan_id=plan.id, position=i, slot=ItemKind(r.slot), goal=r.goal, ref=r.ref, level=r.level)
+        PlanReason(
+            plan_id=plan.id,
+            position=i,
+            slot=ItemKind(r.slot),
+            goal=r.goal,
+            ref=r.ref,
+            level=r.level,
+            source=f"{r.source}: {sources.get(r.source, '')}"[:300] if r.source else None,
+        )
         for i, r in enumerate(built.reasons)
     )
     return plan
@@ -129,6 +148,7 @@ class ReasonOut(ApiModel):
     goal: str
     ref: str
     level: int
+    source: str | None  # A4.6: the research the AI's pick rests on ("KB-HAND-02: Novak et al., 2020"); None = rules
 
 
 class PlanOut(ApiModel):
@@ -240,7 +260,7 @@ async def current_plan(
         engine_version=plan.engine_version,
         exercises_allowed=plan.exercises_allowed,
         days=[d for d in await plan_days(db, plan) if limit is None or d.day < limit],
-        reasons=[ReasonOut(slot=r.slot, goal=r.goal, ref=r.ref, level=r.level) for r in reasons],
+        reasons=[ReasonOut(slot=r.slot, goal=r.goal, ref=r.ref, level=r.level, source=r.source) for r in reasons],
         paused=await paused_dates(db, plan),
         free_days=limit,
     )

@@ -30,6 +30,7 @@ from app.crypto import decrypt_json, encrypt_json
 from app.db import get_session
 from app.errors import AppError
 from app.modules.accounts.models import User
+from app.modules.assistant.ai import Ai, get_ai
 from app.modules.audit import models as audit
 from app.modules.auth.session import CurrentUser
 from app.modules.children.consents import ConsentKind, has_consent, require_consent
@@ -289,7 +290,7 @@ async def child_limits(db: AsyncSession, child: Child) -> tuple[frozenset[str], 
 REBUILDS = {"T2", "T5", "T6", "T7", "T8"}  # restrictions, movement level, goals, exercises
 
 
-async def rebuild_plan(db: AsyncSession, child_id: uuid.UUID) -> bool:
+async def rebuild_plan(db: AsyncSession, child_id: uuid.UUID, ai: Ai | None = None) -> bool:
     """A new plan from the last finished round and what the therapists set now. False when there is no finished
     round yet (the plan then comes when the parent finishes the questions)."""
     last = await db.scalar(
@@ -303,7 +304,7 @@ async def rebuild_plan(db: AsyncSession, child_id: uuid.UUID) -> bool:
         return False
     health = await has_consent(db, child_id, ConsentKind.health)
     used, _ = await answers_in_use(db, child_id, await _round_answers(db, last.id), health)
-    await create_plan(db, child, last.id, used, health, await therapist_input(db, child_id, health))
+    await create_plan(db, child, last.id, used, health, await therapist_input(db, child_id, health), ai)
     return True
 
 
@@ -402,7 +403,11 @@ async def get_form(
 
 @therapist_router.put("/children/{child_id}/form")
 async def save_form(
-    child_id: uuid.UUID, body: FormIn, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]
+    child_id: uuid.UUID,
+    body: FormIn,
+    user: CurrentUser,
+    db: Annotated[AsyncSession, Depends(get_session)],
+    ai: Annotated[Ai, Depends(get_ai)],
 ) -> FormOut:
     """Save some answers; the others stay. All valid, or nothing is saved. The answers are used at once."""
     await get_shared_child(db, user, child_id)
@@ -447,6 +452,6 @@ async def save_form(
             )
         )
     audit.record(db, user.id, "therapist.form_saved", child_id, questions=sorted(clean))
-    rebuilt = bool(REBUILDS & clean.keys()) and await rebuild_plan(db, child_id)
+    rebuilt = bool(REBUILDS & clean.keys()) and await rebuild_plan(db, child_id, ai)
     await db.commit()
     return (await _form(db, user, child_id, profession)).model_copy(update={"plan_rebuilt": rebuilt})

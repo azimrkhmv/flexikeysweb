@@ -3398,6 +3398,8 @@ export interface components {
             ref: string;
             /** Level */
             level: number;
+            /** Source */
+            source: string | null;
         };
         /** RefreshBody */
         RefreshBody: {

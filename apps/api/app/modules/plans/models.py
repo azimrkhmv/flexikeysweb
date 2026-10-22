@@ -68,6 +68,7 @@ class PlanReason(IdTimeMixin, Base):
     goal: Mapped[str] = mapped_column(String(16))
     ref: Mapped[str] = mapped_column(String(48))
     level: Mapped[int] = mapped_column(SmallInteger)
+    source: Mapped[str | None] = mapped_column(String(300))  # A4.6: "KB-HAND-02: Novak et al., 2020" for an AI pick
 
 
 class FixedLevel(IdTimeMixin, Base):

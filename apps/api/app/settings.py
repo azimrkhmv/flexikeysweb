@@ -41,6 +41,8 @@ class Settings(BaseSettings):
     # A9.8: the knowledge base the assistant answers from (a Markdown file or a folder of them), kept outside the
     # repository. Empty: no library (tests, computers without the file); production refuses a real AI without it.
     research_path: str = ""
+    # A4.6: the AI chooses the plan inside the rules. Off until the lawyer's answer (G7) and the model choice (E2).
+    ai_plan: bool = False
     intake_repeat_days: int = (
         90  # the questions come back every 3 months (spec)  # TASKS.md section 3: "Both numbers are settings"
     )
