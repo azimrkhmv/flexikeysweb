@@ -17,6 +17,8 @@ class IntakeRound(IdTimeMixin, Base):
 
     child_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("children.id", ondelete="CASCADE"), index=True)
     number: Mapped[int]
+    # Which question set: "p41" (spec §5, P1-P41) or the CEO's questionnaire by its date (IQ2). Never changes.
+    questionnaire: Mapped[str] = mapped_column(String(16), server_default="p41")
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
 

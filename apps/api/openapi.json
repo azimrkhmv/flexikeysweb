@@ -3211,6 +3211,50 @@
     }
    }
   },
+  "/api/v1/children/{child_id}/intake/file-link": {
+   "post": {
+    "tags": [
+     "intake"
+    ],
+    "summary": "File Link",
+    "description": "Where to upload a document or photo for a questionnaire answer (B10, B13, CP21, DD3, I4), straight to storage.",
+    "operationId": "file_link_api_v1_children__child_id__intake_file_link_post",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/FileLink"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/v1/children/{child_id}/plan": {
    "get": {
     "tags": [
@@ -6919,6 +6963,24 @@
     ],
     "title": "FeelingIn"
    },
+   "FileLink": {
+    "properties": {
+     "storageKey": {
+      "type": "string",
+      "title": "Storagekey"
+     },
+     "uploadUrl": {
+      "type": "string",
+      "title": "Uploadurl"
+     }
+    },
+    "type": "object",
+    "required": [
+     "storageKey",
+     "uploadUrl"
+    ],
+    "title": "FileLink"
+   },
    "FlagChange": {
     "properties": {
      "key": {
@@ -9603,6 +9665,10 @@
       "type": "integer",
       "title": "Number"
      },
+     "questionnaire": {
+      "type": "string",
+      "title": "Questionnaire"
+     },
      "completedAt": {
       "anyOf": [
        {
@@ -9624,6 +9690,7 @@
     "type": "object",
     "required": [
      "number",
+     "questionnaire",
      "completedAt",
      "answers"
     ],

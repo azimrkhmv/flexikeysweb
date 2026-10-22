@@ -780,7 +780,7 @@ the database fields never shift.
     6. DD1's milestone checklist is a temporary list until the physio gives the pictures per age band
     7. Drafts to check: seizure follow-ups (R17), the vision follow-up (R18), the budget ranges in I6, device sizes as one text (B11), day positions as one text (CP19), the body-map list of 12 parts
     8. F10 says "when something doesn't work out" instead of "fails"; A6 and A8 stay at sign-up; K1 is the baseline video
-- [ ] **Azim** — `IQ2` Server: save and check answers to the new questions (new kinds: number, body map, picture choice, milestone checklist, scale, time, file), health answers encrypted, "finished" by the new display rules; a round remembers which questionnaire it used, so old rounds stay readable
+- [x] **Azim** — `IQ2` Server: save and check answers to the new questions (new kinds: number, body map, picture choice, milestone checklist, scale, time, file), health answers encrypted, "finished" by the new display rules; a round remembers which questionnaire it used, so old rounds stay readable
   - Done when: a round of the new questionnaire can be saved, continued and finished for each sample child; an old P-round still opens
   - Needs: IQ1
 - [ ] **Azim** — `IQ3` Bridge: turn new answers into what the plan, the skill model and the assistant already use (movement level, hand level, restrictions, goals, daily minutes, start levels), and add the questionnaire's red flags (lost skill, recent surgery or Botox, seizures still happening, choking, weak bones, shunt, pain, Down syndrome neck check, heart)

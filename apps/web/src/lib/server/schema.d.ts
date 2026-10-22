@@ -1240,6 +1240,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/children/{child_id}/intake/file-link": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * File Link
+         * @description Where to upload a document or photo for a questionnaire answer (B10, B13, CP21, DD3, I4), straight to storage.
+         */
+        post: operations["file_link_api_v1_children__child_id__intake_file_link_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/children/{child_id}/plan": {
         parameters: {
             query?: never;
@@ -2571,6 +2591,13 @@ export interface components {
         FeelingIn: {
             feeling: components["schemas"]["Feeling"];
         };
+        /** FileLink */
+        FileLink: {
+            /** Storagekey */
+            storageKey: string;
+            /** Uploadurl */
+            uploadUrl: string;
+        };
         /** FlagChange */
         FlagChange: {
             /** Key */
@@ -3447,6 +3474,8 @@ export interface components {
         RoundOut: {
             /** Number */
             number: number;
+            /** Questionnaire */
+            questionnaire: string;
             /** Completedat */
             completedAt: string | null;
             /** Answers */
@@ -6191,6 +6220,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["VoiceNote"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    file_link_api_v1_children__child_id__intake_file_link_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FileLink"];
                 };
             };
             /** @description Validation Error */

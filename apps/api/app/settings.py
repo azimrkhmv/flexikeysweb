@@ -41,6 +41,8 @@ class Settings(BaseSettings):
     intake_repeat_days: int = (
         90  # the questions come back every 3 months (spec)  # TASKS.md section 3: "Both numbers are settings"
     )
+    # The question set new rounds use: "p41" (spec §5) until the switch to the CEO's questionnaire (IQ8).
+    intake_questionnaire: Literal["p41", "2026-10-16"] = "p41"
 
     @property
     def ai_provider(self) -> Literal["fake", "openrouter"]:
