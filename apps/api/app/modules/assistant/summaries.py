@@ -45,7 +45,7 @@ LANG_NAME = {
     Lang.en: "English",
 }
 WRITE = (
-    "Write {what} for a parent of a child with cerebral palsy, in {lang}, in at most two short, warm, plain "
+    "Write {what} for a parent of a child in home therapy, in {lang}, in at most two short, warm, plain "
     "sentences. Use ONLY these facts; add nothing else: {facts}. Write numbers as digits. No scores, no "
     "percentages, no comparing with other children, no diagnosis, no medical advice. Call the child 'your child'."
 )

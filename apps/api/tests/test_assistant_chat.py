@@ -14,6 +14,7 @@ from app.modules.assistant.safety import is_emergency
 from app.settings import settings
 from tests.test_billing_plan import on_pro
 from tests.test_children import API, add_child, add_helper, parent
+from tests.test_intake_save import health_consent, save
 from tests.test_plan_create import approved_putty  # noqa: F401
 from tests.test_plan_read import family_with_plan, move_start
 from tests.test_therapist_form import share
@@ -248,3 +249,14 @@ def test_the_owner_sees_every_chat_about_the_child(client: TestClient, ai: FakeA
     assert client.delete(f"{API}/children/{child}/chats/{mine[0]['userId']}", headers=owner).status_code == 204
     assert len(client.get(f"{API}/children/{child}/chats", headers=owner).json()) == 2
     assert client.get(f"{API}/children/{child}/chats", headers=parent(client)).status_code == 404
+
+
+def test_the_ai_is_told_the_childs_own_condition(client: TestClient, ai: FakeAi) -> None:
+    """FA9: not every child has cerebral palsy (founders, 2026-10-22)."""
+    owner = parent(client)
+    child = add_child(client, owner)
+    health_consent(client, owner, child)
+    assert save(client, owner, child, {"P9": ["autism"]}).status_code == 200
+    client.post(f"{API}/children/{child}/assistant/messages", headers=owner, json={"text": "Hello", "lang": "en"})
+    system = ai.sent[-1][0]["content"]
+    assert "condition: autism" in system and "cerebral palsy" not in system

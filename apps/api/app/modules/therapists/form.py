@@ -255,7 +255,7 @@ async def _round_answers(db: AsyncSession, round_id: uuid.UUID | None) -> dict[s
     return rules_view(questionnaire or "p41", answers, datetime.now(TASHKENT).date())
 
 
-async def _latest_parent_answers(db: AsyncSession, child_id: uuid.UUID) -> dict[str, Any]:
+async def latest_parent_answers(db: AsyncSession, child_id: uuid.UUID) -> dict[str, Any]:
     last = await db.scalar(
         select(IntakeRound.id).where(IntakeRound.child_id == child_id).order_by(IntakeRound.number.desc()).limit(1)
     )
@@ -314,7 +314,7 @@ async def in_use(child_id: uuid.UUID, user: CurrentUser, db: Annotated[AsyncSess
     therapists' messages."""
     await get_visible_child(db, user, child_id)
     health = await has_consent(db, child_id, ConsentKind.health)
-    answers, by = await answers_in_use(db, child_id, await _latest_parent_answers(db, child_id), health)
+    answers, by = await answers_in_use(db, child_id, await latest_parent_answers(db, child_id), health)
     messages = [
         Message(text=v, **who.model_dump()) for _, v, who in await _therapist_rows(db, child_id, ["T11"], health)
     ]
@@ -378,7 +378,7 @@ async def _form(db: AsyncSession, user: User, child_id: uuid.UUID, profession: P
         select(TherapistAnswer).where(TherapistAnswer.child_id == child_id, TherapistAnswer.therapist_id == user.id)
     )
     mine = {a.question_id: decrypt_json(a.secret) if a.secret else a.value for a in rows}
-    parent = await _latest_parent_answers(db, child_id)
+    parent = await latest_parent_answers(db, child_id)
     return FormOut(
         answers=mine,
         missing=[q for q in required(profession) if q not in mine],

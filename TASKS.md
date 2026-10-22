@@ -870,7 +870,7 @@ the database fields never shift.
     massage rule (KB-MAS-*, KB-CONF-05) and is told not to suggest it. The questionnaire's touch and massage questions
     (AU8, E8, and "Massage" as a therapy now in I1) stay as the CEO's set has them; they only feed the later massage
     feature. L9's massage areas are only stored
-- [ ] **Azim** — `FA9` The assistant's instructions say "the child has cerebral palsy"; with DCD, delay, autism and Down
+- [x] **Azim** — `FA9` The assistant's instructions say "the child has cerebral palsy"; with DCD, delay, autism and Down
   syndrome children (founders, 2026-10-22) they should name the child's own condition from the answers
   - Done when: a DCD child's chat does not call the child's condition cerebral palsy
 - [ ] **Azim** — `FA8` Home Kit optional: a family without the kit gets exercises with household things

@@ -33,10 +33,15 @@ CONDITIONS = {"cp": "cerebral palsy", "autism": "autism", "down": "Down syndrome
               "not_diagnosed": "no diagnosis yet"}  # fmt: skip
 
 
+def condition_words(answers: Mapping[str, Any]) -> str:
+    """The child's condition groups in words (P9, or the questionnaire's B1 through the bridge); "not known"."""
+    p9 = answers.get("P9")
+    return ", ".join(dict.fromkeys(CONDITIONS.get(c, "another condition") for c in p9)) if p9 else "not known"
+
+
 def _child(answers: Mapping[str, Any], birth_date: date, start: date, f: Facts) -> str:
     age = start.year - birth_date.year - ((start.month, start.day) < (birth_date.month, birth_date.day))
-    p9 = answers.get("P9")
-    conditions = ", ".join(CONDITIONS.get(c, "another condition") for c in p9) if isinstance(p9, list) else "not known"
+    conditions = condition_words(answers)
     level = f"GMFCS level {f.gmfcs}" if f.gmfcs else "movement level not known"
     return (
         f"A child of {age} years; condition: {conditions}; {level}; goals: {', '.join(f.goals)}; "

@@ -38,10 +38,11 @@ from app.modules.auth.session import CurrentUser
 from app.modules.billing.router import plan_of
 from app.modules.children.models import Child
 from app.modules.children.router import get_visible_child, require_owner
+from app.modules.plans.ai_plan import condition_words
 from app.modules.plans.engine import DAYS
 from app.modules.plans.models import Plan
 from app.modules.plans.router import TASHKENT, free_days, plan_day_today, plan_days
-from app.modules.therapists.form import child_limits
+from app.modules.therapists.form import child_limits, latest_parent_answers
 from app.modules.therapists.router import get_shared_child
 from app.modules.today.models import TaskDone
 from app.schemas import ApiModel
@@ -57,7 +58,7 @@ LANG_NAME = {
     Lang.en: "English",
 }
 SYSTEM = (
-    "You help {who} in Uzbekistan with a child's home therapy; the child has cerebral palsy. The child is {age} "
+    "You help {who} in Uzbekistan with a child's home therapy; the child's condition: {condition}. The child is {age} "
     "years old. Answer in {lang}, in short plain sentences. You are not a doctor: never diagnose, never talk about "
     "medicine doses, never contradict a doctor's or therapist's advice, never suggest home massage (not part of "
     "FlexiKeys yet). For a medical question give general "
@@ -193,7 +194,10 @@ async def ask(
     )
     restrictions, forbidden = await child_limits(db, child)
     who = "a therapist who guides the family" if therapist else "a parent"
-    system = SYSTEM.format(who=who, age=age, lang=LANG_NAME[body.lang], avoid=avoid_words(restrictions) or "nothing")
+    condition = condition_words(await latest_parent_answers(db, child.id))  # FA9: not every child has CP
+    system = SYSTEM.format(
+        who=who, condition=condition, age=age, lang=LANG_NAME[body.lang], avoid=avoid_words(restrictions) or "nothing"
+    )
     system += " " + await plan_words(db, child, body.lang)
     messages = [{"role": "system", "content": system}]
     for m in earlier:
