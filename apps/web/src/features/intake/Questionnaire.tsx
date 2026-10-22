@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import { FileUp, ShieldCheck, Trash2 } from "lucide-react";
 import { Button, Card, Field, Input, Textarea, useAction } from "@/components/ui";
-import { Q_BY_ID, QUESTIONNAIRE, shownOptions, visible, type QAnswer, type QAnswers, type QQuestion } from "@/content/questionnaire";
+import { inLang, Q_BY_ID, QUESTIONNAIRE, shownOptions, visible, type QAnswer, type QAnswers, type QQuestion } from "@/content/questionnaire";
 import { pView } from "@/content/questionnaireBridge";
 import { FormError, FormNote } from "@/features/auth/parts";
 import { api, sel, useDb } from "@/lib/api";
@@ -15,7 +15,7 @@ import { Ready } from "./Wizard";
 
 // IQ4: the CEO's parent questionnaire (content/questionnaire.json), one screen per section, saved as the parent goes.
 // Which questions show is the data's rules (visible, shownOptions), the same as the server's. Section K (baseline
-// videos) waits for IQ8 and section L is the therapist's (IQ6). Text is English until IQ5 adds uz and ru.
+// videos) waits for IQ8 and section L is the therapist's (IQ6). Text comes from the data in the parent's language.
 
 const NO_NOT_SURE = new Set(["A1", "A2"]);
 const TEXT_MAX = 200;
@@ -94,7 +94,7 @@ export function QuestionnaireWizard({ childId: initialChild, version }: { childI
         <div className="h-full rounded-full bg-teal transition-all" style={{ width: `${((i + 1) / steps.length) * 100}%` }} />
       </div>
       <h1 className="text-2xl font-extrabold text-ink sm:text-3xl">
-        {step === "health_consent" ? t("intake.step.health_consent") : QUESTIONNAIRE.step_text.en[step]}
+        {step === "health_consent" ? t("intake.step.health_consent") : inLang(QUESTIONNAIRE.step_text, uiLang, step)}
       </h1>
 
       {step === "health_consent" ? (
@@ -154,10 +154,12 @@ type SetAnswer = (id: string, v: QAnswer) => void;
 /** One question of any kind. "Not sure" is stored as null (spec §5); an optional question has no "Not sure". */
 function Question({ q, answers, set, childId }: { q: QQuestion; answers: QAnswers; set: SetAnswer; childId: string | null }) {
   const t = useT();
+  const [uiLang] = useUiLang();
   const v = answers[q.id];
-  const label = q.text.en + (q.unit ? ` (${q.unit})` : "") + (q.required ? "" : ` · ${t("intake.optional")}`);
+  const text = inLang(q.text, uiLang);
+  const label = text + (q.unit ? ` (${t(`intake.unit.${q.unit}`)})` : "") + (q.required ? "" : ` · ${t("intake.optional")}`);
   const options = shownOptions(q.id, answers, today()) ?? [];
-  const opt = (o: string) => q.option_text?.en[o] ?? o;
+  const opt = (o: string) => (q.option_text ? inLang(q.option_text, uiLang, o) : o);
   const notSure = q.required && !NO_NOT_SURE.has(q.id) && !options.includes("not_sure") && (
     <Choice name={q.id} type="radio" checked={v === null} onChange={() => set(q.id, null)} label={t("intake.notSure")} />
   );
@@ -190,7 +192,7 @@ function Question({ q, answers, set, childId }: { q: QQuestion; answers: QAnswer
           <legend className="mb-2 font-bold text-ink">{label}</legend>
           <div className="flex flex-wrap items-center gap-2">
             <Input
-              type="number" inputMode="numeric" min={0} max={240} step={1} className="w-28" aria-label={`${q.text.en} (${t("intake.months")})`}
+              type="number" inputMode="numeric" min={0} max={240} step={1} className="w-28" aria-label={`${text} (${t("intake.months")})`}
               value={typeof v === "number" ? v : ""} onChange={(e) => set(q.id, number(e.target.value))}
             />
             <span className="text-sm font-semibold text-ink-2">{t("intake.months")}</span>

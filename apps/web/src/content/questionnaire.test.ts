@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import mine from "./backend/questionnaire.json";
-import { Q_BY_ID, QUESTIONNAIRE, shownOptions, visible, type QAnswers } from "./questionnaire";
+import { inLang, Q_BY_ID, QUESTIONNAIRE, shownOptions, visible, type QAnswers } from "./questionnaire";
 
 // IQ1: the questionnaire file is the server's, and the cases below fix which questions each sample child is shown.
 // questionnaire_cases.json (here and a copy in apps/api/tests) makes the server prove the same. Regenerate with
@@ -61,6 +61,18 @@ describe("questionnaire (IQ1)", () => {
       for (const o of Object.keys(q.option_show ?? {})) expect(q.options, `${q.id}.${o}`).toContain(o);
       if (q.options) expect(Object.keys(q.option_text!.en)).toEqual(q.options);
     }
+  });
+
+  it("every question, option and section has Uzbek and Russian text (IQ5)", () => {
+    for (const lang of ["uz", "ru"]) {
+      for (const s of QUESTIONNAIRE.steps) expect(QUESTIONNAIRE.step_text[lang]?.[s], `${lang} ${s}`).toBeTruthy();
+      for (const q of QUESTIONNAIRE.questions) {
+        expect(q.text[lang], `${lang} ${q.id}`).toBeTruthy();
+        for (const o of q.options ?? []) expect(q.option_text?.[lang]?.[o], `${lang} ${q.id}.${o}`).toBeTruthy();
+      }
+    }
+    expect(inLang(Q_BY_ID.A3.option_text!, "uz_cyrl", "boy")).toMatch(/^[\u0400-\u04FF\s]+$/); // Cyrillic, made from Latin
+    expect(inLang(Q_BY_ID.C10.text, "uz_cyrl")).not.toMatch(/[a-z]{2}/); // no Latin left over
   });
 
   it("each sample child sees the right questions (shared with the server)", () => {

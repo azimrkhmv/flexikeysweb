@@ -29,8 +29,8 @@ const SINGLE: Record<string, string> = {
 function word(w: string): string {
   const fixed = WORDS[w.toLowerCase()];
   if (fixed) return fixed;
-  // Acronyms and brand-style words (GMFCS, FlexiKeys) stay Latin.
-  if (/^[A-Z]{2,}$/.test(w) || /[a-z][A-Z]/.test(w)) return w;
+  // Acronyms, Roman numerals (GMFCS level I) and brand-style words (FlexiKeys) stay Latin.
+  if (/^([A-Z]{2,}|[IVX]+)$/.test(w) || /[a-z][A-Z]/.test(w)) return w;
   let s = w;
   for (const [re, to] of PAIRS) s = s.replace(re, to);
   let out = "";

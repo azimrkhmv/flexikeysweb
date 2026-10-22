@@ -1,3 +1,5 @@
+import { toCyrillic } from "@/lib/cyrillic";
+import { baseLang, type UiLang } from "@/lib/translate";
 import data from "./backend/questionnaire.json";
 
 // The CEO's parent questionnaire of 16 Oct 2026 (IQ1): its questions and which ones a parent is shown.
@@ -39,6 +41,16 @@ export interface QQuestion {
 
 export const QUESTIONNAIRE = data as unknown as { version: string; steps: string[]; step_text: Record<string, Record<string, string>>; defs: Record<string, Cond>; questions: QQuestion[] };
 export const Q_BY_ID: Record<string, QQuestion> = Object.fromEntries(QUESTIONNAIRE.questions.map((q) => [q.id, q]));
+/** A question's, option's or section's text in the parent's language (Uzbek Cyrillic made from Latin, IQ5). */
+export function inLang(texts: Record<string, Record<string, string>> | Record<string, string>, ui: UiLang, key?: string): string {
+  const pick = (l: string) => {
+    const t = (texts as Record<string, Record<string, string> | string>)[l];
+    return typeof t === "string" ? t : key !== undefined ? t?.[key] : undefined;
+  };
+  const s = pick(baseLang(ui)) ?? pick("en") ?? key ?? "";
+  return ui === "uz_cyrl" && pick("uz") ? toCyrillic(s) : s;
+}
+
 const LEVEL: Record<string, number> = { i: 1, ii: 2, iii: 3, iv: 4, v: 5 };
 
 function years(born: QAnswer, today: string): number | null {

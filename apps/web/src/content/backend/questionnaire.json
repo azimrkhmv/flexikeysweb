@@ -39,6 +39,44 @@
    "J": "Goals and time",
    "K": "Baseline videos",
    "L": "Therapist assessment"
+  },
+  "uz": {
+   "A": "Farzandingiz va oilangiz haqida",
+   "B": "Tashxis va tibbiy tarix",
+   "CP": "Bolalar serebral falaji",
+   "DCD": "Harakat muvofiqligi (DCD)",
+   "DD": "Rivojlanish",
+   "DS": "Daun sindromi",
+   "AU": "Autizm",
+   "C": "Harakat",
+   "D": "Qoʻllar",
+   "E": "Tana va sogʻliq",
+   "F": "Koʻrish, eshitish va diqqat",
+   "G": "Gapirish va tushunish",
+   "H": "Kundalik hayot",
+   "I": "Shu paytgacha olingan terapiya",
+   "J": "Maqsadlar va vaqt",
+   "K": "Boshlangʻich videolar",
+   "L": "Terapevt baholashi"
+  },
+  "ru": {
+   "A": "О ребёнке и семье",
+   "B": "Диагноз и история болезни",
+   "CP": "Детский церебральный паралич",
+   "DCD": "Координация (DCD)",
+   "DD": "Развитие",
+   "DS": "Синдром Дауна",
+   "AU": "Аутизм",
+   "C": "Движение",
+   "D": "Руки",
+   "E": "Тело и здоровье",
+   "F": "Зрение, слух и внимание",
+   "G": "Речь и понимание",
+   "H": "Повседневная жизнь",
+   "I": "Занятия до сих пор",
+   "J": "Цели и время",
+   "K": "Видео для начальной оценки",
+   "L": "Оценка терапевта"
   }
  },
  "defs": {
@@ -342,7 +380,9 @@
     "MV"
    ],
    "text": {
-    "en": "What is your child's name (or the name you call them)?"
+    "en": "What is your child's name (or the name you call them)?",
+    "uz": "Farzandingizning ismi nima (yoki uni qanday chaqirasiz)?",
+    "ru": "Как зовут вашего ребёнка (или как вы его называете)?"
    },
    "option_text": null
   },
@@ -366,7 +406,9 @@
     "All"
    ],
    "text": {
-    "en": "Date of birth"
+    "en": "Date of birth",
+    "uz": "Tugʻilgan sanasi",
+    "ru": "Дата рождения"
    },
    "option_text": null
   },
@@ -393,12 +435,22 @@
     "V"
    ],
    "text": {
-    "en": "Boy or girl?"
+    "en": "Boy or girl?",
+    "uz": "Oʻgʻil yoki qiz?",
+    "ru": "Мальчик или девочка?"
    },
    "option_text": {
     "en": {
      "boy": "Boy",
      "girl": "Girl"
+    },
+    "uz": {
+     "boy": "Oʻgʻil",
+     "girl": "Qiz"
+    },
+    "ru": {
+     "boy": "Мальчик",
+     "girl": "Девочка"
     }
    }
   },
@@ -428,7 +480,9 @@
     "T"
    ],
    "text": {
-    "en": "Height"
+    "en": "Height",
+    "uz": "Boʻyi",
+    "ru": "Рост"
    },
    "option_text": null
   },
@@ -458,7 +512,9 @@
     "T"
    ],
    "text": {
-    "en": "Weight"
+    "en": "Weight",
+    "uz": "Vazni",
+    "ru": "Вес"
    },
    "option_text": null
   },
@@ -487,7 +543,9 @@
     "A"
    ],
    "text": {
-    "en": "Who is filling this in?"
+    "en": "Who is filling this in?",
+    "uz": "Buni kim toʻldiryapti?",
+    "ru": "Кто заполняет анкету?"
    },
    "option_text": {
     "en": {
@@ -495,6 +553,18 @@
      "father": "Father",
      "grandparent": "Grandparent",
      "other_caregiver": "Other caregiver"
+    },
+    "uz": {
+     "mother": "Onasi",
+     "father": "Otasi",
+     "grandparent": "Buvisi yoki bobosi",
+     "other_caregiver": "Boshqa qaraydigan kishi"
+    },
+    "ru": {
+     "mother": "Мама",
+     "father": "Папа",
+     "grandparent": "Бабушка или дедушка",
+     "other_caregiver": "Другой взрослый, который ухаживает за ребёнком"
     }
    }
   },
@@ -522,13 +592,25 @@
     "All"
    ],
    "text": {
-    "en": "App language"
+    "en": "App language",
+    "uz": "Ilova tili",
+    "ru": "Язык приложения"
    },
    "option_text": {
     "en": {
      "uz": "Uzbek",
      "ru": "Russian",
      "en": "English"
+    },
+    "uz": {
+     "uz": "Oʻzbek tili",
+     "ru": "Rus tili",
+     "en": "Ingliz tili"
+    },
+    "ru": {
+     "uz": "Узбекский",
+     "ru": "Русский",
+     "en": "Английский"
     }
    },
    "note": "Chosen at sign-up (language first, spec §4); Uzbek Cyrillic is open with the CEO."
@@ -557,13 +639,25 @@
     "MV"
    ],
    "text": {
-    "en": "Language you speak with your child at home"
+    "en": "Language you speak with your child at home",
+    "uz": "Uyda farzandingiz bilan qaysi tilda gaplashasiz?",
+    "ru": "На каком языке вы говорите с ребёнком дома"
    },
    "option_text": {
     "en": {
      "uzbek": "Uzbek",
      "russian": "Russian",
      "other": "Other"
+    },
+    "uz": {
+     "uzbek": "Oʻzbek tili",
+     "russian": "Rus tili",
+     "other": "Boshqa til"
+    },
+    "ru": {
+     "uzbek": "Узбекский",
+     "russian": "Русский",
+     "other": "Другой"
     }
    }
   },
@@ -587,7 +681,9 @@
     "R"
    ],
    "text": {
-    "en": "City / region"
+    "en": "City / region",
+    "uz": "Shahar / viloyat",
+    "ru": "Город / область"
    },
    "option_text": null,
    "note": "Chosen at sign-up from the district list (content/districts.ts)."
@@ -616,11 +712,23 @@
     "E"
    ],
    "text": {
-    "en": "How many adults can help with exercises at home?"
+    "en": "How many adults can help with exercises at home?",
+    "uz": "Uyda mashqlarga nechta katta odam yordam bera oladi?",
+    "ru": "Сколько взрослых дома могут помогать с упражнениями?"
    },
    "option_text": {
     "en": {
      "only_me": "Only me",
+     "two": "2",
+     "three_plus": "3+"
+    },
+    "uz": {
+     "only_me": "Faqat men",
+     "two": "2",
+     "three_plus": "3+"
+    },
+    "ru": {
+     "only_me": "Только я",
      "two": "2",
      "three_plus": "3+"
     }
@@ -650,7 +758,9 @@
     "A"
    ],
    "text": {
-    "en": "Brothers or sisters at home? How many?"
+    "en": "Brothers or sisters at home? How many?",
+    "uz": "Uyda aka-uka yoki opa-singillari bormi? Nechta?",
+    "ru": "Есть ли дома братья или сёстры? Сколько?"
    },
    "option_text": null
   },
@@ -678,7 +788,9 @@
     "A"
    ],
    "text": {
-    "en": "Their ages"
+    "en": "Their ages",
+    "uz": "Ularning yoshi",
+    "ru": "Их возраст"
    },
    "option_text": null
   },
@@ -711,7 +823,9 @@
     "All"
    ],
    "text": {
-    "en": "Has a doctor given your child a diagnosis?"
+    "en": "Has a doctor given your child a diagnosis?",
+    "uz": "Shifokor farzandingizga tashxis qoʻyganmi?",
+    "ru": "Ставил ли врач ребёнку диагноз?"
    },
    "option_text": {
     "en": {
@@ -723,6 +837,26 @@
      "other": "Other",
      "no_diagnosis": "No diagnosis yet",
      "not_sure": "Not sure"
+    },
+    "uz": {
+     "cp": "Bolalar serebral falaji (BSF)",
+     "dcd": "Harakat muvofiqligi buzilishi (DCD)",
+     "developmental_delay": "Rivojlanishning kechikishi",
+     "down_syndrome": "Daun sindromi",
+     "autism": "Autizm",
+     "other": "Boshqa",
+     "no_diagnosis": "Hali tashxis qoʻyilmagan",
+     "not_sure": "Bilmayman"
+    },
+    "ru": {
+     "cp": "Детский церебральный паралич (ДЦП)",
+     "dcd": "Нарушение координации (диспраксия)",
+     "developmental_delay": "Задержка развития",
+     "down_syndrome": "Синдром Дауна",
+     "autism": "Аутизм",
+     "other": "Другое",
+     "no_diagnosis": "Диагноза пока нет",
+     "not_sure": "Не уверен(а)"
     }
    }
   },
@@ -754,7 +888,9 @@
     "V"
    ],
    "text": {
-    "en": "Which parts of the body are most affected?"
+    "en": "Which parts of the body are most affected?",
+    "uz": "Tananing qaysi qismlariga koʻproq taʼsir qilgan?",
+    "ru": "Какие части тела затронуты больше всего?"
    },
    "option_text": {
     "en": {
@@ -763,6 +899,20 @@
      "mostly_legs": "Mostly legs",
      "whole_body": "Whole body",
      "not_sure": "Not sure"
+    },
+    "uz": {
+     "right_side": "Oʻng tomoni",
+     "left_side": "Chap tomoni",
+     "mostly_legs": "Asosan oyoqlar",
+     "whole_body": "Butun tana",
+     "not_sure": "Bilmayman"
+    },
+    "ru": {
+     "right_side": "Правая сторона",
+     "left_side": "Левая сторона",
+     "mostly_legs": "В основном ноги",
+     "whole_body": "Всё тело",
+     "not_sure": "Не уверен(а)"
     }
    }
   },
@@ -786,7 +936,9 @@
     "A"
    ],
    "text": {
-    "en": "Age when diagnosed"
+    "en": "Age when diagnosed",
+    "uz": "Tashxis qoʻyilgandagi yoshi",
+    "ru": "Возраст, когда поставили диагноз"
    },
    "option_text": null
   },
@@ -817,7 +969,9 @@
     "T"
    ],
    "text": {
-    "en": "Was your child born early?"
+    "en": "Was your child born early?",
+    "uz": "Farzandingiz muddatidan oldin tugʻilganmi?",
+    "ru": "Ребёнок родился раньше срока?"
    },
    "option_text": {
     "en": {
@@ -826,6 +980,20 @@
      "28_31": "28–31 weeks",
      "before_28": "Before 28 weeks",
      "dont_know": "Don't know"
+    },
+    "uz": {
+     "on_time": "Oʻz vaqtida",
+     "32_36": "32–36 hafta",
+     "28_31": "28–31 hafta",
+     "before_28": "28 haftadan oldin",
+     "dont_know": "Bilmayman"
+    },
+    "ru": {
+     "on_time": "В срок",
+     "32_36": "32–36 недель",
+     "28_31": "28–31 неделя",
+     "before_28": "Раньше 28 недель",
+     "dont_know": "Не знаю"
     }
    }
   },
@@ -855,7 +1023,9 @@
     "G"
    ],
    "text": {
-    "en": "Does your child have seizures (epilepsy)?"
+    "en": "Does your child have seizures (epilepsy)?",
+    "uz": "Farzandingizda tutqanoq (epilepsiya) boʻladimi?",
+    "ru": "Бывают ли у ребёнка судороги (эпилепсия)?"
    },
    "option_text": {
     "en": {
@@ -863,6 +1033,18 @@
      "controlled": "Yes, controlled with medicine",
      "still": "Yes, still happening",
      "not_sure": "Not sure"
+    },
+    "uz": {
+     "no": "Yoʻq",
+     "controlled": "Ha, dori bilan nazorat qilinadi",
+     "still": "Ha, hali ham boʻlib turadi",
+     "not_sure": "Bilmayman"
+    },
+    "ru": {
+     "no": "Нет",
+     "controlled": "Да, контролируются лекарствами",
+     "still": "Да, всё ещё бывают",
+     "not_sure": "Не уверен(а)"
     }
    }
   },
@@ -897,7 +1079,9 @@
     "S"
    ],
    "text": {
-    "en": "How often?"
+    "en": "How often?",
+    "uz": "Qanchalik tez-tez?",
+    "ru": "Как часто?"
    },
    "option_text": {
     "en": {
@@ -905,6 +1089,18 @@
      "weekly": "Every week",
      "monthly": "Every month",
      "rarely": "Rarely"
+    },
+    "uz": {
+     "daily": "Har kuni",
+     "weekly": "Har hafta",
+     "monthly": "Har oy",
+     "rarely": "Kamdan-kam"
+    },
+    "ru": {
+     "daily": "Каждый день",
+     "weekly": "Каждую неделю",
+     "monthly": "Каждый месяц",
+     "rarely": "Редко"
     }
    },
    "note": "R17 follow-up; answer options are the team's draft, to be checked by the physio."
@@ -942,7 +1138,9 @@
     "G"
    ],
    "text": {
-    "en": "What can start a seizure?"
+    "en": "What can start a seizure?",
+    "uz": "Tutqanoqni nima qoʻzgʻatishi mumkin?",
+    "ru": "Что может вызвать приступ?"
    },
    "option_text": {
     "en": {
@@ -951,6 +1149,20 @@
      "fever": "Fever",
      "loud_sounds": "Loud sounds",
      "not_known": "Not known"
+    },
+    "uz": {
+     "flashing_light": "Miltillovchi yorugʻlik",
+     "tiredness": "Charchoq",
+     "fever": "Isitma",
+     "loud_sounds": "Baland tovushlar",
+     "not_known": "Bilmayman"
+    },
+    "ru": {
+     "flashing_light": "Мигающий свет",
+     "tiredness": "Усталость",
+     "fever": "Высокая температура",
+     "loud_sounds": "Громкие звуки",
+     "not_known": "Неизвестно"
     }
    },
    "note": "R17 follow-up; options other than flashing light are the team's draft."
@@ -987,7 +1199,9 @@
     "G"
    ],
    "text": {
-    "en": "Other conditions a doctor confirmed"
+    "en": "Other conditions a doctor confirmed",
+    "uz": "Shifokor tasdiqlagan boshqa holatlar",
+    "ru": "Другие состояния, которые подтвердил врач"
    },
    "option_text": {
     "en": {
@@ -1001,6 +1215,30 @@
      "reflux": "Reflux",
      "shunt": "Hydrocephalus (shunt)",
      "none": "None"
+    },
+    "uz": {
+     "vision": "Koʻrish muammosi",
+     "hearing": "Eshitish muammosi",
+     "intellectual": "Aqliy rivojlanish buzilishi",
+     "hip": "Son boʻgʻimi muammosi",
+     "spine": "Umurtqa pogʻonasi qiyshiqligi",
+     "heart": "Yurak",
+     "breathing": "Nafas olish",
+     "reflux": "Reflyuks",
+     "shunt": "Gidrotsefaliya (shunt)",
+     "none": "Hech biri"
+    },
+    "ru": {
+     "vision": "Проблемы со зрением",
+     "hearing": "Проблемы со слухом",
+     "intellectual": "Интеллектуальные нарушения",
+     "hip": "Проблемы с тазобедренным суставом",
+     "spine": "Искривление позвоночника",
+     "heart": "Сердце",
+     "breathing": "Дыхание",
+     "reflux": "Рефлюкс",
+     "shunt": "Гидроцефалия (шунт)",
+     "none": "Нет"
     }
    }
   },
@@ -1027,12 +1265,22 @@
     "S"
    ],
    "text": {
-    "en": "Has your child had surgery?"
+    "en": "Has your child had surgery?",
+    "uz": "Farzandingiz operatsiya qilinganmi?",
+    "ru": "Были ли у ребёнка операции?"
    },
    "option_text": {
     "en": {
      "yes": "Yes",
      "no": "No"
+    },
+    "uz": {
+     "yes": "Ha",
+     "no": "Yoʻq"
+    },
+    "ru": {
+     "yes": "Да",
+     "no": "Нет"
     }
    }
   },
@@ -1067,7 +1315,9 @@
     "S"
    ],
    "text": {
-    "en": "What kind of surgery?"
+    "en": "What kind of surgery?",
+    "uz": "Qanday operatsiya?",
+    "ru": "Какая операция?"
    },
    "option_text": {
     "en": {
@@ -1076,6 +1326,20 @@
      "spine": "Spine",
      "shunt": "Shunt",
      "other": "Other"
+    },
+    "uz": {
+     "hip": "Son boʻgʻimi",
+     "tendon": "Pay",
+     "spine": "Umurtqa pogʻonasi",
+     "shunt": "Shunt",
+     "other": "Boshqa"
+    },
+    "ru": {
+     "hip": "На тазобедренном суставе",
+     "tendon": "На сухожилиях",
+     "spine": "На позвоночнике",
+     "shunt": "Шунтирование",
+     "other": "Другое"
     }
    }
   },
@@ -1104,7 +1368,9 @@
     "S"
    ],
    "text": {
-    "en": "When was the last surgery?"
+    "en": "When was the last surgery?",
+    "uz": "Oxirgi operatsiya qachon boʻlgan?",
+    "ru": "Когда была последняя операция?"
    },
    "option_text": null
   },
@@ -1129,7 +1395,9 @@
     "S"
    ],
    "text": {
-    "en": "Medicines your child takes now"
+    "en": "Medicines your child takes now",
+    "uz": "Farzandingiz hozir ichayotgan dorilar",
+    "ru": "Какие лекарства ребёнок принимает сейчас"
    },
    "option_text": null
   },
@@ -1154,7 +1422,9 @@
     "S"
    ],
    "text": {
-    "en": "Or a photo of the prescription"
+    "en": "Or a photo of the prescription",
+    "uz": "Yoki retseptning surati",
+    "ru": "Или фото рецепта"
    },
    "option_text": null
   },
@@ -1200,7 +1470,9 @@
     "M"
    ],
    "text": {
-    "en": "Devices your child uses"
+    "en": "Devices your child uses",
+    "uz": "Farzandingiz foydalanadigan moslamalar",
+    "ru": "Какими приспособлениями пользуется ребёнок"
    },
    "option_text": {
     "en": {
@@ -1223,6 +1495,48 @@
      "glasses": "Glasses",
      "hearing_aid": "Hearing aid",
      "none": "None"
+    },
+    "uz": {
+     "gait_trainer": "Yurish trenajori",
+     "rollator": "Gʻildirakli yurgich yoki ramka",
+     "walker": "Yurgich",
+     "u_support": "U shaklidagi tayanch",
+     "crutches": "Qoʻltiqtayoq",
+     "quad_cane": "Toʻrt oyoqli hassa",
+     "cane": "Hassa",
+     "hip_orthosis": "Son ortezi",
+     "knee_orthosis": "Tizza ortezi",
+     "afo": "Boldir-oyoq panjasi ortezi (AFO)",
+     "insoles": "Ortopedik patak",
+     "ortho_shoes": "Ortopedik poyabzal",
+     "hand_splint": "Qoʻl shinasi",
+     "stander": "Vertikalizator",
+     "wheelchair": "Nogironlar aravachasi",
+     "special_chair": "Maxsus stul",
+     "glasses": "Koʻzoynak",
+     "hearing_aid": "Eshitish apparati",
+     "none": "Hech biri"
+    },
+    "ru": {
+     "gait_trainer": "Тренажёр для ходьбы",
+     "rollator": "Роллатор или рама",
+     "walker": "Ходунки",
+     "u_support": "U-образная опора",
+     "crutches": "Костыли",
+     "quad_cane": "Трость с четырьмя опорами",
+     "cane": "Трость",
+     "hip_orthosis": "Ортез на тазобедренный сустав",
+     "knee_orthosis": "Ортез на колено",
+     "afo": "Ортез на голеностоп (AFO)",
+     "insoles": "Стельки",
+     "ortho_shoes": "Ортопедическая обувь",
+     "hand_splint": "Шина на кисть",
+     "stander": "Вертикализатор",
+     "wheelchair": "Инвалидная коляска",
+     "special_chair": "Специальный стул",
+     "glasses": "Очки",
+     "hearing_aid": "Слуховой аппарат",
+     "none": "Нет"
     }
    }
   },
@@ -1263,7 +1577,9 @@
     "M"
    ],
    "text": {
-    "en": "Sizes, and when each was last fitted"
+    "en": "Sizes, and when each was last fitted",
+    "uz": "Oʻlchamlari va har biri oxirgi marta qachon moslangani",
+    "ru": "Размеры и когда каждое подбирали в последний раз"
    },
    "option_text": null
   },
@@ -1287,7 +1603,9 @@
     "A"
    ],
    "text": {
-    "en": "Upload doctor's documents (conclusion, discharge summary)"
+    "en": "Upload doctor's documents (conclusion, discharge summary)",
+    "uz": "Shifokor hujjatlarini yuklang (xulosa, kasallik tarixidan koʻchirma)",
+    "ru": "Загрузите документы от врача (заключение, выписка)"
    },
    "option_text": null
   },
@@ -1321,7 +1639,9 @@
     "G"
    ],
    "text": {
-    "en": "What type of CP did the doctor say?"
+    "en": "What type of CP did the doctor say?",
+    "uz": "Shifokor BSFning qaysi turini aytgan?",
+    "ru": "Какой тип ДЦП назвал врач?"
    },
    "option_text": {
     "en": {
@@ -1330,6 +1650,20 @@
      "ataxic": "Shaky, poor balance (ataxic)",
      "mixed": "Mixed",
      "dont_know": "Don't know"
+    },
+    "uz": {
+     "spastic": "Mushaklar qattiq (spastik)",
+     "dyskinetic": "Ixtiyorsiz harakatlar (diskinetik)",
+     "ataxic": "Titrash, muvozanat qiyin (ataksik)",
+     "mixed": "Aralash",
+     "dont_know": "Bilmayman"
+    },
+    "ru": {
+     "spastic": "Напряжённые мышцы (спастический)",
+     "dyskinetic": "Неконтролируемые движения (дискинетический)",
+     "ataxic": "Дрожание, плохое равновесие (атактический)",
+     "mixed": "Смешанный",
+     "dont_know": "Не знаю"
     }
    }
   },
@@ -1362,7 +1696,9 @@
     "V"
    ],
    "text": {
-    "en": "Which picture shows where your child's body is affected?"
+    "en": "Which picture shows where your child's body is affected?",
+    "uz": "Qaysi rasm farzandingiz tanasining qaysi qismiga taʼsir qilganini koʻrsatadi?",
+    "ru": "На какой картинке показано, какая часть тела ребёнка затронута?"
    },
    "option_text": {
     "en": {
@@ -1370,6 +1706,18 @@
      "legs": "Mostly legs",
      "three_limbs": "Three limbs",
      "whole_body": "Whole body"
+    },
+    "uz": {
+     "one_side": "Bir tomoni",
+     "legs": "Asosan oyoqlar",
+     "three_limbs": "Uchta qoʻl-oyoq",
+     "whole_body": "Butun tana"
+    },
+    "ru": {
+     "one_side": "Одна сторона",
+     "legs": "В основном ноги",
+     "three_limbs": "Три конечности",
+     "whole_body": "Всё тело"
     }
    }
   },
@@ -1399,12 +1747,22 @@
     "S"
    ],
    "text": {
-    "en": "Has your child had Botox injections?"
+    "en": "Has your child had Botox injections?",
+    "uz": "Farzandingizga Botoks ukoli qilinganmi?",
+    "ru": "Делали ли ребёнку уколы ботокса?"
    },
    "option_text": {
     "en": {
      "yes": "Yes",
      "no": "No"
+    },
+    "uz": {
+     "yes": "Ha",
+     "no": "Yoʻq"
+    },
+    "ru": {
+     "yes": "Да",
+     "no": "Нет"
     }
    }
   },
@@ -1441,7 +1799,9 @@
     "S"
    ],
    "text": {
-    "en": "Date of the last injection"
+    "en": "Date of the last injection",
+    "uz": "Oxirgi ukol sanasi",
+    "ru": "Дата последнего укола"
    },
    "option_text": null
   },
@@ -1491,7 +1851,9 @@
     "S"
    ],
    "text": {
-    "en": "Which muscles?"
+    "en": "Which muscles?",
+    "uz": "Qaysi mushaklarga?",
+    "ru": "В какие мышцы?"
    },
    "option_text": {
     "en": {
@@ -1507,6 +1869,34 @@
      "right_leg": "Right leg",
      "left_foot": "Left foot",
      "right_foot": "Right foot"
+    },
+    "uz": {
+     "head_neck": "Bosh va boʻyin",
+     "shoulders": "Yelkalar",
+     "back": "Orqa",
+     "hips": "Son va chanoq",
+     "left_arm": "Chap qoʻl",
+     "right_arm": "Oʻng qoʻl",
+     "left_hand": "Chap kaft",
+     "right_hand": "Oʻng kaft",
+     "left_leg": "Chap oyoq",
+     "right_leg": "Oʻng oyoq",
+     "left_foot": "Chap oyoq panjasi",
+     "right_foot": "Oʻng oyoq panjasi"
+    },
+    "ru": {
+     "head_neck": "Голова и шея",
+     "shoulders": "Плечи",
+     "back": "Спина",
+     "hips": "Таз и бёдра",
+     "left_arm": "Левая рука",
+     "right_arm": "Правая рука",
+     "left_hand": "Левая кисть",
+     "right_hand": "Правая кисть",
+     "left_leg": "Левая нога",
+     "right_leg": "Правая нога",
+     "left_foot": "Левая стопа",
+     "right_foot": "Правая стопа"
     }
    }
   },
@@ -1536,13 +1926,25 @@
     "S"
    ],
    "text": {
-    "en": "Hip X-ray in the last 12 months?"
+    "en": "Hip X-ray in the last 12 months?",
+    "uz": "Oxirgi 12 oyda son boʻgʻimi rentgeni qilinganmi?",
+    "ru": "Делали ли рентген тазобедренных суставов за последние 12 месяцев?"
    },
    "option_text": {
     "en": {
      "yes": "Yes",
      "no": "No",
      "dont_know": "Don't know"
+    },
+    "uz": {
+     "yes": "Ha",
+     "no": "Yoʻq",
+     "dont_know": "Bilmayman"
+    },
+    "ru": {
+     "yes": "Да",
+     "no": "Нет",
+     "dont_know": "Не знаю"
     }
    }
   },
@@ -1578,7 +1980,9 @@
     "S"
    ],
    "text": {
-    "en": "What did the doctor say?"
+    "en": "What did the doctor say?",
+    "uz": "Shifokor nima dedi?",
+    "ru": "Что сказал врач?"
    },
    "option_text": null
   },
@@ -1629,7 +2033,9 @@
     "E"
    ],
    "text": {
-    "en": "Which muscles feel tightest?"
+    "en": "Which muscles feel tightest?",
+    "uz": "Qaysi mushaklar eng qattiq?",
+    "ru": "Какие мышцы самые напряжённые?"
    },
    "option_text": {
     "en": {
@@ -1645,6 +2051,34 @@
      "right_leg": "Right leg",
      "left_foot": "Left foot",
      "right_foot": "Right foot"
+    },
+    "uz": {
+     "head_neck": "Bosh va boʻyin",
+     "shoulders": "Yelkalar",
+     "back": "Orqa",
+     "hips": "Son va chanoq",
+     "left_arm": "Chap qoʻl",
+     "right_arm": "Oʻng qoʻl",
+     "left_hand": "Chap kaft",
+     "right_hand": "Oʻng kaft",
+     "left_leg": "Chap oyoq",
+     "right_leg": "Oʻng oyoq",
+     "left_foot": "Chap oyoq panjasi",
+     "right_foot": "Oʻng oyoq panjasi"
+    },
+    "ru": {
+     "head_neck": "Голова и шея",
+     "shoulders": "Плечи",
+     "back": "Спина",
+     "hips": "Таз и бёдра",
+     "left_arm": "Левая рука",
+     "right_arm": "Правая рука",
+     "left_hand": "Левая кисть",
+     "right_hand": "Правая кисть",
+     "left_leg": "Левая нога",
+     "right_leg": "Правая нога",
+     "left_foot": "Левая стопа",
+     "right_foot": "Правая стопа"
     }
    }
   },
@@ -1686,13 +2120,25 @@
     "A"
    ],
    "text": {
-    "en": "Does the tightness get worse when your child is upset, cold or tired?"
+    "en": "Does the tightness get worse when your child is upset, cold or tired?",
+    "uz": "Farzandingiz xafa boʻlganda, sovqotganda yoki charchaganda mushaklari qattiqroq boʻladimi?",
+    "ru": "Мышцы напрягаются сильнее, когда ребёнок расстроен, замёрз или устал?"
    },
    "option_text": {
     "en": {
      "yes": "Yes",
      "sometimes": "Sometimes",
      "no": "No"
+    },
+    "uz": {
+     "yes": "Ha",
+     "sometimes": "Baʼzan",
+     "no": "Yoʻq"
+    },
+    "ru": {
+     "yes": "Да",
+     "sometimes": "Иногда",
+     "no": "Нет"
     }
    }
   },
@@ -1737,7 +2183,9 @@
     "V"
    ],
    "text": {
-    "en": "Does your child walk on tiptoes, or with knees touching or crossing?"
+    "en": "Does your child walk on tiptoes, or with knees touching or crossing?",
+    "uz": "Farzandingiz oyoq uchida yuradimi yoki tizzalari bir-biriga tegib yo chalishib yuradimi?",
+    "ru": "Ребёнок ходит на носочках или так, что колени соприкасаются или ноги перекрещиваются?"
    },
    "option_text": {
     "en": {
@@ -1745,6 +2193,18 @@
      "knees_together": "Knees together",
      "legs_cross": "Legs cross",
      "no": "No"
+    },
+    "uz": {
+     "tiptoes": "Oyoq uchida",
+     "knees_together": "Tizzalari bir-biriga tegadi",
+     "legs_cross": "Oyoqlari chalishadi",
+     "no": "Yoʻq"
+    },
+    "ru": {
+     "tiptoes": "На носочках",
+     "knees_together": "Колени соприкасаются",
+     "legs_cross": "Ноги перекрещиваются",
+     "no": "Нет"
     }
    }
   },
@@ -1785,12 +2245,22 @@
     "M"
    ],
    "text": {
-    "en": "Has your child used night splints or casts?"
+    "en": "Has your child used night splints or casts?",
+    "uz": "Farzandingiz tungi shina yoki gips taqqanmi?",
+    "ru": "Использовал ли ребёнок ночные шины или гипс?"
    },
    "option_text": {
     "en": {
      "yes": "Yes",
      "no": "No"
+    },
+    "uz": {
+     "yes": "Ha",
+     "no": "Yoʻq"
+    },
+    "ru": {
+     "yes": "Да",
+     "no": "Нет"
     }
    }
   },
@@ -1834,7 +2304,9 @@
     "M"
    ],
    "text": {
-    "en": "Which, and when?"
+    "en": "Which, and when?",
+    "uz": "Qaysi va qachon?",
+    "ru": "Какие и когда?"
    },
    "option_text": null
   },
@@ -1877,7 +2349,9 @@
     "E"
    ],
    "text": {
-    "en": "When do the extra movements get stronger?"
+    "en": "When do the extra movements get stronger?",
+    "uz": "Ortiqcha harakatlar qachon kuchayadi?",
+    "ru": "Когда лишние движения становятся сильнее?"
    },
    "option_text": {
     "en": {
@@ -1885,6 +2359,18 @@
      "reaching": "Trying to reach",
      "tired": "Tired",
      "always": "Always"
+    },
+    "uz": {
+     "excited": "Hayajonlanganda",
+     "reaching": "Biror narsaga qoʻl choʻzganda",
+     "tired": "Charchaganda",
+     "always": "Doim"
+    },
+    "ru": {
+     "excited": "Когда радуется или волнуется",
+     "reaching": "Когда тянется к чему-то",
+     "tired": "Когда устал",
+     "always": "Всегда"
     }
    }
   },
@@ -1927,13 +2413,25 @@
     "S"
    ],
    "text": {
-    "en": "Does your child's body twist or arch backwards?"
+    "en": "Does your child's body twist or arch backwards?",
+    "uz": "Farzandingizning tanasi buraladimi yoki orqaga egiladimi?",
+    "ru": "Тело ребёнка скручивается или выгибается назад?"
    },
    "option_text": {
     "en": {
      "often": "Often",
      "sometimes": "Sometimes",
      "never": "Never"
+    },
+    "uz": {
+     "often": "Tez-tez",
+     "sometimes": "Baʼzan",
+     "never": "Hech qachon"
+    },
+    "ru": {
+     "often": "Часто",
+     "sometimes": "Иногда",
+     "never": "Никогда"
     }
    }
   },
@@ -1976,7 +2474,9 @@
     "M"
    ],
    "text": {
-    "en": "Which position calms the movements best?"
+    "en": "Which position calms the movements best?",
+    "uz": "Qaysi holatda harakatlar eng yaxshi tinchlanadi?",
+    "ru": "В какой позе движения успокаиваются лучше всего?"
    },
    "option_text": {
     "en": {
@@ -1984,6 +2484,18 @@
      "side_lying": "Lying on side",
      "held": "Being held",
      "nothing": "Nothing helps"
+    },
+    "uz": {
+     "supported_sitting": "Tayanib oʻtirganda",
+     "side_lying": "Yonboshlab yotganda",
+     "held": "Quchoqda koʻtarib turganda",
+     "nothing": "Hech narsa yordam bermaydi"
+    },
+    "ru": {
+     "supported_sitting": "Сидя с опорой",
+     "side_lying": "Лёжа на боку",
+     "held": "На руках у взрослого",
+     "nothing": "Ничего не помогает"
     }
    }
   },
@@ -2025,13 +2537,25 @@
     "E"
    ],
    "text": {
-    "en": "Do the hands shake more as they get close to a toy?"
+    "en": "Do the hands shake more as they get close to a toy?",
+    "uz": "Oʻyinchoqqa yaqinlashganda qoʻllari koʻproq titraydimi?",
+    "ru": "Руки дрожат сильнее, когда приближаются к игрушке?"
    },
    "option_text": {
     "en": {
      "yes": "Yes",
      "a_little": "A little",
      "no": "No"
+    },
+    "uz": {
+     "yes": "Ha",
+     "a_little": "Biroz",
+     "no": "Yoʻq"
+    },
+    "ru": {
+     "yes": "Да",
+     "a_little": "Немного",
+     "no": "Нет"
     }
    }
   },
@@ -2073,12 +2597,22 @@
     "E"
    ],
    "text": {
-    "en": "Does your child walk with feet wide apart?"
+    "en": "Does your child walk with feet wide apart?",
+    "uz": "Farzandingiz oyoqlarini keng qoʻyib yuradimi?",
+    "ru": "Ребёнок ходит, широко расставляя ноги?"
    },
    "option_text": {
     "en": {
      "yes": "Yes",
      "no": "No"
+    },
+    "uz": {
+     "yes": "Ha",
+     "no": "Yoʻq"
+    },
+    "ru": {
+     "yes": "Да",
+     "no": "Нет"
     }
    }
   },
@@ -2119,13 +2653,25 @@
     "MV"
    ],
    "text": {
-    "en": "Is your child's speech slow or unclear?"
+    "en": "Is your child's speech slow or unclear?",
+    "uz": "Farzandingizning nutqi sekin yoki tushunarsizmi?",
+    "ru": "Речь ребёнка медленная или неразборчивая?"
    },
    "option_text": {
     "en": {
      "yes": "Yes",
      "a_little": "A little",
      "no": "No"
+    },
+    "uz": {
+     "yes": "Ha",
+     "a_little": "Biroz",
+     "no": "Yoʻq"
+    },
+    "ru": {
+     "yes": "Да",
+     "a_little": "Немного",
+     "no": "Нет"
     }
    }
   },
@@ -2163,13 +2709,25 @@
     "G"
    ],
    "text": {
-    "en": "Does your child forget or ignore the weaker hand?"
+    "en": "Does your child forget or ignore the weaker hand?",
+    "uz": "Farzandingiz kuchsizroq qoʻlini unutadimi yoki ishlatmaydimi?",
+    "ru": "Ребёнок забывает о более слабой руке или не пользуется ею?"
    },
    "option_text": {
     "en": {
      "often": "Often",
      "sometimes": "Sometimes",
      "never": "Never"
+    },
+    "uz": {
+     "often": "Tez-tez",
+     "sometimes": "Baʼzan",
+     "never": "Hech qachon"
+    },
+    "ru": {
+     "often": "Часто",
+     "sometimes": "Иногда",
+     "never": "Никогда"
     }
    }
   },
@@ -2208,7 +2766,9 @@
     "G"
    ],
    "text": {
-    "en": "What can the weaker hand do?"
+    "en": "What can the weaker hand do?",
+    "uz": "Kuchsizroq qoʻli nima qila oladi?",
+    "ru": "Что может делать более слабая рука?"
    },
    "option_text": {
     "en": {
@@ -2216,6 +2776,18 @@
      "holds_put": "Holds what I put in it",
      "grasps": "Grasps alone",
      "lets_go": "Lets go on purpose"
+    },
+    "uz": {
+     "nothing_yet": "Hali hech narsa",
+     "holds_put": "Men bergan narsani ushlab turadi",
+     "grasps": "Oʻzi ushlaydi",
+     "lets_go": "Ataylab qoʻyib yuboradi"
+    },
+    "ru": {
+     "nothing_yet": "Пока ничего",
+     "holds_put": "Держит то, что я вложу в неё",
+     "grasps": "Сама берёт предметы",
+     "lets_go": "Отпускает, когда хочет"
     }
    }
   },
@@ -2251,12 +2823,22 @@
     "E"
    ],
    "text": {
-    "en": "Has your child done therapy with a mitt on the stronger hand?"
+    "en": "Has your child done therapy with a mitt on the stronger hand?",
+    "uz": "Farzandingiz kuchliroq qoʻliga qoʻlqop kiydirib mashq qilganmi?",
+    "ru": "Занимался ли ребёнок с варежкой на более сильной руке?"
    },
    "option_text": {
     "en": {
      "yes": "Yes",
      "no": "No"
+    },
+    "uz": {
+     "yes": "Ha",
+     "no": "Yoʻq"
+    },
+    "ru": {
+     "yes": "Да",
+     "no": "Нет"
     }
    }
   },
@@ -2295,7 +2877,9 @@
     "E"
    ],
    "text": {
-    "en": "When, and for how long?"
+    "en": "When, and for how long?",
+    "uz": "Qachon va qancha muddat?",
+    "ru": "Когда и как долго?"
    },
    "option_text": null
   },
@@ -2337,13 +2921,25 @@
     "V"
    ],
    "text": {
-    "en": "Which leg is weaker?"
+    "en": "Which leg is weaker?",
+    "uz": "Qaysi oyogʻi kuchsizroq?",
+    "ru": "Какая нога слабее?"
    },
    "option_text": {
     "en": {
      "left": "Left",
      "right": "Right",
      "same": "About the same"
+    },
+    "uz": {
+     "left": "Chap",
+     "right": "Oʻng",
+     "same": "Taxminan bir xil"
+    },
+    "ru": {
+     "left": "Левая",
+     "right": "Правая",
+     "same": "Примерно одинаково"
     }
    }
   },
@@ -2384,12 +2980,22 @@
     "V"
    ],
    "text": {
-    "en": "Does your child lean to one side when sitting?"
+    "en": "Does your child lean to one side when sitting?",
+    "uz": "Farzandingiz oʻtirganda bir tomonga qiyshayadimi?",
+    "ru": "Ребёнок наклоняется в одну сторону, когда сидит?"
    },
    "option_text": {
     "en": {
      "yes": "Yes",
      "no": "No"
+    },
+    "uz": {
+     "yes": "Ha",
+     "no": "Yoʻq"
+    },
+    "ru": {
+     "yes": "Да",
+     "no": "Нет"
     }
    }
   },
@@ -2433,7 +3039,9 @@
     "E"
    ],
    "text": {
-    "en": "Where does your child spend the day?"
+    "en": "Where does your child spend the day?",
+    "uz": "Farzandingiz kunni qanday holatda oʻtkazadi?",
+    "ru": "Где ребёнок проводит день?"
    },
    "option_text": {
     "en": {
@@ -2443,6 +3051,22 @@
      "special_seat": "Special seat",
      "standing_frame": "Standing frame",
      "held": "Held"
+    },
+    "uz": {
+     "back": "Chalqancha yotib",
+     "side": "Yonboshda",
+     "stomach": "Qorinda",
+     "special_seat": "Maxsus oʻrindiqda",
+     "standing_frame": "Tik turish moslamasi",
+     "held": "Quchoqda"
+    },
+    "ru": {
+     "back": "Лёжа на спине",
+     "side": "На боку",
+     "stomach": "На животе",
+     "special_seat": "В специальном кресле",
+     "standing_frame": "В вертикализаторе",
+     "held": "На руках"
     }
    }
   },
@@ -2483,7 +3107,9 @@
     "E"
    ],
    "text": {
-    "en": "About how long in each?"
+    "en": "About how long in each?",
+    "uz": "Har birida taxminan qancha vaqt?",
+    "ru": "Примерно сколько времени в каждом положении?"
    },
    "option_text": null
   },
@@ -2525,13 +3151,25 @@
     "S"
    ],
    "text": {
-    "en": "Does your child's head drop forward when tired?"
+    "en": "Does your child's head drop forward when tired?",
+    "uz": "Charchaganda farzandingizning boshi oldinga egilib qoladimi?",
+    "ru": "Голова ребёнка опускается вперёд, когда он устаёт?"
    },
    "option_text": {
     "en": {
      "often": "Often",
      "sometimes": "Sometimes",
      "never": "Never"
+    },
+    "uz": {
+     "often": "Tez-tez",
+     "sometimes": "Baʼzan",
+     "never": "Hech qachon"
+    },
+    "ru": {
+     "often": "Часто",
+     "sometimes": "Иногда",
+     "never": "Никогда"
     }
    }
   },
@@ -2572,12 +3210,22 @@
     "R"
    ],
    "text": {
-    "en": "Does your child have a special seat or sleep support at home?"
+    "en": "Does your child have a special seat or sleep support at home?",
+    "uz": "Uyda farzandingiz uchun maxsus oʻrindiq yoki uxlash uchun tayanch bormi?",
+    "ru": "Есть ли дома специальное кресло или приспособление для сна?"
    },
    "option_text": {
     "en": {
      "yes": "Yes",
      "no": "No"
+    },
+    "uz": {
+     "yes": "Ha",
+     "no": "Yoʻq"
+    },
+    "ru": {
+     "yes": "Да",
+     "no": "Нет"
     }
    }
   },
@@ -2621,7 +3269,9 @@
     "R"
    ],
    "text": {
-    "en": "A photo of it"
+    "en": "A photo of it",
+    "uz": "Uning surati",
+    "ru": "Его фото"
    },
    "option_text": null
   },
@@ -2652,13 +3302,25 @@
     "G"
    ],
    "text": {
-    "en": "Compared to children the same age, how does your child catch a ball?"
+    "en": "Compared to children the same age, how does your child catch a ball?",
+    "uz": "Tengdoshlariga qaraganda farzandingiz toʻpni qanday ushlaydi?",
+    "ru": "Как ваш ребёнок ловит мяч по сравнению с детьми того же возраста?"
    },
    "option_text": {
     "en": {
      "much_worse": "Much worse",
      "bit_worse": "A bit worse",
      "same": "About the same"
+    },
+    "uz": {
+     "much_worse": "Ancha qiyinroq",
+     "bit_worse": "Biroz qiyinroq",
+     "same": "Taxminan bir xil"
+    },
+    "ru": {
+     "much_worse": "Намного сложнее",
+     "bit_worse": "Немного сложнее",
+     "same": "Примерно так же"
     }
    },
    "note": "Wording compares children; the review suggests softer wording."
@@ -2689,13 +3351,25 @@
     "E"
    ],
    "text": {
-    "en": "Throwing and kicking a ball"
+    "en": "Throwing and kicking a ball",
+    "uz": "Toʻpni otish va tepish",
+    "ru": "Бросать мяч и бить по нему ногой"
    },
    "option_text": {
     "en": {
      "much_worse": "Much worse",
      "bit_worse": "A bit worse",
      "same": "About the same"
+    },
+    "uz": {
+     "much_worse": "Ancha qiyinroq",
+     "bit_worse": "Biroz qiyinroq",
+     "same": "Taxminan bir xil"
+    },
+    "ru": {
+     "much_worse": "Намного сложнее",
+     "bit_worse": "Немного сложнее",
+     "same": "Примерно так же"
     }
    }
   },
@@ -2725,13 +3399,25 @@
     "E"
    ],
    "text": {
-    "en": "Running, jumping, riding a bike or scooter"
+    "en": "Running, jumping, riding a bike or scooter",
+    "uz": "Yugurish, sakrash, velosiped yoki samokat haydash",
+    "ru": "Бегать, прыгать, кататься на велосипеде или самокате"
    },
    "option_text": {
     "en": {
      "much_worse": "Much worse",
      "bit_worse": "A bit worse",
      "same": "About the same"
+    },
+    "uz": {
+     "much_worse": "Ancha qiyinroq",
+     "bit_worse": "Biroz qiyinroq",
+     "same": "Taxminan bir xil"
+    },
+    "ru": {
+     "much_worse": "Намного сложнее",
+     "bit_worse": "Немного сложнее",
+     "same": "Примерно так же"
     }
    }
   },
@@ -2762,13 +3448,25 @@
     "G"
    ],
    "text": {
-    "en": "Using scissors, spoon and fork"
+    "en": "Using scissors, spoon and fork",
+    "uz": "Qaychi, qoshiq va sanchqini ishlatish",
+    "ru": "Пользоваться ножницами, ложкой и вилкой"
    },
    "option_text": {
     "en": {
      "much_worse": "Much worse",
      "bit_worse": "A bit worse",
      "same": "About the same"
+    },
+    "uz": {
+     "much_worse": "Ancha qiyinroq",
+     "bit_worse": "Biroz qiyinroq",
+     "same": "Taxminan bir xil"
+    },
+    "ru": {
+     "much_worse": "Намного сложнее",
+     "bit_worse": "Немного сложнее",
+     "same": "Примерно так же"
     }
    }
   },
@@ -2799,13 +3497,25 @@
     "S"
    ],
    "text": {
-    "en": "Does your child bump into things or drop things often?"
+    "en": "Does your child bump into things or drop things often?",
+    "uz": "Farzandingiz tez-tez narsalarga urilib ketadimi yoki narsalarni tushirib yuboradimi?",
+    "ru": "Ребёнок часто натыкается на предметы или роняет их?"
    },
    "option_text": {
     "en": {
      "often": "Often",
      "sometimes": "Sometimes",
      "rarely": "Rarely"
+    },
+    "uz": {
+     "often": "Tez-tez",
+     "sometimes": "Baʼzan",
+     "rarely": "Kamdan-kam"
+    },
+    "ru": {
+     "often": "Часто",
+     "sometimes": "Иногда",
+     "rarely": "Редко"
     }
    }
   },
@@ -2843,13 +3553,25 @@
     "G"
    ],
    "text": {
-    "en": "Handwriting: speed and neatness"
+    "en": "Handwriting: speed and neatness",
+    "uz": "Yozuv: tezligi va chiroyliligi",
+    "ru": "Письмо: скорость и аккуратность"
    },
    "option_text": {
     "en": {
      "much_worse": "Much worse",
      "bit_worse": "A bit worse",
      "same": "About the same"
+    },
+    "uz": {
+     "much_worse": "Ancha qiyinroq",
+     "bit_worse": "Biroz qiyinroq",
+     "same": "Taxminan bir xil"
+    },
+    "ru": {
+     "much_worse": "Намного сложнее",
+     "bit_worse": "Немного сложнее",
+     "same": "Примерно так же"
     }
    }
   },
@@ -2886,12 +3608,22 @@
     "G"
    ],
    "text": {
-    "en": "Does your child get tired fast when writing or drawing?"
+    "en": "Does your child get tired fast when writing or drawing?",
+    "uz": "Farzandingiz yozganda yoki rasm chizganda tez charchaydimi?",
+    "ru": "Ребёнок быстро устаёт, когда пишет или рисует?"
    },
    "option_text": {
     "en": {
      "yes": "Yes",
      "no": "No"
+    },
+    "uz": {
+     "yes": "Ha",
+     "no": "Yoʻq"
+    },
+    "ru": {
+     "yes": "Да",
+     "no": "Нет"
     }
    }
   },
@@ -2928,13 +3660,25 @@
     "E"
    ],
    "text": {
-    "en": "Buttons and shoelaces"
+    "en": "Buttons and shoelaces",
+    "uz": "Tugma qadash va bogʻich bogʻlash",
+    "ru": "Пуговицы и шнурки"
    },
    "option_text": {
     "en": {
      "alone": "Alone",
      "with_help": "With help",
      "cannot": "Cannot"
+    },
+    "uz": {
+     "alone": "Oʻzi",
+     "with_help": "Yordam bilan",
+     "cannot": "Hali qila olmaydi"
+    },
+    "ru": {
+     "alone": "Сам",
+     "with_help": "С помощью",
+     "cannot": "Пока не получается"
     }
    }
   },
@@ -2973,7 +3717,9 @@
     "E"
    ],
    "text": {
-    "en": "Has a teacher mentioned slow copying, messy work or problems in PE class?"
+    "en": "Has a teacher mentioned slow copying, messy work or problems in PE class?",
+    "uz": "Oʻqituvchi sekin koʻchirish, tartibsiz ish yoki jismoniy tarbiya darsidagi qiyinchiliklar haqida aytganmi?",
+    "ru": "Говорил ли учитель, что ребёнок медленно списывает, пишет неаккуратно или ему трудно на физкультуре?"
    },
    "option_text": {
     "en": {
@@ -2981,6 +3727,18 @@
      "messy_work": "Messy work",
      "pe": "Problems in PE class",
      "none": "No"
+    },
+    "uz": {
+     "slow_copying": "Sekin koʻchiradi",
+     "messy_work": "Ishlari tartibsiz",
+     "pe": "Jismoniy tarbiya darsida qiyinchilik",
+     "none": "Yoʻq"
+    },
+    "ru": {
+     "slow_copying": "Медленно списывает",
+     "messy_work": "Пишет неаккуратно",
+     "pe": "Трудно на физкультуре",
+     "none": "Нет"
     }
    }
   },
@@ -3014,7 +3772,9 @@
     "E"
    ],
    "text": {
-    "en": "Anything else the teacher said"
+    "en": "Anything else the teacher said",
+    "uz": "Oʻqituvchi aytgan boshqa gaplar",
+    "ru": "Что ещё сказал учитель"
    },
    "option_text": null
   },
@@ -3045,13 +3805,25 @@
     "E"
    ],
    "text": {
-    "en": "Does your child avoid games or sports because of clumsiness?"
+    "en": "Does your child avoid games or sports because of clumsiness?",
+    "uz": "Farzandingiz harakatlari noqulay boʻlgani uchun oʻyin yoki sportdan qochadimi?",
+    "ru": "Ребёнок избегает игр или спорта из-за неловкости?"
    },
    "option_text": {
     "en": {
      "often": "Often",
      "sometimes": "Sometimes",
      "never": "Never"
+    },
+    "uz": {
+     "often": "Tez-tez",
+     "sometimes": "Baʼzan",
+     "never": "Hech qachon"
+    },
+    "ru": {
+     "often": "Часто",
+     "sometimes": "Иногда",
+     "never": "Никогда"
     }
    }
   },
@@ -3082,13 +3854,25 @@
     "G"
    ],
    "text": {
-    "en": "How does your child talk about their own abilities?"
+    "en": "How does your child talk about their own abilities?",
+    "uz": "Farzandingiz oʻz qobiliyatlari haqida qanday gapiradi?",
+    "ru": "Как ребёнок говорит о своих умениях?"
    },
    "option_text": {
     "en": {
      "confident": "Confident",
      "neutral": "Neutral",
      "cant": "Often says \"I can't\""
+    },
+    "uz": {
+     "confident": "Oʻziga ishonadi",
+     "neutral": "Oddiy",
+     "cant": "Koʻpincha \"Men qila olmayman\" deydi"
+    },
+    "ru": {
+     "confident": "Уверенно",
+     "neutral": "Спокойно",
+     "cant": "Часто говорит „Я не могу“"
     }
    }
   },
@@ -3118,13 +3902,25 @@
     "G"
    ],
    "text": {
-    "en": "Has a doctor also mentioned attention problems?"
+    "en": "Has a doctor also mentioned attention problems?",
+    "uz": "Shifokor diqqat bilan bogʻliq qiyinchiliklar haqida ham aytganmi?",
+    "ru": "Говорил ли врач также о трудностях с вниманием?"
    },
    "option_text": {
     "en": {
      "yes": "Yes",
      "no": "No",
      "not_sure": "Not sure"
+    },
+    "uz": {
+     "yes": "Ha",
+     "no": "Yoʻq",
+     "not_sure": "Bilmayman"
+    },
+    "ru": {
+     "yes": "Да",
+     "no": "Нет",
+     "not_sure": "Не уверен(а)"
     }
    }
   },
@@ -3162,7 +3958,9 @@
     "G"
    ],
    "text": {
-    "en": "Which of these can your child do now?"
+    "en": "Which of these can your child do now?",
+    "uz": "Farzandingiz hozir bulardan qaysilarini qila oladi?",
+    "ru": "Что из этого ребёнок умеет сейчас?"
    },
    "option_text": {
     "en": {
@@ -3176,6 +3974,30 @@
      "points": "Points",
      "follows": "Follows a simple instruction",
      "none": "None of these yet"
+    },
+    "uz": {
+     "holds_head": "Boshini tutadi",
+     "rolls": "Agʻanaydi",
+     "sits": "Yordamsiz oʻtiradi",
+     "crawls": "Emaklaydi",
+     "stands": "Ushlab turib tik turadi",
+     "walks": "Yuradi",
+     "first_words": "Ilk soʻzlarini aytadi",
+     "points": "Barmogʻi bilan koʻrsatadi",
+     "follows": "Oddiy topshiriqni bajaradi",
+     "none": "Hali bularning hech biri"
+    },
+    "ru": {
+     "holds_head": "Держит голову",
+     "rolls": "Переворачивается",
+     "sits": "Сидит без помощи",
+     "crawls": "Ползает",
+     "stands": "Стоит с опорой",
+     "walks": "Ходит",
+     "first_words": "Говорит первые слова",
+     "points": "Показывает пальцем",
+     "follows": "Выполняет простую просьбу",
+     "none": "Пока ничего из этого"
     }
    },
    "note": "TEMPORARY list: the questionnaire asks for a picture checklist per age band; the physio supplies it."
@@ -3203,7 +4025,9 @@
     "T"
    ],
    "text": {
-    "en": "At what age did your child hold the head up?"
+    "en": "At what age did your child hold the head up?",
+    "uz": "Farzandingiz necha yoshida boshini tuta boshlagan?",
+    "ru": "В каком возрасте ребёнок начал держать голову?"
    },
    "option_text": null
   },
@@ -3230,7 +4054,9 @@
     "T"
    ],
    "text": {
-    "en": "At what age did your child sit?"
+    "en": "At what age did your child sit?",
+    "uz": "Farzandingiz necha yoshida oʻtira boshlagan?",
+    "ru": "В каком возрасте ребёнок начал сидеть?"
    },
    "option_text": null
   },
@@ -3257,7 +4083,9 @@
     "T"
    ],
    "text": {
-    "en": "At what age did your child walk?"
+    "en": "At what age did your child walk?",
+    "uz": "Farzandingiz necha yoshida yura boshlagan?",
+    "ru": "В каком возрасте ребёнок начал ходить?"
    },
    "option_text": null
   },
@@ -3284,7 +4112,9 @@
     "T"
    ],
    "text": {
-    "en": "At what age did your child say a first word?"
+    "en": "At what age did your child say a first word?",
+    "uz": "Farzandingiz necha yoshida ilk soʻzini aytgan?",
+    "ru": "В каком возрасте ребёнок сказал первое слово?"
    },
    "option_text": null
   },
@@ -3314,12 +4144,22 @@
     "A"
    ],
    "text": {
-    "en": "Has a doctor or therapist examined your child's development?"
+    "en": "Has a doctor or therapist examined your child's development?",
+    "uz": "Shifokor yoki mutaxassis farzandingizning rivojlanishini tekshirganmi?",
+    "ru": "Обследовал ли врач или специалист развитие ребёнка?"
    },
    "option_text": {
     "en": {
      "yes": "Yes",
      "no": "No"
+    },
+    "uz": {
+     "yes": "Ha",
+     "no": "Yoʻq"
+    },
+    "ru": {
+     "yes": "Да",
+     "no": "Нет"
     }
    }
   },
@@ -3356,7 +4196,9 @@
     "A"
    ],
    "text": {
-    "en": "Upload the report"
+    "en": "Upload the report",
+    "uz": "Xulosani yuklang",
+    "ru": "Загрузите заключение"
    },
    "option_text": null
   },
@@ -3387,13 +4229,25 @@
     "R"
    ],
    "text": {
-    "en": "Does one side of the body seem weaker or used less?"
+    "en": "Does one side of the body seem weaker or used less?",
+    "uz": "Tananing bir tomoni kuchsizroq yoki kamroq ishlatiladigandek tuyuladimi?",
+    "ru": "Кажется ли, что одна сторона тела слабее или ребёнок пользуется ею меньше?"
    },
    "option_text": {
     "en": {
      "yes": "Yes",
      "no": "No",
      "not_sure": "Not sure"
+    },
+    "uz": {
+     "yes": "Ha",
+     "no": "Yoʻq",
+     "not_sure": "Bilmayman"
+    },
+    "ru": {
+     "yes": "Да",
+     "no": "Нет",
+     "not_sure": "Не уверен(а)"
     }
    }
   },
@@ -3424,13 +4278,25 @@
     "MV"
    ],
    "text": {
-    "en": "Does your child respond to their name and look at you when you talk?"
+    "en": "Does your child respond to their name and look at you when you talk?",
+    "uz": "Farzandingiz ismini aytganda javob beradimi va siz gapirganingizda sizga qaraydimi?",
+    "ru": "Ребёнок откликается на имя и смотрит на вас, когда вы говорите?"
    },
    "option_text": {
     "en": {
      "usually": "Usually",
      "sometimes": "Sometimes",
      "rarely": "Rarely"
+    },
+    "uz": {
+     "usually": "Odatda",
+     "sometimes": "Baʼzan",
+     "rarely": "Kamdan-kam"
+    },
+    "ru": {
+     "usually": "Обычно да",
+     "sometimes": "Иногда",
+     "rarely": "Редко"
     }
    }
   },
@@ -3459,7 +4325,9 @@
     "A"
    ],
    "text": {
-    "en": "What did the doctor call it?"
+    "en": "What did the doctor call it?",
+    "uz": "Shifokor buni nima deb atadi?",
+    "ru": "Как это назвал врач?"
    },
    "option_text": null
   },
@@ -3490,7 +4358,9 @@
     "S"
    ],
    "text": {
-    "en": "Has a doctor checked your child's neck bones?"
+    "en": "Has a doctor checked your child's neck bones?",
+    "uz": "Shifokor farzandingizning boʻyin umurtqalarini tekshirganmi?",
+    "ru": "Проверял ли врач шейные позвонки ребёнка?"
    },
    "option_text": {
     "en": {
@@ -3498,6 +4368,18 @@
      "problem": "Yes, problem found",
      "not_checked": "Not checked",
      "dont_know": "Don't know"
+    },
+    "uz": {
+     "normal": "Ha, hammasi joyida",
+     "problem": "Ha, muammo topilgan",
+     "not_checked": "Tekshirilmagan",
+     "dont_know": "Bilmayman"
+    },
+    "ru": {
+     "normal": "Да, всё в порядке",
+     "problem": "Да, нашли проблему",
+     "not_checked": "Не проверяли",
+     "dont_know": "Не знаю"
     }
    }
   },
@@ -3527,12 +4409,22 @@
     "E"
    ],
    "text": {
-    "en": "Does your child have a heart condition or had heart surgery?"
+    "en": "Does your child have a heart condition or had heart surgery?",
+    "uz": "Farzandingizda yurak kasalligi bormi yoki yurak operatsiyasi qilinganmi?",
+    "ru": "Есть ли у ребёнка болезнь сердца или была операция на сердце?"
    },
    "option_text": {
     "en": {
      "yes": "Yes",
      "no": "No"
+    },
+    "uz": {
+     "yes": "Ha",
+     "no": "Yoʻq"
+    },
+    "ru": {
+     "yes": "Да",
+     "no": "Нет"
     }
    }
   },
@@ -3569,7 +4461,9 @@
     "E"
    ],
    "text": {
-    "en": "What, and when?"
+    "en": "What, and when?",
+    "uz": "Nima va qachon?",
+    "ru": "Что и когда?"
    },
    "option_text": null
   },
@@ -3600,13 +4494,25 @@
     "M"
    ],
    "text": {
-    "en": "Do your child's joints bend further than usual?"
+    "en": "Do your child's joints bend further than usual?",
+    "uz": "Farzandingizning boʻgʻimlari odatdagidan koʻproq bukiladimi?",
+    "ru": "Суставы ребёнка сгибаются сильнее обычного?"
    },
    "option_text": {
     "en": {
      "a_lot": "A lot",
      "a_little": "A little",
      "no": "No"
+    },
+    "uz": {
+     "a_lot": "Koʻp",
+     "a_little": "Biroz",
+     "no": "Yoʻq"
+    },
+    "ru": {
+     "a_lot": "Сильно",
+     "a_little": "Немного",
+     "no": "Нет"
     }
    }
   },
@@ -3642,12 +4548,22 @@
     "E"
    ],
    "text": {
-    "en": "Do the feet look flat or turn outward when standing?"
+    "en": "Do the feet look flat or turn outward when standing?",
+    "uz": "Tik turganda oyoq panjalari yassi koʻrinadimi yoki tashqariga qaraydimi?",
+    "ru": "Стопы выглядят плоскими или разворачиваются наружу, когда ребёнок стоит?"
    },
    "option_text": {
     "en": {
      "yes": "Yes",
      "no": "No"
+    },
+    "uz": {
+     "yes": "Ha",
+     "no": "Yoʻq"
+    },
+    "ru": {
+     "yes": "Да",
+     "no": "Нет"
     }
    }
   },
@@ -3678,13 +4594,25 @@
     "G"
    ],
    "text": {
-    "en": "Does your child get tired or sleepy quickly during play?"
+    "en": "Does your child get tired or sleepy quickly during play?",
+    "uz": "Farzandingiz oʻyin paytida tez charchaydimi yoki uyqusi keladimi?",
+    "ru": "Ребёнок быстро устаёт или становится сонным во время игры?"
    },
    "option_text": {
     "en": {
      "often": "Often",
      "sometimes": "Sometimes",
      "rarely": "Rarely"
+    },
+    "uz": {
+     "often": "Tez-tez",
+     "sometimes": "Baʼzan",
+     "rarely": "Kamdan-kam"
+    },
+    "ru": {
+     "often": "Часто",
+     "sometimes": "Иногда",
+     "rarely": "Редко"
     }
    }
   },
@@ -3715,13 +4643,25 @@
     "MV"
    ],
    "text": {
-    "en": "Does your child have trouble chewing, or drool a lot?"
+    "en": "Does your child have trouble chewing, or drool a lot?",
+    "uz": "Farzandingiz chaynashga qiynaladimi yoki soʻlagi koʻp oqadimi?",
+    "ru": "Ребёнку трудно жевать или у него сильно текут слюни?"
    },
    "option_text": {
     "en": {
      "chewing": "Trouble chewing",
      "drooling": "Drools a lot",
      "neither": "Neither"
+    },
+    "uz": {
+     "chewing": "Chaynashga qiynaladi",
+     "drooling": "Soʻlagi koʻp oqadi",
+     "neither": "Ikkalasi ham yoʻq"
+    },
+    "ru": {
+     "chewing": "Трудно жевать",
+     "drooling": "Сильно текут слюни",
+     "neither": "Ни то, ни другое"
     }
    }
   },
@@ -3750,12 +4690,22 @@
     "MV"
    ],
    "text": {
-    "en": "Does your child use signs or gestures to communicate?"
+    "en": "Does your child use signs or gestures to communicate?",
+    "uz": "Farzandingiz muloqot uchun ishoralar yoki imo-ishoralardan foydalanadimi?",
+    "ru": "Ребёнок использует знаки или жесты, чтобы общаться?"
    },
    "option_text": {
     "en": {
      "yes": "Yes",
      "no": "No"
+    },
+    "uz": {
+     "yes": "Ha",
+     "no": "Yoʻq"
+    },
+    "ru": {
+     "yes": "Да",
+     "no": "Нет"
     }
    }
   },
@@ -3791,7 +4741,9 @@
     "MV"
    ],
    "text": {
-    "en": "Which ones?"
+    "en": "Which ones?",
+    "uz": "Qaysilari?",
+    "ru": "Какие?"
    },
    "option_text": null
   },
@@ -3825,7 +4777,9 @@
     "M"
    ],
    "text": {
-    "en": "Which of these upset your child?"
+    "en": "Which of these upset your child?",
+    "uz": "Bulardan qaysilari farzandingizni bezovta qiladi?",
+    "ru": "Что из этого расстраивает ребёнка?"
    },
    "option_text": {
     "en": {
@@ -3835,6 +4789,22 @@
      "textures": "Certain textures",
      "touch": "Being touched",
      "none": "None"
+    },
+    "uz": {
+     "loud": "Baland tovushlar",
+     "light": "Yorqin yoki miltillovchi yorugʻlik",
+     "crowds": "Odam gavjum joylar",
+     "textures": "Baʼzi narsalarning sirti (teksturasi)",
+     "touch": "Unga tegishlari",
+     "none": "Hech biri"
+    },
+    "ru": {
+     "loud": "Громкие звуки",
+     "light": "Яркий или мигающий свет",
+     "crowds": "Много людей вокруг",
+     "textures": "Некоторые материалы на ощупь",
+     "touch": "Прикосновения",
+     "none": "Ничего из этого"
     }
    }
   },
@@ -3861,7 +4831,9 @@
     "MV"
    ],
    "text": {
-    "en": "What calms your child?"
+    "en": "What calms your child?",
+    "uz": "Farzandingizni nima tinchlantiradi?",
+    "ru": "Что успокаивает ребёнка?"
    },
    "option_text": null
   },
@@ -3893,7 +4865,9 @@
     "G"
    ],
    "text": {
-    "en": "Which pictures does your child understand best?"
+    "en": "Which pictures does your child understand best?",
+    "uz": "Farzandingiz qaysi rasmlarni yaxshiroq tushunadi?",
+    "ru": "Какие картинки ребёнок понимает лучше всего?"
    },
    "option_text": {
     "en": {
@@ -3901,6 +4875,18 @@
      "drawings": "Simple drawings",
      "cartoons": "Cartoons",
      "not_sure": "Not sure"
+    },
+    "uz": {
+     "photos": "Haqiqiy suratlar",
+     "drawings": "Oddiy chizilgan rasmlar",
+     "cartoons": "Multfilm rasmlari",
+     "not_sure": "Bilmayman"
+    },
+    "ru": {
+     "photos": "Настоящие фото",
+     "drawings": "Простые рисунки",
+     "cartoons": "Мультяшные картинки",
+     "not_sure": "Не уверен(а)"
     }
    }
   },
@@ -3930,13 +4916,25 @@
     "MV"
    ],
    "text": {
-    "en": "Does your child understand that a picture stands for a real thing?"
+    "en": "Does your child understand that a picture stands for a real thing?",
+    "uz": "Farzandingiz rasm haqiqiy narsani bildirishini tushunadimi?",
+    "ru": "Понимает ли ребёнок, что картинка обозначает настоящий предмет?"
    },
    "option_text": {
     "en": {
      "yes": "Yes",
      "sometimes": "Sometimes",
      "no": "No"
+    },
+    "uz": {
+     "yes": "Ha",
+     "sometimes": "Baʼzan",
+     "no": "Yoʻq"
+    },
+    "ru": {
+     "yes": "Да",
+     "sometimes": "Иногда",
+     "no": "Нет"
     }
    }
   },
@@ -3967,13 +4965,25 @@
     "E"
    ],
    "text": {
-    "en": "Repeated movements like hand flapping or rocking?"
+    "en": "Repeated movements like hand flapping or rocking?",
+    "uz": "Qoʻllarini silkitish yoki chayqalish kabi takroriy harakatlar boʻladimi?",
+    "ru": "Бывают ли повторяющиеся движения, например взмахи руками или раскачивание?"
    },
    "option_text": {
     "en": {
      "often": "Often",
      "sometimes": "Sometimes",
      "no": "No"
+    },
+    "uz": {
+     "often": "Tez-tez",
+     "sometimes": "Baʼzan",
+     "no": "Yoʻq"
+    },
+    "ru": {
+     "often": "Часто",
+     "sometimes": "Иногда",
+     "no": "Нет"
     }
    }
   },
@@ -4004,13 +5014,25 @@
     "E"
    ],
    "text": {
-    "en": "How does your child react when the daily routine changes?"
+    "en": "How does your child react when the daily routine changes?",
+    "uz": "Kun tartibi oʻzgarganda farzandingiz qanday munosabatda boʻladi?",
+    "ru": "Как ребёнок реагирует, когда меняется привычный распорядок дня?"
    },
    "option_text": {
     "en": {
      "fine": "Fine",
      "upset_copes": "Upset but copes",
      "very_upset": "Very upset"
+    },
+    "uz": {
+     "fine": "Yaxshi",
+     "upset_copes": "Xafa boʻladi, lekin moslashadi",
+     "very_upset": "Juda xafa boʻladi"
+    },
+    "ru": {
+     "fine": "Спокойно",
+     "upset_copes": "Расстраивается, но справляется",
+     "very_upset": "Сильно расстраивается"
     }
    }
   },
@@ -4041,7 +5063,9 @@
     "A"
    ],
    "text": {
-    "en": "How often are there meltdowns?"
+    "en": "How often are there meltdowns?",
+    "uz": "Kuchli asabiy portlashlar qanchalik tez-tez boʻladi?",
+    "ru": "Как часто бывают сильные срывы (истерики)?"
    },
    "option_text": {
     "en": {
@@ -4049,6 +5073,18 @@
      "weekly": "Every week",
      "rarely": "Rarely",
      "never": "Never"
+    },
+    "uz": {
+     "daily": "Har kuni",
+     "weekly": "Har hafta",
+     "rarely": "Kamdan-kam",
+     "never": "Hech qachon"
+    },
+    "ru": {
+     "daily": "Каждый день",
+     "weekly": "Каждую неделю",
+     "rarely": "Редко",
+     "never": "Никогда"
     }
    }
   },
@@ -4086,7 +5122,9 @@
     "A"
    ],
    "text": {
-    "en": "What usually starts them?"
+    "en": "What usually starts them?",
+    "uz": "Ular odatda nimadan boshlanadi?",
+    "ru": "Что обычно их вызывает?"
    },
    "option_text": null
   },
@@ -4135,7 +5173,9 @@
     "M"
    ],
    "text": {
-    "en": "Where on the body does your child accept touch or massage?"
+    "en": "Where on the body does your child accept touch or massage?",
+    "uz": "Farzandingiz tanasining qayeriga tegishga yoki massajga rozi boʻladi?",
+    "ru": "Где ребёнок позволяет прикасаться к себе или делать массаж?"
    },
    "option_text": {
     "en": {
@@ -4151,6 +5191,34 @@
      "right_leg": "Right leg",
      "left_foot": "Left foot",
      "right_foot": "Right foot"
+    },
+    "uz": {
+     "head_neck": "Bosh va boʻyin",
+     "shoulders": "Yelkalar",
+     "back": "Orqa",
+     "hips": "Son va chanoq",
+     "left_arm": "Chap qoʻl",
+     "right_arm": "Oʻng qoʻl",
+     "left_hand": "Chap kaft",
+     "right_hand": "Oʻng kaft",
+     "left_leg": "Chap oyoq",
+     "right_leg": "Oʻng oyoq",
+     "left_foot": "Chap oyoq panjasi",
+     "right_foot": "Oʻng oyoq panjasi"
+    },
+    "ru": {
+     "head_neck": "Голова и шея",
+     "shoulders": "Плечи",
+     "back": "Спина",
+     "hips": "Таз и бёдра",
+     "left_arm": "Левая рука",
+     "right_arm": "Правая рука",
+     "left_hand": "Левая кисть",
+     "right_hand": "Правая кисть",
+     "left_leg": "Левая нога",
+     "right_leg": "Правая нога",
+     "left_foot": "Левая стопа",
+     "right_foot": "Правая стопа"
     }
    }
   },
@@ -4214,7 +5282,9 @@
     "V"
    ],
    "text": {
-    "en": "Lying on the tummy, what can your child do?"
+    "en": "Lying on the tummy, what can your child do?",
+    "uz": "Qorinda yotganda farzandingiz nima qila oladi?",
+    "ru": "Что ребёнок может делать, лёжа на животе?"
    },
    "option_text": {
     "en": {
@@ -4223,6 +5293,20 @@
      "forearms": "Leans on forearms, chest up",
      "straight_arms": "Leans on straight arms",
      "reaches_one_arm": "Reaches for a toy, leaning on one arm"
+    },
+    "uz": {
+     "cant_lift": "Boshini koʻtara olmaydi",
+     "lifts_briefly": "Boshini qisqa vaqt koʻtaradi",
+     "forearms": "Bilaklariga tayanib, koʻkragini koʻtaradi",
+     "straight_arms": "Toʻgʻri qoʻllariga tayanadi",
+     "reaches_one_arm": "Bir qoʻliga tayanib, oʻyinchoqqa qoʻl choʻzadi"
+    },
+    "ru": {
+     "cant_lift": "Пока не поднимает голову",
+     "lifts_briefly": "Ненадолго поднимает голову",
+     "forearms": "Опирается на предплечья, грудь поднята",
+     "straight_arms": "Опирается на прямые руки",
+     "reaches_one_arm": "Тянется за игрушкой, опираясь на одну руку"
     }
    }
   },
@@ -4280,7 +5364,9 @@
     "E"
    ],
    "text": {
-    "en": "Rolling"
+    "en": "Rolling",
+    "uz": "Agʻanash",
+    "ru": "Перевороты"
    },
    "option_text": {
     "en": {
@@ -4289,6 +5375,20 @@
      "back_to_tummy": "Back to tummy",
      "tummy_to_back": "Tummy to back",
      "both_ways": "Both ways, both sides"
+    },
+    "uz": {
+     "no": "Agʻanamaydi",
+     "back_to_side": "Chalqanchadan yonboshga",
+     "back_to_tummy": "Chalqanchadan qoringa",
+     "tummy_to_back": "Qorindan chalqanchaga",
+     "both_ways": "Ikki tomonga ham, ikkala yonidan"
+    },
+    "ru": {
+     "no": "Пока не переворачивается",
+     "back_to_side": "Со спины на бок",
+     "back_to_tummy": "Со спины на живот",
+     "tummy_to_back": "С живота на спину",
+     "both_ways": "В обе стороны, через оба бока"
     }
    }
   },
@@ -4356,13 +5456,25 @@
     "E"
    ],
    "text": {
-    "en": "Is one side harder?"
+    "en": "Is one side harder?",
+    "uz": "Bir tomoni qiyinroqmi?",
+    "ru": "В одну сторону переворачиваться труднее?"
    },
    "option_text": {
     "en": {
      "right": "Right",
      "left": "Left",
      "same": "Same"
+    },
+    "uz": {
+     "right": "Oʻng",
+     "left": "Chap",
+     "same": "Bir xil"
+    },
+    "ru": {
+     "right": "В правую",
+     "left": "В левую",
+     "same": "Одинаково"
     }
    }
   },
@@ -4425,13 +5537,25 @@
     "S"
    ],
    "text": {
-    "en": "When you hold your child upright, can they hold their head up?"
+    "en": "When you hold your child upright, can they hold their head up?",
+    "uz": "Farzandingizni tik ushlab turganingizda boshini tuta oladimi?",
+    "ru": "Когда вы держите ребёнка вертикально, он может держать голову?"
    },
    "option_text": {
     "en": {
      "no": "No",
      "briefly": "Only briefly",
      "steady": "Yes, steady"
+    },
+    "uz": {
+     "no": "Yoʻq",
+     "briefly": "Faqat qisqa vaqt",
+     "steady": "Ha, barqaror"
+    },
+    "ru": {
+     "no": "Нет",
+     "briefly": "Только недолго",
+     "steady": "Да, уверенно"
     }
    }
   },
@@ -4497,7 +5621,9 @@
     "V"
    ],
    "text": {
-    "en": "Where do you need to hold your child so they sit up straight?"
+    "en": "Where do you need to hold your child so they sit up straight?",
+    "uz": "Farzandingiz tik oʻtirishi uchun uni qayeridan ushlab turishingiz kerak?",
+    "ru": "Где нужно придерживать ребёнка, чтобы он сидел ровно?"
    },
    "option_text": {
     "en": {
@@ -4508,6 +5634,24 @@
      "waist": "Waist",
      "hips": "Hips",
      "no_support": "No support needed"
+    },
+    "uz": {
+     "shoulders": "Yelkalaridan",
+     "armpits": "Qoʻltiq ostidan",
+     "below_shoulder_blades": "Kurak suyaklari ostidan",
+     "lower_ribs": "Pastki qovurgʻalardan",
+     "waist": "Belidan",
+     "hips": "Chanogʻidan",
+     "no_support": "Ushlab turish shart emas"
+    },
+    "ru": {
+     "shoulders": "За плечи",
+     "armpits": "Под мышками",
+     "below_shoulder_blades": "Ниже лопаток",
+     "lower_ribs": "За нижние рёбра",
+     "waist": "За талию",
+     "hips": "За таз",
+     "no_support": "Поддержка не нужна"
     }
    }
   },
@@ -4559,7 +5703,9 @@
     "V"
    ],
    "text": {
-    "en": "How long can your child sit without your hands, on the floor or a stool?"
+    "en": "How long can your child sit without your hands, on the floor or a stool?",
+    "uz": "Farzandingiz polda yoki kursida qoʻllaringizsiz qancha oʻtira oladi?",
+    "ru": "Как долго ребёнок может сидеть без поддержки ваших рук, на полу или табурете?"
    },
    "option_text": {
     "en": {
@@ -4568,6 +5714,20 @@
      "hands_5min": "Leaning on hands, up to 5 min",
      "free_few_min": "Hands free, a few minutes",
      "free_30min": "Hands free, 30 min or more"
+    },
+    "uz": {
+     "cant_sit": "Hali oʻtira olmaydi",
+     "hands_under_10s": "Qoʻllariga tayanib, 10 soniyadan kam",
+     "hands_5min": "Qoʻllariga tayanib, 5 daq gacha",
+     "free_few_min": "Qoʻllarisiz, bir necha daqiqa",
+     "free_30min": "Qoʻllarisiz, 30 daq yoki undan koʻp"
+    },
+    "ru": {
+     "cant_sit": "Пока не сидит",
+     "hands_under_10s": "Опираясь на руки, меньше 10 сек",
+     "hands_5min": "Опираясь на руки, до 5 мин",
+     "free_few_min": "Без опоры на руки, несколько минут",
+     "free_30min": "Без опоры на руки, 30 мин и больше"
     }
    }
   },
@@ -4626,7 +5786,9 @@
     "E"
    ],
    "text": {
-    "en": "While sitting, can your child..."
+    "en": "While sitting, can your child...",
+    "uz": "Oʻtirgan holda farzandingiz...",
+    "ru": "Сидя, может ли ребёнок..."
    },
    "option_text": {
     "en": {
@@ -4636,6 +5798,22 @@
      "reach_above": "Reach above the head",
      "bend_floor": "Bend to the floor and come back",
      "turn": "Turn without falling"
+    },
+    "uz": {
+     "lean_forward": "Oldinga engashib, qayta tiklana oladimi",
+     "reach_left": "Chap tomondagi oʻyinchoqqa qoʻl choʻza oladimi",
+     "reach_right": "Oʻng tomonga qoʻl choʻza oladimi",
+     "reach_above": "Bosh ustiga qoʻl choʻza oladimi",
+     "bend_floor": "Polga engashib, qayta tiklana oladimi",
+     "turn": "Yiqilmasdan burila oladimi"
+    },
+    "ru": {
+     "lean_forward": "Наклониться вперёд и вернуться",
+     "reach_left": "Дотянуться до игрушки слева",
+     "reach_right": "Дотянуться справа",
+     "reach_above": "Дотянуться над головой",
+     "bend_floor": "Наклониться к полу и вернуться",
+     "turn": "Повернуться и не упасть"
     }
    }
   },
@@ -4697,7 +5875,9 @@
     "E"
    ],
    "text": {
-    "en": "From lying down to sitting"
+    "en": "From lying down to sitting",
+    "uz": "Yotgan holatdan oʻtirishga",
+    "ru": "Из положения лёжа в положение сидя"
    },
    "option_text": {
     "en": {
@@ -4705,6 +5885,18 @@
      "with_help": "With my help",
      "push_up": "Pushing up on hands, alone",
      "easily": "Easily, without hands"
+    },
+    "uz": {
+     "cant": "Hali qila olmaydi",
+     "with_help": "Mening yordamim bilan",
+     "push_up": "Qoʻllariga tayanib, oʻzi",
+     "easily": "Oson, qoʻllarisiz"
+    },
+    "ru": {
+     "cant": "Пока не может",
+     "with_help": "С моей помощью",
+     "push_up": "Сам, отталкиваясь руками",
+     "easily": "Легко, без помощи рук"
     }
    }
   },
@@ -4756,7 +5948,9 @@
     "E"
    ],
    "text": {
-    "en": "How does your child move on the floor?"
+    "en": "How does your child move on the floor?",
+    "uz": "Farzandingiz polda qanday harakatlanadi?",
+    "ru": "Как ребёнок передвигается по полу?"
    },
    "option_text": {
     "en": {
@@ -4766,6 +5960,22 @@
      "bottom_scoot": "Bottom scoot",
      "crawls_2m": "Crawls on hands and knees, 2 m or more",
      "crawls_stairs": "Crawls up stairs"
+    },
+    "uz": {
+     "doesnt_move": "Harakatlanmaydi",
+     "rolls": "Agʻanab",
+     "belly_crawl": "Qornida sudralib",
+     "bottom_scoot": "Oʻtirgan holda surilib",
+     "crawls_2m": "Toʻrt oyoqlab emaklaydi, 2 m yoki undan koʻp",
+     "crawls_stairs": "Zinaga emaklab chiqadi"
+    },
+    "ru": {
+     "doesnt_move": "Пока не передвигается",
+     "rolls": "Перекатывается",
+     "belly_crawl": "Ползает на животе",
+     "bottom_scoot": "Передвигается сидя, на попе",
+     "crawls_2m": "Ползает на четвереньках, 2 м и больше",
+     "crawls_stairs": "Заползает вверх по лестнице"
     }
    }
   },
@@ -4823,7 +6033,9 @@
     "E"
    ],
    "text": {
-    "en": "Kneeling"
+    "en": "Kneeling",
+    "uz": "Tizzalab turish",
+    "ru": "Стояние на коленях"
    },
    "option_text": {
     "en": {
@@ -4832,6 +6044,20 @@
      "kneel_holding": "Upright kneeling, holding on",
      "kneel_free": "Upright kneeling, hands free",
      "half_kneel_stand": "One knee down, stands up from there"
+    },
+    "uz": {
+     "cant": "Hali qila olmaydi",
+     "hands_knees_10s": "Toʻrt oyoqlab, 10 soniya",
+     "kneel_holding": "Tizzada tik turadi, ushlab",
+     "kneel_free": "Tizzada tik turadi, qoʻllarisiz",
+     "half_kneel_stand": "Bir tizzada turib, oʻrnidan turadi"
+    },
+    "ru": {
+     "cant": "Пока не может",
+     "hands_knees_10s": "На четвереньках, 10 сек",
+     "kneel_holding": "Стоит на коленях, держась",
+     "kneel_free": "Стоит на коленях без опоры",
+     "half_kneel_stand": "Стоит на одном колене и встаёт из этого положения"
     }
    }
   },
@@ -4889,7 +6115,9 @@
     "E"
    ],
    "text": {
-    "en": "Getting up from a chair or stool"
+    "en": "Getting up from a chair or stool",
+    "uz": "Stul yoki kursidan turish",
+    "ru": "Вставание со стула или табурета"
    },
    "option_text": {
     "en": {
@@ -4898,6 +6126,20 @@
      "pulls": "Pulling on furniture or a bar",
      "alone_hands": "Alone, hands on knees or chair",
      "alone_free": "Alone, hands free"
+    },
+    "uz": {
+     "cant": "Hali qila olmaydi",
+     "full_help": "Toʻliq mening yordamim bilan",
+     "pulls": "Mebel yoki tutqichdan tortilib",
+     "alone_hands": "Oʻzi, qoʻllarini tizzaga yoki stulga tirab",
+     "alone_free": "Oʻzi, qoʻllarisiz"
+    },
+    "ru": {
+     "cant": "Пока не может",
+     "full_help": "Полностью с моей помощью",
+     "pulls": "Подтягиваясь за мебель или поручень",
+     "alone_hands": "Сам, опираясь руками на колени или стул",
+     "alone_free": "Сам, без помощи рук"
     }
    }
   },
@@ -4929,7 +6171,9 @@
     "E"
    ],
    "text": {
-    "en": "Sitting down from standing, and squatting"
+    "en": "Sitting down from standing, and squatting",
+    "uz": "Tik turgan holatdan oʻtirish va choʻqqayish",
+    "ru": "Как ребёнок садится из положения стоя и приседает"
    },
    "option_text": {
     "en": {
@@ -4938,6 +6182,20 @@
      "holding": "Holding furniture, controlled",
      "squats": "Squats and stands up alone",
      "picks_toy": "Picks a toy off the floor and stands, hands free"
+    },
+    "uz": {
+     "drops": "Tushib ketadi yoki yiqiladi",
+     "with_help": "Mening yordamim bilan",
+     "holding": "Mebelni ushlab, ehtiyot boʻlib",
+     "squats": "Choʻqqayib, oʻzi turadi",
+     "picks_toy": "Poldan oʻyinchoqni olib, qoʻllarisiz turadi"
+    },
+    "ru": {
+     "drops": "Опускается резко или падает",
+     "with_help": "С моей помощью",
+     "holding": "Держась за мебель, плавно",
+     "squats": "Приседает и встаёт сам",
+     "picks_toy": "Поднимает игрушку с пола и встаёт без помощи рук"
     }
    }
   },
@@ -4998,7 +6256,9 @@
     "V"
    ],
    "text": {
-    "en": "Standing"
+    "en": "Standing",
+    "uz": "Tik turish",
+    "ru": "Стояние"
    },
    "option_text": {
     "en": {
@@ -5010,6 +6270,26 @@
      "alone_under_10s": "Alone, under 10 sec",
      "alone_10_60s": "Alone, 10–60 sec",
      "alone_over_1min": "Alone, over 1 min"
+    },
+    "uz": {
+     "cant": "Hali qila olmaydi",
+     "stander": "Faqat vertikalizatorda",
+     "trunk_support": "Gavdasini ushlab turilsa",
+     "bar_two_hands": "Tutqichni ikki qoʻli bilan ushlab",
+     "one_hand": "Bir qoʻli bilan ushlab",
+     "alone_under_10s": "Oʻzi, 10 soniyadan kam",
+     "alone_10_60s": "Oʻzi, 10–60 soniya",
+     "alone_over_1min": "Oʻzi, 1 daq dan koʻp"
+    },
+    "ru": {
+     "cant": "Пока не стоит",
+     "stander": "Только в вертикализаторе",
+     "trunk_support": "С поддержкой за туловище",
+     "bar_two_hands": "Держась за поручень двумя руками",
+     "one_hand": "Держась одной рукой",
+     "alone_under_10s": "Сам, меньше 10 сек",
+     "alone_10_60s": "Сам, 10–60 сек",
+     "alone_over_1min": "Сам, больше 1 мин"
     }
    }
   },
@@ -5068,7 +6348,9 @@
     "V"
    ],
    "text": {
-    "en": "Minutes a day in the stander"
+    "en": "Minutes a day in the stander",
+    "uz": "Kuniga vertikalizatorda necha daqiqa",
+    "ru": "Сколько минут в день в вертикализаторе"
    },
    "option_text": null
   },
@@ -5101,7 +6383,9 @@
     "E"
    ],
    "text": {
-    "en": "While standing, can your child..."
+    "en": "While standing, can your child...",
+    "uz": "Tik turgan holda farzandingiz...",
+    "ru": "Стоя, может ли ребёнок..."
    },
    "option_text": {
     "en": {
@@ -5111,6 +6395,22 @@
      "bend_floor": "Bend to the floor",
      "one_leg": "Stand on one leg",
      "kick": "Kick a ball"
+    },
+    "uz": {
+     "shift_weight": "Ogʻirligini bir oyoqdan boshqasiga oʻtkaza oladimi",
+     "turn_upper": "Gavdasining yuqori qismini bura oladimi",
+     "reach_above": "Bosh ustiga qoʻl choʻza oladimi",
+     "bend_floor": "Polga engasha oladimi",
+     "one_leg": "Bir oyoqda tura oladimi",
+     "kick": "Toʻpni tepa oladimi"
+    },
+    "ru": {
+     "shift_weight": "Переносить вес с ноги на ногу",
+     "turn_upper": "Поворачивать верхнюю часть тела",
+     "reach_above": "Тянуться вверх над головой",
+     "bend_floor": "Наклоняться к полу",
+     "one_leg": "Стоять на одной ноге",
+     "kick": "Ударить ногой по мячу"
     }
    }
   },
@@ -5150,13 +6450,25 @@
     "E"
    ],
    "text": {
-    "en": "On which leg?"
+    "en": "On which leg?",
+    "uz": "Qaysi oyoqda?",
+    "ru": "На какой ноге?"
    },
    "option_text": {
     "en": {
      "left": "Left",
      "right": "Right",
      "both": "Both"
+    },
+    "uz": {
+     "left": "Chap",
+     "right": "Oʻng",
+     "both": "Ikkalasi"
+    },
+    "ru": {
+     "left": "На левой",
+     "right": "На правой",
+     "both": "На обеих"
     }
    }
   },
@@ -5196,13 +6508,25 @@
     "E"
    ],
    "text": {
-    "en": "With which foot?"
+    "en": "With which foot?",
+    "uz": "Qaysi oyogʻi bilan?",
+    "ru": "Какой ногой?"
    },
    "option_text": {
     "en": {
      "left": "Left",
      "right": "Right",
      "both": "Both"
+    },
+    "uz": {
+     "left": "Chap",
+     "right": "Oʻng",
+     "both": "Ikkalasi"
+    },
+    "ru": {
+     "left": "Левой",
+     "right": "Правой",
+     "both": "Обеими"
     }
    }
   },
@@ -5235,7 +6559,9 @@
     "V"
    ],
    "text": {
-    "en": "How does your child walk?"
+    "en": "How does your child walk?",
+    "uz": "Farzandingiz qanday yuradi?",
+    "ru": "Как ребёнок ходит?"
    },
    "option_text": {
     "en": {
@@ -5246,6 +6572,24 @@
      "one_hand": "Holding one hand",
      "alone_few_m": "Alone, a few meters",
      "alone_7m": "Alone, 7 m or more"
+    },
+    "uz": {
+     "doesnt_step": "Qadam tashlamaydi",
+     "gait_trainer": "Faqat yurish trenajorida qadam tashlaydi",
+     "adult_trunk": "Kattalar gavdasidan ushlasa, bir necha qadam",
+     "walker_two_hands": "Yurgich bilan yoki ikki qoʻlidan ushlab",
+     "one_hand": "Bir qoʻlidan ushlab",
+     "alone_few_m": "Oʻzi, bir necha metr",
+     "alone_7m": "Oʻzi, 7 m yoki undan koʻp"
+    },
+    "ru": {
+     "doesnt_step": "Пока не шагает",
+     "gait_trainer": "Шагает только в тренажёре для ходьбы",
+     "adult_trunk": "Несколько шагов, когда взрослый держит за туловище",
+     "walker_two_hands": "С ходунками или за две руки",
+     "one_hand": "За одну руку",
+     "alone_few_m": "Сам, несколько метров",
+     "alone_7m": "Сам, 7 м и больше"
     }
    }
   },
@@ -5286,7 +6630,9 @@
     "R"
    ],
    "text": {
-    "en": "Longest distance your child walks"
+    "en": "Longest distance your child walks",
+    "uz": "Farzandingiz yuradigan eng uzoq masofa",
+    "ru": "Самое большое расстояние, которое проходит ребёнок"
    },
    "option_text": {
     "en": {
@@ -5294,6 +6640,18 @@
      "7_100m": "7–100 m",
      "100_300m": "100–300 m",
      "over_300m": "Over 300 m"
+    },
+    "uz": {
+     "under_7m": "7 m dan kam",
+     "7_100m": "7–100 m",
+     "100_300m": "100–300 m",
+     "over_300m": "300 m dan koʻp"
+    },
+    "ru": {
+     "under_7m": "Меньше 7 м",
+     "7_100m": "7–100 м",
+     "100_300m": "100–300 м",
+     "over_300m": "Больше 300 м"
     }
    }
   },
@@ -5338,7 +6696,9 @@
     "R"
    ],
    "text": {
-    "en": "With what help?"
+    "en": "With what help?",
+    "uz": "Qanday yordam bilan?",
+    "ru": "С какой помощью?"
    },
    "option_text": {
     "en": {
@@ -5346,6 +6706,18 @@
      "one_hand": "One hand held",
      "walker": "Walker",
      "stroller": "Stroller or wheelchair outside"
+    },
+    "uz": {
+     "alone": "Oʻzi",
+     "one_hand": "Bir qoʻlidan ushlab",
+     "walker": "Yurgich",
+     "stroller": "Tashqarida aravacha yoki nogironlar aravachasi"
+    },
+    "ru": {
+     "alone": "Сам",
+     "one_hand": "За одну руку",
+     "walker": "С ходунками",
+     "stroller": "На улице в коляске или инвалидной коляске"
     }
    }
   },
@@ -5384,13 +6756,25 @@
     "E"
    ],
    "text": {
-    "en": "Starting and stopping"
+    "en": "Starting and stopping",
+    "uz": "Yurishni boshlash va toʻxtash",
+    "ru": "Начать идти и остановиться"
    },
    "option_text": {
     "en": {
      "needs_help": "Needs help to start",
      "starts_alone": "Starts alone from standing",
      "stops_alone": "Stops and keeps standing alone"
+    },
+    "uz": {
+     "needs_help": "Boshlash uchun yordam kerak",
+     "starts_alone": "Tik turgan holatdan oʻzi boshlaydi",
+     "stops_alone": "Toʻxtab, oʻzi tik turib qoladi"
+    },
+    "ru": {
+     "needs_help": "Нужна помощь, чтобы начать идти",
+     "starts_alone": "Сам начинает идти из положения стоя",
+     "stops_alone": "Сам останавливается и продолжает стоять"
     }
    }
   },
@@ -5430,7 +6814,9 @@
     "E"
    ],
    "text": {
-    "en": "Turning and walking backward"
+    "en": "Turning and walking backward",
+    "uz": "Burilish va orqaga yurish",
+    "ru": "Повороты и ходьба назад"
    },
    "option_text": {
     "en": {
@@ -5438,6 +6824,18 @@
      "circle": "Walks in a circle",
      "backward_help": "Walks backward with help",
      "backward_alone": "Walks backward alone"
+    },
+    "uz": {
+     "turns": "Yurib ketayotib buriladi",
+     "circle": "Aylana boʻylab yuradi",
+     "backward_help": "Yordam bilan orqaga yuradi",
+     "backward_alone": "Oʻzi orqaga yuradi"
+    },
+    "ru": {
+     "turns": "Поворачивает во время ходьбы",
+     "circle": "Ходит по кругу",
+     "backward_help": "Ходит назад с помощью",
+     "backward_alone": "Ходит назад сам"
     }
    }
   },
@@ -5478,7 +6876,9 @@
     "E"
    ],
    "text": {
-    "en": "Stairs up"
+    "en": "Stairs up",
+    "uz": "Zinadan chiqish",
+    "ru": "Подъём по лестнице"
    },
    "option_text": {
     "en": {
@@ -5487,6 +6887,20 @@
      "rail_one_foot": "Holding a rail, one foot at a time",
      "alone_one_foot": "Alone, one foot at a time",
      "alternating": "Alone, alternating feet"
+    },
+    "uz": {
+     "cant": "Hali qila olmaydi",
+     "adult_help": "Kattalar yordamida",
+     "rail_one_foot": "Tutqichni ushlab, har zinaga ikki oyoqni qoʻyib",
+     "alone_one_foot": "Oʻzi, har zinaga ikki oyoqni qoʻyib",
+     "alternating": "Oʻzi, oyoqlarini navbatma-navbat qoʻyib"
+    },
+    "ru": {
+     "cant": "Пока не может",
+     "adult_help": "С помощью взрослого",
+     "rail_one_foot": "Держась за перила, приставным шагом",
+     "alone_one_foot": "Сам, приставным шагом",
+     "alternating": "Сам, ставя ноги поочерёдно"
     }
    }
   },
@@ -5527,7 +6941,9 @@
     "E"
    ],
    "text": {
-    "en": "Stairs down"
+    "en": "Stairs down",
+    "uz": "Zinadan tushish",
+    "ru": "Спуск по лестнице"
    },
    "option_text": {
     "en": {
@@ -5536,6 +6952,20 @@
      "rail_one_foot": "Holding a rail, one foot at a time",
      "alone_one_foot": "Alone, one foot at a time",
      "alternating": "Alone, alternating feet"
+    },
+    "uz": {
+     "cant": "Hali qila olmaydi",
+     "adult_help": "Kattalar yordamida",
+     "rail_one_foot": "Tutqichni ushlab, har zinaga ikki oyoqni qoʻyib",
+     "alone_one_foot": "Oʻzi, har zinaga ikki oyoqni qoʻyib",
+     "alternating": "Oʻzi, oyoqlarini navbatma-navbat qoʻyib"
+    },
+    "ru": {
+     "cant": "Пока не может",
+     "adult_help": "С помощью взрослого",
+     "rail_one_foot": "Держась за перила, приставным шагом",
+     "alone_one_foot": "Сам, приставным шагом",
+     "alternating": "Сам, ставя ноги поочерёдно"
     }
    }
   },
@@ -5576,7 +7006,9 @@
     "E"
    ],
    "text": {
-    "en": "Outside surfaces"
+    "en": "Outside surfaces",
+    "uz": "Tashqaridagi yuzalar",
+    "ru": "Ходьба на улице"
    },
    "option_text": {
     "en": {
@@ -5585,6 +7017,20 @@
      "step_over_alone": "Steps over a 10–15 cm object alone",
      "slope_up": "Walks up a slope",
      "slope_down": "Walks down a slope"
+    },
+    "uz": {
+     "grass": "Maysa yoki notekis yerda yuradi",
+     "step_over_help": "Yordam bilan 10–15 sm li narsadan hatlab oʻtadi",
+     "step_over_alone": "Oʻzi 10–15 sm li narsadan hatlab oʻtadi",
+     "slope_up": "Qiyalikka chiqadi",
+     "slope_down": "Qiyalikdan tushadi"
+    },
+    "ru": {
+     "grass": "Ходит по траве или неровной земле",
+     "step_over_help": "Перешагивает предмет высотой 10–15 см с помощью",
+     "step_over_alone": "Перешагивает предмет высотой 10–15 см сам",
+     "slope_up": "Поднимается в горку",
+     "slope_down": "Спускается с горки"
     }
    }
   },
@@ -5635,7 +7081,9 @@
     "E"
    ],
    "text": {
-    "en": "Running and jumping"
+    "en": "Running and jumping",
+    "uz": "Yugurish va sakrash",
+    "ru": "Бег и прыжки"
    },
    "option_text": {
     "en": {
@@ -5645,6 +7093,22 @@
      "jumps_down": "Jumps down a step",
      "hops": "Hops on one foot",
      "none": "None of these yet"
+    },
+    "uz": {
+     "runs": "Yuguradi",
+     "jumps_both": "Ikki oyoqlab sakraydi",
+     "jumps_forward": "Oldinga sakraydi",
+     "jumps_down": "Zinadan pastga sakraydi",
+     "hops": "Bir oyoqda sakraydi",
+     "none": "Hali bularning hech biri"
+    },
+    "ru": {
+     "runs": "Бегает",
+     "jumps_both": "Прыгает на двух ногах",
+     "jumps_forward": "Прыгает вперёд",
+     "jumps_down": "Спрыгивает со ступеньки",
+     "hops": "Прыгает на одной ноге",
+     "none": "Пока ничего из этого"
     }
    }
   },
@@ -5698,13 +7162,25 @@
     "E"
    ],
    "text": {
-    "en": "Hops on which foot?"
+    "en": "Hops on which foot?",
+    "uz": "Qaysi oyoqda sakraydi?",
+    "ru": "На какой ноге прыгает?"
    },
    "option_text": {
     "en": {
      "left": "Left",
      "right": "Right",
      "both": "Both"
+    },
+    "uz": {
+     "left": "Chap",
+     "right": "Oʻng",
+     "both": "Ikkalasi"
+    },
+    "ru": {
+     "left": "На левой",
+     "right": "На правой",
+     "both": "На обеих"
     }
    }
   },
@@ -5758,7 +7234,9 @@
     "T"
    ],
    "text": {
-    "en": "Which picture looks most like your child?"
+    "en": "Which picture looks most like your child?",
+    "uz": "Qaysi rasm farzandingizga koʻproq oʻxshaydi?",
+    "ru": "Какая картинка больше всего похожа на вашего ребёнка?"
    },
    "option_text": {
     "en": {
@@ -5767,6 +7245,20 @@
      "iii": "Level III",
      "iv": "Level IV",
      "v": "Level V"
+    },
+    "uz": {
+     "i": "I daraja",
+     "ii": "II daraja",
+     "iii": "III daraja",
+     "iv": "IV daraja",
+     "v": "V daraja"
+    },
+    "ru": {
+     "i": "Уровень I",
+     "ii": "Уровень II",
+     "iii": "Уровень III",
+     "iv": "Уровень IV",
+     "v": "Уровень V"
     }
    }
   },
@@ -5798,7 +7290,9 @@
     "E"
    ],
    "text": {
-    "en": "How often does your child fall?"
+    "en": "How often does your child fall?",
+    "uz": "Farzandingiz qanchalik tez-tez yiqiladi?",
+    "ru": "Как часто ребёнок падает?"
    },
    "option_text": {
     "en": {
@@ -5806,6 +7300,18 @@
      "few_week": "A few times a week",
      "every_day": "Every day",
      "many_day": "Many times a day"
+    },
+    "uz": {
+     "rarely": "Kamdan-kam",
+     "few_week": "Haftada bir necha marta",
+     "every_day": "Har kuni",
+     "many_day": "Kuniga koʻp marta"
+    },
+    "ru": {
+     "rarely": "Редко",
+     "few_week": "Несколько раз в неделю",
+     "every_day": "Каждый день",
+     "many_day": "Много раз в день"
     }
    }
   },
@@ -5832,12 +7338,22 @@
     "S"
    ],
    "text": {
-    "en": "Has your child stopped doing something they could do before?"
+    "en": "Has your child stopped doing something they could do before?",
+    "uz": "Farzandingiz avval qila olgan biror narsani qilmay qoʻydimi?",
+    "ru": "Перестал ли ребёнок делать что-то, что умел раньше?"
    },
    "option_text": {
     "en": {
      "yes": "Yes",
      "no": "No"
+    },
+    "uz": {
+     "yes": "Ha",
+     "no": "Yoʻq"
+    },
+    "ru": {
+     "yes": "Да",
+     "no": "Нет"
     }
    },
    "note": "Red flag: asked of every child, whatever the diagnosis (not hidden by R5)."
@@ -5867,7 +7383,9 @@
     "S"
    ],
    "text": {
-    "en": "What, and when?"
+    "en": "What, and when?",
+    "uz": "Nima va qachon?",
+    "ru": "Что и когда?"
    },
    "option_text": null
   },
@@ -5897,13 +7415,25 @@
     "T"
    ],
    "text": {
-    "en": "Are these answers how your child usually moves?"
+    "en": "Are these answers how your child usually moves?",
+    "uz": "Bu javoblar farzandingizning odatdagi harakatlarini koʻrsatadimi?",
+    "ru": "Эти ответы описывают, как ребёнок обычно двигается?"
    },
    "option_text": {
     "en": {
      "usual": "Yes",
      "better": "Better than usual",
      "worse": "Worse than usual (ill, tired, after surgery)"
+    },
+    "uz": {
+     "usual": "Ha",
+     "better": "Odatdagidan yaxshiroq",
+     "worse": "Odatdagidan qiyinroq (kasal, charchagan, operatsiyadan keyin)"
+    },
+    "ru": {
+     "usual": "Да",
+     "better": "Лучше, чем обычно",
+     "worse": "Хуже, чем обычно (болеет, устал, после операции)"
     }
    }
   },
@@ -5956,7 +7486,9 @@
     "E"
    ],
    "text": {
-    "en": "Which picture looks most like how your child handles objects?"
+    "en": "Which picture looks most like how your child handles objects?",
+    "uz": "Qaysi rasm farzandingiz narsalarni qanday ushlashiga koʻproq oʻxshaydi?",
+    "ru": "Какая картинка больше всего похожа на то, как ребёнок обращается с предметами?"
    },
    "option_text": {
     "en": {
@@ -5965,6 +7497,20 @@
      "iii": "Level III",
      "iv": "Level IV",
      "v": "Level V"
+    },
+    "uz": {
+     "i": "I daraja",
+     "ii": "II daraja",
+     "iii": "III daraja",
+     "iv": "IV daraja",
+     "v": "V daraja"
+    },
+    "ru": {
+     "i": "Уровень I",
+     "ii": "Уровень II",
+     "iii": "Уровень III",
+     "iv": "Уровень IV",
+     "v": "Уровень V"
     }
    },
    "note": "Mini-MACS pictures under age 4 (R15)."
@@ -5997,7 +7543,9 @@
     "E"
    ],
    "text": {
-    "en": "Which hand does your child use more?"
+    "en": "Which hand does your child use more?",
+    "uz": "Farzandingiz qaysi qoʻlini koʻproq ishlatadi?",
+    "ru": "Какой рукой ребёнок пользуется чаще?"
    },
    "option_text": {
     "en": {
@@ -6005,6 +7553,18 @@
      "left": "Left",
      "same": "Both the same",
      "neither": "Neither yet"
+    },
+    "uz": {
+     "right": "Oʻng",
+     "left": "Chap",
+     "same": "Ikkalasini bir xil",
+     "neither": "Hali hech birini"
+    },
+    "ru": {
+     "right": "Правой",
+     "left": "Левой",
+     "same": "Обеими одинаково",
+     "neither": "Пока ни одной"
     }
    }
   },
@@ -6035,7 +7595,9 @@
     "E"
    ],
    "text": {
-    "en": "Does the other hand help (holds paper, holds a cup with two hands)?"
+    "en": "Does the other hand help (holds paper, holds a cup with two hands)?",
+    "uz": "Ikkinchi qoʻli yordam beradimi (qogʻozni ushlaydi, piyolani ikki qoʻllab ushlaydi)?",
+    "ru": "Помогает ли вторая рука (придерживает бумагу, держит чашку двумя руками)?"
    },
    "option_text": {
     "en": {
@@ -6043,6 +7605,18 @@
      "sometimes": "Sometimes",
      "rarely": "Rarely",
      "never": "Never"
+    },
+    "uz": {
+     "always": "Doim",
+     "sometimes": "Baʼzan",
+     "rarely": "Kamdan-kam",
+     "never": "Hech qachon"
+    },
+    "ru": {
+     "always": "Всегда",
+     "sometimes": "Иногда",
+     "rarely": "Редко",
+     "never": "Никогда"
     }
    }
   },
@@ -6073,13 +7647,25 @@
     "E"
    ],
    "text": {
-    "en": "How does your child pick up a small thing, like a raisin?"
+    "en": "How does your child pick up a small thing, like a raisin?",
+    "uz": "Farzandingiz mayiz kabi kichik narsani qanday oladi?",
+    "ru": "Как ребёнок берёт мелкий предмет, например изюминку?"
    },
    "option_text": {
     "en": {
      "thumb_finger": "Thumb and finger",
      "whole_hand": "Whole hand",
      "cannot": "Cannot pick it up"
+    },
+    "uz": {
+     "thumb_finger": "Bosh barmoq va boshqa barmoq bilan",
+     "whole_hand": "Butun kafti bilan",
+     "cannot": "Hali ola olmaydi"
+    },
+    "ru": {
+     "thumb_finger": "Большим и другим пальцем",
+     "whole_hand": "Всей ладонью",
+     "cannot": "Пока не получается взять"
     }
    }
   },
@@ -6110,13 +7696,25 @@
     "E"
    ],
    "text": {
-    "en": "Can your child let go of a toy on purpose?"
+    "en": "Can your child let go of a toy on purpose?",
+    "uz": "Farzandingiz oʻyinchoqni ataylab qoʻyib yubora oladimi?",
+    "ru": "Может ли ребёнок отпустить игрушку, когда хочет?"
    },
    "option_text": {
     "en": {
      "easily": "Easily",
      "effort": "With effort",
      "no": "No"
+    },
+    "uz": {
+     "easily": "Oson",
+     "effort": "Qiynalib",
+     "no": "Yoʻq"
+    },
+    "ru": {
+     "easily": "Легко",
+     "effort": "С усилием",
+     "no": "Нет"
     }
    }
   },
@@ -6146,12 +7744,22 @@
     "MV"
    ],
    "text": {
-    "en": "Can your child point with one finger?"
+    "en": "Can your child point with one finger?",
+    "uz": "Farzandingiz bitta barmogʻi bilan koʻrsata oladimi?",
+    "ru": "Может ли ребёнок показать одним пальцем?"
    },
    "option_text": {
     "en": {
      "yes": "Yes",
      "no": "No"
+    },
+    "uz": {
+     "yes": "Ha",
+     "no": "Yoʻq"
+    },
+    "ru": {
+     "yes": "Да",
+     "no": "Нет"
     }
    }
   },
@@ -6192,7 +7800,9 @@
     "G"
    ],
    "text": {
-    "en": "Can your child tap a picture on a phone or tablet?"
+    "en": "Can your child tap a picture on a phone or tablet?",
+    "uz": "Farzandingiz telefon yoki planshetdagi rasmga bosa oladimi?",
+    "ru": "Может ли ребёнок нажать на картинку на телефоне или планшете?"
    },
    "option_text": {
     "en": {
@@ -6200,6 +7810,18 @@
      "big_only": "Only big pictures",
      "with_help": "With my help",
      "not_yet": "Not yet"
+    },
+    "uz": {
+     "accurately": "Ha, aniq",
+     "big_only": "Faqat katta rasmlarga",
+     "with_help": "Mening yordamim bilan",
+     "not_yet": "Hali emas"
+    },
+    "ru": {
+     "accurately": "Да, точно",
+     "big_only": "Только на большие картинки",
+     "with_help": "С моей помощью",
+     "not_yet": "Пока нет"
     }
    }
   },
@@ -6241,13 +7863,25 @@
     "G"
    ],
    "text": {
-    "en": "Can your child swipe or drag on a screen?"
+    "en": "Can your child swipe or drag on a screen?",
+    "uz": "Farzandingiz ekranni surib yoki narsani sudrab olib bora oladimi?",
+    "ru": "Может ли ребёнок провести пальцем или перетащить что-то на экране?"
    },
    "option_text": {
     "en": {
      "yes": "Yes",
      "sometimes": "Sometimes",
      "no": "No"
+    },
+    "uz": {
+     "yes": "Ha",
+     "sometimes": "Baʼzan",
+     "no": "Yoʻq"
+    },
+    "ru": {
+     "yes": "Да",
+     "sometimes": "Иногда",
+     "no": "Нет"
     }
    }
   },
@@ -6278,13 +7912,25 @@
     "E"
    ],
    "text": {
-    "en": "Do the hands shake or move on their own when reaching?"
+    "en": "Do the hands shake or move on their own when reaching?",
+    "uz": "Qoʻl choʻzganda qoʻllari titraydimi yoki oʻz-oʻzidan harakatlanadimi?",
+    "ru": "Руки дрожат или двигаются сами, когда ребёнок тянется к чему-то?"
    },
    "option_text": {
     "en": {
      "no": "No",
      "a_little": "A little",
      "a_lot": "A lot"
+    },
+    "uz": {
+     "no": "Yoʻq",
+     "a_little": "Biroz",
+     "a_lot": "Koʻp"
+    },
+    "ru": {
+     "no": "Нет",
+     "a_little": "Немного",
+     "a_lot": "Сильно"
     }
    }
   },
@@ -6316,13 +7962,25 @@
     "S"
    ],
    "text": {
-    "en": "Is the hand often in a fist, or the thumb inside the palm?"
+    "en": "Is the hand often in a fist, or the thumb inside the palm?",
+    "uz": "Qoʻli tez-tez mushtlangan boʻladimi yoki bosh barmogʻi kaft ichida boʻladimi?",
+    "ru": "Рука часто сжата в кулак или большой палец прижат к ладони?"
    },
    "option_text": {
     "en": {
      "never": "Never",
      "sometimes": "Sometimes",
      "most": "Most of the time"
+    },
+    "uz": {
+     "never": "Hech qachon",
+     "sometimes": "Baʼzan",
+     "most": "Koʻp vaqt"
+    },
+    "ru": {
+     "never": "Никогда",
+     "sometimes": "Иногда",
+     "most": "Большую часть времени"
     }
    }
   },
@@ -6365,13 +8023,25 @@
     "S"
    ],
    "text": {
-    "en": "Which hand?"
+    "en": "Which hand?",
+    "uz": "Qaysi qoʻli?",
+    "ru": "Какая рука?"
    },
    "option_text": {
     "en": {
      "left": "Left",
      "right": "Right",
      "both": "Both"
+    },
+    "uz": {
+     "left": "Chap",
+     "right": "Oʻng",
+     "both": "Ikkalasi"
+    },
+    "ru": {
+     "left": "Левая",
+     "right": "Правая",
+     "both": "Обе"
     }
    }
   },
@@ -6424,13 +8094,25 @@
     "E"
    ],
    "text": {
-    "en": "How does your child hold a pencil or crayon?"
+    "en": "How does your child hold a pencil or crayon?",
+    "uz": "Farzandingiz qalam yoki rangli qalamni qanday ushlaydi?",
+    "ru": "Как ребёнок держит карандаш или мелок?"
    },
    "option_text": {
     "en": {
      "fingers": "Fingers",
      "fist": "Whole fist",
      "cant": "Can't hold yet"
+    },
+    "uz": {
+     "fingers": "Barmoqlari bilan",
+     "fist": "Butun mushti bilan",
+     "cant": "Hali ushlay olmaydi"
+    },
+    "ru": {
+     "fingers": "Пальцами",
+     "fist": "Всем кулаком",
+     "cant": "Пока не держит"
     }
    }
   },
@@ -6482,13 +8164,25 @@
     "E"
    ],
    "text": {
-    "en": "Can your child hold a spoon or cup alone?"
+    "en": "Can your child hold a spoon or cup alone?",
+    "uz": "Farzandingiz qoshiq yoki piyolani oʻzi ushlay oladimi?",
+    "ru": "Может ли ребёнок сам держать ложку или чашку?"
    },
    "option_text": {
     "en": {
      "yes": "Yes",
      "with_help": "With help",
      "no": "No"
+    },
+    "uz": {
+     "yes": "Ha",
+     "with_help": "Yordam bilan",
+     "no": "Yoʻq"
+    },
+    "ru": {
+     "yes": "Да",
+     "with_help": "С помощью",
+     "no": "Нет"
     }
    }
   },
@@ -6540,13 +8234,25 @@
     "E"
    ],
    "text": {
-    "en": "Can your child do buttons or zippers?"
+    "en": "Can your child do buttons or zippers?",
+    "uz": "Farzandingiz tugma yoki zamokni qadab-ocha oladimi?",
+    "ru": "Может ли ребёнок застёгивать пуговицы или молнию?"
    },
    "option_text": {
     "en": {
      "yes": "Yes",
      "with_help": "With help",
      "no": "No"
+    },
+    "uz": {
+     "yes": "Ha",
+     "with_help": "Yordam bilan",
+     "no": "Yoʻq"
+    },
+    "ru": {
+     "yes": "Да",
+     "with_help": "С помощью",
+     "no": "Нет"
     }
    }
   },
@@ -6577,7 +8283,9 @@
     "E"
    ],
    "text": {
-    "en": "How does your child's body feel when you move their arms and legs?"
+    "en": "How does your child's body feel when you move their arms and legs?",
+    "uz": "Farzandingizning qoʻl-oyoqlarini harakatlantirganingizda tanasi qanday seziladi?",
+    "ru": "Какое на ощупь тело ребёнка, когда вы двигаете его руки и ноги?"
    },
    "option_text": {
     "en": {
@@ -6586,6 +8294,20 @@
      "changes": "Changes during the day",
      "normal": "Normal",
      "dont_know": "Don't know"
+    },
+    "uz": {
+     "stiff": "Qattiq",
+     "floppy": "Boʻshashgan, yumshoq",
+     "changes": "Kun davomida oʻzgaradi",
+     "normal": "Odatdagidek",
+     "dont_know": "Bilmayman"
+    },
+    "ru": {
+     "stiff": "Напряжённое, тугое",
+     "floppy": "Вялое, мягкое",
+     "changes": "Меняется в течение дня",
+     "normal": "Обычное",
+     "dont_know": "Не знаю"
     }
    }
   },
@@ -6629,7 +8351,9 @@
     "E"
    ],
    "text": {
-    "en": "Where is it stiffest?"
+    "en": "Where is it stiffest?",
+    "uz": "Qayeri eng qattiq?",
+    "ru": "Где напряжение сильнее всего?"
    },
    "option_text": {
     "en": {
@@ -6645,6 +8369,34 @@
      "right_leg": "Right leg",
      "left_foot": "Left foot",
      "right_foot": "Right foot"
+    },
+    "uz": {
+     "head_neck": "Bosh va boʻyin",
+     "shoulders": "Yelkalar",
+     "back": "Orqa",
+     "hips": "Son va chanoq",
+     "left_arm": "Chap qoʻl",
+     "right_arm": "Oʻng qoʻl",
+     "left_hand": "Chap kaft",
+     "right_hand": "Oʻng kaft",
+     "left_leg": "Chap oyoq",
+     "right_leg": "Oʻng oyoq",
+     "left_foot": "Chap oyoq panjasi",
+     "right_foot": "Oʻng oyoq panjasi"
+    },
+    "ru": {
+     "head_neck": "Голова и шея",
+     "shoulders": "Плечи",
+     "back": "Спина",
+     "hips": "Таз и бёдра",
+     "left_arm": "Левая рука",
+     "right_arm": "Правая рука",
+     "left_hand": "Левая кисть",
+     "right_hand": "Правая кисть",
+     "left_leg": "Левая нога",
+     "right_leg": "Правая нога",
+     "left_foot": "Левая стопа",
+     "right_foot": "Правая стопа"
     }
    }
   },
@@ -6673,13 +8425,25 @@
     "M"
    ],
    "text": {
-    "en": "Does your child show pain when moving, dressing, or changing diapers?"
+    "en": "Does your child show pain when moving, dressing, or changing diapers?",
+    "uz": "Farzandingiz harakatlanganda, kiyinganda yoki tagligi almashtirilganda ogʻriq sezadimi?",
+    "ru": "Показывает ли ребёнок, что ему больно, когда двигается, одевается или когда меняют подгузник?"
    },
    "option_text": {
     "en": {
      "never": "Never",
      "sometimes": "Sometimes",
      "often": "Often"
+    },
+    "uz": {
+     "never": "Hech qachon",
+     "sometimes": "Baʼzan",
+     "often": "Tez-tez"
+    },
+    "ru": {
+     "never": "Никогда",
+     "sometimes": "Иногда",
+     "often": "Часто"
     }
    }
   },
@@ -6723,7 +8487,9 @@
     "M"
    ],
    "text": {
-    "en": "Where is the pain?"
+    "en": "Where is the pain?",
+    "uz": "Qayeri ogʻriydi?",
+    "ru": "Где болит?"
    },
    "option_text": {
     "en": {
@@ -6739,6 +8505,34 @@
      "right_leg": "Right leg",
      "left_foot": "Left foot",
      "right_foot": "Right foot"
+    },
+    "uz": {
+     "head_neck": "Bosh va boʻyin",
+     "shoulders": "Yelkalar",
+     "back": "Orqa",
+     "hips": "Son va chanoq",
+     "left_arm": "Chap qoʻl",
+     "right_arm": "Oʻng qoʻl",
+     "left_hand": "Chap kaft",
+     "right_hand": "Oʻng kaft",
+     "left_leg": "Chap oyoq",
+     "right_leg": "Oʻng oyoq",
+     "left_foot": "Chap oyoq panjasi",
+     "right_foot": "Oʻng oyoq panjasi"
+    },
+    "ru": {
+     "head_neck": "Голова и шея",
+     "shoulders": "Плечи",
+     "back": "Спина",
+     "hips": "Таз и бёдра",
+     "left_arm": "Левая рука",
+     "right_arm": "Правая рука",
+     "left_hand": "Левая кисть",
+     "right_hand": "Правая кисть",
+     "left_leg": "Левая нога",
+     "right_leg": "Правая нога",
+     "left_foot": "Левая стопа",
+     "right_foot": "Правая стопа"
     }
    }
   },
@@ -6770,7 +8564,9 @@
     "M"
    ],
    "text": {
-    "en": "Are there joints that won't straighten all the way?"
+    "en": "Are there joints that won't straighten all the way?",
+    "uz": "Oxirigacha toʻgʻrilanmaydigan boʻgʻimlar bormi?",
+    "ru": "Есть ли суставы, которые не разгибаются до конца?"
    },
    "option_text": {
     "en": {
@@ -6780,6 +8576,22 @@
      "knee": "Knee",
      "ankle": "Ankle",
      "none": "None"
+    },
+    "uz": {
+     "elbow": "Tirsak",
+     "wrist": "Bilak",
+     "hip": "Son boʻgʻimi",
+     "knee": "Tizza",
+     "ankle": "Toʻpiq",
+     "none": "Hech biri"
+    },
+    "ru": {
+     "elbow": "Локоть",
+     "wrist": "Запястье",
+     "hip": "Тазобедренный сустав",
+     "knee": "Колено",
+     "ankle": "Голеностоп",
+     "none": "Нет"
     }
    }
   },
@@ -6807,12 +8619,22 @@
     "M"
    ],
    "text": {
-    "en": "Any skin problems: wounds, sores, rashes, easy bruising?"
+    "en": "Any skin problems: wounds, sores, rashes, easy bruising?",
+    "uz": "Teri muammolari bormi: yara, yotoq yarasi, toshma, tez koʻkarish?",
+    "ru": "Есть ли проблемы с кожей: раны, пролежни, сыпь, легко появляются синяки?"
    },
    "option_text": {
     "en": {
      "yes": "Yes",
      "no": "No"
+    },
+    "uz": {
+     "yes": "Ha",
+     "no": "Yoʻq"
+    },
+    "ru": {
+     "yes": "Да",
+     "no": "Нет"
     }
    }
   },
@@ -6855,7 +8677,9 @@
     "M"
    ],
    "text": {
-    "en": "Where?"
+    "en": "Where?",
+    "uz": "Qayerda?",
+    "ru": "Где?"
    },
    "option_text": {
     "en": {
@@ -6871,6 +8695,34 @@
      "right_leg": "Right leg",
      "left_foot": "Left foot",
      "right_foot": "Right foot"
+    },
+    "uz": {
+     "head_neck": "Bosh va boʻyin",
+     "shoulders": "Yelkalar",
+     "back": "Orqa",
+     "hips": "Son va chanoq",
+     "left_arm": "Chap qoʻl",
+     "right_arm": "Oʻng qoʻl",
+     "left_hand": "Chap kaft",
+     "right_hand": "Oʻng kaft",
+     "left_leg": "Chap oyoq",
+     "right_leg": "Oʻng oyoq",
+     "left_foot": "Chap oyoq panjasi",
+     "right_foot": "Oʻng oyoq panjasi"
+    },
+    "ru": {
+     "head_neck": "Голова и шея",
+     "shoulders": "Плечи",
+     "back": "Спина",
+     "hips": "Таз и бёдра",
+     "left_arm": "Левая рука",
+     "right_arm": "Правая рука",
+     "left_hand": "Левая кисть",
+     "right_hand": "Правая кисть",
+     "left_leg": "Левая нога",
+     "right_leg": "Правая нога",
+     "left_foot": "Левая стопа",
+     "right_foot": "Правая стопа"
     }
    }
   },
@@ -6898,12 +8750,22 @@
     "M"
    ],
    "text": {
-    "en": "Has your child ever broken a bone, or did a doctor say the bones are weak?"
+    "en": "Has your child ever broken a bone, or did a doctor say the bones are weak?",
+    "uz": "Farzandingizning biror suyagi singanmi yoki shifokor suyaklari moʻrt deganmi?",
+    "ru": "Были ли у ребёнка переломы или говорил ли врач, что кости хрупкие?"
    },
    "option_text": {
     "en": {
      "yes": "Yes",
      "no": "No"
+    },
+    "uz": {
+     "yes": "Ha",
+     "no": "Yoʻq"
+    },
+    "ru": {
+     "yes": "Да",
+     "no": "Нет"
     }
    }
   },
@@ -6933,7 +8795,9 @@
     "M"
    ],
    "text": {
-    "en": "When?"
+    "en": "When?",
+    "uz": "Qachon?",
+    "ru": "Когда?"
    },
    "option_text": null
   },
@@ -6976,7 +8840,9 @@
     "M"
    ],
    "text": {
-    "en": "Where?"
+    "en": "Where?",
+    "uz": "Qayerda?",
+    "ru": "Где?"
    },
    "option_text": {
     "en": {
@@ -6992,6 +8858,34 @@
      "right_leg": "Right leg",
      "left_foot": "Left foot",
      "right_foot": "Right foot"
+    },
+    "uz": {
+     "head_neck": "Bosh va boʻyin",
+     "shoulders": "Yelkalar",
+     "back": "Orqa",
+     "hips": "Son va chanoq",
+     "left_arm": "Chap qoʻl",
+     "right_arm": "Oʻng qoʻl",
+     "left_hand": "Chap kaft",
+     "right_hand": "Oʻng kaft",
+     "left_leg": "Chap oyoq",
+     "right_leg": "Oʻng oyoq",
+     "left_foot": "Chap oyoq panjasi",
+     "right_foot": "Oʻng oyoq panjasi"
+    },
+    "ru": {
+     "head_neck": "Голова и шея",
+     "shoulders": "Плечи",
+     "back": "Спина",
+     "hips": "Таз и бёдра",
+     "left_arm": "Левая рука",
+     "right_arm": "Правая рука",
+     "left_hand": "Левая кисть",
+     "right_hand": "Правая кисть",
+     "left_leg": "Левая нога",
+     "right_leg": "Правая нога",
+     "left_foot": "Левая стопа",
+     "right_foot": "Правая стопа"
     }
    }
   },
@@ -7020,7 +8914,9 @@
     "M"
    ],
    "text": {
-    "en": "Does your child like being touched or massaged?"
+    "en": "Does your child like being touched or massaged?",
+    "uz": "Farzandingiz tegishni yoki massajni yoqtiradimi?",
+    "ru": "Нравятся ли ребёнку прикосновения или массаж?"
    },
    "option_text": {
     "en": {
@@ -7028,6 +8924,18 @@
      "neutral": "Neutral",
      "resists": "Cries or resists",
      "very_sensitive": "Very sensitive to touch"
+    },
+    "uz": {
+     "likes": "Yoqtiradi",
+     "neutral": "Befarq",
+     "resists": "Yigʻlaydi yoki qarshilik qiladi",
+     "very_sensitive": "Tegishga juda sezgir"
+    },
+    "ru": {
+     "likes": "Нравятся",
+     "neutral": "Относится спокойно",
+     "resists": "Плачет или сопротивляется",
+     "very_sensitive": "Очень чувствительно реагирует на прикосновения"
     }
    }
   },
@@ -7056,13 +8964,25 @@
     "S"
    ],
    "text": {
-    "en": "Does your child get tired or short of breath quickly when active?"
+    "en": "Does your child get tired or short of breath quickly when active?",
+    "uz": "Farzandingiz harakatlanganda tez charchaydimi yoki nafasi qisadimi?",
+    "ru": "Ребёнок быстро устаёт или начинает задыхаться, когда активно двигается?"
    },
    "option_text": {
     "en": {
      "no": "No",
      "sometimes": "Sometimes",
      "yes": "Yes"
+    },
+    "uz": {
+     "no": "Yoʻq",
+     "sometimes": "Baʼzan",
+     "yes": "Ha"
+    },
+    "ru": {
+     "no": "Нет",
+     "sometimes": "Иногда",
+     "yes": "Да"
     }
    }
   },
@@ -7091,7 +9011,9 @@
     "S"
    ],
    "text": {
-    "en": "Does your child cough or choke while eating or drinking?"
+    "en": "Does your child cough or choke while eating or drinking?",
+    "uz": "Farzandingiz ovqatlanayotganda yoki ichayotganda yoʻtaladimi yoki qaqalib qoladimi?",
+    "ru": "Ребёнок кашляет или поперхивается, когда ест или пьёт?"
    },
    "option_text": {
     "en": {
@@ -7099,6 +9021,18 @@
      "sometimes": "Sometimes",
      "often": "Often",
      "tube_fed": "Tube-fed"
+    },
+    "uz": {
+     "never": "Hech qachon",
+     "sometimes": "Baʼzan",
+     "often": "Tez-tez",
+     "tube_fed": "Zond orqali ovqatlanadi"
+    },
+    "ru": {
+     "never": "Никогда",
+     "sometimes": "Иногда",
+     "often": "Часто",
+     "tube_fed": "Питается через зонд"
     }
    }
   },
@@ -7126,13 +9060,25 @@
     "A"
    ],
    "text": {
-    "en": "How does your child sleep?"
+    "en": "How does your child sleep?",
+    "uz": "Farzandingiz qanday uxlaydi?",
+    "ru": "Как ребёнок спит?"
    },
    "option_text": {
     "en": {
      "through": "Sleeps through",
      "wakes_1_2": "Wakes 1–2 times",
      "wakes_many": "Wakes many times"
+    },
+    "uz": {
+     "through": "Tun boʻyi uygʻonmay uxlaydi",
+     "wakes_1_2": "1–2 marta uygʻonadi",
+     "wakes_many": "Koʻp marta uygʻonadi"
+    },
+    "ru": {
+     "through": "Спит всю ночь",
+     "wakes_1_2": "Просыпается 1–2 раза",
+     "wakes_many": "Просыпается много раз"
     }
    }
   },
@@ -7162,7 +9108,9 @@
     "A"
    ],
    "text": {
-    "en": "Usual sleeping position"
+    "en": "Usual sleeping position",
+    "uz": "Odatda qaysi holatda uxlaydi",
+    "ru": "В какой позе ребёнок обычно спит"
    },
    "option_text": {
     "en": {
@@ -7170,6 +9118,18 @@
      "side": "Side",
      "stomach": "Stomach",
      "changes": "Changes"
+    },
+    "uz": {
+     "back": "Chalqancha",
+     "side": "Yonboshda",
+     "stomach": "Qorinda",
+     "changes": "Oʻzgarib turadi"
+    },
+    "ru": {
+     "back": "На спине",
+     "side": "На боку",
+     "stomach": "На животе",
+     "changes": "По-разному"
     }
    }
   },
@@ -7197,12 +9157,22 @@
     "M"
    ],
    "text": {
-    "en": "Any metal plates, pumps or devices under the skin?"
+    "en": "Any metal plates, pumps or devices under the skin?",
+    "uz": "Teri ostida metall plastinkalar, nasoslar yoki moslamalar bormi?",
+    "ru": "Есть ли металлические пластины, помпы или другие устройства под кожей?"
    },
    "option_text": {
     "en": {
      "yes": "Yes",
      "no": "No"
+    },
+    "uz": {
+     "yes": "Ha",
+     "no": "Yoʻq"
+    },
+    "ru": {
+     "yes": "Да",
+     "no": "Нет"
     }
    }
   },
@@ -7232,7 +9202,9 @@
     "M"
    ],
    "text": {
-    "en": "Where?"
+    "en": "Where?",
+    "uz": "Qayerda?",
+    "ru": "Где?"
    },
    "option_text": null
   },
@@ -7261,13 +9233,25 @@
     "E"
    ],
    "text": {
-    "en": "Does your child follow a simple instruction, like \"give me the ball\"?"
+    "en": "Does your child follow a simple instruction, like \"give me the ball\"?",
+    "uz": "Farzandingiz \"toʻpni menga ber\" kabi oddiy topshiriqni bajaradimi?",
+    "ru": "Выполняет ли ребёнок простую просьбу, например „дай мячик“?"
    },
    "option_text": {
     "en": {
      "yes": "Yes",
      "gesture": "Only with a gesture",
      "no": "No"
+    },
+    "uz": {
+     "yes": "Ha",
+     "gesture": "Faqat imo-ishora bilan",
+     "no": "Yoʻq"
+    },
+    "ru": {
+     "yes": "Да",
+     "gesture": "Только если показать жестом",
+     "no": "Нет"
     }
    }
   },
@@ -7296,13 +9280,25 @@
     "E"
    ],
    "text": {
-    "en": "A two-step instruction, like \"take the ball and put it in the box\"?"
+    "en": "A two-step instruction, like \"take the ball and put it in the box\"?",
+    "uz": "Ikki qadamli topshiriqni-chi, masalan, \"toʻpni olib, qutiga sol\"?",
+    "ru": "А просьбу из двух шагов, например „возьми мячик и положи в коробку“?"
    },
    "option_text": {
     "en": {
      "yes": "Yes",
      "sometimes": "Sometimes",
      "no": "No"
+    },
+    "uz": {
+     "yes": "Ha",
+     "sometimes": "Baʼzan",
+     "no": "Yoʻq"
+    },
+    "ru": {
+     "yes": "Да",
+     "sometimes": "Иногда",
+     "no": "Нет"
     }
    }
   },
@@ -7344,7 +9340,9 @@
     "G"
    ],
    "text": {
-    "en": "What does your child know?"
+    "en": "What does your child know?",
+    "uz": "Farzandingiz nimalarni biladi?",
+    "ru": "Что ребёнок знает?"
    },
    "option_text": {
     "en": {
@@ -7354,6 +9352,22 @@
      "numbers": "Numbers",
      "letters": "Letters",
      "none": "None yet"
+    },
+    "uz": {
+     "colors": "Ranglar",
+     "shapes": "Shakllar",
+     "animals": "Hayvonlar",
+     "numbers": "Raqamlar",
+     "letters": "Harflar",
+     "none": "Hali hech birini"
+    },
+    "ru": {
+     "colors": "Цвета",
+     "shapes": "Фигуры",
+     "animals": "Животных",
+     "numbers": "Цифры",
+     "letters": "Буквы",
+     "none": "Пока ничего из этого"
     }
    }
   },
@@ -7383,7 +9397,9 @@
     "E"
    ],
    "text": {
-    "en": "How long does your child stay with one toy or game?"
+    "en": "How long does your child stay with one toy or game?",
+    "uz": "Farzandingiz bitta oʻyinchoq yoki oʻyin bilan qancha vaqt shugʻullanadi?",
+    "ru": "Как долго ребёнок занимается одной игрушкой или игрой?"
    },
    "option_text": {
     "en": {
@@ -7391,6 +9407,18 @@
      "1_5": "1–5 min",
      "5_15": "5–15 min",
      "over_15": "Over 15 min"
+    },
+    "uz": {
+     "under_1": "1 daq dan kam",
+     "1_5": "1–5 daq",
+     "5_15": "5–15 daq",
+     "over_15": "15 daq dan koʻp"
+    },
+    "ru": {
+     "under_1": "Меньше 1 мин",
+     "1_5": "1–5 мин",
+     "5_15": "5–15 мин",
+     "over_15": "Больше 15 мин"
     }
    }
   },
@@ -7420,7 +9448,9 @@
     "G"
    ],
    "text": {
-    "en": "How is your child's vision?"
+    "en": "How is your child's vision?",
+    "uz": "Farzandingizning koʻrishi qanday?",
+    "ru": "Как у ребёнка со зрением?"
    },
    "option_text": {
     "en": {
@@ -7429,6 +9459,20 @@
      "eyes_turn": "Eyes turn in or out",
      "small_things": "Struggles to see small things",
      "impairment": "Doctor said vision impairment"
+    },
+    "uz": {
+     "normal": "Odatdagidek",
+     "glasses": "Koʻzoynak taqadi",
+     "eyes_turn": "Koʻzlari ichkariga yoki tashqariga qaraydi",
+     "small_things": "Kichik narsalarni koʻrishga qiynaladi",
+     "impairment": "Shifokor koʻrish zaifligi borligini aytgan"
+    },
+    "ru": {
+     "normal": "Всё в порядке",
+     "glasses": "Носит очки",
+     "eyes_turn": "Глаза косят внутрь или наружу",
+     "small_things": "Трудно видит мелкие предметы",
+     "impairment": "Врач сказал, что зрение снижено"
     }
    }
   },
@@ -7459,7 +9503,9 @@
     "G"
    ],
    "text": {
-    "en": "What helps your child see pictures better?"
+    "en": "What helps your child see pictures better?",
+    "uz": "Farzandingizga rasmlarni yaxshiroq koʻrishga nima yordam beradi?",
+    "ru": "Что помогает ребёнку лучше видеть картинки?"
    },
    "option_text": {
     "en": {
@@ -7467,6 +9513,18 @@
      "contrast": "Strong contrast",
      "colours": "Certain colours",
      "not_sure": "Not sure"
+    },
+    "uz": {
+     "bigger": "Kattaroq rasmlar",
+     "contrast": "Yorqin farqli ranglar (kontrast)",
+     "colours": "Baʼzi ranglar",
+     "not_sure": "Bilmayman"
+    },
+    "ru": {
+     "bigger": "Крупные картинки",
+     "contrast": "Яркий контраст",
+     "colours": "Определённые цвета",
+     "not_sure": "Не уверен(а)"
     }
    },
    "note": "R18 asks for size, contrast and color follow-ups; this wording is the team's draft for the physio."
@@ -7497,7 +9555,9 @@
     "MV"
    ],
    "text": {
-    "en": "How is your child's hearing?"
+    "en": "How is your child's hearing?",
+    "uz": "Farzandingizning eshitishi qanday?",
+    "ru": "Как у ребёнка со слухом?"
    },
    "option_text": {
     "en": {
@@ -7505,6 +9565,18 @@
      "hearing_aid": "Hearing aid",
      "hard": "Hard of hearing",
      "deaf": "Deaf"
+    },
+    "uz": {
+     "normal": "Odatdagidek",
+     "hearing_aid": "Eshitish apparati",
+     "hard": "Yaxshi eshitmaydi",
+     "deaf": "Eshitmaydi"
+    },
+    "ru": {
+     "normal": "Всё в порядке",
+     "hearing_aid": "Слуховой аппарат",
+     "hard": "Слух снижен",
+     "deaf": "Не слышит"
     }
    }
   },
@@ -7533,13 +9605,25 @@
     "S"
    ],
    "text": {
-    "en": "Do loud sounds or flashing lights upset your child?"
+    "en": "Do loud sounds or flashing lights upset your child?",
+    "uz": "Baland tovushlar yoki miltillovchi chiroqlar farzandingizni bezovta qiladimi?",
+    "ru": "Громкие звуки или мигающий свет расстраивают ребёнка?"
    },
    "option_text": {
     "en": {
      "no": "No",
      "a_little": "A little",
      "a_lot": "A lot"
+    },
+    "uz": {
+     "no": "Yoʻq",
+     "a_little": "Biroz",
+     "a_lot": "Koʻp"
+    },
+    "ru": {
+     "no": "Нет",
+     "a_little": "Немного",
+     "a_lot": "Сильно"
     }
    }
   },
@@ -7569,7 +9653,9 @@
     "A"
    ],
    "text": {
-    "en": "How much time a day does your child use a phone, tablet or TV?"
+    "en": "How much time a day does your child use a phone, tablet or TV?",
+    "uz": "Farzandingiz kuniga telefon, planshet yoki televizorga qancha vaqt sarflaydi?",
+    "ru": "Сколько времени в день ребёнок проводит с телефоном, планшетом или телевизором?"
    },
    "option_text": {
     "en": {
@@ -7577,6 +9663,18 @@
      "under_1h": "Under 1 hr",
      "1_2h": "1–2 hrs",
      "over_2h": "Over 2 hrs"
+    },
+    "uz": {
+     "none": "Umuman yoʻq",
+     "under_1h": "1 soatdan kam",
+     "1_2h": "1–2 soat",
+     "over_2h": "2 soatdan koʻp"
+    },
+    "ru": {
+     "none": "Нисколько",
+     "under_1h": "Меньше 1 ч",
+     "1_2h": "1–2 ч",
+     "over_2h": "Больше 2 ч"
     }
    }
   },
@@ -7609,7 +9707,9 @@
     "MV"
    ],
    "text": {
-    "en": "What does your child love?"
+    "en": "What does your child love?",
+    "uz": "Farzandingiz nimani yaxshi koʻradi?",
+    "ru": "Что ребёнок любит?"
    },
    "option_text": {
     "en": {
@@ -7620,6 +9720,24 @@
      "balls": "Balls",
      "water": "Water",
      "other": "Other"
+    },
+    "uz": {
+     "cartoons": "Multfilmlar",
+     "music": "Musiqa",
+     "animals": "Hayvonlar",
+     "cars": "Mashinalar",
+     "balls": "Toʻplar",
+     "water": "Suv",
+     "other": "Boshqa"
+    },
+    "ru": {
+     "cartoons": "Мультфильмы",
+     "music": "Музыку",
+     "animals": "Животных",
+     "cars": "Машинки",
+     "balls": "Мячи",
+     "water": "Воду",
+     "other": "Другое"
     }
    }
   },
@@ -7644,7 +9762,9 @@
     "MV"
    ],
    "text": {
-    "en": "Favorite character"
+    "en": "Favorite character",
+    "uz": "Sevimli qahramoni",
+    "ru": "Любимый персонаж"
    },
    "option_text": null
   },
@@ -7673,7 +9793,9 @@
     "G"
    ],
    "text": {
-    "en": "What happens when something doesn't work out for your child?"
+    "en": "What happens when something doesn't work out for your child?",
+    "uz": "Biror narsa chiqmasa, farzandingiz nima qiladi?",
+    "ru": "Что происходит, когда у ребёнка что-то не получается?"
    },
    "option_text": {
     "en": {
@@ -7681,6 +9803,18 @@
      "upset_continues": "Gets upset but continues",
      "gives_up": "Gives up",
      "cries": "Cries or gets angry"
+    },
+    "uz": {
+     "tries_again": "Yana urinib koʻradi",
+     "upset_continues": "Xafa boʻladi, lekin davom etadi",
+     "gives_up": "Toʻxtatadi",
+     "cries": "Yigʻlaydi yoki jahli chiqadi"
+    },
+    "ru": {
+     "tries_again": "Пробует снова",
+     "upset_continues": "Расстраивается, но продолжает",
+     "gives_up": "Бросает",
+     "cries": "Плачет или злится"
     }
    },
    "note": "Questionnaire wording: \"when your child fails at something\"; softened for parents."
@@ -7708,12 +9842,22 @@
     "G"
    ],
    "text": {
-    "en": "If you hide a toy while they watch, can they find it?"
+    "en": "If you hide a toy while they watch, can they find it?",
+    "uz": "Koʻz oldida oʻyinchoqni yashirsangiz, uni topa oladimi?",
+    "ru": "Если спрятать игрушку, пока ребёнок смотрит, он может её найти?"
    },
    "option_text": {
     "en": {
      "yes": "Yes",
      "no": "No"
+    },
+    "uz": {
+     "yes": "Ha",
+     "no": "Yoʻq"
+    },
+    "ru": {
+     "yes": "Да",
+     "no": "Нет"
     }
    }
   },
@@ -7745,7 +9889,9 @@
     "A"
    ],
    "text": {
-    "en": "How does your child mostly communicate?"
+    "en": "How does your child mostly communicate?",
+    "uz": "Farzandingiz asosan qanday muloqot qiladi?",
+    "ru": "Как ребёнок чаще всего общается?"
    },
    "option_text": {
     "en": {
@@ -7755,6 +9901,22 @@
      "face_crying": "Face and crying",
      "looking": "Looking at things",
      "picture_cards": "Picture cards or device"
+    },
+    "uz": {
+     "sentences": "Gaplar bilan",
+     "single_words": "Alohida soʻzlar bilan",
+     "sounds_gestures": "Tovushlar va imo-ishoralar bilan",
+     "face_crying": "Yuz ifodasi va yigʻi bilan",
+     "looking": "Narsalarga qarab",
+     "picture_cards": "Rasmli kartochkalar yoki qurilma bilan"
+    },
+    "ru": {
+     "sentences": "Предложениями",
+     "single_words": "Отдельными словами",
+     "sounds_gestures": "Звуками и жестами",
+     "face_crying": "Мимикой и плачем",
+     "looking": "Взглядом на предметы",
+     "picture_cards": "Карточками с картинками или с помощью устройства"
     }
    }
   },
@@ -7786,7 +9948,9 @@
     "MV"
    ],
    "text": {
-    "en": "Which picture matches how your child communicates with family and with strangers?"
+    "en": "Which picture matches how your child communicates with family and with strangers?",
+    "uz": "Qaysi rasm farzandingizning oila aʼzolari va begonalar bilan muloqotiga mos keladi?",
+    "ru": "Какая картинка подходит к тому, как ребёнок общается с семьёй и с незнакомыми людьми?"
    },
    "option_text": {
     "en": {
@@ -7795,6 +9959,20 @@
      "iii": "Level III",
      "iv": "Level IV",
      "v": "Level V"
+    },
+    "uz": {
+     "i": "I daraja",
+     "ii": "II daraja",
+     "iii": "III daraja",
+     "iv": "IV daraja",
+     "v": "V daraja"
+    },
+    "ru": {
+     "i": "Уровень I",
+     "ii": "Уровень II",
+     "iii": "Уровень III",
+     "iv": "Уровень IV",
+     "v": "Уровень V"
     }
    }
   },
@@ -7823,7 +10001,9 @@
     "MV"
    ],
    "text": {
-    "en": "Do people outside the family understand your child?"
+    "en": "Do people outside the family understand your child?",
+    "uz": "Oiladan tashqaridagi odamlar farzandingizni tushunadimi?",
+    "ru": "Понимают ли ребёнка люди вне семьи?"
    },
    "option_text": {
     "en": {
@@ -7831,6 +10011,18 @@
      "sometimes": "Sometimes",
      "rarely": "Rarely",
      "never": "Never"
+    },
+    "uz": {
+     "mostly": "Koʻpincha",
+     "sometimes": "Baʼzan",
+     "rarely": "Kamdan-kam",
+     "never": "Hech qachon"
+    },
+    "ru": {
+     "mostly": "В основном да",
+     "sometimes": "Иногда",
+     "rarely": "Редко",
+     "never": "Никогда"
     }
    }
   },
@@ -7865,7 +10057,9 @@
     "MV"
    ],
    "text": {
-    "en": "How does your child say \"yes\" and \"no\"?"
+    "en": "How does your child say \"yes\" and \"no\"?",
+    "uz": "Farzandingiz \"ha\" va \"yoʻq\"ni qanday bildiradi?",
+    "ru": "Как ребёнок говорит „да“ и „нет“?"
    },
    "option_text": {
     "en": {
@@ -7875,6 +10069,22 @@
      "looks_away": "Looks away",
      "sounds": "Sounds",
      "no_clear_way": "No clear way yet"
+    },
+    "uz": {
+     "words": "Soʻzlar bilan",
+     "nod": "Bosh irgʻab yoki bosh chayqab",
+     "smile": "Jilmayib",
+     "looks_away": "Boshqa tomonga qarab",
+     "sounds": "Tovushlar bilan",
+     "no_clear_way": "Hali aniq usuli yoʻq"
+    },
+    "ru": {
+     "words": "Словами",
+     "nod": "Кивает или качает головой",
+     "smile": "Улыбается",
+     "looks_away": "Отводит взгляд",
+     "sounds": "Звуками",
+     "no_clear_way": "Пока нет понятного способа"
     }
    }
   },
@@ -7905,12 +10115,22 @@
     "MV"
    ],
    "text": {
-    "en": "Has your child used picture cards before?"
+    "en": "Has your child used picture cards before?",
+    "uz": "Farzandingiz avval rasmli kartochkalardan foydalanganmi?",
+    "ru": "Пользовался ли ребёнок раньше карточками с картинками?"
    },
    "option_text": {
     "en": {
      "yes": "Yes",
      "no": "No"
+    },
+    "uz": {
+     "yes": "Ha",
+     "no": "Yoʻq"
+    },
+    "ru": {
+     "yes": "Да",
+     "no": "Нет"
     }
    }
   },
@@ -7944,7 +10164,9 @@
     "G"
    ],
    "text": {
-    "en": "How can your child choose a card?"
+    "en": "How can your child choose a card?",
+    "uz": "Farzandingiz kartochkani qanday tanlay oladi?",
+    "ru": "Как ребёнок может выбрать карточку?"
    },
    "option_text": {
     "en": {
@@ -7952,6 +10174,18 @@
      "whole_hand": "Taps with whole hand",
      "looks": "Looks at it",
      "points_held": "Points while I hold the phone"
+    },
+    "uz": {
+     "finger": "Barmogʻi bilan bosadi",
+     "whole_hand": "Butun kafti bilan bosadi",
+     "looks": "Unga qaraydi",
+     "points_held": "Men telefonni ushlab turganimda koʻrsatadi"
+    },
+    "ru": {
+     "finger": "Нажимает пальцем",
+     "whole_hand": "Нажимает всей ладонью",
+     "looks": "Смотрит на неё",
+     "points_held": "Показывает, пока я держу телефон"
     }
    }
   },
@@ -7991,7 +10225,9 @@
     "MV"
    ],
    "text": {
-    "en": "What does your child most need to tell you?"
+    "en": "What does your child most need to tell you?",
+    "uz": "Farzandingiz sizga eng koʻp nimani aytishi kerak?",
+    "ru": "Что ребёнку важнее всего сообщить вам?"
    },
    "option_text": {
     "en": {
@@ -8006,6 +10242,32 @@
      "scared": "Scared",
      "happy": "Happy",
      "bored": "Bored"
+    },
+    "uz": {
+     "hungry": "Qornim och",
+     "thirsty": "Chanqadim",
+     "toilet": "Hojatxonaga borishim kerak",
+     "pain": "Ogʻriyapti",
+     "tired": "Charchadim",
+     "play": "Oʻynagim keldi",
+     "parent": "Onam yoki dadam kerak",
+     "hot_cold": "Juda issiq yoki sovuq",
+     "scared": "Qoʻrqyapman",
+     "happy": "Xursandman",
+     "bored": "Zerikdim"
+    },
+    "ru": {
+     "hungry": "Хочу есть",
+     "thirsty": "Хочу пить",
+     "toilet": "Хочу в туалет",
+     "pain": "Больно",
+     "tired": "Устал(а)",
+     "play": "Хочу играть",
+     "parent": "Хочу к маме или папе",
+     "hot_cold": "Жарко или холодно",
+     "scared": "Страшно",
+     "happy": "Мне весело",
+     "bored": "Скучно"
     }
    }
   },
@@ -8034,7 +10296,9 @@
     "A"
    ],
    "text": {
-    "en": "Words or sounds your child uses, and what they mean"
+    "en": "Words or sounds your child uses, and what they mean",
+    "uz": "Farzandingiz ishlatadigan soʻzlar yoki tovushlar va ularning maʼnosi",
+    "ru": "Слова или звуки, которые использует ребёнок, и что они значат"
    },
    "option_text": null
   },
@@ -8062,7 +10326,9 @@
     "MV"
    ],
    "text": {
-    "en": "Names of family members and pets for cards"
+    "en": "Names of family members and pets for cards",
+    "uz": "Kartochkalar uchun oila aʼzolari va uy hayvonlarining ismlari",
+    "ru": "Имена членов семьи и домашних животных для карточек"
    },
    "option_text": null
   },
@@ -8094,13 +10360,25 @@
     "MV"
    ],
    "text": {
-    "en": "Can your child read?"
+    "en": "Can your child read?",
+    "uz": "Farzandingiz oʻqiy oladimi?",
+    "ru": "Умеет ли ребёнок читать?"
    },
    "option_text": {
     "en": {
      "yes": "Yes",
      "some_words": "Some words",
      "no": "No"
+    },
+    "uz": {
+     "yes": "Ha",
+     "some_words": "Baʼzi soʻzlarni",
+     "no": "Yoʻq"
+    },
+    "ru": {
+     "yes": "Да",
+     "some_words": "Некоторые слова",
+     "no": "Нет"
     }
    }
   },
@@ -8130,7 +10408,9 @@
     "MV"
    ],
    "text": {
-    "en": "How does your child eat?"
+    "en": "How does your child eat?",
+    "uz": "Farzandingiz qanday ovqatlanadi?",
+    "ru": "Как ребёнок ест?"
    },
    "option_text": {
     "en": {
@@ -8138,6 +10418,18 @@
      "some_help": "With some help",
      "i_feed": "I feed them",
      "tube": "Tube"
+    },
+    "uz": {
+     "self": "Oʻzi ovqatlanadi",
+     "some_help": "Biroz yordam bilan",
+     "i_feed": "Men ovqatlantiraman",
+     "tube": "Zond orqali"
+    },
+    "ru": {
+     "self": "Ест сам",
+     "some_help": "С небольшой помощью",
+     "i_feed": "Я кормлю",
+     "tube": "Через зонд"
     }
    }
   },
@@ -8165,13 +10457,25 @@
     "E"
    ],
    "text": {
-    "en": "Does your child help with dressing?"
+    "en": "Does your child help with dressing?",
+    "uz": "Farzandingiz kiyinishda yordam beradimi?",
+    "ru": "Помогает ли ребёнок, когда его одевают?"
    },
    "option_text": {
     "en": {
      "alone": "Dresses alone",
      "helps": "Helps (pushes arm in)",
      "no": "Doesn't help"
+    },
+    "uz": {
+     "alone": "Oʻzi kiyinadi",
+     "helps": "Yordam beradi (qoʻlini yengga tiqadi)",
+     "no": "Yordam bermaydi"
+    },
+    "ru": {
+     "alone": "Одевается сам",
+     "helps": "Помогает (просовывает руку)",
+     "no": "Пока не помогает"
     }
    }
   },
@@ -8200,13 +10504,25 @@
     "A"
    ],
    "text": {
-    "en": "Toilet"
+    "en": "Toilet",
+    "uz": "Hojatxona",
+    "ru": "Туалет"
    },
    "option_text": {
     "en": {
      "trained": "Trained",
      "partly": "Partly",
      "diapers": "Diapers"
+    },
+    "uz": {
+     "trained": "Oʻrgangan",
+     "partly": "Qisman",
+     "diapers": "Taglik"
+    },
+    "ru": {
+     "trained": "Ходит в туалет",
+     "partly": "Частично",
+     "diapers": "Подгузники"
     }
    }
   },
@@ -8235,7 +10551,9 @@
     "E"
    ],
    "text": {
-    "en": "Where does your child spend most of the day?"
+    "en": "Where does your child spend most of the day?",
+    "uz": "Farzandingiz kunning koʻp qismini qayerda oʻtkazadi?",
+    "ru": "Где ребёнок проводит большую часть дня?"
    },
    "option_text": {
     "en": {
@@ -8243,6 +10561,18 @@
      "chair": "In a chair or stroller",
      "floor": "Sitting on the floor",
      "moving": "Moving around"
+    },
+    "uz": {
+     "lying": "Yotib",
+     "chair": "Stulda yoki aravachada",
+     "floor": "Polda oʻtirib",
+     "moving": "Harakatlanib"
+    },
+    "ru": {
+     "lying": "Лёжа",
+     "chair": "В кресле или коляске",
+     "floor": "Сидя на полу",
+     "moving": "В движении"
     }
    }
   },
@@ -8272,7 +10602,9 @@
     "A"
    ],
    "text": {
-    "en": "When is your child most calm and active?"
+    "en": "When is your child most calm and active?",
+    "uz": "Farzandingiz qachon eng tinch va faol boʻladi?",
+    "ru": "Когда ребёнок спокойнее и активнее всего?"
    },
    "option_text": {
     "en": {
@@ -8280,6 +10612,18 @@
      "midday": "Midday",
      "afternoon": "Afternoon",
      "evening": "Evening"
+    },
+    "uz": {
+     "morning": "Ertalab",
+     "midday": "Tushda",
+     "afternoon": "Tushdan keyin",
+     "evening": "Kechqurun"
+    },
+    "ru": {
+     "morning": "Утром",
+     "midday": "В середине дня",
+     "afternoon": "После обеда",
+     "evening": "Вечером"
     }
    }
   },
@@ -8303,7 +10647,9 @@
     "A"
    ],
    "text": {
-    "en": "Usual wake-up time"
+    "en": "Usual wake-up time",
+    "uz": "Odatda uygʻonish vaqti",
+    "ru": "Обычное время подъёма"
    },
    "option_text": null
   },
@@ -8327,7 +10673,9 @@
     "A"
    ],
    "text": {
-    "en": "Usual nap time"
+    "en": "Usual nap time",
+    "uz": "Odatda kunduzgi uyqu vaqti",
+    "ru": "Обычное время дневного сна"
    },
    "option_text": null
   },
@@ -8351,7 +10699,9 @@
     "A"
    ],
    "text": {
-    "en": "Usual bedtime"
+    "en": "Usual bedtime",
+    "uz": "Odatda uxlash vaqti",
+    "ru": "Обычное время отхода ко сну"
    },
    "option_text": null
   },
@@ -8385,7 +10735,9 @@
     "E"
    ],
    "text": {
-    "en": "Does your child go to kindergarten or school?"
+    "en": "Does your child go to kindergarten or school?",
+    "uz": "Farzandingiz bogʻcha yoki maktabga boradimi?",
+    "ru": "Ходит ли ребёнок в детский сад или школу?"
    },
    "option_text": {
     "en": {
@@ -8393,6 +10745,18 @@
      "inclusive": "Inclusive",
      "special": "Special",
      "home_only": "Home only"
+    },
+    "uz": {
+     "regular": "Oddiy",
+     "inclusive": "Inklyuziv",
+     "special": "Maxsus",
+     "home_only": "Faqat uyda"
+    },
+    "ru": {
+     "regular": "Обычный",
+     "inclusive": "Инклюзивный",
+     "special": "Специальный (коррекционный)",
+     "home_only": "Только дома"
     }
    }
   },
@@ -8431,7 +10795,9 @@
     "E"
    ],
    "text": {
-    "en": "Hours a day"
+    "en": "Hours a day",
+    "uz": "Kuniga necha soat",
+    "ru": "Сколько часов в день"
    },
    "option_text": null
   },
@@ -8460,13 +10826,25 @@
     "G"
    ],
    "text": {
-    "en": "Does your child play with other children?"
+    "en": "Does your child play with other children?",
+    "uz": "Farzandingiz boshqa bolalar bilan oʻynaydimi?",
+    "ru": "Играет ли ребёнок с другими детьми?"
    },
    "option_text": {
     "en": {
      "often": "Often",
      "sometimes": "Sometimes",
      "rarely": "Rarely"
+    },
+    "uz": {
+     "often": "Tez-tez",
+     "sometimes": "Baʼzan",
+     "rarely": "Kamdan-kam"
+    },
+    "ru": {
+     "often": "Часто",
+     "sometimes": "Иногда",
+     "rarely": "Редко"
     }
    }
   },
@@ -8500,7 +10878,9 @@
     "R"
    ],
    "text": {
-    "en": "What therapy does your child get now?"
+    "en": "What therapy does your child get now?",
+    "uz": "Farzandingiz hozir qanday terapiya oladi?",
+    "ru": "Какие занятия ребёнок получает сейчас?"
    },
    "option_text": {
     "en": {
@@ -8511,6 +10891,24 @@
      "psychologist": "Psychologist",
      "water": "Water therapy",
      "none": "None"
+    },
+    "uz": {
+     "physio": "Fizioterapiya (LFK)",
+     "massage": "Massaj",
+     "ot": "Ergoterapiya",
+     "speech": "Logoped",
+     "psychologist": "Psixolog",
+     "water": "Suvda mashqlar",
+     "none": "Hech biri"
+    },
+    "ru": {
+     "physio": "ЛФК",
+     "massage": "Массаж",
+     "ot": "Эрготерапия",
+     "speech": "Логопед",
+     "psychologist": "Психолог",
+     "water": "Занятия в воде",
+     "none": "Нет"
     }
    }
   },
@@ -8549,7 +10947,9 @@
     "R"
    ],
    "text": {
-    "en": "Where? (center name)"
+    "en": "Where? (center name)",
+    "uz": "Qayerda? (markaz nomi)",
+    "ru": "Где? (название центра)"
    },
    "option_text": null
   },
@@ -8578,7 +10978,9 @@
     "E"
    ],
    "text": {
-    "en": "How often?"
+    "en": "How often?",
+    "uz": "Qanchalik tez-tez?",
+    "ru": "Как часто?"
    },
    "option_text": {
     "en": {
@@ -8586,6 +10988,18 @@
      "courses": "Courses a few times a year",
      "rarely": "Rarely",
      "never": "Never"
+    },
+    "uz": {
+     "weekly": "Har hafta",
+     "courses": "Yiliga bir necha marta kurs",
+     "rarely": "Kamdan-kam",
+     "never": "Hech qachon"
+    },
+    "ru": {
+     "weekly": "Каждую неделю",
+     "courses": "Курсами несколько раз в год",
+     "rarely": "Редко",
+     "never": "Никогда"
     }
    }
   },
@@ -8617,7 +11031,9 @@
     "E"
    ],
    "text": {
-    "en": "How many days is each course?"
+    "en": "How many days is each course?",
+    "uz": "Har bir kurs necha kun?",
+    "ru": "Сколько дней длится каждый курс?"
    },
    "option_text": null
   },
@@ -8641,7 +11057,9 @@
     "E"
    ],
    "text": {
-    "en": "Exercises your therapist gave you for home"
+    "en": "Exercises your therapist gave you for home",
+    "uz": "Mutaxassisingiz uyda qilish uchun bergan mashqlar",
+    "ru": "Упражнения, которые специалист дал вам для дома"
    },
    "option_text": null
   },
@@ -8665,7 +11083,9 @@
     "E"
    ],
    "text": {
-    "en": "Or a video of them"
+    "en": "Or a video of them",
+    "uz": "Yoki ularning videosi",
+    "ru": "Или видео с ними"
    },
    "option_text": null
   },
@@ -8690,7 +11110,9 @@
     "E"
    ],
    "text": {
-    "en": "What has helped most so far? What didn't help?"
+    "en": "What has helped most so far? What didn't help?",
+    "uz": "Hozirgacha eng koʻp nima yordam berdi? Nima yordam bermadi?",
+    "ru": "Что помогло больше всего? А что не помогло?"
    },
    "option_text": null
   },
@@ -8720,7 +11142,9 @@
     "R"
    ],
    "text": {
-    "en": "Monthly budget for rehab (optional)"
+    "en": "Monthly budget for rehab (optional)",
+    "uz": "Reabilitatsiya uchun oylik byudjet (ixtiyoriy)",
+    "ru": "Бюджет на реабилитацию в месяц (по желанию)"
    },
    "option_text": {
     "en": {
@@ -8729,6 +11153,20 @@
      "1m_3m": "1–3 million UZS",
      "over_3m": "Over 3 million UZS",
      "prefer_not": "Prefer not to say"
+    },
+    "uz": {
+     "under_500k": "500 000 soʻmdan kam",
+     "500k_1m": "500 000–1 000 000 soʻm",
+     "1m_3m": "1–3 million soʻm",
+     "over_3m": "3 million soʻmdan koʻp",
+     "prefer_not": "Aytmaslikni afzal koʻraman"
+    },
+    "ru": {
+     "under_500k": "Меньше 500 000 сум",
+     "500k_1m": "500 000–1 000 000 сум",
+     "1m_3m": "1–3 млн сум",
+     "over_3m": "Больше 3 млн сум",
+     "prefer_not": "Не хочу указывать"
     }
    },
    "note": "The questionnaire says \"ranges in UZS\"; these ranges are the team's draft."
@@ -8758,7 +11196,9 @@
     "R"
    ],
    "text": {
-    "en": "How far can you travel for rehab?"
+    "en": "How far can you travel for rehab?",
+    "uz": "Reabilitatsiya uchun qanchalik uzoqqa bora olasiz?",
+    "ru": "Как далеко вы можете ездить на реабилитацию?"
    },
    "option_text": {
     "en": {
@@ -8766,6 +11206,18 @@
      "city": "Across the city",
      "other_cities": "Other cities",
      "abroad": "Abroad"
+    },
+    "uz": {
+     "district": "Faqat oʻz tumanimda",
+     "city": "Shahar boʻylab",
+     "other_cities": "Boshqa shaharlarga",
+     "abroad": "Chet elga"
+    },
+    "ru": {
+     "district": "Только в моём районе",
+     "city": "По всему городу",
+     "other_cities": "В другие города",
+     "abroad": "За границу"
     }
    }
   },
@@ -8794,7 +11246,9 @@
     "R"
    ],
    "text": {
-    "en": "Preferred center type"
+    "en": "Preferred center type",
+    "uz": "Qanday markazni afzal koʻrasiz",
+    "ru": "Какой центр вам удобнее"
    },
    "option_text": {
     "en": {
@@ -8802,6 +11256,18 @@
      "private": "Private",
      "uzbek_doctor": "Doctor speaks Uzbek",
      "russian_doctor": "Doctor speaks Russian"
+    },
+    "uz": {
+     "state": "Davlat",
+     "private": "Xususiy",
+     "uzbek_doctor": "Shifokor oʻzbekcha gapiradi",
+     "russian_doctor": "Shifokor ruscha gapiradi"
+    },
+    "ru": {
+     "state": "Государственный",
+     "private": "Частный",
+     "uzbek_doctor": "Врач говорит по-узбекски",
+     "russian_doctor": "Врач говорит по-русски"
     }
    }
   },
@@ -8833,7 +11299,9 @@
     "A"
    ],
    "text": {
-    "en": "Equipment you need but don't have"
+    "en": "Equipment you need but don't have",
+    "uz": "Kerak, lekin sizda yoʻq jihozlar",
+    "ru": "Оборудование, которое нужно, но которого нет"
    },
    "option_text": {
     "en": {
@@ -8843,6 +11311,22 @@
      "standing_frame": "Standing frame",
      "special_chair": "Special chair",
      "none": "None"
+    },
+    "uz": {
+     "walker": "Yurgich",
+     "wheelchair": "Nogironlar aravachasi",
+     "braces": "Ortezlar",
+     "standing_frame": "Tik turish moslamasi",
+     "special_chair": "Maxsus stul",
+     "none": "Hech biri"
+    },
+    "ru": {
+     "walker": "Ходунки",
+     "wheelchair": "Инвалидная коляска",
+     "braces": "Ортезы",
+     "standing_frame": "Вертикализатор",
+     "special_chair": "Специальный стул",
+     "none": "Ничего"
     }
    }
   },
@@ -8871,7 +11355,9 @@
     "E"
    ],
    "text": {
-    "en": "How much time a day can you give to exercises?"
+    "en": "How much time a day can you give to exercises?",
+    "uz": "Kuniga mashqlarga qancha vaqt ajrata olasiz?",
+    "ru": "Сколько времени в день вы можете уделять упражнениям?"
    },
    "option_text": {
     "en": {
@@ -8879,6 +11365,18 @@
      "20": "20 min",
      "30": "30 min",
      "45": "45+ min"
+    },
+    "uz": {
+     "10": "10 daq",
+     "20": "20 daq",
+     "30": "30 daq",
+     "45": "45+ daq"
+    },
+    "ru": {
+     "10": "10 мин",
+     "20": "20 мин",
+     "30": "30 мин",
+     "45": "45+ мин"
     }
    }
   },
@@ -8906,13 +11404,25 @@
     "E"
    ],
    "text": {
-    "en": "How many days a week?"
+    "en": "How many days a week?",
+    "uz": "Haftasiga necha kun?",
+    "ru": "Сколько дней в неделю?"
    },
    "option_text": {
     "en": {
      "2_3": "2–3",
      "4_5": "4–5",
      "every_day": "Every day"
+    },
+    "uz": {
+     "2_3": "2–3",
+     "4_5": "4–5",
+     "every_day": "Har kuni"
+    },
+    "ru": {
+     "2_3": "2–3",
+     "4_5": "4–5",
+     "every_day": "Каждый день"
     }
    }
   },
@@ -8940,13 +11450,25 @@
     "E"
    ],
    "text": {
-    "en": "Space at home for floor exercises"
+    "en": "Space at home for floor exercises",
+    "uz": "Uyda polda mashq qilish uchun joy",
+    "ru": "Место дома для упражнений на полу"
    },
    "option_text": {
     "en": {
      "large": "Large",
      "small": "Small",
      "very_little": "Very little"
+    },
+    "uz": {
+     "large": "Keng",
+     "small": "Kichik",
+     "very_little": "Juda oz"
+    },
+    "ru": {
+     "large": "Много",
+     "small": "Немного",
+     "very_little": "Совсем мало"
     }
    }
   },
@@ -8979,7 +11501,9 @@
     "E"
    ],
    "text": {
-    "en": "What do you have at home?"
+    "en": "What do you have at home?",
+    "uz": "Uyingizda nimalar bor?",
+    "ru": "Что у вас есть дома?"
    },
    "option_text": {
     "en": {
@@ -8991,6 +11515,26 @@
      "stairs": "Stairs",
      "bath": "Bath",
      "none": "None"
+    },
+    "uz": {
+     "floor_mat": "Polga toʻshaladigan gilamcha",
+     "exercise_ball": "Fitbol (katta toʻp)",
+     "mirror": "Oyna",
+     "table_chair": "Kichik stol va stul",
+     "low_bench": "Past oʻrindiq",
+     "stairs": "Zina",
+     "bath": "Vanna",
+     "none": "Hech biri"
+    },
+    "ru": {
+     "floor_mat": "Коврик на пол",
+     "exercise_ball": "Фитбол",
+     "mirror": "Зеркало",
+     "table_chair": "Маленький стол и стул",
+     "low_bench": "Низкая скамейка",
+     "stairs": "Лестница",
+     "bath": "Ванна",
+     "none": "Ничего из этого"
     }
    }
   },
@@ -9019,13 +11563,25 @@
     "M"
    ],
    "text": {
-    "en": "Can you lift and carry your child safely?"
+    "en": "Can you lift and carry your child safely?",
+    "uz": "Farzandingizni xavfsiz koʻtarib yura olasizmi?",
+    "ru": "Можете ли вы безопасно поднимать и носить ребёнка?"
    },
    "option_text": {
     "en": {
      "easily": "Easily",
      "effort": "With effort",
      "no": "No"
+    },
+    "uz": {
+     "easily": "Oson",
+     "effort": "Qiynalib",
+     "no": "Yoʻq"
+    },
+    "ru": {
+     "easily": "Легко",
+     "effort": "С усилием",
+     "no": "Нет"
     }
    }
   },
@@ -9052,7 +11608,9 @@
     "A"
    ],
    "text": {
-    "en": "How confident are you doing exercises at home?"
+    "en": "How confident are you doing exercises at home?",
+    "uz": "Uyda mashqlarni oʻzingiz qilishga qanchalik ishonasiz?",
+    "ru": "Насколько уверенно вы делаете упражнения дома?"
    },
    "option_text": null
   },
@@ -9082,7 +11640,9 @@
     "V"
    ],
    "text": {
-    "en": "How do you learn best?"
+    "en": "How do you learn best?",
+    "uz": "Sizga qanday oʻrganish qulay?",
+    "ru": "Как вам удобнее учиться?"
    },
    "option_text": {
     "en": {
@@ -9090,6 +11650,18 @@
      "pictures": "Pictures",
      "text": "Text",
      "voice": "Voice messages"
+    },
+    "uz": {
+     "video": "Video",
+     "pictures": "Rasmlar",
+     "text": "Matn",
+     "voice": "Ovozli xabarlar"
+    },
+    "ru": {
+     "video": "Видео",
+     "pictures": "Картинки",
+     "text": "Текст",
+     "voice": "Голосовые сообщения"
     }
    }
   },
@@ -9117,13 +11689,25 @@
     "G"
    ],
    "text": {
-    "en": "Your device"
+    "en": "Your device",
+    "uz": "Qurilmangiz",
+    "ru": "Ваше устройство"
    },
    "option_text": {
     "en": {
      "android": "Android",
      "iphone": "iPhone",
      "tablet": "Tablet"
+    },
+    "uz": {
+     "android": "Android",
+     "iphone": "iPhone",
+     "tablet": "Planshet"
+    },
+    "ru": {
+     "android": "Android",
+     "iphone": "iPhone",
+     "tablet": "Планшет"
     }
    }
   },
@@ -9151,13 +11735,25 @@
     "G"
    ],
    "text": {
-    "en": "Your internet"
+    "en": "Your internet",
+    "uz": "Internetingiz",
+    "ru": "Ваш интернет"
    },
    "option_text": {
     "en": {
      "stable": "Stable",
      "sometimes": "Sometimes",
      "rarely": "Rarely"
+    },
+    "uz": {
+     "stable": "Barqaror",
+     "sometimes": "Baʼzan uziladi",
+     "rarely": "Kamdan-kam ishlaydi"
+    },
+    "ru": {
+     "stable": "Стабильный",
+     "sometimes": "Работает не всегда",
+     "rarely": "Бывает редко"
     }
    }
   },
@@ -9195,7 +11791,9 @@
     "T"
    ],
    "text": {
-    "en": "Your top 3 goals for the next 3 months"
+    "en": "Your top 3 goals for the next 3 months",
+    "uz": "Keyingi 3 oy uchun eng muhim 3 ta maqsadingiz",
+    "ru": "Ваши 3 главные цели на ближайшие 3 месяца"
    },
    "option_text": {
     "en": {
@@ -9209,6 +11807,30 @@
      "less_pain": "Less pain or stiffness",
      "school": "Get ready for school",
      "other": "Other"
+    },
+    "uz": {
+     "sit": "Oʻzi oʻtirish",
+     "stand": "Tik turish",
+     "walk": "Yurish",
+     "hands_eat": "Ovqatlanishda qoʻllarini ishlatish",
+     "hold": "Narsalarni ushlash",
+     "communicate": "Ehtiyojlarini bildirish",
+     "tablet": "Planshetda oʻynash",
+     "less_pain": "Ogʻriq yoki qattiqlik kamayishi",
+     "school": "Maktabga tayyorlanish",
+     "other": "Boshqa"
+    },
+    "ru": {
+     "sit": "Сидеть самостоятельно",
+     "stand": "Стоять",
+     "walk": "Ходить",
+     "hands_eat": "Есть, помогая себе руками",
+     "hold": "Держать предметы",
+     "communicate": "Сообщать о своих нуждах",
+     "tablet": "Играть на планшете",
+     "less_pain": "Меньше боли или напряжения",
+     "school": "Подготовиться к школе",
+     "other": "Другое"
     }
    }
   },
@@ -9240,7 +11862,9 @@
     "T"
    ],
    "text": {
-    "en": "Your other goal"
+    "en": "Your other goal",
+    "uz": "Boshqa maqsadingiz",
+    "ru": "Ваша другая цель"
    },
    "option_text": null
   },
@@ -9264,7 +11888,9 @@
     "A"
    ],
    "text": {
-    "en": "What is hardest for you day to day?"
+    "en": "What is hardest for you day to day?",
+    "uz": "Kundalik hayotda siz uchun eng qiyini nima?",
+    "ru": "Что для вас труднее всего в повседневной жизни?"
    },
    "option_text": null
   },
@@ -9293,13 +11919,25 @@
     "E"
    ],
    "text": {
-    "en": "Does anyone help you care for your child?"
+    "en": "Does anyone help you care for your child?",
+    "uz": "Farzandingizga qarashda kimdir sizga yordam beradimi?",
+    "ru": "Помогает ли вам кто-то ухаживать за ребёнком?"
    },
    "option_text": {
     "en": {
      "regularly": "Yes, regularly",
      "sometimes": "Sometimes",
      "no": "No"
+    },
+    "uz": {
+     "regularly": "Ha, muntazam",
+     "sometimes": "Baʼzan",
+     "no": "Yoʻq"
+    },
+    "ru": {
+     "regularly": "Да, постоянно",
+     "sometimes": "Иногда",
+     "no": "Нет"
     }
    }
   },
@@ -9323,7 +11961,9 @@
     "T"
    ],
    "text": {
-    "en": "Baseline video tasks (recommended)"
+    "en": "Baseline video tasks (recommended)",
+    "uz": "Boshlangʻich video topshiriqlar (tavsiya etiladi)",
+    "ru": "Видеозадания для начальной оценки (рекомендуется)"
    },
    "option_text": null,
    "note": "The 11 video tasks and the recording rules come from section K; which tasks show follows C and D answers."
@@ -9349,7 +11989,9 @@
     "R"
    ],
    "text": {
-    "en": "Assessment date"
+    "en": "Assessment date",
+    "uz": "Tekshiruv sanasi",
+    "ru": "Дата оценки"
    },
    "option_text": null
   },
@@ -9374,7 +12016,9 @@
     "R"
    ],
    "text": {
-    "en": "Therapist and center"
+    "en": "Therapist and center",
+    "uz": "Mutaxassis va markaz",
+    "ru": "Специалист и центр"
    },
    "option_text": null
   },
@@ -9406,10 +12050,26 @@
     "T"
    ],
    "text": {
-    "en": "GMFCS level"
+    "en": "GMFCS level",
+    "uz": "GMFCS darajasi",
+    "ru": "Уровень GMFCS"
    },
    "option_text": {
     "en": {
+     "i": "I",
+     "ii": "II",
+     "iii": "III",
+     "iv": "IV",
+     "v": "V"
+    },
+    "uz": {
+     "i": "I",
+     "ii": "II",
+     "iii": "III",
+     "iv": "IV",
+     "v": "V"
+    },
+    "ru": {
      "i": "I",
      "ii": "II",
      "iii": "III",
@@ -9442,7 +12102,9 @@
     "T"
    ],
    "text": {
-    "en": "GMFM score: lying and rolling"
+    "en": "GMFM score: lying and rolling",
+    "uz": "GMFM bali: yotish va agʻanash",
+    "ru": "Балл GMFM: лёжа и перевороты"
    },
    "option_text": null
   },
@@ -9470,7 +12132,9 @@
     "T"
    ],
    "text": {
-    "en": "GMFM score: sitting"
+    "en": "GMFM score: sitting",
+    "uz": "GMFM bali: oʻtirish",
+    "ru": "Балл GMFM: сидение"
    },
    "option_text": null
   },
@@ -9498,7 +12162,9 @@
     "T"
    ],
    "text": {
-    "en": "GMFM score: crawling and kneeling"
+    "en": "GMFM score: crawling and kneeling",
+    "uz": "GMFM bali: emaklash va tizzalab turish",
+    "ru": "Балл GMFM: ползание и стояние на коленях"
    },
    "option_text": null
   },
@@ -9526,7 +12192,9 @@
     "T"
    ],
    "text": {
-    "en": "GMFM score: standing"
+    "en": "GMFM score: standing",
+    "uz": "GMFM bali: tik turish",
+    "ru": "Балл GMFM: стояние"
    },
    "option_text": null
   },
@@ -9554,7 +12222,9 @@
     "T"
    ],
    "text": {
-    "en": "GMFM score: walking, running, jumping"
+    "en": "GMFM score: walking, running, jumping",
+    "uz": "GMFM bali: yurish, yugurish, sakrash",
+    "ru": "Балл GMFM: ходьба, бег, прыжки"
    },
    "option_text": null
   },
@@ -9582,7 +12252,9 @@
     "T"
    ],
    "text": {
-    "en": "GMFM total score"
+    "en": "GMFM total score",
+    "uz": "GMFM umumiy bali",
+    "ru": "Общий балл GMFM"
    },
    "option_text": null,
    "note": "Therapist only: never shown to the parent (rule 1)."
@@ -9616,7 +12288,9 @@
     "V"
    ],
    "text": {
-    "en": "Trunk control level (SATCo), static"
+    "en": "Trunk control level (SATCo), static",
+    "uz": "Gavdani tutish darajasi (SATCo), statik",
+    "ru": "Уровень контроля туловища (SATCo), статический"
    },
    "option_text": {
     "en": {
@@ -9627,6 +12301,24 @@
      "upper_waist": "Upper waist",
      "lower_waist": "Lower waist",
      "full_trunk": "Full trunk"
+    },
+    "uz": {
+     "head": "Bosh",
+     "upper_chest": "Koʻkrakning yuqori qismi",
+     "mid_chest": "Koʻkrakning oʻrta qismi",
+     "lower_chest": "Koʻkrakning pastki qismi",
+     "upper_waist": "Belning yuqori qismi",
+     "lower_waist": "Belning pastki qismi",
+     "full_trunk": "Butun gavda"
+    },
+    "ru": {
+     "head": "Голова",
+     "upper_chest": "Верх груди",
+     "mid_chest": "Середина груди",
+     "lower_chest": "Низ груди",
+     "upper_waist": "Верх поясницы",
+     "lower_waist": "Низ поясницы",
+     "full_trunk": "Всё туловище"
     }
    }
   },
@@ -9659,7 +12351,9 @@
     "V"
    ],
    "text": {
-    "en": "Trunk control level (SATCo), active"
+    "en": "Trunk control level (SATCo), active",
+    "uz": "Gavdani tutish darajasi (SATCo), faol",
+    "ru": "Уровень контроля туловища (SATCo), активный"
    },
    "option_text": {
     "en": {
@@ -9670,6 +12364,24 @@
      "upper_waist": "Upper waist",
      "lower_waist": "Lower waist",
      "full_trunk": "Full trunk"
+    },
+    "uz": {
+     "head": "Bosh",
+     "upper_chest": "Koʻkrakning yuqori qismi",
+     "mid_chest": "Koʻkrakning oʻrta qismi",
+     "lower_chest": "Koʻkrakning pastki qismi",
+     "upper_waist": "Belning yuqori qismi",
+     "lower_waist": "Belning pastki qismi",
+     "full_trunk": "Butun gavda"
+    },
+    "ru": {
+     "head": "Голова",
+     "upper_chest": "Верх груди",
+     "mid_chest": "Середина груди",
+     "lower_chest": "Низ груди",
+     "upper_waist": "Верх поясницы",
+     "lower_waist": "Низ поясницы",
+     "full_trunk": "Всё туловище"
     }
    }
   },
@@ -9702,7 +12414,9 @@
     "V"
    ],
    "text": {
-    "en": "Trunk control level (SATCo), reactive"
+    "en": "Trunk control level (SATCo), reactive",
+    "uz": "Gavdani tutish darajasi (SATCo), reaktiv",
+    "ru": "Уровень контроля туловища (SATCo), реактивный"
    },
    "option_text": {
     "en": {
@@ -9713,6 +12427,24 @@
      "upper_waist": "Upper waist",
      "lower_waist": "Lower waist",
      "full_trunk": "Full trunk"
+    },
+    "uz": {
+     "head": "Bosh",
+     "upper_chest": "Koʻkrakning yuqori qismi",
+     "mid_chest": "Koʻkrakning oʻrta qismi",
+     "lower_chest": "Koʻkrakning pastki qismi",
+     "upper_waist": "Belning yuqori qismi",
+     "lower_waist": "Belning pastki qismi",
+     "full_trunk": "Butun gavda"
+    },
+    "ru": {
+     "head": "Голова",
+     "upper_chest": "Верх груди",
+     "mid_chest": "Середина груди",
+     "lower_chest": "Низ груди",
+     "upper_waist": "Верх поясницы",
+     "lower_waist": "Низ поясницы",
+     "full_trunk": "Всё туловище"
     }
    }
   },
@@ -9737,7 +12469,9 @@
     "T"
    ],
    "text": {
-    "en": "Current step and goal for each skill area А–Р, with dates"
+    "en": "Current step and goal for each skill area А–Р, with dates",
+    "uz": "А–Р har bir koʻnikma sohasi uchun hozirgi bosqich va maqsad, sanalari bilan",
+    "ru": "Текущий шаг и цель по каждой области навыков А–Р, с датами"
    },
    "option_text": null
   },
@@ -9763,7 +12497,9 @@
     "R"
    ],
    "text": {
-    "en": "Walking aids and orthoses, with sizes"
+    "en": "Walking aids and orthoses, with sizes",
+    "uz": "Yurish vositalari va ortezlar, oʻlchamlari bilan",
+    "ru": "Средства для ходьбы и ортезы, с размерами"
    },
    "option_text": null
   },
@@ -9790,12 +12526,22 @@
     "T"
    ],
    "text": {
-    "en": "Was the child's performance typical that day?"
+    "en": "Was the child's performance typical that day?",
+    "uz": "Oʻsha kuni bolaning harakatlari odatdagidekmi edi?",
+    "ru": "Ребёнок в тот день был в своём обычном состоянии?"
    },
    "option_text": {
     "en": {
      "yes": "Yes",
      "no": "No"
+    },
+    "uz": {
+     "yes": "Ha",
+     "no": "Yoʻq"
+    },
+    "ru": {
+     "yes": "Да",
+     "no": "Нет"
     }
    }
   },
@@ -9824,7 +12570,9 @@
     "T"
    ],
    "text": {
-    "en": "Comment"
+    "en": "Comment",
+    "uz": "Izoh",
+    "ru": "Комментарий"
    },
    "option_text": null
   },
@@ -9849,7 +12597,9 @@
     "E"
    ],
    "text": {
-    "en": "Hand function score"
+    "en": "Hand function score",
+    "uz": "Qoʻl funksiyasi bali",
+    "ru": "Балл функции руки"
    },
    "option_text": null,
    "note": "The center confirms which test it uses."
@@ -9876,7 +12626,9 @@
     "M"
    ],
    "text": {
-    "en": "Restrictions: movements to avoid, maximum effort, massage areas to skip"
+    "en": "Restrictions: movements to avoid, maximum effort, massage areas to skip",
+    "uz": "Cheklovlar: qilinmaydigan harakatlar, eng yuqori yuklama, massaj qilinmaydigan joylar",
+    "ru": "Ограничения: каких движений избегать, максимальная нагрузка, где нельзя делать массаж"
    },
    "option_text": null
   },
@@ -9913,7 +12665,9 @@
     "M"
    ],
    "text": {
-    "en": "Massage areas to skip"
+    "en": "Massage areas to skip",
+    "uz": "Massaj qilinmaydigan joylar",
+    "ru": "Где нельзя делать массаж"
    },
    "option_text": {
     "en": {
@@ -9929,8 +12683,40 @@
      "right_leg": "Right leg",
      "left_foot": "Left foot",
      "right_foot": "Right foot"
+    },
+    "uz": {
+     "head_neck": "Bosh va boʻyin",
+     "shoulders": "Yelkalar",
+     "back": "Orqa",
+     "hips": "Son va chanoq",
+     "left_arm": "Chap qoʻl",
+     "right_arm": "Oʻng qoʻl",
+     "left_hand": "Chap kaft",
+     "right_hand": "Oʻng kaft",
+     "left_leg": "Chap oyoq",
+     "right_leg": "Oʻng oyoq",
+     "left_foot": "Chap oyoq panjasi",
+     "right_foot": "Oʻng oyoq panjasi"
+    },
+    "ru": {
+     "head_neck": "Голова и шея",
+     "shoulders": "Плечи",
+     "back": "Спина",
+     "hips": "Таз и бёдра",
+     "left_arm": "Левая рука",
+     "right_arm": "Правая рука",
+     "left_hand": "Левая кисть",
+     "right_hand": "Правая кисть",
+     "left_leg": "Левая нога",
+     "right_leg": "Правая нога",
+     "left_foot": "Левая стопа",
+     "right_foot": "Правая стопа"
     }
    }
   }
- ]
+ ],
+ "text_status": {
+  "uz": "draft: native-speaker check B44 (Uzbek Cyrillic is made from it)",
+  "ru": "draft: native-speaker check B44"
+ }
 }

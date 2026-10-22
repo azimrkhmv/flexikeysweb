@@ -797,9 +797,15 @@ the database fields never shift.
   - Note: `/parent/children/new` asks the set the server hands out (`GET /intake/questionnaire`, from
     `INTAKE_QUESTIONNAIRE`; still `p41` until IQ8); the demo tries the new one with `?q=2026-10-16`. Live test:
     `e2e-live/questionnaire.e2e.ts` runs only against a server started with `INTAKE_QUESTIONNAIRE=2026-10-16`.
-- [ ] **Azim** — `IQ5` Uzbek (Latin and Cyrillic) and Russian text for every new question and option, marked for the native-speaker check (B44)
+- [x] **Azim** — `IQ5` Uzbek (Latin and Cyrillic) and Russian text for every new question and option, marked for the native-speaker check (B44)
   - Done when: no new question shows English in another language
   - Needs: IQ1
+  - Note: draft text, `text_status` in questionnaire.json says so; Uzbek Cyrillic is made from the Latin. For the B44
+    check, words the translators were unsure of: DCD1–DCD6 options say "harder" not "worse" but the questions still
+    compare with other children (rule 1, see DCD1's note); device names (stander / standing frame, gait trainer,
+    rollator, AFO); "hips" on the body maps; AU7 "meltdowns" (uz); I1 occupational therapy ("Эрготерапия"); "therapist"
+    is «специалист» in Russian («терапевт» is a GP); G7 options are in the child's voice in Uzbek; I6 amounts use
+    "500 000" and soʻm/сум; L5 keeps the source's "А–Р"
 - [ ] **Azim** — `IQ6` Therapist assessment L1–L9 in the therapist dashboard; L2 overrides the parent's movement level and L9 the restrictions (rule 4)
   - Done when: a therapist's L2 and L9 change the plan; scores (L3 percentages) are never shown to the parent (rule 1)
   - Needs: IQ3
