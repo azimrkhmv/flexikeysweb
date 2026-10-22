@@ -444,6 +444,8 @@ export interface RoadmapReason {
   goal: GoalKey;
   ref: string;
   level: number;
+  /** A4.6: the research the AI's pick rests on ("KB-HAND-03: Jackman et al., 2020"); none = the rules' own pick. */
+  source?: string;
 }
 
 /** The parent's optional answer after Done (spec §8). */

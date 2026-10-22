@@ -7,7 +7,7 @@ import { ApiError, type ChildAuth, type DB } from "@/lib/api/schema";
 import { sessionStore } from "@/lib/session";
 import { useStore } from "@/lib/store";
 import { http } from "./http";
-import type { ChatOut, ChatSummary, MessageOut, AuditOut, FlagOut, Overview, KitOrderOut, BookingOut, ClinicBooking, ClinicSlot, FreeSlot, MyPlace, PlaceView, CardOut, ChildOut, ClipOut, Helpers, InviteForMe, Consents, DailyOut, FormOut, InUse, InviteOut, PlanOut, PlanStatus, ProfileOut, ReviewItem, RoundOut, RoundSummary, ShareOut, SharedChild } from "@/lib/server/types";
+import type { ChatOut, ChatSummary, MessageOut, PlanReasons, AuditOut, FlagOut, Overview, KitOrderOut, BookingOut, ClinicBooking, ClinicSlot, FreeSlot, MyPlace, PlaceView, CardOut, ChildOut, ClipOut, Helpers, InviteForMe, Consents, DailyOut, FormOut, InUse, InviteOut, PlanOut, PlanStatus, ProfileOut, ReviewItem, RoundOut, RoundSummary, ShareOut, SharedChild } from "@/lib/server/types";
 import {
   kitOrderFrom, bookingFrom, clinicBookingFrom, myPlaceFrom, placeFrom, slotFrom,
   answersFrom, chatFrom, clipsFrom, dailyFrom, doneFrom, familyChildFrom, familyConsentsFrom, familyPlanFrom, inUseFrom, pausedFrom, planFrom, planVideosFrom, reviewVideosFrom, shareFrom, sharedChildFrom, voiceCardFrom,
@@ -168,7 +168,7 @@ export function useLiveDb(): DB {
     queryFn: () => http<ProfileOut>("GET", "/therapist/profile").catch((e) => (e instanceof ApiError && e.code === "no_profile" ? null : Promise.reject(e))),
   });
   const shared = role === "therapist" ? (linked.data ?? []) : [];
-  const VIEWS = 4; // queries per shared child, in this order: form, clips, chat, chat summary
+  const VIEWS = 5; // queries per shared child, in this order: form, clips, chat, chat summary, plan reasons
   const views = useQueries({
     queries: shared.flatMap((c) => [
       { queryKey: ["therapist-form", c.id], enabled: !!tprofile.data, queryFn: () => http<unknown>("GET", `/therapist/children/${c.id}/form`) },
@@ -179,6 +179,10 @@ export function useLiveDb(): DB {
       // B31, B33: the therapist's own assistant chat, and the family's chats as topics and warnings only.
       { queryKey: ["chat", c.id], queryFn: () => http<unknown>("GET", `/children/${c.id}/assistant/messages`) },
       { queryKey: ["chat-summary", c.id], queryFn: () => http<unknown>("GET", `/therapist/children/${c.id}/assistant-summary`) },
+      {
+        queryKey: ["plan-reasons", c.id],
+        queryFn: () => http<unknown>("GET", `/therapist/children/${c.id}/plan-reasons`).catch((e) => (e instanceof ApiError && e.code === "not_found" ? null : Promise.reject(e))), // no plan yet
+      },
     ]),
   });
 
@@ -349,6 +353,9 @@ export function useLiveDb(): DB {
         db.aiMessages.push(...chatFrom(c.id, user.id, (views[k * VIEWS + 2]?.data as MessageOut[] | undefined) ?? []));
         const summary = views[k * VIEWS + 3]?.data as ChatSummary | undefined;
         if (summary) (db.chatSummaries ??= {})[c.id] = summary;
+        const why = views[k * VIEWS + 4]?.data as PlanReasons | null | undefined;
+        type Why = NonNullable<DB["planReasons"]>[string];
+        if (why) (db.planReasons ??= {})[c.id] = { ...why, reasons: why.reasons.map((r) => ({ ...r, source: r.source ?? undefined })) as Why["reasons"] };
         // The server lists clips only with the movement-videos consent.
         if (clips.clips.length) db.consents.push({ id: `videos-${c.id}`, childId: c.id, scope: "movement_videos", version: "", grantedBy: "", grantedAt: "" });
       });

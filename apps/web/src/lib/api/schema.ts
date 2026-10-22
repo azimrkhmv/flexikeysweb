@@ -85,6 +85,8 @@ export interface DB {
   /** Live only: the therapist's summary of the family's assistant chats, per child (B31, B33). */
   /** Live only: every adult's chat about each child, for "Everything we store" (B41); never the words. */
   chatList?: Record<string, { userId: string; name: string; messages: number; at: string }[]>;
+  /** Live, therapist: why each item of a shared child's plan is there (GET /therapist/children/{id}/plan-reasons). */
+  planReasons?: Record<string, { exercisesAllowed: boolean; byAi: boolean; reasons: Roadmap["reasons"] }>;
   chatSummaries?: Record<string, { questions: number; topics: { topic: string; count: number }[]; warnings: { kind: "emergency" | "restricted"; at: string }[] }>;
   answersInUse?: Record<string, { updated: Record<string, { value: string | string[]; name: string; profession?: Profession; at: string }>; messages: { text: string; name: string; profession?: Profession; at: string }[] }>;
 }

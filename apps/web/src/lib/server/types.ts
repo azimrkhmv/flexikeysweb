@@ -17,6 +17,7 @@ export type PlanOut = Schemas["PlanOut"];
 export type ReviewItem = Schemas["ReviewItem"];
 export type RoundOut = Schemas["RoundOut"];
 export type QuestionnaireOut = Schemas["QuestionnaireOut"];
+export type PlanReasons = Schemas["PlanReasons"];
 export type DailyOut = Schemas["DailyOut"];
 export type DoneOut = Schemas["DoneOut"];
 export type CardOut = Schemas["CardOut"];
@@ -67,6 +68,7 @@ export const ADDRESSES = [
   "/api/v1/children/{child_id}/intake/{number}/finish",
   "/api/v1/children/{child_id}/intake/file-link",
   "/api/v1/intake/questionnaire",
+  "/api/v1/therapist/children/{child_id}/plan-reasons",
   "/api/v1/children/{child_id}/plan",
   "/api/v1/children/{child_id}/done",
   "/api/v1/children/{child_id}/done/{done_id}",

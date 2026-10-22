@@ -74,6 +74,7 @@ function Why({ plan }: { plan: Roadmap }) {
         <>
           <p className="text-ink-2">{t("plan.why.safe")}</p>
           <p className="text-ink-2">{t("plan.why.time", { min: minutes })}</p>
+          {plan.reasons.some((r) => r.source) && <p className="text-ink-2">{t("plan.why.research")}</p>}
         </>
       ) : (
         <p className="text-ink-2">{t("plan.why.gamesOnly")}</p>

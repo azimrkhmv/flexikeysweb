@@ -619,7 +619,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `A4.7` Turn on the AI plan (`AI_PLAN=true` with `RESEARCH_PATH`) for real families
   - Done when: a new family's plan is the AI's choice, with its sources
   - Needs: G7 (may health data go to an AI company abroad), E2 (the model)
-- [ ] **Azim** — `B58` Show the AI's reasons and sources for each plan item to the therapist, and the simple explanation to the parent
+- [x] **Azim** — `B58` Show the AI's reasons and sources for each plan item to the therapist, and the simple explanation to the parent
   - Done when: a therapist sees why each exercise and game was chosen, and can still change anything (rule 4)
   - Needs: A4.6
 

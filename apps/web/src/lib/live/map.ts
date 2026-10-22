@@ -101,7 +101,7 @@ export function planFrom(childId: string, round: number, p: PlanOut): Roadmap {
       exercises: d.exercises.map((e) => ({ videoId: e.exerciseId, level: Math.min(3, Math.max(1, made.get(e.exerciseId) ?? e.level)) as 1 | 2 | 3 })),
       games: d.games.map((g) => ({ kind: g.kind as ActivityKind, minutes: g.minutes })),
     })),
-    reasons: p.reasons.map((r) => ({ slot: r.slot, goal: r.goal as GoalKey, ref: r.ref, level: r.level })),
+    reasons: p.reasons.map((r) => ({ slot: r.slot, goal: r.goal as GoalKey, ref: r.ref, level: r.level, source: r.source ?? undefined })),
   };
 }
 

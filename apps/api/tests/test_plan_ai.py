@@ -19,8 +19,11 @@ from app.modules.plans.safety import LibraryExercise
 from app.settings import settings
 from tests.test_assistant_chat import ai, client  # noqa: F401
 from tests.test_assistant_research import library  # noqa: F401
-from tests.test_intake_rounds import complete
+from tests.test_children import API, add_child, parent
+from tests.test_intake_rounds import complete, finish
+from tests.test_intake_save import health_consent, save
 from tests.test_plan_create import approved_putty, finished_child, stored  # noqa: F401
+from tests.test_therapist_form import share
 from tests.test_videos_register import run
 
 ANSWERS = complete(with_health=True) | {"P33": ["hands"]}
@@ -113,3 +116,24 @@ def test_with_the_ai_off_the_ai_is_not_asked(
 ) -> None:
     plan, _, _ = stored(client, finished_child(client, ANSWERS, health=True))
     assert plan.engine_version == engine.ENGINE_VERSION and ai.sent == []
+
+
+def test_the_therapist_sees_why_each_item_is_in_the_plan(
+    ai_plan: None, client: TestClient, ai: FakeAi, approved_putty: None
+) -> None:
+    """B58: the reasons and the research behind the AI's picks; a therapist the child is not shared with gets 404."""
+    owner = parent(client)
+    child = add_child(client, owner)
+    health_consent(client, owner, child)
+    assert save(client, owner, child, ANSWERS).status_code == 200
+    ai.replies = ['{"entries": ["KB-HAND-01"]}', choose(("putty_squeeze", "KB-HAND-01"))]
+    assert finish(client, owner, child).status_code == 200
+    therapist = share(client, owner, child)
+    got = client.get(f"{API}/therapist/children/{child}/plan-reasons", headers=therapist).json()
+    assert got["byAi"] is True and got["exercisesAllowed"] is True
+    sources = {r["ref"]: r["source"] for r in got["reasons"]}
+    assert sources["putty_squeeze"] == "KB-HAND-01: Novak et al., 2020; Hoare et al., 2019"
+    assert all(v is None for k, v in sources.items() if k != "putty_squeeze")  # the rules' own games
+    other_owner = parent(client)
+    stranger = share(client, other_owner, add_child(client, other_owner))  # another family's therapist
+    assert client.get(f"{API}/therapist/children/{child}/plan-reasons", headers=stranger).status_code == 404

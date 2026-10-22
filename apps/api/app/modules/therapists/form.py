@@ -40,7 +40,8 @@ from app.modules.intake import questionnaire
 from app.modules.intake.bridge import rules_view
 from app.modules.intake.models import IntakeAnswer, IntakeRound
 from app.modules.intake.rules import QUESTIONS
-from app.modules.plans.router import TASHKENT, create_plan
+from app.modules.plans.models import Plan, PlanReason
+from app.modules.plans.router import TASHKENT, ReasonOut, create_plan
 from app.modules.plans.safety import P14_TAGS, plan_facts
 from app.modules.plans.safety import Therapist as TherapistInput
 from app.modules.therapists.models import Profession, TherapistAnswer, TherapistProfile
@@ -455,3 +456,27 @@ async def save_form(
     rebuilt = bool(REBUILDS & clean.keys()) and await rebuild_plan(db, child_id, ai)
     await db.commit()
     return (await _form(db, user, child_id, profession)).model_copy(update={"plan_rebuilt": rebuilt})
+
+
+class PlanReasons(ApiModel):
+    exercises_allowed: bool
+    by_ai: bool  # the AI chose the items, inside the rules (A4.6); each reason then names its research
+    reasons: list[ReasonOut]  # why each exercise and game is in the plan; source None = the rules' own pick
+
+
+@therapist_router.get("/children/{child_id}/plan-reasons")
+async def plan_reasons(
+    child_id: uuid.UUID, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]
+) -> PlanReasons:
+    """B58: why each item of the child's current plan was chosen, and the research behind the AI's picks. The therapist
+    changes anything with T6 and T8 (rule 4). 404 no_plan before the parent finishes the questions."""
+    await get_shared_child(db, user, child_id)
+    plan = await db.scalar(select(Plan).where(Plan.child_id == child_id).order_by(Plan.created_at.desc()).limit(1))
+    if plan is None:
+        raise AppError(404, "no_plan")
+    rows = await db.scalars(select(PlanReason).where(PlanReason.plan_id == plan.id).order_by(PlanReason.position))
+    return PlanReasons(
+        exercises_allowed=plan.exercises_allowed,
+        by_ai=plan.engine_version.endswith("+ai"),
+        reasons=[ReasonOut(slot=r.slot, goal=r.goal, ref=r.ref, level=r.level, source=r.source) for r in rows],
+    )

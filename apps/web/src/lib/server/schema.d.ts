@@ -1643,6 +1643,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/therapist/children/{child_id}/plan-reasons": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Plan Reasons
+         * @description B58: why each item of the child's current plan was chosen, and the research behind the AI's picks. The therapist
+         *     changes anything with T6 and T8 (rule 4). 404 no_plan before the parent finishes the questions.
+         */
+        get: operations["plan_reasons_api_v1_therapist_children__child_id__plan_reasons_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/children/{child_id}/clips/upload-link": {
         parameters: {
             query?: never;
@@ -3337,6 +3358,15 @@ export interface components {
             paused: string[];
             /** Freedays */
             freeDays: number | null;
+        };
+        /** PlanReasons */
+        PlanReasons: {
+            /** Exercisesallowed */
+            exercisesAllowed: boolean;
+            /** Byai */
+            byAi: boolean;
+            /** Reasons */
+            reasons: components["schemas"]["ReasonOut"][];
         };
         /** PlanStatus */
         PlanStatus: {
@@ -6969,6 +6999,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["FormOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    plan_reasons_api_v1_therapist_children__child_id__plan_reasons_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanReasons"];
                 };
             };
             /** @description Validation Error */

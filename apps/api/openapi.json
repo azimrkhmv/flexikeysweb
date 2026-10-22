@@ -4237,6 +4237,50 @@
     }
    }
   },
+  "/api/v1/therapist/children/{child_id}/plan-reasons": {
+   "get": {
+    "tags": [
+     "therapists"
+    ],
+    "summary": "Plan Reasons",
+    "description": "B58: why each item of the child's current plan was chosen, and the research behind the AI's picks. The therapist\nchanges anything with T6 and T8 (rule 4). 404 no_plan before the parent finishes the questions.",
+    "operationId": "plan_reasons_api_v1_therapist_children__child_id__plan_reasons_get",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/PlanReasons"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/v1/children/{child_id}/clips/upload-link": {
    "post": {
     "tags": [
@@ -9210,6 +9254,32 @@
      "freeDays"
     ],
     "title": "PlanOut"
+   },
+   "PlanReasons": {
+    "properties": {
+     "exercisesAllowed": {
+      "type": "boolean",
+      "title": "Exercisesallowed"
+     },
+     "byAi": {
+      "type": "boolean",
+      "title": "Byai"
+     },
+     "reasons": {
+      "items": {
+       "$ref": "#/components/schemas/ReasonOut"
+      },
+      "type": "array",
+      "title": "Reasons"
+     }
+    },
+    "type": "object",
+    "required": [
+     "exercisesAllowed",
+     "byAi",
+     "reasons"
+    ],
+    "title": "PlanReasons"
    },
    "PlanStatus": {
     "properties": {

@@ -56,6 +56,9 @@ test("the parent sees the therapist's updates and message", async ({ page }, inf
   await page.getByLabel("Workplace").fill("Clinic 1");
   await page.getByRole("button", { name: "Save" }).click();
   await page.goto("/therapist/child/ch_ali");
+  // B58: why each item of Ali's plan is there (the demo's plans are the rules' own picks).
+  await expect(page.getByRole("heading", { name: "Why this plan" })).toBeVisible();
+  await expect(page.getByText("The fixed rules chose these items for the child's goals and level.")).toBeVisible();
   const form = page.locator("form:has([data-question])");
   await page.getByLabel("Gross motor level (GMFCS)").selectOption("3");
   await page.getByRole("checkbox", { name: "No jumping" }).check();

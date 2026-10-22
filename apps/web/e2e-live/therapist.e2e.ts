@@ -35,6 +35,8 @@ test("a therapist's change in the browser changes the parent's plan", async ({ p
   await expect(th.getByText("Physiotherapist / LFK specialist · Clinic 1")).toBeVisible();
 
   await th.goto(`/therapist/child/${child}`);
+  await expect(th.getByRole("heading", { name: "Why this plan" })).toBeVisible(); // B58, from the server
+  await expect(th.getByText("The fixed rules chose these items")).toBeVisible();
   await th.getByLabel("Gross motor level (GMFCS)").selectOption("1");
   await th.getByLabel("Hand use level (MACS)").selectOption("2");
   await th.getByRole("checkbox", { name: "No lying on the stomach" }).check();

@@ -11,6 +11,7 @@ import { SupportCard } from "@/features/parent/support";
 import { TherapistAssistant } from "@/features/therapist/Assistant";
 import { Clips } from "@/features/therapist/Clips";
 import { TherapistForm } from "@/features/therapist/Form";
+import { PlanReasons } from "@/features/therapist/PlanReasons";
 import { AdaptationLog, MotorMetrics, LevelLabel, LevelOptions, LockNote, MasteryList, MinutesChart, NotFound, SectionTitle, SessionsList, useMe, useNow } from "@/features/pro/shared";
 import { fmtDate } from "@/lib/format";
 import { api, LIVE, sel } from "@/lib/api";
@@ -46,6 +47,7 @@ export default function TherapistChild() {
       <p className="mb-6 text-xs text-muted">{t("therapist.child.audit")}</p>
       <div className="mb-6 space-y-6">
         <TherapistForm childId={id} />
+        <PlanReasons childId={id} />
         <Clips childId={id} />
         <TherapistAssistant childId={id} />
       </div>

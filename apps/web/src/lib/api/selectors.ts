@@ -362,6 +362,12 @@ export const sel = {
     }
     return [...by.values()].sort((a, b) => b.at.localeCompare(a.at));
   },
+  /** B58: why each item of the child's current plan is there (live: the server's answer for a shared child). */
+  planReasons(db: DB, childId: string): NonNullable<DB["planReasons"]>[string] | null {
+    if (db.planReasons?.[childId]) return db.planReasons[childId];
+    const plan = sel.roadmap(db, childId);
+    return plan && { exercisesAllowed: plan.exercisesAllowed, byAi: plan.reasons.some((r) => r.source), reasons: plan.reasons };
+  },
   /** The therapist's summary of the family's assistant chats: topics and warnings, never the chat (spec §12, B31).
    *  The server's GET /therapist/children/{id}/assistant-summary. */
   chatSummary(db: DB, childId: string): NonNullable<DB["chatSummaries"]>[string] {
