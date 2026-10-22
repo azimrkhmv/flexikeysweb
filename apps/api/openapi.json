@@ -7669,7 +7669,6 @@
     "type": "string",
     "enum": [
      "uz",
-     "uz_cyrl",
      "ru",
      "en"
     ],

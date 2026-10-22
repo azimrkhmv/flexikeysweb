@@ -2,7 +2,7 @@
 
 // /auth/*, /users/me, notifications.
 
-import type { UiLang } from "../i18n";
+import type { Lang } from "../i18n";
 import { read, write, net } from "./db";
 import { requireUser, purgeChild } from "./guards";
 import { sel } from "./selectors";
@@ -33,7 +33,7 @@ export const authApi = {
   },
   /** POST /auth/phone/verify — signs in, or creates a parent account the first time this number is used. A new
    * number a parent invited as a therapist, or one opening an unused therapist link (`invite`), becomes a therapist. */
-  async verifyCode(rawPhone: string, code: string, uiLang: UiLang, invite?: string) {
+  async verifyCode(rawPhone: string, code: string, uiLang: Lang, invite?: string) {
     const phone = normalizePhone(rawPhone);
     const otp = read().otp.find((o) => o.phone === phone);
     if (!phone || !otp) throw new ApiError("code_expired");

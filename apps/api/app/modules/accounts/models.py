@@ -27,7 +27,6 @@ class Lang(StrEnum):
     """The website's interface languages (apps/web/src/lib/translate.ts UiLang)."""
 
     uz = "uz"
-    uz_cyrl = "uz_cyrl"
     ru = "ru"
     en = "en"
 

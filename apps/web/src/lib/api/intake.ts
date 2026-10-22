@@ -7,7 +7,7 @@ import { FREE } from "@/content/plans";
 import type { Answers } from "@/content/intake";
 import { Q_BY_ID } from "@/content/questionnaire";
 import { rulesView } from "@/content/questionnaireBridge";
-import { baseLang, type Lang, type UiLang } from "../i18n";
+import { type Lang } from "../i18n";
 import { buildRoadmap } from "../roadmap";
 import { deleteMedia, getMedia, putMedia } from "../media";
 import { read, write, net } from "./db";
@@ -37,7 +37,7 @@ export const intakeApi = {
   },
 
   /** POST /children — from intake step 1 (P1–P5, P8; or A1–A3 of the CEO's questionnaire). Basic consent was given at sign-up. */
-  async createChildFromIntake(answers: Answers, uiLang: UiLang, questionnaire = "p41") {
+  async createChildFromIntake(answers: Answers, uiLang: Lang, questionnaire = "p41") {
     const u = requireUser(["parent"]);
     if (!u.consentVersion) throw new ApiError("consent_required");
     const name = String(answers.P1 ?? answers.A1 ?? "").trim();
@@ -45,7 +45,7 @@ export const intakeApi = {
     const sex = answers.P3 ?? answers.A3;
     if (!name) throw new ApiError("name_required");
     if (!/^\d{4}-\d{2}-\d{2}$/.test(birthDate) || birthDate > today()) throw new ApiError("invalid_date");
-    const lang = baseLang(uiLang);
+    const lang = uiLang;
     const child: Child = {
       id: id(), familyId: "", name, birthYear: Number(birthDate.slice(0, 4)), birthDate, learningLang: lang, uiLang: lang, avatar: "☁️", access: "touch",
       equipped: typeof answers.P8 === "string" ? { color: answers.P8 } : {},

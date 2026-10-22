@@ -9,7 +9,7 @@ import { dailyQuestionOn } from "@/content/daily";
 import { FREE } from "@/content/plans";
 import { ProLock } from "./ProLock";
 import { useLang, useT } from "@/lib/i18n";
-import { baseLang } from "@/lib/translate";
+import {  } from "@/lib/translate";
 import type { Child, ExerciseVideo, Feeling } from "@/lib/types";
 
 // Today (spec §10): the first thing a parent sees. Each child's exercises for today, with the video and the Home Kit
@@ -224,7 +224,7 @@ function ExerciseItem({ child, day, video }: { child: Child; day: number; video:
   const planned = sel.roadmap(db, child.id)?.days[day]?.exercises.find((e) => e.videoId === video.id)?.level ?? 1;
   const level = sel.exerciseLevel(db, child.id, video.id);
   // Only a physio-approved version is ever shown (rule 3); the plan only holds exercises with one.
-  const version = video.versions[baseLang(lang)];
+  const version = video.versions[lang];
   const file = version?.status === "approved" ? version : undefined;
   return (
     <li className="overflow-hidden rounded-2xl border border-line">

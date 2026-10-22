@@ -265,11 +265,14 @@ test("after a pause the plan view moves its dates like the Today screen", async 
   expect(dates[3]).toMatch(/\b30\b/); // plan day 3 moved to tomorrow, where the Today screen will show it
 });
 
-test("Uzbek Cyrillic is a full app language", async ({ page }) => {
+test("three app languages, no Uzbek Cyrillic (founders, 2026-10-22)", async ({ page }) => {
   await setup(page);
   await page.goto("/signup");
+  await page.evaluate(() => localStorage.setItem("fk_lang", JSON.stringify("uz_cyrl"))); // chosen before the change
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "Telefon raqamingiz bilan kiring" })).toBeVisible(); // now Uzbek Latin
   await page.evaluate(() => localStorage.setItem("fk_lang", "null")); // nobody chose a language on this device yet
   await page.reload();
-  await page.getByRole("button", { name: "Ўзбекча (Кирилл)" }).click();
-  await expect(page.getByRole("heading", { name: "Телефон рақамингиз билан киринг" })).toBeVisible();
+  await expect(page.getByRole("button", { name: /^(Oʻzbekcha|Русский|English)$/ })).toHaveCount(3);
+  await expect(page.getByText("Ўзбекча")).toHaveCount(0);
 });

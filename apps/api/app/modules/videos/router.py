@@ -270,7 +270,7 @@ async def watch(
 ) -> FamilyVideo:
     """The exercise's video in this language, only once a physiotherapist approved it (product rule 3). Anything
     else, even a video waiting for review, answers "not found". Uzbek Cyrillic gets the Uzbek video."""
-    video_lang = VideoLang.uz if lang == Lang.uz_cyrl else VideoLang(lang.value)
+    video_lang = VideoLang(lang.value)
     video = await db.scalar(select(Video).where(Video.exercise_id == exercise_id, Video.lang == video_lang, servable()))
     if video is None:
         raise AppError(404, "not_found")

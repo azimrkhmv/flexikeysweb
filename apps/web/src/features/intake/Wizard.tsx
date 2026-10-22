@@ -7,7 +7,7 @@ import { Button, Card, LinkButton, useAction } from "@/components/ui";
 import { openQuestions, STEPS, stepComplete, visibleQuestions, type Answers, type Step } from "@/content/intake";
 import { FormError, FormNote } from "@/features/auth/parts";
 import { api, ApiError, sel, useDb } from "@/lib/api";
-import { useT, useUiLang } from "@/lib/i18n";
+import { useT, useLang } from "@/lib/i18n";
 import type { IntakeValue, Roadmap } from "@/lib/types";
 import { QuestionField } from "./Fields";
 
@@ -17,7 +17,7 @@ import { QuestionField } from "./Fields";
 export function IntakeWizard({ childId: initialChild }: { childId?: string }) {
   const t = useT();
   const router = useRouter();
-  const [uiLang] = useUiLang();
+  const [uiLang] = useLang();
   const db = useDb();
   const [childId, setChildId] = useState<string | null>(initialChild ?? null);
   const child = childId ? sel.child(db, childId) : null;

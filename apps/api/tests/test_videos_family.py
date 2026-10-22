@@ -45,12 +45,9 @@ def test_a_parent_never_gets_a_video_that_is_not_approved(client: TestClient) ->
     assert title(watch(client, family, "sit_reach_sides", "ru")) == (404, "not_found")  # an approval taken back
 
 
-def test_uzbek_cyrillic_gets_the_uzbek_video(client: TestClient) -> None:
-    video = new_video(client, "walk_line", "uz")
-    _, physio, _ = make(client, Role.physio)
-    decide(client, physio, video, "approved")
-    r = watch(client, parent(client), "walk_line", "uz_cyrl")
-    assert (r.status_code, r.json()["lang"]) == (200, "uz")
+def test_there_is_no_uzbek_cyrillic(client: TestClient) -> None:
+    """FA3: three languages (founders, 2026-10-22)."""
+    assert watch(client, parent(client), "walk_line", "uz_cyrl").status_code == 422
 
 
 def test_signed_out_gets_nothing(client: TestClient) -> None:

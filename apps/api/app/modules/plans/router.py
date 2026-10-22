@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db import get_session
 from app.errors import AppError
-from app.modules.accounts.models import Lang, User
+from app.modules.accounts.models import User
 from app.modules.auth.session import CurrentUser
 from app.modules.billing.router import is_pro
 from app.modules.children.models import Child
@@ -66,7 +66,7 @@ async def create_plan(
         await library(db),
         birth_date=child.birth_date,
         start_date=start,
-        lang="uz" if child.lang == Lang.uz_cyrl else child.lang.value,
+        lang=child.lang.value,
         health_consent=health_consent,
         therapist=therapist,
     )

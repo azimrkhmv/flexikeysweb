@@ -548,7 +548,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 
 **Server — in this order**
 
-- [ ] **Azim** — `E1` Write 30 real parent questions in Uzbek Latin, Uzbek Cyrillic and Russian, each with the safe answer described
+- [ ] **Azim** — `E1` Write 30 real parent questions in Uzbek Latin and Russian, each with the safe answer described
   - Done when: a therapist has read and corrected them
   - Needs: —
 - [ ] **Azim** — `E2` Blind test of the low-cost model from at least 3 AI providers on those questions
@@ -743,7 +743,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `B57` Privacy and terms pages: they still describe schools, teachers, emails and Payme/Click payments. Rewrite them for the new product with the final consent texts and the lawyer's answers
   - Done when: they match the consents the app asks for and say where the data is stored
   - Needs: G6, G7
-- [ ] **Azim** — `B44` Native-speaker check of the Uzbek Latin, Uzbek Cyrillic and Russian text
+- [ ] **Azim** — `B44` Native-speaker check of the Uzbek Latin and Russian text
   - Done when: a named person has signed off each language
   - Needs: —
 - [x] **Azim** — `B45` Remove the hidden old features, or keep them hidden
@@ -804,10 +804,10 @@ the database fields never shift.
   - Note: `/parent/children/new` asks the set the server hands out (`GET /intake/questionnaire`, from
     `INTAKE_QUESTIONNAIRE`; still `p41` until IQ8); the demo tries the new one with `?q=2026-10-16`. Live test:
     `e2e-live/questionnaire.e2e.ts` runs only against a server started with `INTAKE_QUESTIONNAIRE=2026-10-16`.
-- [x] **Azim** — `IQ5` Uzbek (Latin and Cyrillic) and Russian text for every new question and option, marked for the native-speaker check (B44)
+- [x] **Azim** — `IQ5` Uzbek (Latin) and Russian text for every new question and option, marked for the native-speaker check (B44)
   - Done when: no new question shows English in another language
   - Needs: IQ1
-  - Note: draft text, `text_status` in questionnaire.json says so; Uzbek Cyrillic is made from the Latin. For the B44
+  - Note: draft text, `text_status` in questionnaire.json says so. For the B44
     check, words the translators were unsure of: DCD1–DCD6 options say "harder" not "worse" but the questions still
     compare with other children (rule 1, see DCD1's note); device names (stander / standing frame, gait trainer,
     rollator, AFO); "hips" on the body maps; AU7 "meltdowns" (uz); I1 occupational therapy ("Эрготерапия"); "therapist"
@@ -835,8 +835,10 @@ the database fields never shift.
 - [ ] **Azim** — `FA2` Ages 3–12 get the full plan; other ages a limited plan, flagged for the therapist
   - Done when: a 2-year-old and a 14-year-old get the limited plan and appear on the therapist's list
   - Needs: Q14 (what the limited plan is)
-- [ ] **Azim** — `FA3` Remove Uzbek Cyrillic: three app languages (Uzbek Latin, Russian, English); families on Cyrillic move to Uzbek Latin
+- [x] **Azim** — `FA3` Remove Uzbek Cyrillic: three app languages (Uzbek Latin, Russian, English); families on Cyrillic move to Uzbek Latin
   - Done when: no screen offers Cyrillic, and a saved Cyrillic choice opens in Uzbek Latin
+  - Note: migration 0038 moves accounts and children on `uz_cyrl` to `uz`; the server refuses `uz_cyrl` (422); the
+    transliterator (lib/cyrillic.ts) is gone
 - [ ] **Azim** — `FA4` 12-week plan in 3 steps of 4 weeks, a short re-check with a video every month that builds the next step
   - Done when: a plan shows 3 steps; the monthly re-check opens the next step
   - Needs: Q14 (Free's share of the 12 weeks; what the re-check asks)

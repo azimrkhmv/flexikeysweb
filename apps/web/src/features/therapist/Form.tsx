@@ -3,14 +3,11 @@
 import { useState, type ReactNode } from "react";
 import { Button, Card, Checkbox, Chip, Field, Input, Select, Textarea, useAction } from "@/components/ui";
 import { SectionTitle, useMe } from "@/features/pro/shared";
-import {
-  CP_PARTS, CP_TYPES, FORM_IDS, GOALS, LEVELS, MAX_GOALS, MUST_NOT, PROFESSIONS, UPDATES,
-  missing, requiredFor, type FormId, type Level, type Profession, type TherapistAnswers,
-} from "@/content/therapist";
+import { CP_PARTS, CP_TYPES, FORM_IDS, GOALS, LEVELS, MAX_GOALS, MUST_NOT, PROFESSIONS, UPDATES, missing, requiredFor, type FormId, type Level, type Profession, type TherapistAnswers } from "@/content/therapist";
 import { Q_BY_ID, visible, type QAnswer } from "@/content/questionnaire";
 import { Question } from "@/features/intake/Questionnaire";
 import { api, sel } from "@/lib/api";
-import { baseLang, useLang, useT } from "@/lib/i18n";
+import { useLang, useT } from "@/lib/i18n";
 
 // The therapist form (spec §6, B23, B25). T1 is the therapist's profile; T2–T11 are about one child, and which ones
 // are required follows the profession. T9 (notes on clips) are the replies in Clips.tsx. "L" is section L of the CEO's
@@ -124,7 +121,7 @@ export function TherapistForm({ childId }: { childId: string }) {
   const [sent, setSent] = useState<TherapistAnswers>(a); // what the server has, so a save sends only the changes
   const [tried, setTried] = useState(false);
   const [saved, setSaved] = useState<null | { planRebuilt: boolean }>(null);
-  const library = sel.usableVideos(db, baseLang(lang));
+  const library = sel.usableVideos(db, lang);
   const save = useAction(api.saveTherapistForm);
   const set = (patch: TherapistAnswers) => {
     setA((x) => ({ ...x, ...patch }));
@@ -266,9 +263,9 @@ export function TherapistForm({ childId }: { childId: string }) {
           <ul className="divide-y divide-line">
             {library.map((v) => (
               <li key={v.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
-                <span className="text-sm font-semibold text-ink">{v.title[baseLang(lang)]}</span>
+                <span className="text-sm font-semibold text-ink">{v.title[lang]}</span>
                 <Select
-                  aria-label={v.title[baseLang(lang)]}
+                  aria-label={v.title[lang]}
                   className="h-10 w-auto"
                   value={choice(v.id)}
                   onChange={(e) => {

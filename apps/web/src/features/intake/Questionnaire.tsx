@@ -8,7 +8,7 @@ import { inLang, Q_BY_ID, QUESTIONNAIRE, shownOptions, visible, type QAnswer, ty
 import { pView } from "@/content/questionnaireBridge";
 import { FormError, FormNote } from "@/features/auth/parts";
 import { api, sel, useDb } from "@/lib/api";
-import { useT, useUiLang } from "@/lib/i18n";
+import { useT, useLang } from "@/lib/i18n";
 import type { IntakeValue, Roadmap } from "@/lib/types";
 import { chip, Choice } from "./Fields";
 import { Ready } from "./Wizard";
@@ -28,7 +28,7 @@ const unanswered = (v: QAnswer) => v === undefined || v === "" || (Array.isArray
 export function QuestionnaireWizard({ childId: initialChild, version }: { childId?: string; version: string }) {
   const t = useT();
   const router = useRouter();
-  const [uiLang] = useUiLang();
+  const [uiLang] = useLang();
   const db = useDb();
   const [childId, setChildId] = useState<string | null>(initialChild ?? null);
   const child = childId ? sel.child(db, childId) : null;
@@ -154,7 +154,7 @@ type SetAnswer = (id: string, v: QAnswer) => void;
 /** One question of any kind. "Not sure" is stored as null (spec §5); an optional question has no "Not sure". */
 export function Question({ q, answers, set, childId }: { q: QQuestion; answers: QAnswers; set: SetAnswer; childId: string | null }) {
   const t = useT();
-  const [uiLang] = useUiLang();
+  const [uiLang] = useLang();
   const v = answers[q.id];
   const text = inLang(q.text, uiLang);
   const label = text + (q.unit ? ` (${t(`intake.unit.${q.unit}`)})` : "") + (q.required ? "" : ` · ${t("intake.optional")}`);

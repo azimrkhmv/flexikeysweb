@@ -70,12 +70,11 @@ def test_another_family_cannot_ask_about_the_child(client: TestClient) -> None:
     assert r.status_code == 404
 
 
-# A9.3: emergency words, in each of the four languages, get 103 before any limit or AI call.
+# A9.3: emergency words, in each of the three languages, get 103 before any limit or AI call.
 EMERGENCIES = {
     "en": "He had a seizure ten minutes ago",
     "ru": "У ребёнка судороги, что делать?",
     "uz": "Bolada tutqanoq boʻldi",
-    "uz_cyrl": "Болада тутқаноқ бўлди",
 }
 
 

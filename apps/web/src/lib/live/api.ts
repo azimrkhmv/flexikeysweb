@@ -8,16 +8,11 @@ import { STEPS, type Answers } from "@/content/intake";
 import { Q_BY_ID } from "@/content/questionnaire";
 import type { AssistantAnswer, KitOrderOut, BookingOut, ClinicSlot, CardOut, ChildOut, ClipOut, ClipUpload, Consents, DoneOut, FormOut, PhoneStarted, PlanOut, PlanStatus, ReviewItem, QuestionnaireOut, RoundOut, ShareOut } from "@/lib/server/types";
 import type { Profession, TherapistAnswers } from "@/content/therapist";
-import type { Lang, UiLang } from "@/lib/translate";
+import type { Lang } from "@/lib/translate";
 import type { AacCustomCard, KitStatus, BookingMode, ReportReason, Slot, Child, ChildSupport, ConsentScope, Feeling, InputProfile, InteractionEvent, Roadmap, TaskDone, User, UserStatus, VideoStatus } from "@/lib/types";
 import { queryClient } from "./client";
 import { http } from "./http";
-import {
-  bookingFrom, kitOrderFrom, slotFrom,
-  CONSENT_KIND, familyChildFrom, planFrom, planStatusFrom, shareFrom,
-  childFrom, childTo, eventTo, scopeTo, userFrom,
-  type BChild, type BConsent, type BGoal, type BUser,
-} from "./map";
+import { bookingFrom, kitOrderFrom, slotFrom, CONSENT_KIND, familyChildFrom, planFrom, planStatusFrom, shareFrom, childFrom, childTo, eventTo, scopeTo, userFrom, type BChild, type BConsent, type BGoal, type BUser } from "./map";
 import { liveChild } from "./state";
 import { KIT } from "@/content/kits";
 import type { KitOrderInput } from "@/lib/api/kits";
@@ -62,7 +57,7 @@ export const liveApi = {
     return { phone: r.phone, resendAfterMs: r.resendAfterMs, demoCode: r.demoCode ?? "" };
   },
   /** POST /auth/phone/verify — sets the session cookies; a new number becomes a parent with a new family. */
-  async verifyCode(rawPhone: string, code: string, uiLang: UiLang, invite?: string) {
+  async verifyCode(rawPhone: string, code: string, uiLang: Lang, invite?: string) {
     const r = await http<{ isNew: boolean }>("POST", "/auth/phone/verify", { phone: rawPhone, code: code.trim(), lang: uiLang, inviteCode: invite || null });
     return { user: await signedIn(), isNew: r.isNew };
   },
@@ -196,7 +191,7 @@ export const liveApi = {
     return (await http<QuestionnaireOut>("GET", "/intake/questionnaire")).active;
   },
   /** POST /children from the first question step (P1–P3, P8; or A1–A3 of the CEO's questionnaire), then its answers. */
-  async createChildFromIntake(answers: Answers, uiLang: UiLang) {
+  async createChildFromIntake(answers: Answers, uiLang: Lang) {
     const name = String(answers.P1 ?? answers.A1 ?? "").trim();
     const birthDate = String(answers.P2 ?? answers.A2 ?? "");
     if (!name) throw new ApiError("name_required");

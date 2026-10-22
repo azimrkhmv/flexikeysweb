@@ -1,4 +1,4 @@
-import type { Lang, UiLang } from "./i18n";
+import type { Lang } from "./i18n";
 
 export type L10n<T = string> = Record<Lang, T>;
 
@@ -12,7 +12,7 @@ export interface User {
   name: string;
   role: Role;
   status: UserStatus;
-  uiLang: UiLang;
+  uiLang: Lang;
   /** Sign-in is phone + SMS code (spec §4): +998XXXXXXXXX. */
   phone?: string;
   /** City/region and district ids from content/districts.ts (Find help, booking, Home Kit delivery). */

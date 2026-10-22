@@ -34,11 +34,9 @@ NO_SOURCE = {
     "который занимается с ребёнком.",
     Lang.uz: "Bilmayman: tadqiqotlar kutubxonamizda bu haqda maʼlumot yoʻq. Iltimos, farzandingizning terapevtidan "
     "soʻrang.",
-    Lang.uz_cyrl: "Билмайман: тадқиқотлар кутубхонамизда бу ҳақда маълумот йўқ. Илтимос, фарзандингизнинг "
-    "терапевтидан сўранг.",
 }
 TEAM_NOTE = "FlexiKeys knowledge base, team note"
-SOURCE_WORD = {Lang.en: "Source", Lang.ru: "Источник", Lang.uz: "Manba", Lang.uz_cyrl: "Манба"}
+SOURCE_WORD = {Lang.en: "Source", Lang.ru: "Источник", Lang.uz: "Manba"}
 
 
 @dataclass(frozen=True)

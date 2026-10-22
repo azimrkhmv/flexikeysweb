@@ -56,9 +56,9 @@ export function userFrom(u: BUser): User {
 
 // ---------------------------------------------------------------- the new server (apps/api)
 
-/** A child of the family (GET /children). Uzbek Cyrillic plays with the Uzbek content. */
+/** A child of the family (GET /children). */
 export function familyChildFrom(c: ChildOut): Child {
-  const lang = c.lang === "uz_cyrl" ? "uz" : c.lang;
+  const lang = c.lang;
   return {
     id: c.id, familyId: c.familyId, name: c.name, birthYear: Number(c.birthDate.slice(0, 4)), birthDate: c.birthDate, sex: c.sex,
     learningLang: lang, uiLang: lang, avatar: "☁️", access: "touch", equipped: c.color ? { color: c.color } : {}, createdAt: "",

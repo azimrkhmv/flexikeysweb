@@ -277,7 +277,7 @@ async def offline_videos(
     exercises = select(PlanItem.ref).where(
         PlanItem.plan_id == plan.id, PlanItem.kind == ItemKind.exercise, PlanItem.day.in_(days)
     )
-    video_lang = VideoLang.uz if lang == Lang.uz_cyrl else VideoLang(lang.value)
+    video_lang = VideoLang(lang.value)
     videos = await db.scalars(
         select(Video)
         .where(Video.exercise_id.in_(exercises), Video.lang == video_lang, servable())

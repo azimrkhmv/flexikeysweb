@@ -53,7 +53,6 @@ RESTRICTED = "restricted"  # the topic of an answer replaced because it touched 
 HISTORY = 10  # earlier messages the AI sees
 LANG_NAME = {
     Lang.uz: "Uzbek (Latin script)",
-    Lang.uz_cyrl: "Uzbek (Cyrillic script)",
     Lang.ru: "Russian",
     Lang.en: "English",
 }
@@ -102,7 +101,7 @@ async def plan_words(db: AsyncSession, child: Child, lang: Lang) -> str:
         return "The child has no plan yet (the parent has not finished the questions): suggest no exercises."
     limit = await free_days(db, child.id)
     days = [d for d in await plan_days(db, plan) if limit is None or d.day < limit]
-    key = "uz" if lang == Lang.uz_cyrl else lang.value
+    key = lang.value
     day, paused = await plan_day_today(db, plan)
     today = next((d for d in days if d.day == day), None)
     if paused:

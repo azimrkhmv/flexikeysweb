@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Button, Card, Empty, Textarea, useAction } from "@/components/ui";
 import { SectionTitle, useMe } from "@/features/pro/shared";
 import { api, sel } from "@/lib/api";
-import { baseLang } from "@/lib/i18n";
+import {  } from "@/lib/i18n";
 import { fmtDate } from "@/lib/format";
 import { useLang, useT } from "@/lib/i18n";
 import { getMedia } from "@/lib/media";
@@ -37,7 +37,7 @@ export function Clips({ childId }: { childId: string }) {
   const feedback = sel.feedbackClips(db, childId);
   const clips = [
     ...sel.movementClips(db, childId).map((id, i) => ({ id, label: t("tclips.clip", { n: i + 1 }) })),
-    ...feedback.map((c) => ({ id: c.id, label: t("tclips.exercise", { name: sel.video(db, c.exerciseId)?.title[baseLang(lang)] ?? c.exerciseId }) })),
+    ...feedback.map((c) => ({ id: c.id, label: t("tclips.exercise", { name: sel.video(db, c.exerciseId)?.title[lang] ?? c.exerciseId }) })),
   ];
   const reply = useAction(api.replyToClip);
   const [text, setText] = useState<Record<string, string>>({});

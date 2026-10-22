@@ -19,11 +19,6 @@ TEXTS: dict[Lang, tuple[str, str]] = {
         "Ilovadan foydalanish uchun kerak. Maʼlumotlarni hech qachon sotmaymiz va bermaymiz, "
         "ularni istalgan vaqtda oʻchirishingiz mumkin.",
     ),
-    Lang.uz_cyrl: (
-        "FlexiKeys ҳисобим ва боламнинг ўйин маълумотларини сақлашига розиман",
-        "Иловадан фойдаланиш учун керак. Маълумотларни ҳеч қачон сотмаймиз ва бермаймиз, "
-        "уларни исталган вақтда ўчиришингиз мумкин.",
-    ),
     Lang.ru: (
         "Я согласен(на), что FlexiKeys хранит мой аккаунт и данные игр ребёнка",
         "Нужно для работы приложения. Мы никогда не продаём и не передаём данные, удалить всё можно в любой момент.",

@@ -41,7 +41,6 @@ GOAL_WORDS = {
 }  # fmt: skip
 LANG_NAME = {
     Lang.uz: "Uzbek (Latin script)",
-    Lang.uz_cyrl: "Uzbek (Cyrillic script)",
     Lang.ru: "Russian",
     Lang.en: "English",
 }
@@ -79,8 +78,6 @@ FALLBACK = {
         Lang.en: "This week your child did tasks on {days_with_tasks} of 7 days. Keep going at your own pace.",
         Lang.ru: "На этой неделе ваш ребёнок выполнял задания {days_with_tasks} дн. из 7. Продолжайте в своём темпе.",
         Lang.uz: "Bu hafta farzandingiz 7 kundan {days_with_tasks} kunida vazifa bajardi. Oʻz sur'atingizda davom eting.",
-        Lang.uz_cyrl: "Бу ҳафта фарзандингиз 7 кундан {days_with_tasks} кунида вазифа бажарди. Ўз суръатингизда давом "
-        "этинг.",
     },
     "plan": {
         Lang.en: "The plan is built from your answers and what your child's therapist set. Each day has short exercises "
@@ -89,8 +86,6 @@ FALLBACK = {
         "игры, безопасные для вашего ребёнка.",
         Lang.uz: "Reja sizning javoblaringiz va terapevt koʻrsatmalari asosida tuzilgan. Har kuni farzandingiz uchun "
         "xavfsiz qisqa mashqlar va oʻyinlar bor.",
-        Lang.uz_cyrl: "Режа сизнинг жавобларингиз ва терапевт кўрсатмалари асосида тузилган. Ҳар куни фарзандингиз учун "
-        "хавфсиз қисқа машқлар ва ўйинлар бор.",
     },
 }
 

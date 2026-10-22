@@ -71,8 +71,7 @@ describe("questionnaire (IQ1)", () => {
         for (const o of q.options ?? []) expect(q.option_text?.[lang]?.[o], `${lang} ${q.id}.${o}`).toBeTruthy();
       }
     }
-    expect(inLang(Q_BY_ID.A3.option_text!, "uz_cyrl", "boy")).toMatch(/^[\u0400-\u04FF\s]+$/); // Cyrillic, made from Latin
-    expect(inLang(Q_BY_ID.C10.text, "uz_cyrl")).not.toMatch(/[a-z]{2}/); // no Latin left over
+    expect(inLang(Q_BY_ID.A3.option_text!, "ru", "boy")).toBe(Q_BY_ID.A3.option_text!.ru.boy);
   });
 
   it("each sample child sees the right questions (shared with the server)", () => {

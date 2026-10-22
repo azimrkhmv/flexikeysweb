@@ -8,7 +8,7 @@ import { Button, Checkbox, Field, Input, Select, useAction } from "@/components/
 import { REGIONS, regionById } from "@/content/districts";
 import { AuthTitle, FormError, FormNote } from "@/features/auth/parts";
 import { api, DEMO_PHONES, sel, useDb } from "@/lib/api";
-import { applyAccountLang, LANG_NAMES, UI_LANGS, useLangChosen, useT, useUiLang } from "@/lib/i18n";
+import { applyAccountLang, LANG_NAMES, LANGS, useLangChosen, useT, useLang } from "@/lib/i18n";
 import { useMounted } from "@/lib/store";
 import type { User } from "@/lib/types";
 
@@ -33,7 +33,7 @@ export function PhoneFlow({ showDemos }: { showDemos?: boolean }) {
   const db = useDb();
   const me = sel.me(db);
   const chosen = useLangChosen();
-  const [lang, setLang] = useUiLang();
+  const [lang, setLang] = useLang();
   const mounted = useMounted();
   // Derived until the person moves on, so the saved language (read after hydration) decides the first screen.
   const [picked, setStep] = useState<Step | null>(null);
@@ -89,13 +89,13 @@ export function PhoneFlow({ showDemos }: { showDemos?: boolean }) {
       <>
         <AuthTitle title={t("auth.phone.langTitle")} />
         <div className="grid gap-3">
-          {UI_LANGS.map((l) => (
+          {LANGS.map((l) => (
             <Button
               key={l}
               size="lg"
               variant={l === lang ? "primary" : "outline"}
               className="w-full"
-              lang={l === "uz_cyrl" ? "uz-Cyrl" : l}
+              lang={l}
               onClick={() => {
                 setLang(l);
                 setStep("phone");

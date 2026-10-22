@@ -2887,7 +2887,7 @@ export interface components {
          * @description The website's interface languages (apps/web/src/lib/translate.ts UiLang).
          * @enum {string}
          */
-        Lang: "uz" | "uz_cyrl" | "ru" | "en";
+        Lang: "uz" | "ru" | "en";
         /** Me */
         Me: {
             /**

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Globe } from "lucide-react";
-import { LANG_NAMES, LANGS, UI_LANGS, useRouteLang, useT, useUiLang, type UiLang } from "@/lib/i18n";
+import { LANG_NAMES, LANGS, useRouteLang, useT, useLang, type Lang } from "@/lib/i18n";
 import type { Role } from "@/lib/types";
 
 export function Logo({ href = "/", small }: { href?: string; small?: boolean }) {
@@ -27,13 +27,13 @@ export function Logo({ href = "/", small }: { href?: string; small?: boolean }) 
 }
 
 export function LangSwitch({ compact }: { compact?: boolean }) {
-  const [lang, setLang] = useUiLang();
+  const [lang, setLang] = useLang();
   const routeLang = useRouteLang();
   const path = usePathname();
   const router = useRouter();
   const t = useT();
   // On public pages the language is part of the URL (/uz/pricing → /ru/pricing); elsewhere it's a preference.
-  const choose = (l: UiLang) => {
+  const choose = (l: Lang) => {
     setLang(l);
     if (routeLang) router.push(path.replace(/^\/(uz|ru|en)(?=\/|$)/, `/${l}`) + window.location.hash);
   };
@@ -41,10 +41,10 @@ export function LangSwitch({ compact }: { compact?: boolean }) {
     <label className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-3 h-10 text-sm font-bold text-ink-2">
       <Globe className="size-4" aria-hidden />
       <span className="sr-only">{t("nav.language")}</span>
-      <select value={lang} onChange={(e) => choose(e.target.value as UiLang)} className="bg-transparent font-bold text-ink outline-none">
-        {(routeLang ? LANGS : UI_LANGS).map((l) => (
+      <select value={lang} onChange={(e) => choose(e.target.value as Lang)} className="bg-transparent font-bold text-ink outline-none">
+        {(routeLang ? LANGS : LANGS).map((l) => (
           <option key={l} value={l}>
-            {compact ? (l === "uz_cyrl" ? "ЎЗ" : l.toUpperCase()) : LANG_NAMES[l]}
+            {compact ? l.toUpperCase() : LANG_NAMES[l]}
           </option>
         ))}
       </select>

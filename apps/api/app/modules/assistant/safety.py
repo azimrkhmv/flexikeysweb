@@ -31,8 +31,6 @@ EMERGENCY_ANSWER = {
     "ответа здесь.",
     Lang.uz: "Hoziroq 103 ga qoʻngʻiroq qiling. Bu shoshilinch holat boʻlishi mumkin: tez yordam (103) chaqiring yoki "
     "darhol shifokoringizga qoʻngʻiroq qiling. Bu yerda javob kutmang.",
-    Lang.uz_cyrl: "Ҳозироқ 103 га қўнғироқ қилинг. Бу шошилинч ҳолат бўлиши мумкин: тез ёрдам (103) чақиринг ёки "
-    "дарҳол шифокорингизга қўнғироқ қилинг. Бу ерда жавоб кутманг.",
 }
 
 # The plan's restrictions (plans/safety.py), in plain words for the AI and as words to find in its answer.
@@ -73,8 +71,6 @@ SAFE_ANSWER = {
     "касался. Спросите терапевта или посмотрите сегодняшнее задание в плане.",
     Lang.uz: "Buni maslahat bera olmayman: farzandingizning shifokori yoki terapevti baʼzi harakatlardan saqlanishni "
     "aytgan, javobim ularga tegib ketdi. Terapevtingizdan soʻrang yoki rejadagi bugungi vazifani koʻring.",
-    Lang.uz_cyrl: "Буни маслаҳат бера олмайман: фарзандингизнинг шифокори ёки терапевти баъзи ҳаракатлардан "
-    "сақланишни айтган, жавобим уларга тегиб кетди. Терапевтингиздан сўранг ёки режадаги бугунги вазифани кўринг.",
 }
 
 
@@ -86,8 +82,6 @@ RESTING_ANSWER = {
     "что-то беспокоит, позвоните врачу, а в экстренном случае — 103.",
     Lang.uz: "Yordamchi bu oy uchun vaqtini tugatdi. Mashq uchun bugungi vazifadagi videoga qarang. Biror narsa "
     "tashvishlantirsa, shifokoringizga, shoshilinch holatda esa 103 ga qoʻngʻiroq qiling.",
-    Lang.uz_cyrl: "Ёрдамчи бу ой учун вақтини тугатди. Машқ учун бугунги вазифадаги видеога қаранг. Бирор нарса "
-    "ташвишлантирса, шифокорингизга, шошилинч ҳолатда эса 103 га қўнғироқ қилинг.",
 }
 
 

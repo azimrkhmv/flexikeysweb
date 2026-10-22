@@ -84,19 +84,20 @@ def test_after_signup_the_rest_opens(client: TestClient) -> None:
     assert (me["needsSignup"], me["name"], me["district"]) == (False, "Dilnoza", "Chilonzor")
     assert me["consentVersion"] == "2026-09-v1"
 
-    r = client.patch(f"{API}/me", headers=auth, json={"lang": "uz_cyrl", "district": "Yunusobod"})
+    r = client.patch(f"{API}/me", headers=auth, json={"lang": "ru", "district": "Yunusobod"})
     assert r.status_code == 200
-    assert (r.json()["lang"], r.json()["district"]) == ("uz_cyrl", "Yunusobod")
+    assert (r.json()["lang"], r.json()["district"]) == ("ru", "Yunusobod")
+    assert client.patch(f"{API}/me", headers=auth, json={"lang": "uz_cyrl"}).status_code == 422  # FA3: no Cyrillic
 
 
-def test_consent_text_in_all_4_languages(client: TestClient) -> None:
+def test_consent_text_in_all_3_languages(client: TestClient) -> None:
     texts = set()
     for lang in Lang:
         body = client.get(f"{API}/consents/basic", params={"lang": lang.value}).json()
         assert body["version"] == "2026-09-v1"
         assert body["text"] and body["detail"]
         texts.add(body["text"])
-    assert len(texts) == 4
+    assert len(texts) == 3
 
 
 def test_district_list_matches_the_website() -> None:

@@ -43,7 +43,6 @@ MAX_OPEN = 5  # open invites and shares per child
 # through the provider. The invite waits for that number, so signing in is all the therapist does.
 INVITE_SMS = {
     Lang.uz: "FlexiKeys: sizni bolaning terapevti sifatida taklif qilishdi. Shu raqam bilan kiring: {url}",
-    Lang.uz_cyrl: "FlexiKeys: сизни боланинг терапевти сифатида таклиф қилишди. Шу рақам билан киринг: {url}",
     Lang.ru: "FlexiKeys: вас пригласили как терапевта ребёнка. Войдите с этим номером: {url}",  # noqa: RUF001
     Lang.en: "FlexiKeys: a family invites you as their child's therapist. Sign in with this number: {url}",
 }

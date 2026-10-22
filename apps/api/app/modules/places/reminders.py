@@ -20,7 +20,6 @@ BY_SMS = False  # G10: no SMS; the mobile app sends these once it exists
 
 TEXT = {
     Lang.uz: ("FlexiKeys: ertaga {time} — {place}", "FlexiKeys: bugun {time} — {place}"),
-    Lang.uz_cyrl: ("FlexiKeys: эртага {time} — {place}", "FlexiKeys: бугун {time} — {place}"),
     Lang.ru: ("FlexiKeys: завтра в {time} — {place}", "FlexiKeys: сегодня в {time} — {place}"),
     Lang.en: ("FlexiKeys: tomorrow at {time} — {place}", "FlexiKeys: today at {time} — {place}"),
 }

@@ -32,7 +32,7 @@ def test_the_week_of_videos_with_7_day_links(client: TestClient, approved_putty:
     assert (len(got) == 1) == bool(later)
 
     move_start(client, child, days[0])  # today is a putty day
-    (video,) = client.get(f"{API}/children/{child}/videos", headers=owner, params={"lang": "uz_cyrl"}).json()
+    (video,) = client.get(f"{API}/children/{child}/videos", headers=owner, params={"lang": "uz"}).json()
     assert (video["exerciseId"], video["lang"]) == ("putty_squeeze", "uz")
     assert parse_qs(urlparse(video["url"]).query)["X-Amz-Expires"] == [str(7 * 24 * 3600)]
     expires = datetime.fromisoformat(video["expiresAt"])

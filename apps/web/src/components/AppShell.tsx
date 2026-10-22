@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Bell, LogOut, type LucideIcon } from "lucide-react";
 import { api, sel, useDb } from "@/lib/api";
-import { useT, useUiLang } from "@/lib/i18n";
+import { useT, useLang } from "@/lib/i18n";
 import { useMounted } from "@/lib/store";
 import { useDismiss } from "@/lib/useDismiss";
 import type { Role, User } from "@/lib/types";
@@ -62,7 +62,7 @@ export function AppShell({ role, nav, children }: { role: Role | Role[]; nav: Na
 
 function Shell({ me, nav, children }: { me: User; nav: NavItem[]; children: ReactNode }) {
   const t = useT();
-  const [lang] = useUiLang();
+  const [lang] = useLang();
   // The language picked on this device is the user's preference: keep the account in sync (PATCH /users/me).
   useEffect(() => {
     if (me.uiLang !== lang) api.updateMe({ uiLang: lang }).catch(() => {});

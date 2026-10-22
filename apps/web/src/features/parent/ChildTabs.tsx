@@ -7,7 +7,7 @@ import { Bars, Button, Card, Chip, Empty, Field, Input, Modal, Select, Stat, Tog
 import { AAC_CATEGORIES } from "@/content/aac";
 import { LEVELS } from "@/content/levels";
 import { api, sel, useDb } from "@/lib/api";
-import { baseLang, LANGS, useLang, useT, type Lang } from "@/lib/i18n";
+import { LANGS, useLang, useT, type Lang } from "@/lib/i18n";
 import type { AccessMode, Child, ConsentScope } from "@/lib/types";
 import { fmtDate } from "@/lib/format";
 import { hasVoice, subscribeVoices } from "@/lib/audio";
@@ -624,7 +624,7 @@ function StoredCard({ child }: { child: Child }) {
   const delChat = useAction(api.deleteChat);
   const videos = [
     ...sel.movementClips(db, child.id).map((id, i) => ({ id, label: t("parent.stored.movementVideo", { n: i + 1 }) })),
-    ...sel.feedbackClips(db, child.id).map((c) => ({ id: c.id, label: t("parent.stored.exerciseVideo", { name: sel.video(db, c.exerciseId)?.title[baseLang(lang)] ?? c.exerciseId }) })),
+    ...sel.feedbackClips(db, child.id).map((c) => ({ id: c.id, label: t("parent.stored.exerciseVideo", { name: sel.video(db, c.exerciseId)?.title[lang] ?? c.exerciseId }) })),
   ];
   const chats = sel.chats(db, child.id);
   const error = delClip.error ?? delChat.error;
