@@ -875,6 +875,9 @@ the database fields never shift.
   - Done when: a DCD child's chat does not call the child's condition cerebral palsy
 - [ ] **Azim** — `FA8` Home Kit optional: a family without the kit gets exercises with household things
   - Done when: a plan for a family without the kit has no kit-only tool
+  - BLOCKED (2026-10-22): 21 of the 33 exercises need a kit tool, so without the kit a plan has only the other 12 until
+    the household exercise library exists (the CEO's 109 activity cards need videos, C-tasks). Waiting for Azim: switch
+    now (smaller plans for families without a kit) or after the household library
 - [ ] **Azim** — `Q14` Ask the founders 4 follow-ups to their answers of 22 Oct
   - 1. "Therapist approval is Pro only" and "the therapist approves every plan before the parent sees it": which one? Does a Free family see its plan without a therapist?
   - 2. What is the "limited plan" (Free, delay or not sure, ages outside 3–12)? For example: shorter, lying and sitting only, no balance and no hard exercise
