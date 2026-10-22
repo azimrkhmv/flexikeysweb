@@ -90,6 +90,7 @@ Every task must keep these. They come from the spec.
 | Exercise videos | Made with Higgsfield from one prompt per exercise, all in one fixed style. No child's name in a video. One video per exercise per language |
 | AI model for the assistant | Chosen by our own blind test of several providers. No provider is fixed in advance |
 | Uzbek voice | An AI voice, chosen by a listening test |
+| Parent questions | The CEO's "FlexiKeys Parent Intake Questionnaire" (16 Oct 2026, therapist-reviewed; file in the repo root, not in git) replaces P1–P41 (Azim, 2026-10-22). The 9 open points in the CTO package review stay open until the CEO answers; the build keeps them easy to change |
 | Records of each try in a game | Sent to the server and deleted after 90 days |
 | Old features (teachers, classes, email sign-in) | Deleted (Q7, task B45). Not part of the new server |
 | Hosting | Contabo (Q4). A lawyer must still confirm before the pilot that children's health data may be stored in Germany (G7) |
@@ -760,6 +761,38 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 
 ---
 
+### M8 — New parent questionnaire (Azim's priority, 2026-10-22)
+
+*After this: a parent answers the CEO's 16 Oct questionnaire, and the plan, games and assistant still work from it.*
+Source: `FlexiKeys Parent Intake Questionnaire.pdf` (174 parent questions, L1–L9 for the therapist, display rules
+R1–R19, red flags). Same IDs as the CTO package (`dataset/cto/`, checked: all 183 match). Keep the question numbers:
+the database fields never shift.
+
+- [ ] **Azim** — `IQ1` The questionnaire as data: every question, answer option, required mark, section and module, and the display rules R1–R19 and follow-ups written as rules the website and the server both read
+  - Done when: a shared case file proves the website and the server show the same questions for at least 8 sample children (one-sided CP walking, CP GMFCS V, Down syndrome not sitting, autism only, DCD, delay, two diagnoses, under 4); every unclear rule is listed under the task for the therapist
+  - Needs: —
+- [ ] **Azim** — `IQ2` Server: save and check answers to the new questions (new kinds: number, body map, picture choice, milestone checklist, scale, time, file), health answers encrypted, "finished" by the new display rules; a round remembers which questionnaire it used, so old rounds stay readable
+  - Done when: a round of the new questionnaire can be saved, continued and finished for each sample child; an old P-round still opens
+  - Needs: IQ1
+- [ ] **Azim** — `IQ3` Bridge: turn new answers into what the plan, the skill model and the assistant already use (movement level, hand level, restrictions, goals, daily minutes, start levels), and add the questionnaire's red flags (lost skill, recent surgery or Botox, seizures still happening, choking, weak bones, shunt, pain, Down syndrome neck check, heart)
+  - Done when: tests prove "not sure" and missing answers give the cautious choice, every red flag holds or removes what it says, and a plan is made from a new round
+  - Needs: IQ2
+- [ ] **Azim** — `IQ4` Website: the questions screens for the new questionnaire (sections, modules, follow-ups, new answer kinds; pictures shown as text cards until IQ7)
+  - Done when: each sample child's questions can be answered in the browser, saved, continued later and finished into a plan, in the demo and against the server
+  - Needs: IQ1, IQ2, IQ3
+- [ ] **Azim** — `IQ5` Uzbek (Latin and Cyrillic) and Russian text for every new question and option, marked for the native-speaker check (B44)
+  - Done when: no new question shows English in another language
+  - Needs: IQ1
+- [ ] **Azim** — `IQ6` Therapist assessment L1–L9 in the therapist dashboard; L2 overrides the parent's movement level and L9 the restrictions (rule 4)
+  - Done when: a therapist's L2 and L9 change the plan; scores (L3 percentages) are never shown to the parent (rule 1)
+  - Needs: IQ3
+- [ ] **Azim** — `IQ7` Pictures for C10 (GMFCS), D1 (MACS/Mini-MACS), G2 (CFCS), C13, CP2 and the body maps
+  - Done when: each picture question shows drawings approved by the physio
+  - Needs: Q13 (permissions), drawings from the physio and a designer
+- [ ] **Azim** — `IQ8` Switch: new parents get the new questionnaire; consents (section K), monthly re-check and baseline videos follow the CEO's answers
+  - Done when: the old P1–P41 screens are no longer shown to new families
+  - Needs: IQ4, IQ5, IQ6, the CEO's answers to the review's 9 points
+
 ## 6. Ask and collect
 
 These are not programming. The named developer asks the right person and writes the answer **in this file**
@@ -788,6 +821,8 @@ These are not programming. The named developer asks the right person and writes 
   - Needed for: planning only
 - [ ] **Azim** — `Q11` Ask the founders and the lawyer (with G7): does the assistant need its own consent before a family's questions go to an AI company abroad? The spec's consents (§4) have none, so the server has none; the website's "AI help" switch only works in the demo
   - Needed for: F5
+- [ ] **Azim** — `Q13` Ask CanChild (GMFCS, CFCS) and the MACS / Mini-MACS owners for permission to show picture versions in the app; ask the centre about GMFM, SATCo and the А–Р motor skills sheet (the questionnaire's own open items)
+  - Needed for: IQ7
 - [ ] **Azim** — `Q12` Ask the founders: may AI choose each child's plan, only from the approved exercise videos and FlexiKeys' fixed set of games, after the rules removed everything unsafe (A4.6)? The spec (§13) says the plan comes from fixed rules, "not from an AI guessing". Azim's direction (2026-10-20): yes. Write the answer in section 3
   - Needed for: A4.6
 - [x] **Azim** — `Q10` Ask Shoxjahon once whether the `web-backend` server branch exists anywhere. If it is not found in a few days, stop looking
