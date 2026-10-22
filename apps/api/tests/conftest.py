@@ -19,7 +19,8 @@ os.environ.update(
     S3_BUCKET="flexikeys-test",
     JWT_SECRET="test-secret-at-least-32-bytes-long!!",
     HEALTH_KEYS="rns5GjXuzrOlYZEsm_Rpxq6AYW-NsEDRLg9XzFxbZSQ=",
-    RESEARCH_PATH="",  # the real knowledge base never; tests/test_assistant_research.py brings a made-up one
+    RESEARCH_PATH="",
+    INTAKE_QUESTIONNAIRE="p41",  # most tests answer P1-P41; the new questionnaire's tests switch to it  # the real knowledge base never; tests/test_assistant_research.py brings a made-up one
 )
 
 from alembic import command  # noqa: E402

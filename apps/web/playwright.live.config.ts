@@ -1,7 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
 
 // Live-mode E2E: the app built with NEXT_PUBLIC_API_MODE=live against the real server (apps/api: `docker compose up
-// -d db redis minio`, then `uv run uvicorn app.main:app --port 8000`). Run: npm run e2e:live
+// -d db redis minio`, then `INTAKE_QUESTIONNAIRE=p41 uv run uvicorn app.main:app --port 8000`; most tests answer P1–P41,
+// e2e-live/questionnaire.e2e.ts needs the default set instead). Run: npm run e2e:live
 const PORT = 3200;
 
 export default defineConfig({

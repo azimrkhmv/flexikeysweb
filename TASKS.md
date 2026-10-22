@@ -823,9 +823,18 @@ the database fields never shift.
 - [ ] **Azim** — `IQ7` Pictures for C10 (GMFCS), D1 (MACS/Mini-MACS), G2 (CFCS), C13, CP2 and the body maps
   - Done when: each picture question shows drawings approved by the physio
   - Needs: Q13 (permissions), drawings from the physio and a designer
-- [ ] **Azim** — `IQ8` Switch: new parents get the new questionnaire; consents (section K), monthly re-check and baseline videos follow the CEO's answers
+- [x] **Azim** — `IQ8` Switch: new parents get the new questionnaire; consents (section K), monthly re-check and baseline videos follow the CEO's answers
   - Done when: the old P1–P41 screens are no longer shown to new families
   - Needs: IQ4, IQ5, IQ6, the CEO's answers to the review's 9 points
+  - Note (2026-10-22): `INTAKE_QUESTIONNAIRE` now defaults to `2026-10-16`; a round started on P1–P41 keeps it, and
+    the next round (re-check) asks the new set with the answers it still has. The older tests pin `p41` (server
+    tests' conftest, the demo tests' build, the live CI server). Section K moved to IQ9; the monthly re-check is FA4;
+    the five consents of section K go with the lawyer's answers (B57)
+- [ ] **Azim** — `IQ9` Section K baseline videos: the 11 video tasks with the recording rules, only the tasks the child
+  can do (from C and D), saved as movement clips with the movement-video consent; task 11 (tapping targets) is
+  recorded by the app
+  - Done when: a parent films the tasks the questions say the child can do, and the therapist sees them
+  - Needs: the physio's rule for which task shows after which C and D answers; Q14 (what the monthly re-check asks)
 
 ### M9 — Founders' answers of 22 Oct (Azim, 2026-10-22)
 

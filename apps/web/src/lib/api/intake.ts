@@ -33,7 +33,7 @@ export function planInput(db: DB, childId: string, round: number) {
 export const intakeApi = {
   /** The question set a new child's first round asks: "p41" or the CEO's questionnaire's date (IQ4). */
   async intakeQuestionnaire() {
-    return process.env.NEXT_PUBLIC_QUESTIONNAIRE ?? "p41";
+    return process.env.NEXT_PUBLIC_QUESTIONNAIRE ?? "2026-10-16"; // the CEO's questionnaire since IQ8
   },
 
   /** POST /children — from intake step 1 (P1–P5, P8; or A1–A3 of the CEO's questionnaire). Basic consent was given at sign-up. */
@@ -156,11 +156,14 @@ export const intakeApi = {
     requireChildAccess(childId, FAMILY);
     const last = sel.intakeRound(read(), childId);
     const round = (last?.round ?? 0) + 1;
+    // Same as the server: a new round asks the set in use now, with last time's answers to the questions it still has.
+    const questionnaire = await intakeApi.intakeQuestionnaire();
     const prev = last ? sel.intakeAnswers(read(), childId, last.round) : {};
+    const kept = (last?.questionnaire ?? "p41") === questionnaire ? prev : Object.fromEntries(Object.entries(prev).filter(([q]) => q in Q_BY_ID));
     write((db) => {
-      db.intakeRounds.push({ childId, round, questionnaire: last?.questionnaire, startedAt: iso() });
+      db.intakeRounds.push({ childId, round, questionnaire, startedAt: iso() });
     });
-    await intakeApi.saveAnswers(childId, round, prev);
+    await intakeApi.saveAnswers(childId, round, kept);
     return round;
   },
 

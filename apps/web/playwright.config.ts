@@ -23,6 +23,7 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
     timeout: 240_000,
     // The real site address, so canonical links are the same on every machine (a local .env.local may differ).
-    env: { NEXT_TELEMETRY_DISABLED: "1", NEXT_PUBLIC_SITE_URL: "https://flexikeys.uz" },
+    // Most tests answer P1–P41; e2e/questionnaire.e2e.ts opens the CEO's questionnaire with ?q=2026-10-16.
+    env: { NEXT_TELEMETRY_DISABLED: "1", NEXT_PUBLIC_SITE_URL: "https://flexikeys.uz", NEXT_PUBLIC_QUESTIONNAIRE: "p41" },
   },
 });
