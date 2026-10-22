@@ -5,3 +5,8 @@ out/
 .env*
 !.env.example
 *.tsbuildinfo
+
+# Private company documents: kept outside the repo (~/code/flexikeys-docs, ~/code/flexikeys-dataset), never committed
+/dataset/
+/*.pdf
+/*.xlsx

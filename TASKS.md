@@ -901,6 +901,8 @@ These are not programming. The named developer asks the right person and writes 
   - For now (2026-10-19, Azim): build with placeholder data, clearly marked as test data and kept off production; the real data replaces it
   - Needed for: B35, B36
 - [ ] **Azim** — `G5` Get the game catalogue (3 → 20 games) and the onboarding assessment document, both named as sources in the spec
+  - Game catalogue received (Azim, 2026-10-22): the CEO's `4_FlexiKeys_Game_Library.html` (23 games + My Voice), kept
+    outside the repo in `~/code/flexikeys-docs/cto-package/`. Still to get: the onboarding assessment document
   - Needed for: B16
 - [x] **Azim** — `G8` Decide: does the parent's own recorded voice on a My Voice card need its own consent? The website asks for a "voice recording" consent; the new server has no such consent yet, so in live mode cards have photos but no recorded voice
   - Answer (2026-10-19): yes, its own consent (the website's "voice recording" consent). Work: A8.7
