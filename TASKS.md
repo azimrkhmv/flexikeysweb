@@ -806,9 +806,13 @@ the database fields never shift.
     rollator, AFO); "hips" on the body maps; AU7 "meltdowns" (uz); I1 occupational therapy ("Эрготерапия"); "therapist"
     is «специалист» in Russian («терапевт» is a GP); G7 options are in the child's voice in Uzbek; I6 amounts use
     "500 000" and soʻm/сум; L5 keeps the source's "А–Р"
-- [ ] **Azim** — `IQ6` Therapist assessment L1–L9 in the therapist dashboard; L2 overrides the parent's movement level and L9 the restrictions (rule 4)
+- [x] **Azim** — `IQ6` Therapist assessment L1–L9 in the therapist dashboard; L2 overrides the parent's movement level and L9 the restrictions (rule 4)
   - Done when: a therapist's L2 and L9 change the plan; scores (L3 percentages) are never shown to the parent (rule 1)
   - Needs: IQ3
+  - Note: L2 is the form's T2 (GMFCS) and L9 is T6 (restrictions, now with "no hard exercise" for L9's maximum
+    effort); the rest of section L is the form's "L" answer, therapists only. A T6 answer ends the questionnaire's
+    red-flag hold and its restrictions are the ones used. L9's massage areas are only stored: the plan has no
+    massage yet (Q: founders' decision on massage)
 - [ ] **Azim** — `IQ7` Pictures for C10 (GMFCS), D1 (MACS/Mini-MACS), G2 (CFCS), C13, CP2 and the body maps
   - Done when: each picture question shows drawings approved by the physio
   - Needs: Q13 (permissions), drawings from the physio and a designer

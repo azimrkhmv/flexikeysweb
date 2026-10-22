@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { planFacts } from "@/lib/roadmap";
 import type { QAnswers } from "./questionnaire";
 import { pView } from "./questionnaireBridge";
+import { replaces, therapistInput } from "./therapist";
 
 // IQ4: the website reads the CEO's questionnaire as the server does (apps/api/app/modules/intake/bridge.py).
 // bridge_cases.json (here and a copy in apps/api/tests) makes the server prove the same. Regenerate with
@@ -59,5 +60,14 @@ describe("questionnaire bridge (IQ4)", () => {
     expect(facts("lost a skill, seizures now").exercisesAllowed).toBe(false);
     expect(facts("implant").restrictions).toContain("prone");
     expect([...facts("recent hip surgery").surgery].sort()).toEqual(["legs", "trunk"]);
+  });
+
+  it("a therapist's restrictions (T6, the questionnaire's L9) end the hold and are the ones used (IQ6)", () => {
+    const t6 = { T6: { items: ["high_intensity"], text: "" } };
+    const answers = { ...pView(CASES.find((c) => c.name === "implant")!.answers, TODAY), _hold: ["lost_skill"], ...replaces(t6, true) };
+    const f = planFacts({ childId: "c", round: 1, birthDate: "2019-05-01", startDate: TODAY, lang: "en", healthConsent: true, answers, therapist: therapistInput([t6], true) });
+    expect(f.exercisesAllowed).toBe(true);
+    expect(f.restrictions).toContain("high_intensity");
+    expect(f.restrictions).not.toContain("prone"); // the implant's red flag: the therapist decided
   });
 });

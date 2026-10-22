@@ -152,7 +152,7 @@ export function QuestionnaireWizard({ childId: initialChild, version }: { childI
 type SetAnswer = (id: string, v: QAnswer) => void;
 
 /** One question of any kind. "Not sure" is stored as null (spec §5); an optional question has no "Not sure". */
-function Question({ q, answers, set, childId }: { q: QQuestion; answers: QAnswers; set: SetAnswer; childId: string | null }) {
+export function Question({ q, answers, set, childId }: { q: QQuestion; answers: QAnswers; set: SetAnswer; childId: string | null }) {
   const t = useT();
   const [uiLang] = useUiLang();
   const v = answers[q.id];

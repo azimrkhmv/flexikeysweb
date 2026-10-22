@@ -108,7 +108,9 @@ def plan_of(client: TestClient, child: str) -> Any:
     import uuid
 
     async def go(db: Any) -> Any:
-        return await db.scalar(select(Plan).where(Plan.child_id == uuid.UUID(child)))
+        return await db.scalar(
+            select(Plan).where(Plan.child_id == uuid.UUID(child)).order_by(Plan.created_at.desc())
+        )  # the newest
 
     return run(client, go)
 

@@ -7,11 +7,14 @@ import {
   CP_PARTS, CP_TYPES, FORM_IDS, GOALS, LEVELS, MAX_GOALS, MUST_NOT, PROFESSIONS, UPDATES,
   missing, requiredFor, type FormId, type Level, type Profession, type TherapistAnswers,
 } from "@/content/therapist";
+import { Q_BY_ID, visible, type QAnswer } from "@/content/questionnaire";
+import { Question } from "@/features/intake/Questionnaire";
 import { api, sel } from "@/lib/api";
 import { baseLang, useLang, useT } from "@/lib/i18n";
 
 // The therapist form (spec §6, B23, B25). T1 is the therapist's profile; T2–T11 are about one child, and which ones
-// are required follows the profession. T9 (notes on clips) are the replies in Clips.tsx.
+// are required follows the profession. T9 (notes on clips) are the replies in Clips.tsx. "L" is section L of the CEO's
+// questionnaire (IQ6): its L2 is T2 and its L9 is T6, so they are not asked twice.
 
 const ROMAN = ["I", "II", "III", "IV", "V"];
 
@@ -145,6 +148,13 @@ export function TherapistForm({ childId }: { childId: string }) {
   const choice = (ex: string) => (t8.assign.includes(ex) ? "assign" : t8.exclude.includes(ex) ? "exclude" : "");
   const goalCount = t7.goals.length + t7.own.filter((g) => g.trim()).length;
   const toggle = (list: string[], v: string, on: boolean) => (on ? [...list, v] : list.filter((x) => x !== v));
+  const sectionL = visible(a.L ?? {}, new Date().toISOString().slice(0, 10), "therapist").filter((id) => id !== "L2" && id !== "L9");
+  const setL = (id: string, v: QAnswer) => {
+    const L = { ...a.L };
+    if (v === undefined || v === null || v === "" || (Array.isArray(v) && !v.length)) delete L[id];
+    else L[id] = v;
+    set({ L: Object.keys(L).length ? L : undefined });
+  };
 
   return (
     <Card>
@@ -213,6 +223,14 @@ export function TherapistForm({ childId }: { childId: string }) {
           <Field label={t("tform.T6.text")}>
             <Textarea maxLength={1000} disabled={t6.items.includes("nothing")} value={t6.text} onChange={(e) => set({ T6: { ...t6, text: e.target.value } })} />
           </Field>
+        </Q>
+        <Q {...q("L")}>
+          <p className="text-xs text-muted">{t("tform.L.hint")}</p>
+          {sectionL.map((id) => (
+            <div key={id} id={`q-${id}`}>
+              <Question q={Q_BY_ID[id]} answers={a.L ?? {}} set={setL} childId={childId} />
+            </div>
+          ))}
         </Q>
         <Q {...q("T7")}>
           <p className="text-xs text-muted">{t("tform.T7.hint", { n: MAX_GOALS })}</p>

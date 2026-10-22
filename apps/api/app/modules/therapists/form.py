@@ -8,6 +8,11 @@ the clips (A8.3).
 
 A change to T2, T5, T6, T7 or T8 rebuilds the plan at once (A8.5).
 
+IQ6: "L" holds the therapist's assessment of the CEO's questionnaire (section L: date, GMFM scores, trunk control,
+goals, aids, hand function, massage areas). Its L2 (GMFCS) is T2 and its L9 (restrictions) is T6. A T6 answer also
+replaces the questionnaire's red flags: the hold ("until a therapist has looked") ends and the therapist's restrictions
+are the ones used (rule 4). The scores are for therapists only and never reach the parent (rule 1).
+
 An answer stays after the share stops: a restriction a therapist gave must not quietly disappear (rule 2).
 """
 
@@ -30,6 +35,7 @@ from app.modules.auth.session import CurrentUser
 from app.modules.children.consents import ConsentKind, has_consent, require_consent
 from app.modules.children.models import Child
 from app.modules.children.router import get_visible_child
+from app.modules.intake import questionnaire
 from app.modules.intake.bridge import rules_view
 from app.modules.intake.models import IntakeAnswer, IntakeRound
 from app.modules.intake.rules import QUESTIONS
@@ -66,8 +72,15 @@ class CpType(ApiModel):  # T5
     parts: Annotated[str, one_of("P11")] | None = None
 
 
-class MustNot(ApiModel):  # T6: a checklist and text, or "nothing"
-    items: list[Annotated[str, one_of("P14")]] = Field(default=[], max_length=6)
+def must_not(v: str) -> str:
+    """P14's options, and "high_intensity" (L9's "maximum effort": no hard exercise)."""
+    if v not in (*(QUESTIONS["P14"].options or ()), "high_intensity"):
+        raise ValueError("not a restriction")
+    return v
+
+
+class MustNot(ApiModel):  # T6 (L9): a checklist and text, or "nothing"
+    items: list[Annotated[str, AfterValidator(must_not)]] = Field(default=[], max_length=7)
     text: str = Field(default="", max_length=1000)
 
     @model_validator(mode="after")
@@ -101,6 +114,21 @@ class Exercises(ApiModel):  # T8: exercise ids from the library
         return self
 
 
+SECTION_L = [
+    q for q, v in questionnaire.QUESTIONS.items() if v["audience"] == "therapist" and q not in ("L2", "L9")
+]  # L2 is T2, L9 is T6
+
+
+def section_l(v: dict[str, Any]) -> dict[str, Any]:
+    """The therapist's section L answers, each checked like a questionnaire answer."""
+    if not v:
+        raise ValueError("empty")
+    for q, answer in v.items():
+        if q not in SECTION_L or questionnaire.problem_with(questionnaire.QUESTIONS[q], answer):
+            raise ValueError(f"not an answer to {q}")
+    return v
+
+
 FORM: dict[str, TypeAdapter[Any]] = {
     "T2": TypeAdapter(Level),  # gross motor (GMFCS)
     "T3": TypeAdapter(Level),  # hand use (MACS)
@@ -111,8 +139,9 @@ FORM: dict[str, TypeAdapter[Any]] = {
     "T8": TypeAdapter(Exercises),
     "T10": TypeAdapter(Literal["weekly", "every_2_weeks", "monthly"]),  # how often progress updates come
     "T11": TypeAdapter(Text),  # a message shown on the parent dashboard
+    "L": TypeAdapter(Annotated[dict[str, Any], AfterValidator(section_l)]),  # IQ6: section L of the questionnaire
 }
-HEALTH = {"T2", "T3", "T4", "T5", "T6"}  # need the child's health consent, stored encrypted
+HEALTH = {"T2", "T3", "T4", "T5", "T6", "L"}  # need the child's health consent, stored encrypted
 
 
 def required(profession: Profession) -> list[str]:
@@ -133,7 +162,7 @@ def replaces(question: str, value: Any) -> dict[str, Any]:
         return {p: value[k] for p, k in (("P10", "type"), ("P11", "parts")) if value[k] is not None}
     if question == "T6":
         items = value["items"] + (["other"] if value["text"].strip() and "other" not in value["items"] else [])
-        return {"P14": items}
+        return {"P14": items, "_hold": [], "_restrictions": []}  # the questionnaire's red flags: the therapist decides
     if question == "T7" and value["goals"]:
         return {"P33": value["goals"]}
     return {}
@@ -187,7 +216,9 @@ async def answers_in_use(
     answers, by = dict(parent), {}
     for question, value, who in await _therapist_rows(db, child_id, REPLACING, health):
         for p, v in replaces(question, value).items():
-            answers[p], by[p] = v, who
+            answers[p] = v
+            if not p.startswith("_"):  # the red flags are not parent questions
+                by[p] = who
     return answers, by
 
 
@@ -201,7 +232,9 @@ async def therapist_input(db: AsyncSession, child_id: uuid.UUID, health: bool) -
     newest = {q: v for q, v, _ in rows}  # oldest first, so the newest stays
     exclude = {e for q, v, _ in rows if q == "T8" for e in v["exclude"]}
     return TherapistInput(
-        restrictions=frozenset(r for q, v, _ in rows if q == "T6" for r in v["items"] if r in P14_TAGS),
+        restrictions=frozenset(
+            r for q, v, _ in rows if q == "T6" for r in v["items"] if r in (*P14_TAGS, "high_intensity")
+        ),
         goals=tuple(newest["T7"]["goals"]) if "T7" in newest else (),
         assign=frozenset(e for q, v, _ in rows if q == "T8" for e in v["assign"]) - exclude,
         exclude=frozenset(exclude),

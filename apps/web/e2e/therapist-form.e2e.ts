@@ -61,6 +61,8 @@ test("the parent sees the therapist's updates and message", async ({ page }, inf
   await page.getByRole("checkbox", { name: "No jumping" }).check();
   await page.getByRole("checkbox", { name: "Sit better" }).check();
   await page.getByLabel("Message to the parent").fill("Ali did well this week.");
+  await page.getByLabel(/GMFM total score/).fill("47.5"); // IQ6: section L, for therapists only
+  await page.getByRole("group", { name: /SATCo\), static/ }).getByText("Mid chest", { exact: true }).click();
   await form.getByRole("button", { name: "Save" }).click();
   await expect(page.getByText("Saved. The plan was updated.")).toBeVisible(); // Ali has a plan: a new level rebuilds it
 
@@ -71,6 +73,8 @@ test("the parent sees the therapist's updates and message", async ({ page }, inf
   await expect(card.getByText("Updated by Dilnoza Karimova, Neurologist").first()).toBeVisible();
   await expect(card.getByText("Walks with a walker or with hands held")).toBeVisible();
   await expect(card.getByText("Ali did well this week.")).toBeVisible();
+  await expect(page.getByText("47.5")).toHaveCount(0); // the GMFM score never reaches the parent (rule 1)
+  await expect(page.getByText("GMFM")).toHaveCount(0);
 });
 
 // B25: an exercise the therapist excludes never comes back into the plan.

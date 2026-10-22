@@ -18,7 +18,7 @@ describe("therapist form (spec §6)", () => {
 describe("a therapist's answers replace the parent's", () => {
   const a = { T2: 3 as const, T5: { type: "spastic", parts: null }, T6: { items: ["jumping"], text: "No stairs" }, T7: { goals: ["walk"], own: [] }, T11: "Hi" };
   it("maps T2, T5, T6 and T7 to the parent questions", () => {
-    expect(replaces(a, true)).toEqual({ P12: "walker", P10: "spastic", P14: ["jumping", "other"], P33: ["walk"] });
+    expect(replaces(a, true)).toEqual({ P12: "walker", P10: "spastic", P14: ["jumping", "other"], _hold: [], _restrictions: [], P33: ["walk"] }); // T6 also ends the red flags (IQ6)
   });
   it("leaves out health answers without the health consent", () => {
     expect(replaces(a, false)).toEqual({ P33: ["walk"] });
