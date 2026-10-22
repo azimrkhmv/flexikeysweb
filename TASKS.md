@@ -91,6 +91,7 @@ Every task must keep these. They come from the spec.
 | AI model for the assistant | Chosen by our own blind test of several providers. No provider is fixed in advance |
 | Uzbek voice | An AI voice, chosen by a listening test |
 | Parent questions | The CEO's "FlexiKeys Parent Intake Questionnaire" (16 Oct 2026, therapist-reviewed; file in the repo root, not in git) replaces P1–P41 (Azim, 2026-10-22). The 9 open points in the CTO package review stay open until the CEO answers; the build keeps them easy to change |
+| Founders' answers (22 Oct 2026) | Charos's "Answers to the CTO package review" (file kept outside the repo): speech delay joins the diagnosis list; ages 3–12, other ages a limited plan flagged for the therapist; no Uzbek Cyrillic (Uzbek Latin, Russian, English); 12-week plan in 3 steps with a short re-check and video every month; therapist approval is Pro only, Free gets a limited safe-only plan (but also "the therapist approves every plan before the parent sees it": Q14); one soft-3D video per exercise with an ordinary-looking AI-made child; home massage later, not in the first release; Home Kit optional, exercises use household things; AI chooses the plan inside the rules' safe list. Confirmed: the new questionnaire replaces P1–P41; CP and DCD full plan, delay or not sure limited plan, autism games and My Voice, Down syndrome through the therapist. Work: M9 |
 | Records of each try in a game | Sent to the server and deleted after 90 days |
 | Old features (teachers, classes, email sign-in) | Deleted (Q7, task B45). Not part of the new server |
 | Hosting | Contabo (Q4). A lawyer must still confirm before the pilot that children's health data may be stored in Germany (G7) |
@@ -823,6 +824,35 @@ the database fields never shift.
   - Done when: the old P1–P41 screens are no longer shown to new families
   - Needs: IQ4, IQ5, IQ6, the CEO's answers to the review's 9 points
 
+### M9 — Founders' answers of 22 Oct (Azim, 2026-10-22)
+
+- [ ] **Azim** — `FA1` Speech delay in the questionnaire's diagnosis list (B1), with its own plan rule
+  - Done when: a parent can pick it and the plan follows the founders' rule for it
+  - Needs: Q14 (which plan a child with only speech delay gets)
+- [ ] **Azim** — `FA2` Ages 3–12 get the full plan; other ages a limited plan, flagged for the therapist
+  - Done when: a 2-year-old and a 14-year-old get the limited plan and appear on the therapist's list
+  - Needs: Q14 (what the limited plan is)
+- [ ] **Azim** — `FA3` Remove Uzbek Cyrillic: three app languages (Uzbek Latin, Russian, English); families on Cyrillic move to Uzbek Latin
+  - Done when: no screen offers Cyrillic, and a saved Cyrillic choice opens in Uzbek Latin
+- [ ] **Azim** — `FA4` 12-week plan in 3 steps of 4 weeks, a short re-check with a video every month that builds the next step
+  - Done when: a plan shows 3 steps; the monthly re-check opens the next step
+  - Needs: Q14 (Free's share of the 12 weeks; what the re-check asks)
+- [ ] **Azim** — `FA5` The therapist approves the plan before the parent sees it
+  - Done when: a plan waits as "with your therapist" until a therapist approves it; the parent then sees it
+  - Needs: Q14 (every plan, or Pro only)
+- [ ] **Azim** — `FA6` Who can start: delay or not sure gets the limited plan (not only when one side is weaker)
+  - Done when: each launch group gets its plan: CP and DCD full; delay or not sure limited; autism games and My Voice; Down syndrome through the therapist
+  - Needs: Q14 (what the limited plan is)
+- [ ] **Azim** — `FA7` Home massage out of the first release: L9's massage areas stay stored, no massage anywhere a parent sees
+  - Done when: no parent screen or plan mentions massage
+- [ ] **Azim** — `FA8` Home Kit optional: a family without the kit gets exercises with household things
+  - Done when: a plan for a family without the kit has no kit-only tool
+- [ ] **Azim** — `Q14` Ask the founders 4 follow-ups to their answers of 22 Oct
+  - 1. "Therapist approval is Pro only" and "the therapist approves every plan before the parent sees it": which one? Does a Free family see its plan without a therapist?
+  - 2. What is the "limited plan" (Free, delay or not sure, ages outside 3–12)? For example: shorter, lying and sitting only, no balance and no hard exercise
+  - 3. Which plan does a child with only speech delay get: games and My Voice, or the limited plan?
+  - 4. How much of the 12 weeks does Free get (now the first week of 4), and what does the monthly re-check ask?
+
 ## 6. Ask and collect
 
 These are not programming. The named developer asks the right person and writes the answer **in this file**
@@ -853,7 +883,8 @@ These are not programming. The named developer asks the right person and writes 
   - Needed for: F5
 - [ ] **Azim** — `Q13` Ask CanChild (GMFCS, CFCS) and the MACS / Mini-MACS owners for permission to show picture versions in the app; ask the centre about GMFM, SATCo and the А–Р motor skills sheet (the questionnaire's own open items)
   - Needed for: IQ7
-- [ ] **Azim** — `Q12` Ask the founders: may AI choose each child's plan, only from the approved exercise videos and FlexiKeys' fixed set of games, after the rules removed everything unsafe (A4.6)? The spec (§13) says the plan comes from fixed rules, "not from an AI guessing". Azim's direction (2026-10-20): yes. Write the answer in section 3
+- [x] **Azim** — `Q12` Ask the founders: may AI choose each child's plan, only from the approved exercise videos and FlexiKeys' fixed set of games, after the rules removed everything unsafe (A4.6)? The spec (§13) says the plan comes from fixed rules, "not from an AI guessing". Azim's direction (2026-10-20): yes. Write the answer in section 3
+  - Answer (2026-10-22, founders): yes, the AI chooses, only inside the safe list the rules allow
   - Needed for: A4.6
 - [x] **Azim** — `Q10` Ask Shoxjahon once whether the `web-backend` server branch exists anywhere. If it is not found in a few days, stop looking
   - Answer (2026-10-19): dropped. We don't look for the old branch
