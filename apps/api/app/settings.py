@@ -38,6 +38,9 @@ class Settings(BaseSettings):
     ai_model: str = "google/gemini-2.5-flash"  # placeholder until the blind test (E2) picks the model
     free_ai_messages_per_day: int = 20  # per family on Free (spec §12: "about 20"); Pro has no limit
     ai_monthly_limit_usd: float = 50.0  # A9.6: past this the assistant gives fixed answers until next month
+    # A9.8: the knowledge base the assistant answers from (a Markdown file or a folder of them), kept outside the
+    # repository. Empty: no library (tests, computers without the file); production refuses a real AI without it.
+    research_path: str = ""
     intake_repeat_days: int = (
         90  # the questions come back every 3 months (spec)  # TASKS.md section 3: "Both numbers are settings"
     )
@@ -55,6 +58,8 @@ class Settings(BaseSettings):
             return self
         if self.sms_provider == "fake":
             raise ValueError("SMS is simulated: sign-in codes would be shown to anyone. Set a real SMS_PROVIDER.")
+        if self.openrouter_api_key and not self.research_path:
+            raise ValueError("The assistant would answer from the AI's own knowledge. Set RESEARCH_PATH (A9.8).")
         if DEV_HEALTH_KEY in self.health_keys:  # reachable once a real SMS provider exists (after Q6)
             raise ValueError("HEALTH_KEYS holds the public dev key from .env.example; see docs/health-key.md")
         return self

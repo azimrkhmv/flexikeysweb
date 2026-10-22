@@ -41,10 +41,11 @@ class FakeAi:
 
     sent: list[list[dict[str, str]]] = field(default_factory=list)
     answer: str = "This is a pretend answer. The real assistant is not connected here."
+    replies: list[str] = field(default_factory=list)  # given first, one per call, before `answer`
 
     async def chat(self, messages: list[dict[str, str]]) -> AiReply:
         self.sent.append(messages)
-        return AiReply(self.answer, "fake", 0, 0, Decimal(0))
+        return AiReply(self.replies.pop(0) if self.replies else self.answer, "fake", 0, 0, Decimal(0))
 
 
 class OpenRouterAi:

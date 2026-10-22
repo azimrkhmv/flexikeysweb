@@ -582,12 +582,15 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [x] **Azim** — `A9.6` Server: a monthly spending limit for AI
   - Done when: the assistant falls back to fixed answers when the limit is reached
   - Needs: A9.2
-- [ ] **Azim** — `A9.8` Research library: load the open research files, search them, and give the assistant only the matching passages with their source
+- [x] **Azim** — `A9.8` Research library: load the open research files, search them, and give the assistant only the matching passages with their source
   - Done when: an answer names the book or paper it came from; with no matching passage the assistant says it does not know
   - Needs: A9.2, Azim's research files (2026-10-19: Azim gives the files later)
   - Data set (Azim, 2026-10-22): the CEO's knowledge base `1_FlexiKeys_Knowledge_Base.md` (89 entries KB-…, sources
     S1–S61), kept outside the repo in `~/code/flexikeys-dataset/`, never committed. Its entries say "DRAFT: needs the
     physio's sign-off"; the therapist approved the package for now (2026-10-22)
+  - Note: the server reads it from `RESEARCH_PATH` (a file or folder); production refuses a real AI without it, so
+    putting the server live (A13.4) must copy the file to the server, outside git. Massage entries (FA7) and draft
+    exercise cards are left out; entries tagged "not for parents" go to therapists only
 - [x] **Azim** — `B30` Assistant knows the child's plan, finished tasks and restrictions
   - Done when: it never suggests a forbidden exercise
   - Needs: A9.3

@@ -30,3 +30,10 @@ def test_the_server_itself_does_not_start() -> None:
     r = subprocess.run([sys.executable, "-c", "import app.main"], env=env, capture_output=True, text=True)
     assert r.returncode != 0
     assert "SMS is simulated" in r.stderr
+
+
+def test_production_refuses_a_real_ai_without_the_research_library() -> None:
+    """A9.8: the assistant must never answer from the AI's own knowledge."""
+    real = Settings.model_construct(env="prod", sms_provider="eskiz", openrouter_api_key="k", research_path="")  # type: ignore[arg-type]
+    with pytest.raises(ValueError, match="RESEARCH_PATH"):  # reachable once a real SMS provider exists (after Q6)
+        real.safe_in_production()  # type: ignore[operator]

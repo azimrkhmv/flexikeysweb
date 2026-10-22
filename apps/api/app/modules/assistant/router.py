@@ -7,6 +7,7 @@ import re
 import uuid
 from collections import Counter
 from datetime import UTC, datetime, time, timedelta
+from decimal import Decimal
 from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends, Response
@@ -19,6 +20,7 @@ from app.db import get_session
 from app.errors import AppError
 from app.modules.accounts.access import family_role
 from app.modules.accounts.models import Lang, MemberRole, Role, User
+from app.modules.assistant import research
 from app.modules.assistant.ai import Ai, get_ai, over_budget
 from app.modules.assistant.models import AiPurpose, AiUsage, Chat, ChatMessage, Speaker
 from app.modules.assistant.safety import (
@@ -200,17 +202,33 @@ async def ask(
     messages.append({"role": "user", "content": without_child(body.text, child)})
 
     store(Speaker.adult, body.text, topics=topics_of(body.text))
-    reply = await ai.chat(messages)
-    blocked = breaks_restriction(reply.text, restrictions) is not None or names_any(
-        reply.text, (t for title in forbidden.values() for t in title.values())
+    library = research.for_asker(research.library(settings.research_path), therapist)
+    pick, chosen, about_plan = None, list[research.Entry](), False
+    if library:  # A9.8: the AI gets only the matching research passages, and its answer must cite them
+        pick = await ai.chat(research.pick_prompt(library, without_child(body.text, child)))
+        chosen, about_plan = research.picked(pick.text, library)
+        messages[0]["content"] += "\n\n" + research.passages(chosen)
+    reply = await ai.chat(messages) if not library or chosen or about_plan else None
+    calls = [r for r in (pick, reply) if r]
+    blocked = reply is not None and (
+        breaks_restriction(reply.text, restrictions) is not None
+        or names_any(reply.text, (t for title in forbidden.values() for t in title.values()))
     )
-    answer = SAFE_ANSWER[body.lang] if blocked else reply.text
+    if reply is None:
+        answer = research.NO_SOURCE[body.lang]
+    elif blocked:
+        answer = SAFE_ANSWER[body.lang]
+    elif library:
+        answer = research.with_sources(reply.text, chosen, about_plan, body.lang) or research.NO_SOURCE[body.lang]
+    else:
+        answer = reply.text
     store(Speaker.assistant, answer, topics=[RESTRICTED] if blocked else None)
     db.add(
         AiUsage(
             family_id=None if therapist else child.family_id,  # a therapist's question is not the family's
-            user_id=user.id, purpose=AiPurpose.chat, model=reply.model,
-            input_tokens=reply.input_tokens, output_tokens=reply.output_tokens, cost_usd=reply.cost_usd,
+            user_id=user.id, purpose=AiPurpose.chat, model=calls[-1].model,
+            input_tokens=sum(r.input_tokens for r in calls), output_tokens=sum(r.output_tokens for r in calls),
+            cost_usd=sum((r.cost_usd for r in calls), Decimal(0)),
         )
     )  # fmt: skip
     await db.commit()
