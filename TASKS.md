@@ -584,6 +584,9 @@ Milestones are done in order. Inside a milestone, each developer works down thei
 - [ ] **Azim** — `A9.8` Research library: load the open research files, search them, and give the assistant only the matching passages with their source
   - Done when: an answer names the book or paper it came from; with no matching passage the assistant says it does not know
   - Needs: A9.2, Azim's research files (2026-10-19: Azim gives the files later)
+  - Data set (Azim, 2026-10-22): the CEO's knowledge base `1_FlexiKeys_Knowledge_Base.md` (89 entries KB-…, sources
+    S1–S61), kept outside the repo in `~/code/flexikeys-dataset/`, never committed. Its entries say "DRAFT: needs the
+    physio's sign-off"; the therapist approved the package for now (2026-10-22)
 - [x] **Azim** — `B30` Assistant knows the child's plan, finished tasks and restrictions
   - Done when: it never suggests a forbidden exercise
   - Needs: A9.3
