@@ -21,6 +21,7 @@ os.environ.update(
     HEALTH_KEYS="rns5GjXuzrOlYZEsm_Rpxq6AYW-NsEDRLg9XzFxbZSQ=",
     RESEARCH_PATH="",  # the real knowledge base never; tests/test_assistant_research.py brings a made-up one
     INTAKE_QUESTIONNAIRE="p41",  # most tests answer P1-P41; the new questionnaire's tests switch to it
+    AI_PLAN="false",  # tests/test_plan_ai.py switches it on
 )
 
 from alembic import command  # noqa: E402
