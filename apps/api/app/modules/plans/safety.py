@@ -95,7 +95,7 @@ def plan_facts(
     if gmfcs is None and health_consent and isinstance(p12, str):
         gmfcs = P12_GMFCS.get(p12)
 
-    restrictions = set(th.restrictions if th else ())
+    restrictions = set(th.restrictions if th else ()) | set(_list(a.get("_restrictions")))  # IQ3 red flags
     # P14: the listed tags; "Not sure" or unanswered = every listed restriction is present.
     p14 = a.get("P14")
     restrictions.update(P14_TAGS if p14 is None else (r for r in _list(p14) if r in P14_TAGS))
@@ -123,7 +123,7 @@ def plan_facts(
         "hands": hands, "arms": hands, "legs": move, "trunk": move, "head_neck": move, "mouth_face": talk,
     }  # fmt: skip
     return Facts(
-        exercises_allowed=health_consent,
+        exercises_allowed=health_consent and not _list(a.get("_hold")),  # IQ3: a red flag holds every exercise
         gmfcs=gmfcs,
         restrictions=frozenset(restrictions),
         surgery=surgery,

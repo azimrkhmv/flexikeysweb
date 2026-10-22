@@ -783,9 +783,14 @@ the database fields never shift.
 - [x] **Azim** — `IQ2` Server: save and check answers to the new questions (new kinds: number, body map, picture choice, milestone checklist, scale, time, file), health answers encrypted, "finished" by the new display rules; a round remembers which questionnaire it used, so old rounds stay readable
   - Done when: a round of the new questionnaire can be saved, continued and finished for each sample child; an old P-round still opens
   - Needs: IQ1
-- [ ] **Azim** — `IQ3` Bridge: turn new answers into what the plan, the skill model and the assistant already use (movement level, hand level, restrictions, goals, daily minutes, start levels), and add the questionnaire's red flags (lost skill, recent surgery or Botox, seizures still happening, choking, weak bones, shunt, pain, Down syndrome neck check, heart)
+- [x] **Azim** — `IQ3` Bridge: turn new answers into what the plan, the skill model and the assistant already use (movement level, hand level, restrictions, goals, daily minutes, start levels), and add the questionnaire's red flags (lost skill, recent surgery or Botox, seizures still happening, choking, weak bones, shunt, pain, Down syndrome neck check, heart)
   - Done when: tests prove "not sure" and missing answers give the cautious choice, every red flag holds or removes what it says, and a plan is made from a new round
   - Needs: IQ2
+  - For the therapist (how IQ3 reads the answers; `apps/api/app/modules/intake/bridge.py`):
+    1. The questionnaire has no "a doctor said your child must not..." list (P14), so until a therapist sets restrictions (IQ6) every new-questionnaire plan leaves out jumping, tummy-lying, neck-bending and one-leg exercises
+    2. Holds (no exercises, games only, until a therapist looks): lost a skill (C12), surgery or Botox in the last 6 months or with no date, seizures still happening, heart condition, frequent pain with no place marked, autism only (package R21), Down syndrome (package R20)
+    3. Extra limits: Down syndrome neck not checked → no neck-bending or tummy-lying; weak bones, shunt or implant (or not answered) → no hard exercise; shunt or implant → no tummy-lying or neck-bending; one side weaker without a diagnosis → no leg-balance or hard exercise; pain or a broken bone in one place → that body area is left out; choking "sometimes" or more → no mouth exercises
+    4. Without the GMFCS picture (DCD, delay...), the walking and sitting steps (C6, C3) give the movement level; 45+ minutes counts as 30; J9 goals: "Stand" → walk, "Use hands to eat" → eat and hands, "Play on tablet" → understand, "Less pain" has no exercise goal
 - [ ] **Azim** — `IQ4` Website: the questions screens for the new questionnaire (sections, modules, follow-ups, new answer kinds; pictures shown as text cards until IQ7)
   - Done when: each sample child's questions can be answered in the browser, saved, continued later and finished into a plan, in the demo and against the server
   - Needs: IQ1, IQ2, IQ3

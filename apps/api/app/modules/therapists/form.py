@@ -30,6 +30,7 @@ from app.modules.auth.session import CurrentUser
 from app.modules.children.consents import ConsentKind, has_consent, require_consent
 from app.modules.children.models import Child
 from app.modules.children.router import get_visible_child
+from app.modules.intake.bridge import rules_view
 from app.modules.intake.models import IntakeAnswer, IntakeRound
 from app.modules.intake.rules import QUESTIONS
 from app.modules.plans.router import TASHKENT, create_plan
@@ -209,12 +210,15 @@ async def therapist_input(db: AsyncSession, child_id: uuid.UUID, health: bool) -
 
 
 async def _round_answers(db: AsyncSession, round_id: uuid.UUID | None) -> dict[str, Any]:
+    """A round's answers as the rules read them (the CEO's questionnaire through intake/bridge.py, IQ3)."""
     rows = await db.execute(
         select(IntakeAnswer.question_id, IntakeAnswer.value, IntakeAnswer.secret).where(
             IntakeAnswer.round_id == round_id
         )
     )
-    return {q: decrypt_json(secret) if secret else value for q, value, secret in rows}
+    answers = {q: decrypt_json(secret) if secret else value for q, value, secret in rows}
+    questionnaire = await db.scalar(select(IntakeRound.questionnaire).where(IntakeRound.id == round_id))
+    return rules_view(questionnaire or "p41", answers, datetime.now(TASHKENT).date())
 
 
 async def _latest_parent_answers(db: AsyncSession, child_id: uuid.UUID) -> dict[str, Any]:

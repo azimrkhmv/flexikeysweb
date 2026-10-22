@@ -15,6 +15,7 @@ from app.db import get_session
 from app.errors import AppError
 from app.modules.auth.session import CurrentUser
 from app.modules.children.router import get_visible_child
+from app.modules.intake.bridge import rules_view
 from app.modules.intake.models import IntakeAnswer, IntakeRound
 from app.modules.play import skill, tries
 from app.modules.play.models import (
@@ -236,18 +237,21 @@ async def skill_rows(db: AsyncSession, child_id: uuid.UUID) -> dict[SkillArea, S
     round (spec §13, step 1). ponytail: a therapist's answers join here with A8.2 (they count twice)."""
     rows = {s.area: s for s in await db.scalars(select(SkillLevel).where(SkillLevel.child_id == child_id))}
     if len(rows) < len(skill.AREAS):
-        round_id = await db.scalar(
-            select(IntakeRound.id)
+        last = await db.scalar(
+            select(IntakeRound)
             .where(IntakeRound.child_id == child_id, IntakeRound.completed_at.is_not(None))
             .order_by(IntakeRound.number.desc())
             .limit(1)
         )
-        answers = {
+        plain = {
             q: v
             for q, v in await db.execute(
-                select(IntakeAnswer.question_id, IntakeAnswer.value).where(IntakeAnswer.round_id == round_id)
+                select(IntakeAnswer.question_id, IntakeAnswer.value).where(
+                    IntakeAnswer.round_id == (last.id if last else None)
+                )
             )
-        }
+        }  # the ability answers are never health answers, so the plain column has them
+        answers = rules_view(last.questionnaire if last else "p41", plain, datetime.now(TASHKENT).date())
         for area in skill.AREAS:
             if SkillArea(area) not in rows:
                 row = SkillLevel(child_id=child_id, area=SkillArea(area), theta=skill.starting_theta(area, answers))
