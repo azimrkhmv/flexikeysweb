@@ -153,7 +153,7 @@ function firstOpenStep(a: Answers, health: boolean) {
 }
 
 /** Spec step 19 — "The plan is ready". No scores, no percentages. */
-function Ready({ name, plan, minutes, childId }: { name: string; plan: Roadmap; minutes: number; childId: string }) {
+export function Ready({ name, plan, minutes, childId }: { name: string; plan: Roadmap; minutes: number; childId: string }) {
   const t = useT();
   return (
     <div className="mx-auto max-w-2xl text-center">

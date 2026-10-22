@@ -1,8 +1,10 @@
 """IQ3: answers to the CEO's questionnaire are read as the P answers the plan, the skill model and the assistant use;
 "Not sure" or no answer gives the cautious choice, and every red flag holds or removes what it says."""
 
+import json
 from collections.abc import Iterator
 from datetime import date, timedelta
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -144,3 +146,12 @@ def test_the_assistant_avoids_what_the_new_answers_forbid(client: TestClient) ->
         app.dependency_overrides.pop(get_ai)
     told = fake.sent[0][0]["content"]
     assert "jumping" in told and "lying on the tummy" in told  # P14 not asked: every listed restriction
+
+
+BRIDGE_CASES: list[dict[str, Any]] = json.loads((Path(__file__).parent / "bridge_cases.json").read_text("utf-8"))
+
+
+@pytest.mark.parametrize("case", BRIDGE_CASES, ids=[c["name"] for c in BRIDGE_CASES])
+def test_the_server_reads_answers_as_the_website_does(case: dict[str, Any]) -> None:
+    """IQ4: bridge_cases.json is written by apps/web/src/content/questionnaireBridge.test.ts."""
+    assert p_view(case["answers"], date.fromisoformat(case["today"])) == case["p"]

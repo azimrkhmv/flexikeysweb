@@ -382,6 +382,8 @@ export interface IntakeAnswer {
 export interface IntakeRound {
   childId: string;
   round: number;
+  /** "p41" (P1–P41) or the CEO's questionnaire's date (IQ4); missing = "p41". */
+  questionnaire?: string;
   startedAt: string;
   completedAt?: string;
 }

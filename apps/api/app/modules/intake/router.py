@@ -34,6 +34,7 @@ from app.schemas import ApiModel
 from app.settings import settings
 
 router = APIRouter(prefix="/children", tags=["intake"])
+sets = APIRouter(prefix="/intake", tags=["intake"])
 
 
 class AnswersIn(ApiModel):
@@ -49,6 +50,7 @@ class RoundOut(ApiModel):
 
 class RoundSummary(ApiModel):
     number: int
+    questionnaire: str
     started_at: datetime
     completed_at: datetime | None
 
@@ -142,7 +144,12 @@ async def list_rounds(
     """Every round of this child, oldest first. Old rounds are never deleted (the child's history)."""
     await get_visible_child(db, user, child_id)
     rounds = await db.scalars(select(IntakeRound).where(IntakeRound.child_id == child_id).order_by(IntakeRound.number))
-    return [RoundSummary(number=r.number, started_at=r.created_at, completed_at=r.completed_at) for r in rounds]
+    return [
+        RoundSummary(
+            number=r.number, questionnaire=r.questionnaire, started_at=r.created_at, completed_at=r.completed_at
+        )
+        for r in rounds
+    ]
 
 
 @router.post("/{child_id}/intake/{number}/finish")
@@ -263,3 +270,13 @@ async def file_link(
     await get_visible_child(db, user, child_id)
     key = f"children/{child_id}/intake/{uuid.uuid4()}"
     return FileLink(storage_key=key, upload_url=storage.upload_url(key))
+
+
+class QuestionnaireOut(ApiModel):
+    active: str  # the question set a new child's first round asks: "p41" or the CEO's questionnaire's date
+
+
+@sets.get("/questionnaire")
+async def active_questionnaire(_: CurrentUser) -> QuestionnaireOut:
+    """Which questions a parent adding a child is asked (IQ4); a round keeps its own set (RoundOut.questionnaire)."""
+    return QuestionnaireOut(active=settings.intake_questionnaire)

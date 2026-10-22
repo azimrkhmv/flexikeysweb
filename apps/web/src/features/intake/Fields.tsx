@@ -13,10 +13,10 @@ import type { IntakeValue } from "@/lib/types";
 
 type Set = (id: string, v: IntakeValue | undefined) => void;
 
-const chip =
+export const chip =
   "inline-flex min-h-12 cursor-pointer items-center rounded-2xl border border-line px-4 py-2 text-sm font-bold text-ink transition hover:bg-surface-2 has-checked:border-teal has-checked:bg-teal-soft has-focus-visible:ring-4 has-focus-visible:ring-primary-soft";
 
-function Choice({ name, type, checked, onChange, label }: { name: string; type: "radio" | "checkbox"; checked: boolean; onChange: () => void; label: string }) {
+export function Choice({ name, type, checked, onChange, label }: { name: string; type: "radio" | "checkbox"; checked: boolean; onChange: () => void; label: string }) {
   return (
     <label className={chip}>
       <input type={type} name={name} checked={checked} onChange={onChange} className="sr-only" />

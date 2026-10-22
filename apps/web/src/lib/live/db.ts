@@ -275,7 +275,7 @@ export function useLiveDb(): DB {
         if (chatList) (db.chatList ??= {})[id] = chatList.map((c) => ({ userId: c.userId, name: c.name ?? "", messages: c.messages, at: c.lastAt }));
         const daily = perChild(i, "daily") as DailyOut | null | undefined;
         if (daily) db.dailyAnswers.push(...dailyFrom(id, daily));
-        db.intakeRounds.push(...rounds.map((r) => ({ childId: id, round: r.number, startedAt: r.startedAt, completedAt: r.completedAt ?? undefined })));
+        db.intakeRounds.push(...rounds.map((r) => ({ childId: id, round: r.number, questionnaire: r.questionnaire, startedAt: r.startedAt, completedAt: r.completedAt ?? undefined })));
         const finished = rounds.filter((r) => r.completedAt).at(-1);
         if (plan && finished) {
           db.roadmaps.push(planFrom(id, finished.number, plan));

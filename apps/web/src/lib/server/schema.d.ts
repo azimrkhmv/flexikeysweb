@@ -1260,6 +1260,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/intake/questionnaire": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Active Questionnaire
+         * @description Which questions a parent adding a child is asked (IQ4); a round keeps its own set (RoundOut.questionnaire).
+         */
+        get: operations["active_questionnaire_api_v1_intake_questionnaire_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/children/{child_id}/plan": {
         parameters: {
             query?: never;
@@ -3364,6 +3384,11 @@ export interface components {
             text: string;
             lang: components["schemas"]["Lang"];
         };
+        /** QuestionnaireOut */
+        QuestionnaireOut: {
+            /** Active */
+            active: string;
+        };
         /** ReasonOut */
         ReasonOut: {
             slot: components["schemas"]["ItemKind"];
@@ -3487,6 +3512,8 @@ export interface components {
         RoundSummary: {
             /** Number */
             number: number;
+            /** Questionnaire */
+            questionnaire: string;
             /**
              * Startedat
              * Format: date-time
@@ -6260,6 +6287,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    active_questionnaire_api_v1_intake_questionnaire_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuestionnaireOut"];
                 };
             };
         };

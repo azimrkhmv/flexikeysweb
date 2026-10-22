@@ -20,6 +20,27 @@
   "K",
   "L"
  ],
+ "step_text": {
+  "en": {
+   "A": "About your child and family",
+   "B": "Diagnosis and medical history",
+   "CP": "Cerebral palsy",
+   "DCD": "Coordination (DCD)",
+   "DD": "Development",
+   "DS": "Down syndrome",
+   "AU": "Autism",
+   "C": "Movement",
+   "D": "Hands",
+   "E": "Body and health",
+   "F": "Seeing, hearing and attention",
+   "G": "Talking and understanding",
+   "H": "Everyday life",
+   "I": "Therapy so far",
+   "J": "Goals and time",
+   "K": "Baseline videos",
+   "L": "Therapist assessment"
+  }
+ },
  "defs": {
   "AUTISM_ONLY": {
    "all": [

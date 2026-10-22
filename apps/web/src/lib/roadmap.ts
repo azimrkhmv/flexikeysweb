@@ -68,7 +68,7 @@ export function planFacts(input: PlanInput) {
   const cp = arr(a.P9).includes("cp");
   const gmfcs: FnLevel | null = th?.gmfcs ?? (health && typeof a.P12 === "string" ? P12_GMFCS[a.P12] ?? null : null);
 
-  const restrictions = new Set<Restriction>(th?.restrictions ?? []);
+  const restrictions = new Set<Restriction>([...(th?.restrictions ?? []), ...(arr(a._restrictions) as Restriction[])]); // IQ3 red flags
   // P14: the listed tags; "Not sure" (null) or unanswered → treat every listed restriction as present.
   if (a.P14 === null || a.P14 === undefined) P14_TAGS.forEach((r) => restrictions.add(r));
   else arr(a.P14).forEach((r) => P14_TAGS.includes(r as Restriction) && restrictions.add(r as Restriction));
@@ -89,7 +89,7 @@ export function planFacts(input: PlanInput) {
   const move: 1 | 2 | 3 = gmfcs === null || gmfcs >= 4 ? 1 : gmfcs === 3 ? 2 : 3;
   const startLevel: Record<BodyArea, 1 | 2 | 3> = { hands, arms: hands, legs: move, trunk: move, head_neck: move, mouth_face: talk };
 
-  return { exercisesAllowed: health, gmfcs, restrictions, surgery, goals, minutes, startLevel, band: ageBand(input.birthDate, input.startDate) };
+  return { exercisesAllowed: health && !arr(a._hold).length, gmfcs, restrictions, surgery, goals, minutes, startLevel, band: ageBand(input.birthDate, input.startDate) };
 }
 export type PlanFacts = ReturnType<typeof planFacts>;
 

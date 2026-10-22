@@ -37,7 +37,7 @@ export interface QQuestion {
   note?: string;
 }
 
-export const QUESTIONNAIRE = data as unknown as { version: string; steps: string[]; defs: Record<string, Cond>; questions: QQuestion[] };
+export const QUESTIONNAIRE = data as unknown as { version: string; steps: string[]; step_text: Record<string, Record<string, string>>; defs: Record<string, Cond>; questions: QQuestion[] };
 export const Q_BY_ID: Record<string, QQuestion> = Object.fromEntries(QUESTIONNAIRE.questions.map((q) => [q.id, q]));
 const LEVEL: Record<string, number> = { i: 1, ii: 2, iii: 3, iv: 4, v: 5 };
 

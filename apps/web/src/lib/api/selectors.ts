@@ -7,6 +7,7 @@ import { computeMetrics, startingProfile, withFloors } from "../adaptive";
 import { levelAfter } from "../roadmap";
 import { AREAS, startingTheta, type Area } from "../skill";
 import type { Answers } from "@/content/intake";
+import { rulesView } from "@/content/questionnaireBridge";
 import { FREE, TRIAL_DAYS, TRIAL_REMIND_DAYS } from "@/content/plans";
 import { PRICE_FRESH_DAYS } from "@/content/places";
 import { replaces, therapistInput, type Profession } from "@/content/therapist";
@@ -68,7 +69,7 @@ export const sel = {
   /** θ of every skill area: what clean tries made of it, or the first guess from the latest finished intake. */
   skills: (db: DB, childId: string): Record<Area, { theta: number; n: number }> => {
     const round = db.intakeRounds.filter((r) => r.childId === childId && r.completedAt).sort((a, b) => b.round - a.round)[0];
-    const answers = round ? sel.intakeAnswers(db, childId, round.round) : {};
+    const answers = round ? rulesView(round.questionnaire, sel.intakeAnswers(db, childId, round.round), localDate()) : {};
     return Object.fromEntries(
       AREAS.map((area) => {
         const row = (db.skills ?? []).find((s) => s.childId === childId && s.area === area);

@@ -791,9 +791,12 @@ the database fields never shift.
     2. Holds (no exercises, games only, until a therapist looks): lost a skill (C12), surgery or Botox in the last 6 months or with no date, seizures still happening, heart condition, frequent pain with no place marked, autism only (package R21), Down syndrome (package R20)
     3. Extra limits: Down syndrome neck not checked → no neck-bending or tummy-lying; weak bones, shunt or implant (or not answered) → no hard exercise; shunt or implant → no tummy-lying or neck-bending; one side weaker without a diagnosis → no leg-balance or hard exercise; pain or a broken bone in one place → that body area is left out; choking "sometimes" or more → no mouth exercises
     4. Without the GMFCS picture (DCD, delay...), the walking and sitting steps (C6, C3) give the movement level; 45+ minutes counts as 30; J9 goals: "Stand" → walk, "Use hands to eat" → eat and hands, "Play on tablet" → understand, "Less pain" has no exercise goal
-- [ ] **Azim** — `IQ4` Website: the questions screens for the new questionnaire (sections, modules, follow-ups, new answer kinds; pictures shown as text cards until IQ7)
+- [x] **Azim** — `IQ4` Website: the questions screens for the new questionnaire (sections, modules, follow-ups, new answer kinds; pictures shown as text cards until IQ7)
   - Done when: each sample child's questions can be answered in the browser, saved, continued later and finished into a plan, in the demo and against the server
   - Needs: IQ1, IQ2, IQ3
+  - Note: `/parent/children/new` asks the set the server hands out (`GET /intake/questionnaire`, from
+    `INTAKE_QUESTIONNAIRE`; still `p41` until IQ8); the demo tries the new one with `?q=2026-10-16`. Live test:
+    `e2e-live/questionnaire.e2e.ts` runs only against a server started with `INTAKE_QUESTIONNAIRE=2026-10-16`.
 - [ ] **Azim** — `IQ5` Uzbek (Latin and Cyrillic) and Russian text for every new question and option, marked for the native-speaker check (B44)
   - Done when: no new question shows English in another language
   - Needs: IQ1

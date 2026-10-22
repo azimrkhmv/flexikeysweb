@@ -157,3 +157,6 @@ def test_an_old_round_keeps_its_questions(client: TestClient, monkeypatch: pytes
     assert r["questionnaire"] == "p41" and r["answers"] == {"P1": "Ali"}
     assert save(client, owner, child, {"P3": "boy"}).status_code == 200  # still P questions
     assert title(save(client, owner, child, {"A3": "boy"})) == (422, "invalid_answer")
+    rounds = client.get(f"{API}/children/{child}/intake", headers=owner).json()
+    assert [r["questionnaire"] for r in rounds] == ["p41"]
+    assert client.get(f"{API}/intake/questionnaire", headers=owner).json() == {"active": NEW}  # for a new child

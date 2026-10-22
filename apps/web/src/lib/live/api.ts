@@ -5,7 +5,8 @@ import { AAC_BY_ID, CUSTOM_PREFIX } from "@/content/aac";
 import { SHOP_BY_ID } from "@/content/shop";
 import { sessionStore } from "@/lib/session";
 import { STEPS, type Answers } from "@/content/intake";
-import type { AssistantAnswer, KitOrderOut, BookingOut, ClinicSlot, CardOut, ChildOut, ClipOut, ClipUpload, Consents, DoneOut, FormOut, PhoneStarted, PlanOut, PlanStatus, ReviewItem, RoundOut, ShareOut } from "@/lib/server/types";
+import { Q_BY_ID } from "@/content/questionnaire";
+import type { AssistantAnswer, KitOrderOut, BookingOut, ClinicSlot, CardOut, ChildOut, ClipOut, ClipUpload, Consents, DoneOut, FormOut, PhoneStarted, PlanOut, PlanStatus, ReviewItem, QuestionnaireOut, RoundOut, ShareOut } from "@/lib/server/types";
 import type { Profession, TherapistAnswers } from "@/content/therapist";
 import type { Lang, UiLang } from "@/lib/translate";
 import type { AacCustomCard, KitStatus, BookingMode, ReportReason, Slot, Child, ChildSupport, ConsentScope, Feeling, InputProfile, InteractionEvent, Roadmap, TaskDone, User, UserStatus, VideoStatus } from "@/lib/types";
@@ -190,13 +191,17 @@ export const liveApi = {
   },
 
   // ------------------------------------------------------------ parent questions (spec §5)
-  /** POST /children from the first question step (P1–P3, P8), then its answers. */
+  /** GET /intake/questionnaire — the question set a new child's first round asks (the server decides). */
+  async intakeQuestionnaire() {
+    return (await http<QuestionnaireOut>("GET", "/intake/questionnaire")).active;
+  },
+  /** POST /children from the first question step (P1–P3, P8; or A1–A3 of the CEO's questionnaire), then its answers. */
   async createChildFromIntake(answers: Answers, uiLang: UiLang) {
-    const name = String(answers.P1 ?? "").trim();
-    const birthDate = String(answers.P2 ?? "");
+    const name = String(answers.P1 ?? answers.A1 ?? "").trim();
+    const birthDate = String(answers.P2 ?? answers.A2 ?? "");
     if (!name) throw new ApiError("name_required");
     if (!/^\d{4}-\d{2}-\d{2}$/.test(birthDate) || birthDate > new Date().toISOString().slice(0, 10)) throw new ApiError("invalid_date");
-    const c = await http<ChildOut>("POST", "/children", { name, birthDate, sex: answers.P3, color: typeof answers.P8 === "string" ? answers.P8 : null, lang: uiLang });
+    const c = await http<ChildOut>("POST", "/children", { name, birthDate, sex: answers.P3 ?? answers.A3, color: typeof answers.P8 === "string" ? answers.P8 : null, lang: uiLang });
     await liveApi.saveAnswers(c.id, 1, answers);
     return familyChildFrom(c);
   },
@@ -204,7 +209,7 @@ export const liveApi = {
    *  questions only with the health consent (the server refuses them otherwise). */
   async saveAnswers(childId: string, round: number, answers: Answers) {
     const health = queryClient.getQueryData<Consents>(["consents", childId])?.health ?? false;
-    const keep = Object.entries(answers).filter(([q, v]) => v !== undefined && QUESTION_IDS.has(q) && (health || !HEALTH_QUESTION.test(q)));
+    const keep = Object.entries(answers).filter(([q, v]) => v !== undefined && (QUESTION_IDS.has(q) || q in Q_BY_ID) && (health || !(HEALTH_QUESTION.test(q) || Q_BY_ID[q]?.health)));
     if (keep.length) {
       const body = Object.fromEntries(keep.map(([q, v]) => [q, typeof v === "string" ? v.slice(0, 1000) : v]));
       await http("PUT", `/children/${childId}/intake/${round}`, { answers: body });
@@ -216,6 +221,13 @@ export const liveApi = {
   async saveVoiceNote(childId: string, blob: Blob) {
     const link = await http<{ storageKey: string; uploadUrl: string }>("POST", `/children/${childId}/intake/voice-link`, {});
     const put = await fetch(link.uploadUrl, { method: "PUT", body: blob, headers: { "Content-Type": blob.type || "audio/webm" } });
+    if (!put.ok) throw new ApiError("generic");
+    return link.storageKey;
+  },
+  /** A questionnaire document or photo goes straight to storage (POST .../intake/file-link); the answer keeps its key. */
+  async uploadIntakeFile(childId: string, file: Blob) {
+    const link = await http<{ storageKey: string; uploadUrl: string }>("POST", `/children/${childId}/intake/file-link`, {});
+    const put = await fetch(link.uploadUrl, { method: "PUT", body: file, headers: { "Content-Type": file.type || "application/octet-stream" } });
     if (!put.ok) throw new ApiError("generic");
     return link.storageKey;
   },

@@ -1,0 +1,460 @@
+[
+ {
+  "name": "no answers yet",
+  "today": "2026-10-22",
+  "answers": {},
+  "p": {
+   "P14": null,
+   "_hold": [],
+   "_restrictions": [
+    "high_intensity"
+   ]
+  }
+ },
+ {
+  "name": "one-sided CP, walks alone",
+  "today": "2026-10-22",
+  "answers": {
+   "A1": "Ali",
+   "A2": "2019-05-01",
+   "A3": "boy",
+   "B1": [
+    "cp"
+   ],
+   "CP1": "spastic",
+   "CP2": "one_side",
+   "C10": "i",
+   "C3": "free_30min",
+   "B6": "no",
+   "B8": "no",
+   "CP3": "no",
+   "E10": "never",
+   "F1": "gesture",
+   "F2": "yes",
+   "G1": [
+    "sentences"
+   ],
+   "D4": "thumb_finger",
+   "D12": "with_help",
+   "D7": "big_only",
+   "F6": "normal",
+   "F4": "5_15",
+   "H1": "some_help",
+   "H2": "helps",
+   "J9": [
+    "walk",
+    "hold",
+    "tablet",
+    "school"
+   ],
+   "J1": "45",
+   "H5": "midday",
+   "F9": [
+    "music",
+    "cars",
+    "dolls"
+   ],
+   "E7": "no",
+   "E13": "no",
+   "B7": []
+  },
+  "p": {
+   "P1": "Ali",
+   "P2": "2019-05-01",
+   "P3": "boy",
+   "P9": [
+    "cp"
+   ],
+   "P10": "spastic",
+   "P11": "one_side",
+   "P12": "walks",
+   "P13": "never",
+   "P14": null,
+   "P15": "no",
+   "P17": "no",
+   "P18": 1,
+   "P19": 2,
+   "P20": 2,
+   "P21": 2,
+   "P23": 2,
+   "P24": 1,
+   "P26": 1,
+   "P27": 2,
+   "P29": 2,
+   "P30": 2,
+   "P31": 1,
+   "P32": 1,
+   "P33": [
+    "walk",
+    "hands",
+    "understand"
+   ],
+   "P34": "30",
+   "P35": "afternoon",
+   "P37": [
+    "music",
+    "cars"
+   ],
+   "_hold": [],
+   "_restrictions": []
+  }
+ },
+ {
+  "name": "no GMFCS picture, walks with one hand",
+  "today": "2026-10-22",
+  "answers": {
+   "B1": [
+    "dcd"
+   ],
+   "C6": "one_hand",
+   "C3": "free_few_min",
+   "G1": [
+    "single_words"
+   ]
+  },
+  "p": {
+   "P9": [
+    "other"
+   ],
+   "P12": "walks_help",
+   "P14": null,
+   "P20": 2,
+   "P21": 1,
+   "P27": 2,
+   "_hold": [],
+   "_restrictions": [
+    "high_intensity"
+   ]
+  }
+ },
+ {
+  "name": "delay, cannot sit or step",
+  "today": "2026-10-22",
+  "answers": {
+   "B1": [
+    "developmental_delay"
+   ],
+   "C6": "doesnt_step",
+   "C3": "cant_sit",
+   "DD4": "yes"
+  },
+  "p": {
+   "P9": [
+    "other"
+   ],
+   "P12": "needs_help_sit",
+   "P14": null,
+   "P27": 0,
+   "_hold": [],
+   "_restrictions": [
+    "high_intensity",
+    "leg_balance"
+   ]
+  }
+ },
+ {
+  "name": "recent hip surgery",
+  "today": "2026-10-22",
+  "answers": {
+   "B1": [
+    "cp"
+   ],
+   "B8": "yes",
+   "B8_type": [
+    "hip",
+    "spine"
+   ],
+   "B8_date": "2026-08-01",
+   "CP3": "no"
+  },
+  "p": {
+   "P9": [
+    "cp"
+   ],
+   "P14": null,
+   "P15": "yes",
+   "P15_part": [
+    "legs",
+    "trunk"
+   ],
+   "_hold": [
+    "recent_surgery_or_botox"
+   ],
+   "_restrictions": [
+    "high_intensity"
+   ]
+  }
+ },
+ {
+  "name": "surgery over a year ago",
+  "today": "2026-10-22",
+  "answers": {
+   "B1": [
+    "cp"
+   ],
+   "B8": "yes",
+   "B8_type": [
+    "hip"
+   ],
+   "B8_date": "2025-01-10",
+   "CP3": "no"
+  },
+  "p": {
+   "P9": [
+    "cp"
+   ],
+   "P14": null,
+   "P15": "no",
+   "_hold": [],
+   "_restrictions": [
+    "high_intensity"
+   ]
+  }
+ },
+ {
+  "name": "Botox, date not sure",
+  "today": "2026-10-22",
+  "answers": {
+   "B1": [
+    "cp"
+   ],
+   "B8": "no",
+   "CP3": "yes",
+   "CP3_muscles": [
+    "left_leg",
+    "right_hand"
+   ]
+  },
+  "p": {
+   "P9": [
+    "cp"
+   ],
+   "P14": null,
+   "P15": "yes",
+   "P15_part": [
+    "hands",
+    "legs"
+   ],
+   "_hold": [
+    "recent_surgery_or_botox"
+   ],
+   "_restrictions": [
+    "high_intensity"
+   ]
+  }
+ },
+ {
+  "name": "Botox, no muscles marked",
+  "today": "2026-10-22",
+  "answers": {
+   "B1": [
+    "cp"
+   ],
+   "B8": "no",
+   "CP3": "yes",
+   "CP3_date": "2026-09-01"
+  },
+  "p": {
+   "P9": [
+    "cp"
+   ],
+   "P14": null,
+   "P15": "yes",
+   "P15_part": [
+    "legs"
+   ],
+   "_hold": [
+    "recent_surgery_or_botox"
+   ],
+   "_restrictions": [
+    "high_intensity"
+   ]
+  }
+ },
+ {
+  "name": "lost a skill, seizures now",
+  "today": "2026-10-22",
+  "answers": {
+   "B1": [
+    "cp"
+   ],
+   "C12": "yes",
+   "B6": "still"
+  },
+  "p": {
+   "P9": [
+    "cp"
+   ],
+   "P13": "last_year",
+   "P14": null,
+   "_hold": [
+    "lost_skill",
+    "seizures"
+   ],
+   "_restrictions": [
+    "high_intensity"
+   ]
+  }
+ },
+ {
+  "name": "heart, shunt",
+  "today": "2026-10-22",
+  "answers": {
+   "B1": [
+    "cp"
+   ],
+   "B7": [
+    "heart",
+    "shunt"
+   ],
+   "E7": "no",
+   "E13": "no"
+  },
+  "p": {
+   "P9": [
+    "cp"
+   ],
+   "P14": null,
+   "_hold": [
+    "heart"
+   ],
+   "_restrictions": [
+    "high_intensity",
+    "neck_flexion",
+    "prone"
+   ]
+  }
+ },
+ {
+  "name": "Down syndrome, neck not checked",
+  "today": "2026-10-22",
+  "answers": {
+   "B1": [
+    "down_syndrome"
+   ],
+   "DS1": "not_checked",
+   "DS2": "yes"
+  },
+  "p": {
+   "P9": [
+    "down"
+   ],
+   "P14": null,
+   "_hold": [
+    "heart",
+    "down_syndrome"
+   ],
+   "_restrictions": [
+    "high_intensity",
+    "neck_flexion",
+    "prone"
+   ]
+  }
+ },
+ {
+  "name": "autism only",
+  "today": "2026-10-22",
+  "answers": {
+   "B1": [
+    "autism"
+   ],
+   "G1": [
+    "sounds_gestures"
+   ]
+  },
+  "p": {
+   "P9": [
+    "autism"
+   ],
+   "P14": null,
+   "P20": 1,
+   "P21": 0,
+   "_hold": [
+    "autism_only"
+   ],
+   "_restrictions": [
+    "high_intensity"
+   ]
+  }
+ },
+ {
+  "name": "pain often, nowhere marked",
+  "today": "2026-10-22",
+  "answers": {
+   "B1": [
+    "cp"
+   ],
+   "E3": "often"
+  },
+  "p": {
+   "P9": [
+    "cp"
+   ],
+   "P14": null,
+   "_hold": [
+    "pain"
+   ],
+   "_restrictions": [
+    "high_intensity"
+   ]
+  }
+ },
+ {
+  "name": "pain sometimes, weak bones",
+  "today": "2026-10-22",
+  "answers": {
+   "B1": [
+    "cp"
+   ],
+   "E3": "sometimes",
+   "E4": [
+    "back",
+    "left_foot"
+   ],
+   "E7": "yes",
+   "E7_where": [
+    "shoulders"
+   ]
+  },
+  "p": {
+   "P9": [
+    "cp"
+   ],
+   "P14": null,
+   "P15": "yes",
+   "P15_part": [
+    "arms",
+    "legs",
+    "trunk"
+   ],
+   "_hold": [],
+   "_restrictions": [
+    "high_intensity"
+   ]
+  }
+ },
+ {
+  "name": "implant",
+  "today": "2026-10-22",
+  "answers": {
+   "B1": [
+    "other"
+   ],
+   "E13": "yes",
+   "E7": "no",
+   "DD4": "no"
+  },
+  "p": {
+   "P9": [
+    "other"
+   ],
+   "P14": null,
+   "_hold": [],
+   "_restrictions": [
+    "high_intensity",
+    "neck_flexion",
+    "prone"
+   ]
+  }
+ }
+]

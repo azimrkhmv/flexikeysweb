@@ -5,6 +5,8 @@
 import { dailyQuestionOn } from "@/content/daily";
 import { FREE } from "@/content/plans";
 import type { Answers } from "@/content/intake";
+import { Q_BY_ID } from "@/content/questionnaire";
+import { rulesView } from "@/content/questionnaireBridge";
 import { baseLang, type Lang, type UiLang } from "../i18n";
 import { buildRoadmap } from "../roadmap";
 import { deleteMedia, getMedia, putMedia } from "../media";
@@ -19,28 +21,35 @@ const today = () => localDate();
 /** The plan engine's input for one round: the answers in use (therapists' answers win) and what the therapists set. */
 export function planInput(db: DB, childId: string, round: number) {
   const child = sel.child(db, childId)!;
+  const r = db.intakeRounds.find((x) => x.childId === childId && x.round === round);
   return {
     childId, round, birthDate: child.birthDate ?? `${child.birthYear}-01-01`, startDate: today(), lang: child.learningLang,
-    answers: sel.answersInUse(db, childId, sel.intakeAnswers(db, childId, round)),
+    answers: sel.answersInUse(db, childId, rulesView(r?.questionnaire, sel.intakeAnswers(db, childId, round), today())),
     healthConsent: sel.hasConsent(db, childId, "health"),
     therapist: sel.therapistInput(db, childId),
   };
 }
 
 export const intakeApi = {
-  /** POST /children — from intake step 1 (P1–P5, P8). Basic consent was given at sign-up. */
-  async createChildFromIntake(answers: Answers, uiLang: UiLang) {
+  /** The question set a new child's first round asks: "p41" or the CEO's questionnaire's date (IQ4). */
+  async intakeQuestionnaire() {
+    return process.env.NEXT_PUBLIC_QUESTIONNAIRE ?? "p41";
+  },
+
+  /** POST /children — from intake step 1 (P1–P5, P8; or A1–A3 of the CEO's questionnaire). Basic consent was given at sign-up. */
+  async createChildFromIntake(answers: Answers, uiLang: UiLang, questionnaire = "p41") {
     const u = requireUser(["parent"]);
     if (!u.consentVersion) throw new ApiError("consent_required");
-    const name = String(answers.P1 ?? "").trim();
-    const birthDate = String(answers.P2 ?? "");
+    const name = String(answers.P1 ?? answers.A1 ?? "").trim();
+    const birthDate = String(answers.P2 ?? answers.A2 ?? "");
+    const sex = answers.P3 ?? answers.A3;
     if (!name) throw new ApiError("name_required");
     if (!/^\d{4}-\d{2}-\d{2}$/.test(birthDate) || birthDate > today()) throw new ApiError("invalid_date");
     const lang = baseLang(uiLang);
     const child: Child = {
       id: id(), familyId: "", name, birthYear: Number(birthDate.slice(0, 4)), birthDate, learningLang: lang, uiLang: lang, avatar: "☁️", access: "touch",
       equipped: typeof answers.P8 === "string" ? { color: answers.P8 } : {},
-      sex: answers.P3 === "boy" || answers.P3 === "girl" ? answers.P3 : undefined,
+      sex: sex === "boy" || sex === "girl" ? sex : undefined,
       relationship: (["mother", "father", "grandparent", "carer"] as const).find((r) => r === answers.P4),
       createdAt: iso(),
     };
@@ -49,7 +58,7 @@ export const intakeApi = {
       db.children.push(child);
       db.consents.push({ id: id(), childId: child.id, scope: "core", version: CONSENT_VERSION, grantedBy: u.id, grantedAt: iso() });
       db.wallets.push({ childId: child.id, coins: 0, stars: 0, owned: [] });
-      db.intakeRounds.push({ childId: child.id, round: 1, startedAt: iso() });
+      db.intakeRounds.push({ childId: child.id, round: 1, questionnaire, startedAt: iso() });
     });
     await intakeApi.saveAnswers(child.id, 1, answers, answers.P5 === "therapist" || answers.P5 === "together" ? answers.P5 : "parent");
     return child;
@@ -63,7 +72,7 @@ export const intakeApi = {
       for (const [questionId, value] of Object.entries(answers)) {
         if (value === undefined) continue;
         // Section B (P9–P17) is health data: never stored without the health consent (spec §4).
-        if (!health && /^P(9|1[0-7])(_|$)/.test(questionId)) continue;
+        if (!health && (/^P(9|1[0-7])(_|$)/.test(questionId) || Q_BY_ID[questionId]?.health)) continue;
         const v: IntakeValue = typeof value === "string" && value.length > 1000 ? value.slice(0, 1000) : value;
         db.intakeAnswers = db.intakeAnswers.filter((a) => !(a.childId === childId && a.round === round && a.questionId === questionId));
         db.intakeAnswers.push({ childId, round, questionId, value: v, answeredAt: iso(), respondent });
@@ -75,6 +84,10 @@ export const intakeApi = {
   /** POST /children/{id}/intake/voice-link + upload — the P39 voice note; the answer keeps only its key. */
   async saveVoiceNote(_childId: string, blob: Blob) {
     return putMedia(blob);
+  },
+  /** A document or photo for a questionnaire answer (B10, B13, CP21, DD3, I4); the answer keeps its key. */
+  async uploadIntakeFile(_childId: string, file: Blob) {
+    return putMedia(file);
   },
   /** P40: a movement clip; the answer keeps its id (live: on the server, for the shared therapist). */
   async addMovementClip(_childId: string, file: Blob) {
@@ -145,7 +158,7 @@ export const intakeApi = {
     const round = (last?.round ?? 0) + 1;
     const prev = last ? sel.intakeAnswers(read(), childId, last.round) : {};
     write((db) => {
-      db.intakeRounds.push({ childId, round, startedAt: iso() });
+      db.intakeRounds.push({ childId, round, questionnaire: last?.questionnaire, startedAt: iso() });
     });
     await intakeApi.saveAnswers(childId, round, prev);
     return round;

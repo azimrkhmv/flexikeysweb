@@ -3255,6 +3255,28 @@
     }
    }
   },
+  "/api/v1/intake/questionnaire": {
+   "get": {
+    "tags": [
+     "intake"
+    ],
+    "summary": "Active Questionnaire",
+    "description": "Which questions a parent adding a child is asked (IQ4); a round keeps its own set (RoundOut.questionnaire).",
+    "operationId": "active_questionnaire_api_v1_intake_questionnaire_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/QuestionnaireOut"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/v1/children/{child_id}/plan": {
    "get": {
     "tags": [
@@ -9333,6 +9355,19 @@
     ],
     "title": "Question"
    },
+   "QuestionnaireOut": {
+    "properties": {
+     "active": {
+      "type": "string",
+      "title": "Active"
+     }
+    },
+    "type": "object",
+    "required": [
+     "active"
+    ],
+    "title": "QuestionnaireOut"
+   },
    "ReasonOut": {
     "properties": {
      "slot": {
@@ -9702,6 +9737,10 @@
       "type": "integer",
       "title": "Number"
      },
+     "questionnaire": {
+      "type": "string",
+      "title": "Questionnaire"
+     },
      "startedAt": {
       "type": "string",
       "format": "date-time",
@@ -9723,6 +9762,7 @@
     "type": "object",
     "required": [
      "number",
+     "questionnaire",
      "startedAt",
      "completedAt"
     ],
