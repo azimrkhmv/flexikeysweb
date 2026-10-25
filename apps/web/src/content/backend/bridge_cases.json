@@ -341,13 +341,33 @@
    ],
    "P14": null,
    "_hold": [
-    "heart",
-    "down_syndrome"
+    "heart"
    ],
    "_restrictions": [
     "high_intensity",
     "neck_flexion",
     "prone"
+   ]
+  }
+ },
+ {
+  "name": "Down syndrome, neck checked fine",
+  "today": "2026-10-22",
+  "answers": {
+   "B1": [
+    "down_syndrome"
+   ],
+   "DS1": "normal",
+   "DS2": "no"
+  },
+  "p": {
+   "P9": [
+    "down"
+   ],
+   "P14": null,
+   "_hold": [],
+   "_restrictions": [
+    "high_intensity"
    ]
   }
  },
@@ -391,9 +411,7 @@
     "cp"
    ],
    "P14": null,
-   "_hold": [
-    "pain"
-   ],
+   "_hold": [],
    "_restrictions": [
     "high_intensity"
    ]

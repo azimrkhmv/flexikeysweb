@@ -67,13 +67,27 @@ def test_without_the_gmfcs_picture_walking_and_sitting_set_the_level() -> None:
         ({"B7": ["heart"]}, "heart"),
         ({"B1": ["down_syndrome"], "DS2": "yes"}, "heart"),
         ({"B1": ["autism"]}, "autism_only"),
-        ({"B1": ["down_syndrome"]}, "down_syndrome"),
-        ({"E3": "often"}, "pain"),
     ],
 )
 def test_red_flags_hold_every_exercise(answers: dict[str, Any], hold: str) -> None:
     assert hold in p_view(answers, TODAY)["_hold"]
     assert not facts(answers).exercises_allowed
+
+
+def test_no_plan_waits_for_a_therapist() -> None:
+    """A4.8: Down syndrome and frequent pain with no place marked get exercises, with their restrictions."""
+    down = facts({"B1": ["down_syndrome"], "DS1": "not_checked"})
+    assert down.exercises_allowed and {"neck_flexion", "prone"} <= down.restrictions
+    pain = facts({"B1": ["cp"], "E3": "often"})
+    assert pain.exercises_allowed and "high_intensity" in pain.restrictions
+
+
+def test_the_next_round_lifts_a_hold_once_the_answer_changed() -> None:
+    """A4.8: the monthly re-check asks again; once the surgery is over 6 months ago, or the seizures are controlled,
+    exercises come."""
+    assert not facts({"B8": "yes", "B8_type": ["hip"], "B8_date": RECENT, "C12": "no"}).exercises_allowed
+    assert facts({"B8": "yes", "B8_type": ["hip"], "B8_date": LONG_AGO, "C12": "no"}).exercises_allowed
+    assert facts({"C12": "no", "B6": "controlled"}).exercises_allowed
 
 
 def test_old_surgery_and_two_diagnoses_do_not_hold() -> None:

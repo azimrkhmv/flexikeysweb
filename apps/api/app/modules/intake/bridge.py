@@ -3,7 +3,8 @@
 `p_view` turns a round of the new questionnaire into P answers (C10 -> P12, J9 -> P33, D4 -> P23 ...) and adds the
 questionnaire's red flags (its table "Red flags: stop or hold the roadmap", plus the CTO package's launch rules):
 
-- `_hold`: reasons to give no exercises at all (games only) until a therapist has looked;
+- `_hold`: reasons to give no exercises at all (games only): the parent sees a doctor first, or autism only. No plan
+  waits for a therapist (A4.8): the next round asks again and builds the full plan once the answer has changed;
 - `_restrictions`: restriction tags (plans/safety.py) the answers add.
 
 What the questionnaire does not ask stays unanswered, and unanswered is the cautious choice (product rule 2). It has
@@ -112,16 +113,14 @@ def p_view(a: dict[str, Any], today: date) -> dict[str, Any]:
     if a.get("C12") == "yes":
         hold.append("lost_skill")  # "No roadmap. Tell parent to see a doctor soon."
     if surgery or botox:
-        hold.append("recent_surgery_or_botox")  # "Hold until therapist sets restrictions and dates."
+        hold.append("recent_surgery_or_botox")  # see the doctor; ends 6 months after the date, or with a therapist's T6
     if a.get("B6") == "still":
-        hold.append("seizures")  # "Therapist approves each new exercise."
+        hold.append("seizures")
     if a.get("DS2") == "yes" or "heart" in _list(a.get("B7")):
-        hold.append("heart")  # "Therapist sets exercise intensity before the roadmap is shown."
+        hold.append("heart")
     if dx == {"autism"}:
-        hold.append("autism_only")  # CTO package R21: games and My Voice only
-    if "down_syndrome" in dx:
-        hold.append("down_syndrome")  # CTO package R20: the therapist builds the plan
-    if a.get("DS1") != "normal" and "down_syndrome" in dx:
+        hold.append("autism_only")  # CTO package R21, founders 22 Oct: games and My Voice only
+    if a.get("DS1") != "normal" and "down_syndrome" in dx:  # Down syndrome: an AI plan with these restrictions (A4.8)
         restrictions |= {"neck_flexion", "prone"}  # "No neck-bending, rolling or head-down until a doctor clears it"
     if a.get("E7") != "no" or "shunt" in _list(a.get("B7")) or a.get("E13") != "no":
         restrictions.add("high_intensity")  # weak bones, shunt or implant (or "Not sure"): therapist reviews first
@@ -133,7 +132,7 @@ def p_view(a: dict[str, Any], today: date) -> dict[str, Any]:
     bones = set(_list(a.get("E7_where"))) if a.get("E7") == "yes" else set()
     painful = {BODY_PART[x] for x in pain | bones if x in BODY_PART}
     if a.get("E3") == "often" and not pain:
-        hold.append("pain")  # frequent pain, nowhere marked: the therapist reviews before any exercise
+        restrictions.add("high_intensity")  # frequent pain, nowhere marked: no hard exercise (A4.8)
     if painful:
         p["P15_part"] = sorted(set(p["P15_part"] or []) | painful)  # the plan leaves these body areas out
         p["P15"] = "yes"

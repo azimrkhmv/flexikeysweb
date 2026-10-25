@@ -87,7 +87,6 @@ export function pView(a: QAnswers, today: string): PAnswers {
   if (a.B6 === "still") hold.push("seizures");
   if (a.DS2 === "yes" || b7.includes("heart")) hold.push("heart");
   if (dx.size === 1 && dx.has("autism")) hold.push("autism_only");
-  if (dx.has("down_syndrome")) hold.push("down_syndrome");
   if (a.DS1 !== "normal" && dx.has("down_syndrome")) ["neck_flexion", "prone"].forEach((r) => restrictions.add(r));
   if (a.E7 !== "no" || b7.includes("shunt") || a.E13 !== "no") restrictions.add("high_intensity");
   if (b7.includes("shunt") || a.E13 === "yes") ["prone", "neck_flexion"].forEach((r) => restrictions.add(r));
@@ -96,7 +95,7 @@ export function pView(a: QAnswers, today: string): PAnswers {
   const pain = a.E3 === "sometimes" || a.E3 === "often" ? list(a.E4) : [];
   const bones = a.E7 === "yes" ? list(a.E7_where) : [];
   const painful = [...pain, ...bones].filter((x) => x in BODY_PART).map((x) => BODY_PART[x]);
-  if (a.E3 === "often" && !pain.length) hold.push("pain");
+  if (a.E3 === "often" && !pain.length) restrictions.add("high_intensity"); // no hard exercise (A4.8)
   if (painful.length) {
     p.P15_part = sorted([...((p.P15_part as string[] | undefined) ?? []), ...painful]);
     p.P15 = "yes";

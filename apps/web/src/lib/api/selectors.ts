@@ -231,6 +231,12 @@ export const sel = {
       sel.hasConsent(db, childId, "health"),
     ),
   /** The answers the plan is built from: the parent's, with the therapists' answers put in. */
+  /** Why the last finished round gives games only (IQ3, A4.8): "autism_only", or answers that need a doctor first. */
+  holds: (db: DB, childId: string): string[] => {
+    const round = db.intakeRounds.filter((r) => r.childId === childId && r.completedAt).sort((a, b) => b.round - a.round)[0];
+    const hold = round ? rulesView(round.questionnaire, sel.intakeAnswers(db, childId, round.round), localDate())._hold : undefined;
+    return Array.isArray(hold) ? (hold as string[]) : [];
+  },
   answersInUse: (db: DB, childId: string, answers: Answers): Answers => {
     const merged: Answers = { ...answers };
     for (const [q, u] of Object.entries(sel.therapistUpdates(db, childId).updated)) merged[q] = u.value;

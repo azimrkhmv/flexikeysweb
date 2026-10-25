@@ -29,6 +29,7 @@ const CASES: { name: string; answers: QAnswers }[] = [
   { name: "lost a skill, seizures now", answers: { B1: ["cp"], C12: "yes", B6: "still" } },
   { name: "heart, shunt", answers: { B1: ["cp"], B7: ["heart", "shunt"], E7: "no", E13: "no" } },
   { name: "Down syndrome, neck not checked", answers: { B1: ["down_syndrome"], DS1: "not_checked", DS2: "yes" } },
+  { name: "Down syndrome, neck checked fine", answers: { B1: ["down_syndrome"], DS1: "normal", DS2: "no" } },
   { name: "autism only", answers: { B1: ["autism"], G1: ["sounds_gestures"] } },
   { name: "pain often, nowhere marked", answers: { B1: ["cp"], E3: "often" } },
   { name: "pain sometimes, weak bones", answers: { B1: ["cp"], E3: "sometimes", E4: ["back", "left_foot"], E7: "yes", E7_where: ["shoulders"] } },
@@ -60,6 +61,27 @@ describe("questionnaire bridge (IQ4)", () => {
     expect(facts("lost a skill, seizures now").exercisesAllowed).toBe(false);
     expect(facts("implant").restrictions).toContain("prone");
     expect([...facts("recent hip surgery").surgery].sort()).toEqual(["legs", "trunk"]);
+  });
+
+  it("no plan waits for a therapist (A4.8)", () => {
+    const facts = (name: string) =>
+      planFacts({
+        childId: "c", round: 1, birthDate: "2019-05-01", startDate: TODAY, lang: "en", healthConsent: true,
+        answers: pView(CASES.find((c) => c.name === name)!.answers, TODAY),
+      });
+    const down = facts("Down syndrome, neck checked fine");
+    expect(down.exercisesAllowed).toBe(true);
+    const downNeck = planFacts({
+      childId: "c", round: 1, birthDate: "2019-05-01", startDate: TODAY, lang: "en", healthConsent: true,
+      answers: pView({ B1: ["down_syndrome"], DS1: "not_checked" }, TODAY),
+    });
+    expect(downNeck.exercisesAllowed).toBe(true);
+    expect([...downNeck.restrictions]).toEqual(expect.arrayContaining(["neck_flexion", "prone"]));
+    const pain = facts("pain often, nowhere marked");
+    expect(pain.exercisesAllowed).toBe(true);
+    expect(pain.restrictions).toContain("high_intensity");
+    expect(facts("autism only").exercisesAllowed).toBe(false); // games and My Voice (founders, 22 Oct)
+    expect(facts("Down syndrome, neck not checked").exercisesAllowed).toBe(false); // the heart answer: see a doctor
   });
 
   it("a therapist's restrictions (T6, the questionnaire's L9) end the hold and are the ones used (IQ6)", () => {

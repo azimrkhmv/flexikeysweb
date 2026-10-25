@@ -6,7 +6,7 @@ import { TherapistUpdates } from "@/features/parent/TherapistUpdates";
 import { useState } from "react";
 import { Button, Card, Chip, Empty, LinkButton, useAction } from "@/components/ui";
 import { api, sel, useDb } from "@/lib/api";
-import { localDate } from "@/lib/api/schema";
+import { localDate, type DB } from "@/lib/api/schema";
 import { useLang, useT } from "@/lib/i18n";
 import type { Child, Roadmap } from "@/lib/types";
 
@@ -65,8 +65,8 @@ export function PlanTab({ child }: { child: Child }) {
 function Why({ plan }: { plan: Roadmap }) {
   const t = useT();
   const db = useDb();
-  // Games only: either no health consent, or an answer a therapist must look at first (a red flag, IQ3).
-  const held = sel.hasConsent(db, plan.childId, "health");
+  // Games only: no health consent, autism only, or an answer that needs a doctor first (a red flag, IQ3, A4.8).
+  const why = gamesOnlyKey(db, plan.childId, "plan.why");
   const goals = [...new Set(plan.reasons.map((r) => r.goal))];
   const minutes = plan.days[0] ? plan.days[0].games.reduce((s, g) => s + g.minutes, 0) * 2 : 10;
   return (
@@ -80,10 +80,17 @@ function Why({ plan }: { plan: Roadmap }) {
           {plan.reasons.some((r) => r.source) && <p className="text-ink-2">{t("plan.why.research")}</p>}
         </>
       ) : (
-        <p className="text-ink-2">{t(held ? "plan.why.held" : "plan.why.gamesOnly")}</p>
+        <p className="text-ink-2">{t(why)}</p>
       )}
     </Card>
   );
+}
+
+/** The message for a games-only plan: `<prefix>.gamesOnly` (no health consent), `.autism` or `.held` (see a doctor). */
+export function gamesOnlyKey(db: DB, childId: string, prefix: "plan.why" | "intake.ready") {
+  if (!sel.hasConsent(db, childId, "health")) return `${prefix}.gamesOnly`;
+  const holds = sel.holds(db, childId);
+  return holds.length && holds.every((h) => h === "autism_only") ? `${prefix}.autism` : `${prefix}.held`;
 }
 
 function Weeks({ plan }: { plan: Roadmap }) {

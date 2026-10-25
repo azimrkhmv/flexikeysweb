@@ -629,7 +629,7 @@ Milestones are done in order. Inside a milestone, each developer works down thei
   - Done when: a new family's plan is the AI's choice, with a research source for each item; a test proves the
     rules plan comes only when the AI fails
   - Needs: G7 (may health data go to an AI company abroad), E2 (the model)
-- [ ] **Bekzod** — `A4.8` No plan waits for a therapist. Today a red-flag answer (`_hold` in
+- [x] **Bekzod** — `A4.8` No plan waits for a therapist. Today a red-flag answer (`_hold` in
   `apps/api/app/modules/intake/bridge.py`) gives games only with "Some answers need a therapist's look first", and
   a family with no linked therapist stays there for good. Change it to:
   - Lost skill, recent Botox or surgery, seizures still happening, heart problem: games only, and the parent sees
@@ -825,7 +825,7 @@ the database fields never shift.
   - Needs: IQ2
   - For the therapist (how IQ3 reads the answers; `apps/api/app/modules/intake/bridge.py`):
     1. The questionnaire has no "a doctor said your child must not..." list (P14), so until a therapist sets restrictions (IQ6) every new-questionnaire plan leaves out jumping, tummy-lying, neck-bending and one-leg exercises
-    2. Holds (no exercises, games only, until a therapist looks): lost a skill (C12), surgery or Botox in the last 6 months or with no date, seizures still happening, heart condition, frequent pain with no place marked, autism only (package R21), Down syndrome (package R20)
+    2. Holds (no exercises, games only; the parent is told to see their doctor): lost a skill (C12), surgery or Botox in the last 6 months or with no date, seizures still happening, heart condition; autism only (package R21) is games and My Voice. Since A4.8, Down syndrome gets a plan with its restrictions and frequent pain with no place marked gets a plan without hard exercise
     3. Extra limits: Down syndrome neck not checked → no neck-bending or tummy-lying; weak bones, shunt or implant (or not answered) → no hard exercise; shunt or implant → no tummy-lying or neck-bending; one side weaker without a diagnosis → no leg-balance or hard exercise; pain or a broken bone in one place → that body area is left out; choking "sometimes" or more → no mouth exercises
     4. Without the GMFCS picture (DCD, delay...), the walking and sitting steps (C6, C3) give the movement level; 45+ minutes counts as 30; J9 goals: "Stand" → walk, "Use hands to eat" → eat and hands, "Play on tablet" → understand, "Less pain" has no exercise goal
 - [x] **Azim** — `IQ4` Website: the questions screens for the new questionnaire (sections, modules, follow-ups, new answer kinds; pictures shown as text cards until IQ7)
