@@ -9,7 +9,7 @@ name of the developer who does it.
 - **What we are building** is described in the founders' spec: `docs/product-spec-2026-10-06.pdf`. Where this file
   and the spec disagree, the spec wins — except for the three points listed in section 3.
 - `PRD.md` is the older product document. The spec replaced the parts where they disagree.
-- **Last updated:** 2026-10-18.
+- **Last updated:** 2026-10-25.
 
 **Contents:** 1. How we work · 2. Rules of the product · 3. Decisions already made · 4. Who does what ·
 5. Tasks (M0–M7) · 6. Ask and collect · 7. Accounts
@@ -97,7 +97,8 @@ Every task must keep these. They come from the spec.
 | Hosting | Contabo (Q4). A lawyer must still confirm before the pilot that children's health data may be stored in Germany (G7) |
 | Reminders | None on the website (Q5). They come with the mobile app, after launch |
 | Child games and My Voice | Saved on the server too (Q2), so progress is the same on every device |
-| AI | Through OpenRouter: one key (`OPENROUTER_API_KEY`), models compared by the blind test E2. **AI never builds the plan**: the plan comes from fixed rules (spec §13). AI explains, summarises and answers, and drafts text a person checks |
+| AI | Through OpenRouter: one key (`OPENROUTER_API_KEY`), models compared by the blind test E2. **AI builds every child's plan** (Azim, 2026-10-25): it decides only from Azim's research papers and data set (A9.8), and only inside the rules' safe list (A4.6). The fixed rules still remove everything forbidden first, and the rules plan is used only when the AI fails. AI also explains, summarises and answers, and drafts text a person checks |
+| Therapists approve videos only (Azim, 2026-10-25) | A physiotherapist approves each exercise video, and an approved video goes out on the website. That is the therapists' only approval job for now. **No therapist approves a plan**, and no parent waits for one. A family may still link a therapist (Pro): that therapist's answers and restrictions win over the parent's (rule 4) and rebuild the plan. This replaces "the therapist approves every plan before the parent sees it" in the founders' answers of 22 Oct (FA5, Q14 point 1) |
 | Videos and voice | Higgsfield (videos) and ElevenLabs (voice), bought after Azim tests them; ElevenLabs' Uzbek is checked by native speakers first (V1, V2). Until then every video and audio spot holds a placeholder (C7) |
 | Research library | Open research about cerebral palsy, free to use. The assistant answers from it and names the source (A9.8) |
 
@@ -118,6 +119,7 @@ Every task must keep these. They come from the spec.
 | The video voice says the child's name | No name in videos | One video per exercise can be reviewed once; a personal video for each child cannot |
 | Records of each try stay on the phone only | Also on the server, for 90 days | A browser can wipe its storage at any time |
 | One parent account | A family with an owner and a helper | Both adults see the same child |
+| The plan comes from fixed rules, not from an AI guessing (§13) | AI builds the plan from the research data set, inside the rules' safe list (Azim, 2026-10-25) | A plan that follows the research and the child, while the rules still keep every forbidden item out |
 
 **Already prepared** in `apps/web/src/content/backend/`, kept up to date by the test `backend-content.test.ts`:
 
@@ -135,6 +137,10 @@ questions to the founders. Inside a milestone, do the server list first, then th
 **Handover.** When the base and the hardest parts are done, Azim hands the project to Bekzod. At that point:
 write down here which tasks are Bekzod's, bring back pull requests with one review, and turn the review rule
 back on for `main` on GitHub.
+
+**Handover started 2026-10-25.** Bekzod does the rest of the code. Azim keeps the tasks that need a key, a
+purchase, a person or a founders' answer. Bekzod starts with `A4.7` and `A4.8` (the AI plan for every family,
+and plans that never wait for a therapist).
 
 ---
 
@@ -616,9 +622,26 @@ Milestones are done in order. Inside a milestone, each developer works down thei
     entry; the engine still lays out the days. Each pick's reason keeps its source (`plan_reasons.source`, migration
     0039; `reasons[].source` in GET /children/{id}/plan); "+ai" on the plan's engine version. A real try: 2 AI calls,
     about $0.002 a plan
-- [ ] **Azim** — `A4.7` Turn on the AI plan (`AI_PLAN=true` with `RESEARCH_PATH`) for real families
-  - Done when: a new family's plan is the AI's choice, with its sources
+- [ ] **Bekzod** — `A4.7` The AI builds every family's plan (Azim, 2026-10-25): `AI_PLAN=true` with `RESEARCH_PATH`
+  becomes the normal setting, and the AI decides only from Azim's research papers and data set (A9.8). The rules
+  still remove everything forbidden first (rule 2), and the rules plan is used only when the AI fails or does not
+  answer. No step waits for a therapist (section 3, "Therapists approve videos only")
+  - Done when: a new family's plan is the AI's choice, with a research source for each item; a test proves the
+    rules plan comes only when the AI fails
   - Needs: G7 (may health data go to an AI company abroad), E2 (the model)
+- [ ] **Bekzod** — `A4.8` No plan waits for a therapist. Today a red-flag answer (`_hold` in
+  `apps/api/app/modules/intake/bridge.py`) gives games only with "Some answers need a therapist's look first", and
+  a family with no linked therapist stays there for good. Change it to:
+  - Lost skill, recent Botox or surgery, seizures still happening, heart problem: games only, and the parent sees
+    "Please see your doctor before starting exercises" (not "a therapist"). The next round (the monthly re-check)
+    asks again and builds the full plan once the answer has changed
+  - Down syndrome: an AI plan with its restrictions (no neck-bending, rolling or head-down), not "through the therapist"
+  - Frequent pain with no place marked: an AI plan without hard exercise (`high_intensity`)
+  - Autism only: stays games and My Voice (founders, 22 Oct), with no therapist wording
+  - A linked therapist can still set restrictions and dates; their answer wins (rule 4)
+  - Done when: no parent screen or message says a therapist must look at or approve the plan; a test for each case
+    above gives the plan described
+  - Needs: —
 - [x] **Azim** — `B58` Show the AI's reasons and sources for each plan item to the therapist, and the simple explanation to the parent
   - Done when: a therapist sees why each exercise and game was chosen, and can still change anything (rule 4)
   - Needs: A4.6
@@ -858,11 +881,10 @@ the database fields never shift.
 - [ ] **Azim** — `FA4` 12-week plan in 3 steps of 4 weeks, a short re-check with a video every month that builds the next step
   - Done when: a plan shows 3 steps; the monthly re-check opens the next step
   - Needs: Q14 (Free's share of the 12 weeks; what the re-check asks)
-- [ ] **Azim** — `FA5` The therapist approves the plan before the parent sees it
-  - Done when: a plan waits as "with your therapist" until a therapist approves it; the parent then sees it
-  - Needs: Q14 (every plan, or Pro only)
+- [x] **Azim** — `FA5` ~~The therapist approves the plan before the parent sees it~~
+  - DROPPED (Azim, 2026-10-25): therapists approve videos only, never a plan (section 3). See A4.7 and A4.8
 - [ ] **Azim** — `FA6` Who can start: delay or not sure gets the limited plan (not only when one side is weaker)
-  - Done when: each launch group gets its plan: CP and DCD full; delay or not sure limited; autism games and My Voice; Down syndrome through the therapist
+  - Done when: each launch group gets its plan: CP and DCD full; delay or not sure limited; autism games and My Voice; Down syndrome an AI plan with its restrictions (A4.8, not through the therapist)
   - Needs: Q14 (what the limited plan is)
 - [x] **Azim** — `FA7` Home massage out of the first release: L9's massage areas stay stored, no massage anywhere a parent sees
   - Done when: no plan item or assistant answer suggests home massage
@@ -879,7 +901,7 @@ the database fields never shift.
     the household exercise library exists (the CEO's 109 activity cards need videos, C-tasks). Waiting for Azim: switch
     now (smaller plans for families without a kit) or after the household library
 - [ ] **Azim** — `Q14` Ask the founders 4 follow-ups to their answers of 22 Oct
-  - 1. "Therapist approval is Pro only" and "the therapist approves every plan before the parent sees it": which one? Does a Free family see its plan without a therapist?
+  - 1. ~~"Therapist approval is Pro only" and "the therapist approves every plan before the parent sees it": which one?~~ Answered by Azim (2026-10-25): no therapist approves a plan; every family sees its AI plan straight away. Tell the founders
   - 2. What is the "limited plan" (Free, delay or not sure, ages outside 3–12)? For example: shorter, lying and sitting only, no balance and no hard exercise
   - 3. Which plan does a child with only speech delay get: games and My Voice, or the limited plan?
   - 4. How much of the 12 weeks does Free get (now the first week of 4), and what does the monthly re-check ask?
