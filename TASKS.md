@@ -874,9 +874,10 @@ the database fields never shift.
 - [ ] **Azim** — `FA1` Speech delay in the questionnaire's diagnosis list (B1), with its own plan rule
   - Done when: a parent can pick it and the plan follows the founders' rule for it
   - Needs: Q14 (which plan a child with only speech delay gets)
-- [ ] **Bekzod** — `FA2` Ages 2–18 all get the plan made from their answers and game results; age alone never gives the limited plan (founders, 30 Oct 2026)
+- [x] **Bekzod** — `FA2` Ages 2–18 all get the plan made from their answers and game results; age alone never gives the limited plan (founders, 30 Oct 2026)
   - Done when: a 2-year-old and an 18-year-old with the same answers get a normal plan and are not put on the therapist's list because of age
   - Needs: —
+  - Note (30 Oct 2026): no age check gave a smaller plan or a therapist flag; age only picks age-fitting exercises (bands 2-4, 5-8, 9-12, 13-20, 26-33 of the 33 each). `tests/test_plan_ages.py` and `questionnaireBridge.test.ts` prove it
 - [x] **Azim** — `FA3` Remove Uzbek Cyrillic: three app languages (Uzbek Latin, Russian, English); families on Cyrillic move to Uzbek Latin
   - Done when: no screen offers Cyrillic, and a saved Cyrillic choice opens in Uzbek Latin
   - Note: migration 0038 moves accounts and children on `uz_cyrl` to `uz`; the server refuses `uz_cyrl` (422); the

@@ -86,6 +86,21 @@ describe("questionnaire bridge (IQ4)", () => {
     expect(facts("Down syndrome, neck not checked").exercisesAllowed).toBe(false); // the heart answer: see a doctor
   });
 
+  it("age never limits the plan: a 2-year-old and an 18-year-old get the same plan facts (FA2)", () => {
+    const answers = { B1: ["cp"], CP2: "one_side", C10: "ii", B6: "no", B8: "no", CP3: "no", E7: "no", E13: "no", E10: "never", J1: "20" };
+    const facts = (birthDate: string) => {
+      const p = pView({ ...answers, A2: birthDate }, TODAY);
+      expect(p._hold).toEqual([]); // nothing for a therapist to look at first
+      const { band, ...rest } = planFacts({ childId: "c", round: 1, birthDate, startDate: TODAY, lang: "en", healthConsent: true, answers: p });
+      expect(band).toBeTruthy(); // age only picks age-fitting exercises
+      return rest;
+    };
+    const seven = facts("2019-05-01");
+    expect(seven.exercisesAllowed).toBe(true);
+    expect(facts("2024-10-22")).toEqual(seven); // 2 today
+    expect(facts("2007-10-23")).toEqual(seven); // 18, 19 tomorrow
+  });
+
   it("a therapist's restrictions (T6, the questionnaire's L9) end the hold and are the ones used (IQ6)", () => {
     const t6 = { T6: { items: ["high_intensity"], text: "" } };
     const answers = { ...pView(CASES.find((c) => c.name === "implant")!.answers, TODAY), _hold: ["lost_skill"], ...replaces(t6, true) };
