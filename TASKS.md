@@ -926,13 +926,16 @@ decision; the source is "FlexiKeys — parent questionnaire fixes" (30 Oct 2026)
 - [x] **Bekzod** — `B62` Skill questions: wording and options (items 10, 11, 12, 14, 15, 16, 17, 19, 20, 21, 22, 23, 24, 25)
   - Done when: every text of the review's section 5 is in place in en and ru with a uz draft; hints show on the step questions; C1, C4, C7, D12 changes work with the rules and the bridge; the cases files cover the new ids
   - Needs: B61
-- [ ] **Bekzod** — `B63` Optional answers: clear by tapping again; "Not sure" on C14, C17, C19 (item 18)
+- [x] **Bekzod** — `B63` Optional answers: clear by tapping again; "Not sure" on C14, C17, C19 (item 18)
   - Done when: tapping a chosen optional answer clears it, and the three questions show "Not sure"
   - Needs: B62
 - [ ] **Bekzod** — `B64` C1 (head control) "Not yet" or "Only for a short time" changes the child's setup: a tablet stand at eye level and supported seating (Home Kit and settings), and a flag for the therapist that switch access may be needed (review item 14, part 3)
   - Done when: a child with C1 "Not yet" or "Only for a short time" gets the tablet stand and seating advice in the Home Kit and settings, and appears on the therapist's list with "switch access may be needed"
   - Needs: B62
   - Note (B62): nothing yet turns questionnaire answers into device or seating settings (`feeds: ["S"]` is only a label), so B62 did the wording and the show rule only, as the review said
+- [ ] **Bekzod** — `B65` A cleared optional answer is cleared on the server too. Since B63 a parent clears an optional answer by tapping it again, but the website sends only given answers, so an answer saved earlier comes back after a reload (`Questionnaire.tsx` save, the "ponytail" comment)
+  - Done when: an optional answer saved, then cleared and saved again, is gone after a reload, in the demo and against the server (a "clear" in the save request; null stays "Not sure")
+  - Needs: B63
 
 ## 6. Ask and collect
 

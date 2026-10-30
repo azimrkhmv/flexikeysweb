@@ -157,7 +157,8 @@ export function QuestionnaireWizard({ childId: initialChild, version }: { childI
 
 type SetAnswer = (id: string, v: QAnswer) => void;
 
-/** One question of any kind. "Not sure" is stored as null (spec §5); an optional question has no "Not sure". */
+/** One question of any kind. "Not sure" is stored as null (spec §5); an optional question has none unless it says
+ * `not_sure` (B63). A chosen answer to an optional question is cleared by choosing it again (B63). */
 export function Question({ q, answers, set, childId }: { q: QQuestion; answers: QAnswers; set: SetAnswer; childId: string | null }) {
   const t = useT();
   const [uiLang] = useLang();
@@ -171,8 +172,9 @@ export function Question({ q, answers, set, childId }: { q: QQuestion; answers: 
   const alert = error && <p role="alert" className="mt-2 text-sm font-semibold text-[#8f3a2c]">{error}</p>;
   const options = shownOptions(q.id, answers, today()) ?? [];
   const opt = (o: string) => (q.option_text ? inLang(q.option_text, uiLang, o) : o);
-  const notSure = q.required && !NO_NOT_SURE.has(q.id) && !options.includes("not_sure") && (
-    <Choice name={q.id} type="radio" checked={v === null} onChange={() => set(q.id, null)} label={t("intake.notSure")} />
+  const clear = q.required ? undefined : () => set(q.id, undefined); // undefined: not answered, unlike null ("Not sure")
+  const notSure = (q.required || q.not_sure) && !NO_NOT_SURE.has(q.id) && !options.includes("not_sure") && (
+    <Choice name={q.id} type="radio" checked={v === null} onChange={() => set(q.id, null)} onClear={clear} label={t("intake.notSure")} />
   );
   // A typed answer: the input in its label, and "Not sure" next to it (a label can't hold another label).
   const typed = (input: ReactNode) => (
@@ -220,7 +222,7 @@ export function Question({ q, answers, set, childId }: { q: QQuestion; answers: 
           </div>
           {alert}
           <div className="mt-2 flex flex-wrap gap-2">
-            <Choice name={q.id} type="radio" checked={v === "not_yet"} onChange={() => set(q.id, "not_yet")} label={t("intake.ability.0")} />
+            <Choice name={q.id} type="radio" checked={v === "not_yet"} onChange={() => set(q.id, "not_yet")} onClear={clear} label={t("intake.ability.0")} />
             {notSure}
           </div>
         </fieldset>
@@ -231,7 +233,7 @@ export function Question({ q, answers, set, childId }: { q: QQuestion; answers: 
           <legend className="mb-2 font-bold text-ink">{label}</legend>
           {hint}
           <div className="flex flex-wrap gap-2">
-            {[1, 2, 3, 4, 5].map((n) => <Choice key={n} name={q.id} type="radio" checked={v === n} onChange={() => set(q.id, n)} label={String(n)} />)}
+            {[1, 2, 3, 4, 5].map((n) => <Choice key={n} name={q.id} type="radio" checked={v === n} onChange={() => set(q.id, n)} onClear={clear} label={String(n)} />)}
             {notSure}
           </div>
         </fieldset>
@@ -244,7 +246,7 @@ export function Question({ q, answers, set, childId }: { q: QQuestion; answers: 
           <legend className="mb-2 font-bold text-ink">{label}</legend>
           {hint}
           <div className="flex flex-wrap gap-2">
-            {options.map((o) => <Choice key={o} name={q.id} type="radio" checked={v === o} onChange={() => set(q.id, o)} label={opt(o)} />)}
+            {options.map((o) => <Choice key={o} name={q.id} type="radio" checked={v === o} onChange={() => set(q.id, o)} onClear={clear} label={opt(o)} />)}
             {notSure}
           </div>
         </fieldset>

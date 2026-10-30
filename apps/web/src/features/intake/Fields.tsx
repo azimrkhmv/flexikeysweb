@@ -16,10 +16,12 @@ type Set = (id: string, v: IntakeValue | undefined) => void;
 export const chip =
   "inline-flex min-h-12 cursor-pointer items-center rounded-2xl border border-line px-4 py-2 text-sm font-bold text-ink transition hover:bg-surface-2 has-checked:border-teal has-checked:bg-teal-soft has-focus-visible:ring-4 has-focus-visible:ring-primary-soft";
 
-export function Choice({ name, type, checked, onChange, label }: { name: string; type: "radio" | "checkbox"; checked: boolean; onChange: () => void; label: string }) {
+/** A chip with a radio or checkbox inside. `onClear`: a radio already chosen is cleared by choosing it again (a click,
+ * or Space on the keyboard; B63). */
+export function Choice({ name, type, checked, onChange, label, onClear }: { name: string; type: "radio" | "checkbox"; checked: boolean; onChange: () => void; label: string; onClear?: () => void }) {
   return (
     <label className={chip}>
-      <input type={type} name={name} checked={checked} onChange={onChange} className="sr-only" />
+      <input type={type} name={name} checked={checked} onChange={onChange} onClick={checked ? onClear : undefined} className="sr-only" />
       {label}
     </label>
   );

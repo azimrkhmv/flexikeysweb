@@ -37,6 +37,8 @@ export interface QQuestion {
   feeds: string[];
   text: Record<string, string>;
   option_text: Record<string, Record<string, string>> | null;
+  /** An optional question that still offers "Not sure", stored as null like a required one's (B63). */
+  not_sure?: boolean;
   /** A short help line under the question, in smaller grey text (B60, B62). */
   hint?: Record<string, string>;
   note?: string;

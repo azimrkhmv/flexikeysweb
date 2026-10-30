@@ -58,7 +58,22 @@ test("a parent answers the new questionnaire and gets a plan", async ({ page }, 
   await expect(page.getByRole("heading", { level: 1, name: "Cerebral palsy" })).toBeVisible(); // the CP module opened (R1)
 
   const ready = page.getByRole("heading", { name: "Malika's plan is ready" });
-  for (let n = 0; n < 20 && !(await ready.isVisible()); n++) await notSureToTheRest(page);
+  let cleared = false;
+  for (let n = 0; n < 20 && !(await ready.isVisible()); n++) {
+    const c14 = page.locator("#q-C14");
+    if (!cleared && (await c14.count())) {
+      // B63: an optional step question offers "Not sure", and choosing an answer again clears it.
+      await expect(c14.getByText("Not sure", { exact: true })).toBeVisible();
+      const lifts = c14.getByRole("radio", { name: "Lifts the head for a moment" });
+      await c14.getByText("Lifts the head for a moment").click();
+      await expect(lifts).toBeChecked();
+      await c14.getByText("Lifts the head for a moment").click();
+      await expect(lifts).not.toBeChecked();
+      cleared = true;
+    }
+    await notSureToTheRest(page);
+  }
+  expect(cleared).toBe(true);
   await expect(page.getByRole("heading", { name: "Malika's plan is ready" })).toBeVisible();
 
   const saved = await page.evaluate(() => {
