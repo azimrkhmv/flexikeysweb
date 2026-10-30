@@ -9,7 +9,7 @@ name of the developer who does it.
 - **What we are building** is described in the founders' spec: `docs/product-spec-2026-10-06.pdf`. Where this file
   and the spec disagree, the spec wins — except for the three points listed in section 3.
 - `PRD.md` is the older product document. The spec replaced the parts where they disagree.
-- **Last updated:** 2026-10-25.
+- **Last updated:** 2026-10-30.
 
 **Contents:** 1. How we work · 2. Rules of the product · 3. Decisions already made · 4. Who does what ·
 5. Tasks (M0–M7) · 6. Ask and collect · 7. Accounts
@@ -91,7 +91,7 @@ Every task must keep these. They come from the spec.
 | AI model for the assistant | Chosen by our own blind test of several providers. No provider is fixed in advance |
 | Uzbek voice | An AI voice, chosen by a listening test |
 | Parent questions | The CEO's "FlexiKeys Parent Intake Questionnaire" (16 Oct 2026, therapist-reviewed; kept outside the repo in `~/code/flexikeys-docs/`) replaces P1–P41 (Azim, 2026-10-22). The 9 open points in the CTO package review stay open until the CEO answers; the build keeps them easy to change |
-| Founders' answers (22 Oct 2026) | Charos's "Answers to the CTO package review" (file kept outside the repo): speech delay joins the diagnosis list; ages 3–12, other ages a limited plan flagged for the therapist; no Uzbek Cyrillic (Uzbek Latin, Russian, English); 12-week plan in 3 steps with a short re-check and video every month; therapist approval is Pro only, Free gets a limited safe-only plan (but also "the therapist approves every plan before the parent sees it": Q14); one soft-3D video per exercise with an ordinary-looking AI-made child; home massage later, not in the first release; Home Kit optional, exercises use household things; AI chooses the plan inside the rules' safe list. Confirmed: the new questionnaire replaces P1–P41; CP and DCD full plan, delay or not sure limited plan, autism games and My Voice, Down syndrome through the therapist. Work: M9 |
+| Founders' answers (22 Oct 2026) | Charos's "Answers to the CTO package review" (file kept outside the repo): speech delay joins the diagnosis list; ~~ages 3–12~~ (replaced 30 Oct 2026: ages 2–18, and age never limits the plan, see below); no Uzbek Cyrillic (Uzbek Latin, Russian, English); 12-week plan in 3 steps with a short re-check and video every month; therapist approval is Pro only, Free gets a limited safe-only plan (but also "the therapist approves every plan before the parent sees it": Q14); one soft-3D video per exercise with an ordinary-looking AI-made child; home massage later, not in the first release; Home Kit optional, exercises use household things; AI chooses the plan inside the rules' safe list. Confirmed: the new questionnaire replaces P1–P41; CP and DCD full plan, delay or not sure limited plan, autism games and My Voice, Down syndrome through the therapist. Work: M9 |
 | Records of each try in a game | Sent to the server and deleted after 90 days |
 | Old features (teachers, classes, email sign-in) | Deleted (Q7, task B45). Not part of the new server |
 | Hosting | Contabo (Q4). A lawyer must still confirm before the pilot that children's health data may be stored in Germany (G7) |
@@ -99,6 +99,9 @@ Every task must keep these. They come from the spec.
 | Child games and My Voice | Saved on the server too (Q2), so progress is the same on every device |
 | AI | Through OpenRouter: one key (`OPENROUTER_API_KEY`), models compared by the blind test E2. **AI builds every child's plan** (Azim, 2026-10-25): it decides only from Azim's research papers and data set (A9.8), and only inside the rules' safe list (A4.6). The fixed rules still remove everything forbidden first, and the rules plan is used only when the AI fails. AI also explains, summarises and answers, and drafts text a person checks |
 | Therapists approve videos only (Azim, 2026-10-25) | A physiotherapist approves each exercise video, and an approved video goes out on the website. That is the therapists' only approval job for now. **No therapist approves a plan**, and no parent waits for one. A family may still link a therapist (Pro): that therapist's answers and restrictions win over the parent's (rule 4) and rebuild the plan. This replaces "the therapist approves every plan before the parent sees it" in the founders' answers of 22 Oct (FA5, Q14 point 1) |
+| No "Not sure" on family facts (Bekzod, 30 Oct 2026) | "Not sure" is removed from A3, A4, A4_kg, A5, A7, A9, B1 and the body-parts question B3_parts. It stays on skill questions a parent may not have seen (head control, crawling, picking up...). This replaces the spec §5 rule ("every required question except name, birthday, district and language has 'Not sure'") for these questions only |
+| Ages 2 to 18 (founders to Bekzod, 30 Oct 2026) | FlexiKeys is for children aged 2 to 18. Replaces "ages 3–12" in the founders' answers of 22 Oct |
+| Age never limits the plan (founders, 30 Oct 2026) | Every child aged 2–18 gets a plan made for them from the parent's answers and the child's results in the games. No "limited plan because of age" and no "flag for the therapist because of age". Age may still choose age-fitting content (game levels, exercises for small or big children); it never cuts the plan down. Other reasons for the limited plan (Free, "delay or not sure" in FA6) are not part of this decision |
 | Videos and voice | Higgsfield (videos) and ElevenLabs (voice), bought after Azim tests them; ElevenLabs' Uzbek is checked by native speakers first (V1, V2). Until then every video and audio spot holds a placeholder (C7) |
 | Research library | Open research about cerebral palsy, free to use. The assistant answers from it and names the source (A9.8) |
 
@@ -871,9 +874,9 @@ the database fields never shift.
 - [ ] **Azim** — `FA1` Speech delay in the questionnaire's diagnosis list (B1), with its own plan rule
   - Done when: a parent can pick it and the plan follows the founders' rule for it
   - Needs: Q14 (which plan a child with only speech delay gets)
-- [ ] **Azim** — `FA2` Ages 3–12 get the full plan; other ages a limited plan, flagged for the therapist
-  - Done when: a 2-year-old and a 14-year-old get the limited plan and appear on the therapist's list
-  - Needs: Q14 (what the limited plan is)
+- [ ] **Bekzod** — `FA2` Ages 2–18 all get the plan made from their answers and game results; age alone never gives the limited plan (founders, 30 Oct 2026)
+  - Done when: a 2-year-old and an 18-year-old with the same answers get a normal plan and are not put on the therapist's list because of age
+  - Needs: —
 - [x] **Azim** — `FA3` Remove Uzbek Cyrillic: three app languages (Uzbek Latin, Russian, English); families on Cyrillic move to Uzbek Latin
   - Done when: no screen offers Cyrillic, and a saved Cyrillic choice opens in Uzbek Latin
   - Note: migration 0038 moves accounts and children on `uz_cyrl` to `uz`; the server refuses `uz_cyrl` (422); the
@@ -902,9 +905,30 @@ the database fields never shift.
     now (smaller plans for families without a kit) or after the household library
 - [ ] **Azim** — `Q14` Ask the founders 4 follow-ups to their answers of 22 Oct
   - 1. ~~"Therapist approval is Pro only" and "the therapist approves every plan before the parent sees it": which one?~~ Answered by Azim (2026-10-25): no therapist approves a plan; every family sees its AI plan straight away. Tell the founders
-  - 2. What is the "limited plan" (Free, delay or not sure, ages outside 3–12)? For example: shorter, lying and sitting only, no balance and no hard exercise
+  - 2. What is the "limited plan" (Free, delay or not sure)? For example: shorter, lying and sitting only, no balance and no hard exercise
   - 3. Which plan does a child with only speech delay get: games and My Voice, or the limited plan?
   - 4. How much of the 12 weeks does Free get (now the first week of 4), and what does the monthly re-check ask?
+
+### Parent review fixes (30 Oct 2026, Bekzod)
+
+*Bekzod filled in the sign-up and the parent questionnaire as a parent (Russian and English). Every point has a
+decision; the source is "FlexiKeys — parent questionnaire fixes" (30 Oct 2026). Order: B59, B60, B61, B62, B63, then FA2.*
+
+- [ ] **Bekzod** — `B59` Sign-up: city and district names in the app language, and the age line "for children aged 2 to 18" on the sign-up screen and step A (items 1, 5)
+  - Done when: in Russian the city and district lists are in Russian, in English in English; the stored value is unchanged; the sign-up screen and step A say "2 to 18"
+  - Needs: —
+- [ ] **Bekzod** — `B60` Child basics: date of birth as Day / Month / Year, height and weight required, no "Not sure" on family facts (items 2, 3, 4, 5, 6)
+  - Done when: date is Day / Month / Year with a hint; year 0001, future dates and ages outside 2–18 are refused on the website and the server; height and weight are required with the new ranges; A3, A4, A4_kg, A5, A7, A9 show no "Not sure"
+  - Needs: B59
+- [ ] **Bekzod** — `B61` Diagnosis and body parts: B1 without "Not sure", B3_parts replaces B3, C2_side deleted, ages in months checked against the child's age (items 7, 8, 13)
+  - Done when: B1 has no "Not sure"; B3_parts replaces B3 and its pattern feeds every rule B3 fed; C2_side is gone; an age at diagnosis (or DD2/DD2_walk) larger than the child's age shows the message and is refused by the server; old saved answers still load
+  - Needs: B60
+- [ ] **Bekzod** — `B62` Skill questions: wording and options (items 10, 11, 12, 14, 15, 16, 17, 19, 20, 21, 22, 23, 24, 25)
+  - Done when: every text of the review's section 5 is in place in en and ru with a uz draft; hints show on the step questions; C1, C4, C7, D12 changes work with the rules and the bridge; the cases files cover the new ids
+  - Needs: B61
+- [ ] **Bekzod** — `B63` Optional answers: clear by tapping again; "Not sure" on C14, C17, C19 (item 18)
+  - Done when: tapping a chosen optional answer clears it, and the three questions show "Not sure"
+  - Needs: B62
 
 ## 6. Ask and collect
 
