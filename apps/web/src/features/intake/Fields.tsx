@@ -46,17 +46,17 @@ export function DateInput({ value, onChange }: { value: string; onChange: (v: st
     onChange(n.d && n.m && /^\d{4}$/.test(n.y) ? `${n.y}-${n.m.padStart(2, "0")}-${n.d.padStart(2, "0")}` : undefined);
   };
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="grid grid-cols-[4.5rem_minmax(0,1fr)_5.5rem] gap-2">
       <Input
-        type="number" inputMode="numeric" min={1} max={31} className="w-20" placeholder={t("intake.date.day")} aria-label={t("intake.date.day")}
+        type="number" inputMode="numeric" min={1} max={31} placeholder={t("intake.date.day")} aria-label={t("intake.date.day")}
         value={parts.d} onChange={(e) => change({ d: e.target.value.slice(0, 2) })}
       />
-      <Select className="w-40" aria-label={t("intake.date.month")} value={parts.m} onChange={(e) => change({ m: e.target.value })}>
+      <Select aria-label={t("intake.date.month")} value={parts.m} onChange={(e) => change({ m: e.target.value })}>
         <option value="" disabled>{t("intake.date.month")}</option>
         {MONTHS[lang].map((name, i) => <option key={name} value={String(i + 1)}>{name}</option>)}
       </Select>
       <Input
-        type="number" inputMode="numeric" min={1} className="w-24" placeholder={t("intake.date.year")} aria-label={t("intake.date.year")}
+        type="number" inputMode="numeric" min={1} placeholder={t("intake.date.year")} aria-label={t("intake.date.year")}
         value={parts.y} onChange={(e) => change({ y: e.target.value.slice(0, 4) })}
       />
     </div>

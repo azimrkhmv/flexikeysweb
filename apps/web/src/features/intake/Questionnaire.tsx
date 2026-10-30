@@ -213,9 +213,9 @@ export function Question({ q, answers, set, childId }: { q: QQuestion; answers: 
           <legend className="mb-2 font-bold text-ink">{label}</legend>
           {hint}
           {/* The unit right after the number; "Not yet" and "Not sure" on their own line (B61). */}
-          <div className="flex items-center gap-2">
+          <div className="grid grid-cols-[7rem_auto] items-center justify-start gap-2">
             <Input
-              type="number" inputMode="numeric" min={0} max={240} step={1} className="w-28" aria-label={`${text} (${t("intake.months")})`}
+              type="number" inputMode="numeric" min={0} max={240} step={1} aria-label={`${text} (${t("intake.months")})`}
               value={typeof v === "number" ? v : ""} onChange={(e) => set(q.id, number(e.target.value))}
             />
             <span className="text-sm font-semibold text-ink-2">{t("intake.months")}</span>
