@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { loginAs, setup } from "./helpers";
+import { birthDate, loginAs, setup } from "./helpers";
 
 // Product spec 2026-10-06, build items #1–#4: phone sign-up → intake → roadmap; physio review gates videos.
 
@@ -25,7 +25,7 @@ async function signUpByPhone(page: Page, phone: string) {
 
 async function childStep(page: Page, name: string) {
   await page.getByLabel("Child's first name").fill(name);
-  await page.getByLabel("Date of birth").fill("2019-05-01");
+  await birthDate(page, "2019-05-01");
   await pick(page, "Boy or girl", "Boy");
   await pick(page, "You are the child's…", "Mother");
   await pick(page, "Who is filling this in?", "Parent");
@@ -100,10 +100,10 @@ test("grey Next points at the question still open", async ({ page }) => {
   const card = page.locator("#q-P2");
   await expect(card.getByText("Please answer this question to continue.")).toBeVisible();
   await expect(card).toBeInViewport();
-  await expect(page.getByLabel("Date of birth")).toBeFocused();
+  await expect(page.getByRole("group", { name: "Date of birth" }).getByLabel("Day")).toBeFocused();
   await expect(page.locator("#q-P1").getByText("Please answer this question")).toHaveCount(0); // answered: not marked
 
-  await page.getByLabel("Date of birth").fill("2019-05-01");
+  await birthDate(page, "2019-05-01");
   await expect(card.getByText("Please answer this question")).toHaveCount(0); // the mark goes once answered
   await pick(page, "You are the child's…", "Mother");
   await pick(page, "Who is filling this in?", "Parent");

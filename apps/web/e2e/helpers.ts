@@ -9,6 +9,15 @@ export async function setup(page: Page, lang: "en" | "uz" | "ru" = "en") {
   }, lang);
 }
 
+/** The date of birth: its Day / Month / Year boxes (B60). */
+export async function birthDate(page: Page, iso: string) {
+  const [y, m, d] = iso.split("-");
+  const box = page.getByRole("group", { name: "Date of birth" });
+  await box.getByLabel("Day").fill(String(Number(d)));
+  await box.getByLabel("Month").selectOption(String(Number(m)));
+  await box.getByLabel("Year").fill(y);
+}
+
 const HOME = { Parent: "/parent", Therapist: "/therapist", Admin: "/admin", "Video reviewer": "/physio", Clinic: "/clinic" };
 
 /** Signs in with one of the seeded demo accounts via the login page's demo buttons (phone sign-in, spec §4). */

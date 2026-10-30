@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { fromServer, newPhone, pick, signUp } from "./helpers";
+import { birthDate, fromServer, newPhone, pick, signUp } from "./helpers";
 
 // IQ4: the CEO's questionnaire against the real server, with a doctor's document uploaded to storage. Runs only
 // when the server hands it out: start it with INTAKE_QUESTIONNAIRE=2026-10-16 (the other live tests need p41).
@@ -28,8 +28,13 @@ test("a parent answers the new questionnaire on the server and gets a plan", asy
   await page.goto("/parent/children/new");
   await expect(page.getByRole("heading", { level: 1, name: "About your child and family" })).toBeVisible();
   await page.getByLabel(/What is your child's name/).fill("Malika");
-  await page.getByLabel("Date of birth").fill("2019-05-01");
+  await birthDate(page, "2019-05-01");
   await pick(page, "Boy or girl?", "Girl");
+  await page.getByLabel(/^Height/).fill("110"); // B60: required, no "Not sure"
+  await page.getByLabel(/^Weight/).fill("18");
+  await pick(page, "Who is filling this in?", "Mother");
+  await pick(page, "Language you speak with your child at home", "Uzbek");
+  await pick(page, "How many adults can help with exercises at home?", "Only me");
   await notSureToTheRest(page);
   const childId = new URL(page.url()).searchParams.get("child")!;
 

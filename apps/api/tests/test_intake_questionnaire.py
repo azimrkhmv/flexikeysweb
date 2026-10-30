@@ -2,7 +2,7 @@
 display rules; health answers are encrypted; a round keeps its question set, so old P1-P41 rounds still open."""
 
 from collections.abc import Iterator
-from datetime import date
+from datetime import date, timedelta
 from typing import Any
 
 import httpx2
@@ -18,7 +18,7 @@ from tests.test_intake_save import health_consent, raw, save, saved
 from tests.test_storage import bucket  # noqa: F401 (makes the test bucket)
 from tests.test_videos_register import title
 
-NEW = questionnaire.VERSION
+NEW = questionnaire.SET
 
 
 @pytest.fixture
@@ -81,11 +81,12 @@ def test_a_new_round_uses_the_new_questionnaire_and_is_finished_by_its_rules(cli
     assert done.json()["completedAt"] is not None
 
 
-def test_not_sure_counts_except_name_and_birthday(client: TestClient) -> None:
+def test_not_sure_counts_except_name_birthday_and_family_facts(client: TestClient) -> None:
     owner = parent(client)
     child = add_child(client, owner)
     assert save(client, owner, child, {"C3": None, "J1": None}).status_code == 200
-    assert title(save(client, owner, child, {"A2": None})) == (422, "invalid_answer")
+    for qid in ("A2", "A3", "A4", "A4_kg", "A5", "A7", "A9"):  # B60
+        assert title(save(client, owner, child, {qid: None})) == (422, "invalid_answer"), qid
 
 
 def test_health_answers_need_the_consent_and_are_encrypted(client: TestClient) -> None:
@@ -109,6 +110,13 @@ def test_health_answers_need_the_consent_and_are_encrypted(client: TestClient) -
         ({"J9": ["sit", "stand", "walk", "hold"]}, "too_many"),
         ({"B7": ["none", "heart"]}, "exclusive_option"),
         ({"A4": 500}, "out_of_range"),
+        ({"A4": 59}, "out_of_range"),  # B60: 60-200 cm, 6-120 kg for ages 2-18
+        ({"A4_kg": 121}, "out_of_range"),
+        ({"A2": "2018-02-31"}, "not_a_date"),
+        ({"A2": "0001-02-27"}, "age_out_of_range"),
+        ({"A2": "2099-01-01"}, "date_in_future"),
+        ({"A2": (date.today() - timedelta(days=400)).isoformat()}, "age_out_of_range"),  # 1 year old
+        ({"A2": "2000-01-01"}, "age_out_of_range"),
         ({"J6": 2.5}, "out_of_range"),
         ({"DD2": 300}, "out_of_range"),
         ({"H6": "25:00"}, "not_a_time"),

@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import mine from "./backend/questionnaire.json";
-import { inLang, Q_BY_ID, QUESTIONNAIRE, shownOptions, visible, type QAnswers } from "./questionnaire";
+import { inLang, Q_BY_ID, QUESTIONNAIRE, shownOptions, typedProblem, visible, type QAnswer, type QAnswers } from "./questionnaire";
 
 // IQ1: the questionnaire file is the server's, and the cases below fix which questions each sample child is shown.
 // questionnaire_cases.json (here and a copy in apps/api/tests) makes the server prove the same. Regenerate with
@@ -91,6 +91,22 @@ describe("questionnaire (IQ1)", () => {
     }
     expect(readFileSync(new URL("questionnaire_cases.json", BACKEND), "utf8")).toBe(json);
     expect(readFileSync(API_COPY, "utf8")).toBe(json);
+  });
+
+  it("refuses the dates and numbers the server refuses (B60)", () => {
+    const p = (id: string, v: QAnswer) => typedProblem(Q_BY_ID[id], v, TODAY);
+    expect(p("A2", "2018-02-27")).toBeNull();
+    expect(p("A2", "2018-02-31")).toBe("not_a_date");
+    expect(p("A2", "0001-02-27")).toBe("age_out_of_range");
+    expect(p("A2", "2099-01-01")).toBe("date_in_future");
+    expect(p("A2", "2025-06-01")).toBe("age_out_of_range"); // 1 year old
+    expect(p("A2", "2007-10-23")).toBeNull(); // still 18 until tomorrow
+    expect(p("A2", "2007-10-22")).toBe("age_out_of_range"); // 19 today
+    expect(p("A2", "2024-10-22")).toBeNull(); // 2 today
+    expect(p("A4", 59)).toBe("out_of_range");
+    expect(p("A4", 104.5)).toBeNull();
+    expect(p("A4_kg", 121)).toBe("out_of_range");
+    expect(p("B8_date", "2026-01-10")).toBeNull();
   });
 
   it("follows the display rules", () => {

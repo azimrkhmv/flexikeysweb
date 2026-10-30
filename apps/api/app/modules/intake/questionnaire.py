@@ -20,8 +20,11 @@ DATA: dict[str, Any] = json.loads((Path(__file__).parents[2] / "content" / "ques
 QUESTIONS: dict[str, dict[str, Any]] = {q["id"]: q for q in DATA["questions"]}
 DEFS: dict[str, Any] = DATA["defs"]
 LEVEL = {"i": 1, "ii": 2, "iii": 3, "iv": 4, "v": 5}
-VERSION: str = DATA["version"]
-NO_NOT_SURE = {"A1", "A2"}  # name and birthday: every other required question may be "Not sure" (spec §5)
+VERSION: str = DATA["version"]  # the content's revision
+SET = "2026-10-16"  # the id a round stores (settings.intake_questionnaire): the CEO's questionnaire of 16 Oct
+# Name, birthday and the family facts have no "Not sure" (B60; TASKS.md section 3 replaces spec §5 for these).
+NO_NOT_SURE = {"A1", "A2", "A3", "A4", "A4_kg", "A5", "A7", "A9"}
+AGE_MIN, AGE_MAX = 2, 18  # FlexiKeys is for children aged 2 to 18 (founders, 30 Oct 2026)
 TEXT_MAX, LONGTEXT_MAX, FILES_MAX, CLIPS_MAX = 200, 1000, 5, 11  # 11 baseline video tasks (section K)
 FILE_KEY = re.compile(r"children/[0-9a-f-]{36}/intake/[0-9a-f-]{36}")
 TIME = re.compile(r"([01]\d|2[0-3]):[0-5]\d")
@@ -130,8 +133,13 @@ def problem_with(q: dict[str, Any], value: Any) -> str | None:
             try:
                 parsed = date.fromisoformat(value)
             except (TypeError, ValueError):
-                return "not_a_date"
-            return None if date(1990, 1, 1) <= parsed <= date.today() else "not_a_date"
+                return "not_a_date"  # also a day that does not exist, like 31 February
+            if parsed > date.today():
+                return "date_in_future"
+            if q["id"] == "A2":
+                age = _years(value, date.today())
+                return None if age is not None and AGE_MIN <= age <= AGE_MAX else "age_out_of_range"
+            return None if parsed >= date(1990, 1, 1) else "not_a_date"
         case "number" | "scale":
             ok = _number(value) and (q["kind"] == "number" or isinstance(value, int)) and lo <= value <= hi
             return None if ok else "out_of_range"

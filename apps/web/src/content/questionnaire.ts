@@ -35,6 +35,8 @@ export interface QQuestion {
   feeds: string[];
   text: Record<string, string>;
   option_text: Record<string, Record<string, string>> | null;
+  /** A short help line under the question, in smaller grey text (B60, B62). */
+  hint?: Record<string, string>;
   note?: string;
 }
 
@@ -96,6 +98,32 @@ export function shownOptions(id: string, a: QAnswers, today: string): string[] |
   if (!q.options) return null;
   const f = facts(a, today);
   return q.options.filter((o) => holds(q.option_show?.[o], a, f));
+}
+
+/** FlexiKeys is for children aged 2 to 18 (founders, 30 Oct 2026). */
+export const AGE_MIN = 2;
+export const AGE_MAX = 18;
+
+function realDate(v: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) return false;
+  const [y, m, d] = v.split("-").map(Number);
+  const t = new Date(0);
+  t.setUTCFullYear(y, m - 1, d); // not Date.UTC: it reads years 0-99 as 1900-1999
+  return y >= 1 && t.getUTCFullYear() === y && t.getUTCMonth() === m - 1 && t.getUTCDate() === d;
+}
+
+/** Why the server (questionnaire.py problem_with) would refuse this typed answer, for a calm message under the
+ * field; null when it is fine. Choices are never wrong, so only dates and numbers are checked. */
+export function typedProblem(q: QQuestion, v: QAnswer, today: string): string | null {
+  if (q.kind === "date" && typeof v === "string") {
+    if (!realDate(v)) return "not_a_date";
+    if (v > today) return "date_in_future";
+    if (q.id !== "A2") return v < "1990-01-01" ? "not_a_date" : null;
+    const age = years(v, today)!;
+    return age < AGE_MIN || age > AGE_MAX ? "age_out_of_range" : null;
+  }
+  if (q.kind === "number" && typeof v === "number" && q.range && (v < q.range[0] || v > q.range[1])) return "out_of_range";
+  return null;
 }
 
 /** Every question this child's parent is asked now, in questionnaire order (sign-up questions left out). */

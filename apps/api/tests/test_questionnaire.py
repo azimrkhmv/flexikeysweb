@@ -29,4 +29,4 @@ def test_every_numbered_question_of_the_questionnaire_is_there() -> None:
         for n in range(1, last + 1):
             qid = f"{prefix}{n}"
             assert qid in QUESTIONS or qid in moved, qid
-    assert DATA["version"] == "2026-10-16"
+    assert DATA["version"] == "2026-10-30"  # Bekzod's parent review (B60)

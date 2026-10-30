@@ -2,11 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Mic, Square, Trash2, Video } from "lucide-react";
-import { Button, Checkbox, Field, Input, Textarea, useAction } from "@/components/ui";
+import { Button, Checkbox, Field, Input, Select, Textarea, useAction } from "@/components/ui";
 import { allowsNotSure, P39_MAX, P40_MAX_CLIPS, type Answers, type Question } from "@/content/intake";
 import { api, sel, useDb } from "@/lib/api";
 import { putMedia } from "@/lib/media";
-import { useT } from "@/lib/i18n";
+import { useLang, useT, type Lang } from "@/lib/i18n";
 import type { IntakeValue } from "@/lib/types";
 
 // One renderer per question kind (content/intake.ts). "Not sure" is stored as null (spec §5).
@@ -25,6 +25,42 @@ export function Choice({ name, type, checked, onChange, label }: { name: string;
   );
 }
 
+const MONTHS: Record<Lang, string[]> = {
+  en: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+  ru: ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"],
+  uz: ["Yanvar", "Fevral", "Mart", "Aprel", "May", "Iyun", "Iyul", "Avgust", "Sentabr", "Oktabr", "Noyabr", "Dekabr"],
+};
+
+/** Day · month · year in one row, the same whatever the browser's language (B60); the value stays "YYYY-MM-DD".
+ * Until the year has 4 digits the answer stays empty, so typing "2018" never shows a wrong age on the way. */
+export function DateInput({ value, onChange }: { value: string; onChange: (v: string | undefined) => void }) {
+  const t = useT();
+  const [lang] = useLang();
+  const [y, m, d] = /^\d{4}-\d{2}-\d{2}$/.test(value) ? value.split("-") : ["", "", ""];
+  const [parts, setParts] = useState({ d: d && String(Number(d)), m: m && String(Number(m)), y });
+  const change = (p: Partial<typeof parts>) => {
+    const n = { ...parts, ...p };
+    setParts(n);
+    onChange(n.d && n.m && /^\d{4}$/.test(n.y) ? `${n.y}-${n.m.padStart(2, "0")}-${n.d.padStart(2, "0")}` : undefined);
+  };
+  return (
+    <div className="flex flex-wrap gap-2">
+      <Input
+        type="number" inputMode="numeric" min={1} max={31} className="w-20" placeholder={t("intake.date.day")} aria-label={t("intake.date.day")}
+        value={parts.d} onChange={(e) => change({ d: e.target.value.slice(0, 2) })}
+      />
+      <Select className="w-40" aria-label={t("intake.date.month")} value={parts.m} onChange={(e) => change({ m: e.target.value })}>
+        <option value="" disabled>{t("intake.date.month")}</option>
+        {MONTHS[lang].map((name, i) => <option key={name} value={String(i + 1)}>{name}</option>)}
+      </Select>
+      <Input
+        type="number" inputMode="numeric" min={1} className="w-24" placeholder={t("intake.date.year")} aria-label={t("intake.date.year")}
+        value={parts.y} onChange={(e) => change({ y: e.target.value.slice(0, 4) })}
+      />
+    </div>
+  );
+}
+
 export function QuestionField({ q, answers, set, childId, previous }: { q: Question; answers: Answers; set: Set; childId: string | null; previous?: IntakeValue }) {
   const t = useT();
   const v = answers[q.id];
@@ -34,10 +70,13 @@ export function QuestionField({ q, answers, set, childId, previous }: { q: Quest
   const last = previous !== undefined && <p className="mt-1 text-xs text-muted">{t("intake.lastTime", { value: show(previous, q, opt, t) })}</p>;
 
   if (q.kind === "text") return <Field label={label}><Input value={String(v ?? "")} maxLength={200} onChange={(e) => set(q.id, e.target.value)} /></Field>;
-  if (q.kind === "date") {
-    const today = new Date().toISOString().slice(0, 10);
-    return <Field label={label}><Input type="date" max={today} value={String(v ?? "")} onChange={(e) => set(q.id, e.target.value)} /></Field>;
-  }
+  if (q.kind === "date")
+    return (
+      <fieldset>
+        <legend className="mb-2 text-sm font-bold text-ink">{label}</legend>
+        <DateInput value={String(v ?? "")} onChange={(d) => set(q.id, d)} />
+      </fieldset>
+    );
   if (q.kind === "longtext") return <OwnWords q={q} label={label} answers={answers} set={set} childId={childId} />;
   if (q.kind === "media") return <Clips q={q} answers={answers} set={set} childId={childId} />;
   if (q.kind === "phone") return <Invite q={q} answers={answers} set={set} childId={childId} />;

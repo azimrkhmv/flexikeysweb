@@ -1,6 +1,6 @@
 {
  "_note": "The CEO's parent intake questionnaire (16 Oct 2026, @Abdulloh Ochilov; therapist-reviewed), as data. Source of truth for the server (app/modules/intake/questionnaire.py) and the website (a copy in apps/web/src/content/backend/questionnaire.json, checked by questionnaire.test.ts). Question numbers never change and are never reused. `show` holds display rules R1-R19 and the follow-ups as one condition; `option_show` hides single options. Conditions: {q, in} (any of these answers), {q, answered}, {q, min/max} (numbers), {fact, in/min/max} with facts age (years), gmfcs, macs, cfcs (1-5, from C10/L2, D1, G2), {all}, {any}, {not}, and {ref} to a named rule in `defs`. `note` marks the team's drafts and open points for the physio.",
- "version": "2026-10-16",
+ "version": "2026-10-30",
  "steps": [
   "A",
   "B",
@@ -410,7 +410,13 @@
     "uz": "Tugʻilgan sanasi",
     "ru": "Дата рождения"
    },
-   "option_text": null
+   "option_text": null,
+   "hint": {
+    "en": "Day / month / year. For example: 27 / 02 / 2018",
+    "uz": "Kun / oy / yil. Masalan: 27 / 02 / 2018",
+    "ru": "День / месяц / год. Например: 27 / 02 / 2018"
+   },
+   "note": "30 Oct 2026: Day / Month / Year boxes with a hint; ages 2-18 only, no future date (B60); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
   },
   {
    "id": "A3",
@@ -452,13 +458,14 @@
      "boy": "Мальчик",
      "girl": "Девочка"
     }
-   }
+   },
+   "note": "30 Oct 2026: no 'Not sure' (B60); physio check needed"
   },
   {
    "id": "A4",
    "step": "A",
    "kind": "number",
-   "required": false,
+   "required": true,
    "health": false,
    "audience": "parent",
    "options": null,
@@ -468,8 +475,8 @@
    "option_show": null,
    "unit": "cm",
    "range": [
-    40,
-    220
+    60,
+    200
    ],
    "picture": null,
    "signup": false,
@@ -484,13 +491,19 @@
     "uz": "Boʻyi",
     "ru": "Рост"
    },
-   "option_text": null
+   "option_text": null,
+   "hint": {
+    "en": "An approximate number is fine.",
+    "uz": "Taxminiy raqam ham boʻladi.",
+    "ru": "Можно примерно."
+   },
+   "note": "30 Oct 2026: required, no 'Not sure', height 60-200 for ages 2-18, hint (B60); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
   },
   {
    "id": "A4_kg",
    "step": "A",
    "kind": "number",
-   "required": false,
+   "required": true,
    "health": false,
    "audience": "parent",
    "options": null,
@@ -500,8 +513,8 @@
    "option_show": null,
    "unit": "kg",
    "range": [
-    3,
-    150
+    6,
+    120
    ],
    "picture": null,
    "signup": false,
@@ -516,7 +529,13 @@
     "uz": "Vazni",
     "ru": "Вес"
    },
-   "option_text": null
+   "option_text": null,
+   "hint": {
+    "en": "An approximate number is fine.",
+    "uz": "Taxminiy raqam ham boʻladi.",
+    "ru": "Можно примерно."
+   },
+   "note": "30 Oct 2026: required, no 'Not sure', weight 6-120 for ages 2-18, hint (B60); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
   },
   {
    "id": "A5",
@@ -566,7 +585,8 @@
      "grandparent": "Бабушка или дедушка",
      "other_caregiver": "Другой взрослый, который ухаживает за ребёнком"
     }
-   }
+   },
+   "note": "30 Oct 2026: no 'Not sure' (B60); physio check needed"
   },
   {
    "id": "A6",
@@ -659,7 +679,8 @@
      "russian": "Русский",
      "other": "Другой"
     }
-   }
+   },
+   "note": "30 Oct 2026: no 'Not sure' (B60); physio check needed"
   },
   {
    "id": "A8",
@@ -732,7 +753,8 @@
      "two": "2",
      "three_plus": "3+"
     }
-   }
+   },
+   "note": "30 Oct 2026: no 'Not sure' (B60); physio check needed"
   },
   {
    "id": "A10",

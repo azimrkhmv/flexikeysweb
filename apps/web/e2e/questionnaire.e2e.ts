@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { setup } from "./helpers";
+import { birthDate, setup } from "./helpers";
 
 // IQ4: the CEO's questionnaire (16 Oct 2026) on the website: section A makes the child, the health consent opens
 // sections B, the modules and E, the diagnosis opens its module, and finishing builds the plan.
@@ -41,8 +41,13 @@ test("a parent answers the new questionnaire and gets a plan", async ({ page }, 
   await expect(page.getByRole("heading", { level: 1, name: "About your child and family" })).toBeVisible();
   await expect(page.locator("#q-A2").getByText("Not sure")).toHaveCount(0); // name and birthday have no "Not sure"
   await page.getByLabel(/What is your child's name/).fill("Malika");
-  await page.getByLabel("Date of birth").fill("2019-05-01");
+  await birthDate(page, "2019-05-01");
   await pick(page, "Boy or girl?", "Girl");
+  await page.getByLabel(/^Height/).fill("110"); // B60: required, no "Not sure"
+  await page.getByLabel(/^Weight/).fill("18");
+  await pick(page, "Who is filling this in?", "Mother");
+  await pick(page, "Language you speak with your child at home", "Uzbek");
+  await pick(page, "How many adults can help with exercises at home?", "Only me");
   await notSureToTheRest(page);
 
   await page.getByRole("button", { name: "I agree — continue" }).click();

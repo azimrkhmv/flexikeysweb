@@ -10,6 +10,15 @@ export const next = (page: Page) => page.getByRole("button", { name: "Next", exa
 export const skip = (page: Page) => page.getByRole("button", { name: "Skip for now" }).click();
 export const newPhone = (prefix: string) => `${prefix}${String(Date.now()).slice(-7)}`;
 
+/** The date of birth: its Day / Month / Year boxes (B60). */
+export async function birthDate(page: Page, iso: string) {
+  const [y, m, d] = iso.split("-");
+  const box = page.getByRole("group", { name: "Date of birth" });
+  await box.getByLabel("Day").fill(String(Number(d)));
+  await box.getByLabel("Month").selectOption(String(Number(m)));
+  await box.getByLabel("Year").fill(y);
+}
+
 /** Phone and code; a new number then gets the district and consent step. */
 export async function signIn(page: Page, phone: string) {
   await page.addInitScript(() => localStorage.setItem("fk_lang", JSON.stringify("en")));
@@ -34,7 +43,7 @@ export async function signUp(page: Page, phone: string) {
 /** The first step; returns the new child's id. */
 export async function childStep(page: Page, name: string) {
   await page.getByLabel("Child's first name").fill(name);
-  await page.getByLabel("Date of birth").fill("2019-05-01");
+  await birthDate(page, "2019-05-01");
   await pick(page, "Boy or girl", "Boy");
   await pick(page, "You are the child's…", "Mother");
   await pick(page, "Who is filling this in?", "Parent");

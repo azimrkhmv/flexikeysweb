@@ -917,7 +917,7 @@ decision; the source is "FlexiKeys — parent questionnaire fixes" (30 Oct 2026)
 - [x] **Bekzod** — `B59` Sign-up: city and district names in the app language, and the age line "for children aged 2 to 18" on the sign-up screen and step A (items 1, 5)
   - Done when: in Russian the city and district lists are in Russian, in English in English; the stored value is unchanged; the sign-up screen and step A say "2 to 18"
   - Needs: —
-- [ ] **Bekzod** — `B60` Child basics: date of birth as Day / Month / Year, height and weight required, no "Not sure" on family facts (items 2, 3, 4, 5, 6)
+- [x] **Bekzod** — `B60` Child basics: date of birth as Day / Month / Year, height and weight required, no "Not sure" on family facts (items 2, 3, 4, 5, 6)
   - Done when: date is Day / Month / Year with a hint; year 0001, future dates and ages outside 2–18 are refused on the website and the server; height and weight are required with the new ranges; A3, A4, A4_kg, A5, A7, A9 show no "Not sure"
   - Needs: B59
 - [ ] **Bekzod** — `B61` Diagnosis and body parts: B1 without "Not sure", B3_parts replaces B3, C2_side deleted, ages in months checked against the child's age (items 7, 8, 13)
