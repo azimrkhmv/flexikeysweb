@@ -4,7 +4,7 @@ import { useState } from "react";
 import { CalendarPlus, LocateFixed, MapPin, Phone, Send } from "lucide-react";
 import { Button, Card, Chip, Empty, LinkButton, PageHeader, Textarea, useAction } from "@/components/ui";
 import { needsFor } from "@/content/places";
-import { regionById } from "@/content/districts";
+import { districtName, regionName } from "@/content/districts";
 import { fmtDate, fmtSum } from "@/lib/format";
 import { api, sel, useDb } from "@/lib/api";
 import { useLang, useT } from "@/lib/i18n";
@@ -77,7 +77,7 @@ function PlaceCard({ place }: { place: Place & { distanceKm?: number } }) {
         </div>
       </div>
       <p className="text-sm text-ink-2">
-        {[place.district, regionById(place.region)?.name, place.address].filter(Boolean).join(" · ")}
+        {[districtName(place.district, lang), regionName(place.region, lang), place.address].filter(Boolean).join(" · ")}
         {place.distanceKm !== undefined && ` · ${t("help.km", { n: place.distanceKm.toFixed(1) })}`}
       </p>
       <dl className="grid gap-x-4 gap-y-1 text-sm sm:grid-cols-2">

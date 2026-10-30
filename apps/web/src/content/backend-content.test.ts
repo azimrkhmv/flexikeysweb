@@ -7,7 +7,7 @@ import { LEVELS } from "./levels";
 import type { TherapistInput } from "@/lib/types";
 import { intake as intakeText } from "@/messages/intake";
 import { DAILY_QUESTIONS } from "./daily";
-import { REGIONS } from "./districts";
+import { districtsWithoutLabel, REGIONS } from "./districts";
 import { exerciseLibrary, KIT_TOOLS } from "./exercises";
 import { STEPS, type Answers } from "./intake";
 
@@ -145,6 +145,7 @@ describe("backend content", () => {
 
   it("regions and districts", () => {
     check("districts.json", REGIONS.map((r) => ({ id: r.id, districts: r.districts })));
+    expect(districtsWithoutLabel()).toEqual([]); // Russian and English names for every district (B59)
   });
   it("roadmap parity cases", () => {
     check("roadmap_cases.json", { library: LIB, cases: roadmapCases() });

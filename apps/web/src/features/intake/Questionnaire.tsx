@@ -96,6 +96,7 @@ export function QuestionnaireWizard({ childId: initialChild, version }: { childI
       <h1 className="text-2xl font-extrabold text-ink sm:text-3xl">
         {step === "health_consent" ? t("intake.step.health_consent") : inLang(QUESTIONNAIRE.step_text, uiLang, step)}
       </h1>
+      {step === "A" && <p className="mt-2 text-ink-2">{t("auth.details.ages")}</p>}
 
       {step === "health_consent" ? (
         <Card className="mt-6 space-y-4 p-5">

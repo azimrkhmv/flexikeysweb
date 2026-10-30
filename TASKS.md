@@ -914,7 +914,7 @@ the database fields never shift.
 *Bekzod filled in the sign-up and the parent questionnaire as a parent (Russian and English). Every point has a
 decision; the source is "FlexiKeys — parent questionnaire fixes" (30 Oct 2026). Order: B59, B60, B61, B62, B63, then FA2.*
 
-- [ ] **Bekzod** — `B59` Sign-up: city and district names in the app language, and the age line "for children aged 2 to 18" on the sign-up screen and step A (items 1, 5)
+- [x] **Bekzod** — `B59` Sign-up: city and district names in the app language, and the age line "for children aged 2 to 18" on the sign-up screen and step A (items 1, 5)
   - Done when: in Russian the city and district lists are in Russian, in English in English; the stored value is unchanged; the sign-up screen and step A say "2 to 18"
   - Needs: —
 - [ ] **Bekzod** — `B60` Child basics: date of birth as Day / Month / Year, height and weight required, no "Not sure" on family facts (items 2, 3, 4, 5, 6)

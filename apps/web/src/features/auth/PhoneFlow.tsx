@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { homeFor } from "@/components/brand";
 import { Button, Checkbox, Field, Input, Select, useAction } from "@/components/ui";
-import { REGIONS, regionById } from "@/content/districts";
+import { districtName, REGIONS, regionById, regionName } from "@/content/districts";
 import { AuthTitle, FormError, FormNote } from "@/features/auth/parts";
 import { api, DEMO_PHONES, sel, useDb } from "@/lib/api";
 import { applyAccountLang, LANG_NAMES, LANGS, useLangChosen, useT, useLang } from "@/lib/i18n";
@@ -229,6 +229,7 @@ export function PhoneFlow({ showDemos }: { showDemos?: boolean }) {
 /** Basic consent + city and district (both required, spec §4). */
 function Details() {
   const t = useT();
+  const [lang] = useLang();
   const router = useRouter();
   const [region, setRegion] = useState(REGIONS[0].id);
   const [district, setDistrict] = useState("");
@@ -237,7 +238,7 @@ function Details() {
   const save = useAction(api.completeSignup);
   return (
     <>
-      <AuthTitle title={t("auth.details.title")} lead={t("auth.details.lead")} />
+      <AuthTitle title={t("auth.details.title")} lead={<>{t("auth.details.lead")}<span className="mt-1 block">{t("auth.details.ages")}</span></>} />
       <form
         className="space-y-5"
         onSubmit={async (e) => {
@@ -259,7 +260,7 @@ function Details() {
           >
             {REGIONS.map((r) => (
               <option key={r.id} value={r.id}>
-                {r.name}
+                {regionName(r.id, lang)}
               </option>
             ))}
           </Select>
@@ -271,7 +272,7 @@ function Details() {
             </option>
             {regionById(region)!.districts.map((d) => (
               <option key={d} value={d}>
-                {d}
+                {districtName(d, lang)}
               </option>
             ))}
           </Select>

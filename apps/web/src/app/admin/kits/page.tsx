@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button, Card, Chip, Empty, PageHeader, useAction } from "@/components/ui";
 import { SectionTitle, Table, td, th, useMe } from "@/features/pro/shared";
-import { regionById } from "@/content/districts";
+import { districtName, regionName } from "@/content/districts";
 import { KIT_NEXT } from "@/lib/api/kits";
 import { fmtDate } from "@/lib/format";
 import { api, sel } from "@/lib/api";
@@ -45,7 +45,7 @@ export default function AdminKits() {
                   <td className={td}>{fmtDate(o.createdAt, lang, "dayMonth")}</td>
                   <td className={td}>{o.phone}</td>
                   <td className={td}>
-                    {t(`kit.${o.delivery}`)}: {[o.address ?? sel.place(db, o.pickupPlaceId ?? "")?.name, o.district, regionById(o.region)?.name].filter(Boolean).join(", ")}
+                    {t(`kit.${o.delivery}`)}: {[o.address ?? sel.place(db, o.pickupPlaceId ?? "")?.name, o.district && districtName(o.district, lang), regionName(o.region, lang)].filter(Boolean).join(", ")}
                   </td>
                   <td className={td}>
                     {o.allergy === "yes" ? <Chip tone="sun">{o.allergyWhich}</Chip> : t("kit.allergy.no")}

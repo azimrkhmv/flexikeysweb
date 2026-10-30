@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Package } from "lucide-react";
 import { Button, Card, Chip, Field, Input, PageHeader, Select, Textarea, useAction } from "@/components/ui";
 import { KIT } from "@/content/kits";
-import { REGIONS, regionById } from "@/content/districts";
+import { districtName, REGIONS, regionById, regionName } from "@/content/districts";
 import { fmtDate, fmtSum } from "@/lib/format";
 import { api, sel, useDb } from "@/lib/api";
 import { useLang, useT } from "@/lib/i18n";
@@ -50,6 +50,7 @@ function Orders({ orders, owner }: { orders: KitOrder[]; owner: boolean }) {
 
 export default function HomeKit() {
   const t = useT();
+  const [lang] = useLang();
   const db = useDb();
   const me = sel.me(db);
   const kids = me ? sel.childrenOf(db, me.id) : [];
@@ -161,7 +162,7 @@ export default function HomeKit() {
               <Select value={reg} onChange={(e) => { setRegion(e.target.value); setDistrict(""); setPickup(""); }}>
                 {REGIONS.map((r) => (
                   <option key={r.id} value={r.id}>
-                    {r.name}
+                    {regionName(r.id, lang)}
                   </option>
                 ))}
               </Select>
@@ -171,7 +172,7 @@ export default function HomeKit() {
                 <option value="">—</option>
                 {regionById(reg)!.districts.map((d) => (
                   <option key={d} value={d}>
-                    {d}
+                    {districtName(d, lang)}
                   </option>
                 ))}
               </Select>
@@ -187,7 +188,7 @@ export default function HomeKit() {
                 <option value="">—</option>
                 {centres.map((p) => (
                   <option key={p.id} value={p.id}>
-                    {p.name} · {p.district}
+                    {p.name} · {districtName(p.district, lang)}
                   </option>
                 ))}
               </Select>
