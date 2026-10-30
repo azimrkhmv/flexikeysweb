@@ -58,8 +58,8 @@ def complete(seed: dict[str, Any], health: bool = True) -> dict[str, Any]:
     return answers
 
 
-CP_WALKING = {"A2": "2019-05-01", "B1": ["cp"], "B3": "left_side", "CP1": "spastic", "CP2": "one_side", "C10": "i",
-              "C6": "alone_7m"}  # fmt: skip
+CP_WALKING = {"A2": "2019-05-01", "B1": ["cp"], "B3_parts": ["left_arm"], "CP1": "spastic", "CP2": "one_side",
+              "C10": "i", "C6": "alone_7m"}  # fmt: skip
 
 
 def test_a_new_round_uses_the_new_questionnaire_and_is_finished_by_its_rules(client: TestClient) -> None:
@@ -117,6 +117,7 @@ def test_health_answers_need_the_consent_and_are_encrypted(client: TestClient) -
         ({"A2": "2099-01-01"}, "date_in_future"),
         ({"A2": (date.today() - timedelta(days=400)).isoformat()}, "age_out_of_range"),  # 1 year old
         ({"A2": "2000-01-01"}, "age_out_of_range"),
+        ({"A2": "2019-05-01", "B4": 200}, "older_than_child"),  # B61: more months than the child is old
         ({"J6": 2.5}, "out_of_range"),
         ({"DD2": 300}, "out_of_range"),
         ({"H6": "25:00"}, "not_a_time"),

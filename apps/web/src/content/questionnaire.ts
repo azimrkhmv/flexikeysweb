@@ -7,13 +7,13 @@ import data from "./backend/questionnaire.json";
 
 export type QAnswer = string | string[] | number | null | undefined;
 export type QAnswers = Record<string, QAnswer>;
-type Fact = "age" | "gmfcs" | "macs" | "cfcs";
+type Fact = "age" | "gmfcs" | "macs" | "cfcs" | "pattern";
 export type Cond =
   | { ref: string }
   | { all: Cond[] }
   | { any: Cond[] }
   | { not: Cond }
-  | { fact: Fact; in?: number[]; min?: number; max?: number }
+  | { fact: Fact; in?: (number | string)[]; min?: number; max?: number }
   | { q: string; in?: string[]; answered?: boolean; min?: number; max?: number };
 
 export interface QQuestion {
@@ -24,6 +24,8 @@ export interface QQuestion {
   health: boolean;
   audience: "parent" | "therapist";
   options: string[] | null;
+  /** Options no longer shown; old answers with them stay valid, and map to the new option when one is named (B61). */
+  retired_options?: Record<string, string | null>;
   max: number | null;
   exclusive: string | null;
   show: Cond | null;
@@ -62,8 +64,40 @@ function years(born: QAnswer, today: string): number | null {
 
 const level = (v: QAnswer) => (typeof v === "string" && v in LEVEL ? LEVEL[v] : null);
 
-/** Age in years and the GMFCS, MACS and CFCS levels (1-5). A therapist's L2 wins over the parent's C10. */
-export const facts = (a: QAnswers, today: string): Record<Fact, number | null> => ({
+/** The child's age in whole months on `today`, or null without a date of birth. */
+export function ageInMonths(born: QAnswer, today: string): number | null {
+  if (typeof born !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(born)) return null;
+  const [by, bm, bd] = born.split("-").map(Number);
+  const [ty, tm, td] = today.split("-").map(Number);
+  return (ty - by) * 12 + tm - bm - (td < bd ? 1 : 0);
+}
+
+/** B61: the pattern the rules read (as the retired B3 asked it), worked out from the body parts ticked in B3_parts.
+ * An old round's B3 answer still counts. null: nothing ticked, "None", or not answered. */
+export function bodyPattern(a: QAnswers): string | null {
+  if (!Array.isArray(a.B3_parts)) {
+    const old = a.B3;
+    return typeof old === "string" && ["right_side", "left_side", "mostly_legs", "whole_body"].includes(old) ? old : null;
+  }
+  const p = new Set(a.B3_parts.filter((x) => x !== "none"));
+  const has = (...xs: string[]) => xs.filter((x) => p.has(x)).length;
+  const right = has("right_arm", "right_leg");
+  const left = has("left_arm", "left_leg");
+  const arms = has("left_arm", "right_arm");
+  const legs = has("left_leg", "right_leg");
+  if (!p.size) return null;
+  if (!right && !left) return "whole_body"; // trunk, head and neck, or face and mouth only
+  if (!left) return "right_side";
+  if (!right) return "left_side";
+  if ((arms === 2 && legs === 2) || has("trunk", "head_neck")) return "whole_body"; // all four limbs, or both sides with the trunk or head and neck
+  if (legs === 2) return arms ? "three_limbs" : "mostly_legs";
+  return "whole_body"; // limbs on both sides in another mix: the cautious reading
+}
+
+/** Age in years, the GMFCS, MACS and CFCS levels (1-5; a therapist's L2 wins over the parent's C10) and the body
+ * pattern (bodyPattern). */
+export const facts = (a: QAnswers, today: string): Record<Fact, number | string | null> => ({
+  pattern: bodyPattern(a),
   age: years(a.A2, today),
   gmfcs: level(a.L2 || a.C10),
   macs: level(a.D1),
@@ -74,7 +108,7 @@ const given = (v: QAnswer) => v !== null && v !== undefined && v !== "" && !(Arr
 const inRange = (v: unknown, c: { min?: number; max?: number }) =>
   typeof v === "number" && (c.min === undefined || v >= c.min) && (c.max === undefined || v <= c.max);
 
-export function holds(cond: Cond | null | undefined, a: QAnswers, f: Record<Fact, number | null>): boolean {
+export function holds(cond: Cond | null | undefined, a: QAnswers, f: Record<Fact, number | string | null>): boolean {
   if (!cond) return true;
   if ("ref" in cond) return holds(QUESTIONNAIRE.defs[cond.ref], a, f);
   if ("all" in cond) return cond.all.every((c) => holds(c, a, f));
@@ -100,6 +134,14 @@ export function shownOptions(id: string, a: QAnswers, today: string): string[] |
   return q.options.filter((o) => holds(q.option_show?.[o], a, f));
 }
 
+/** Saved answers in today's options: a retired option shows as the option that replaced it (B61, B62). */
+export function upgrade(a: QAnswers): QAnswers {
+  const to = (id: string, v: string) => Q_BY_ID[id]?.retired_options?.[v] ?? v;
+  return Object.fromEntries(
+    Object.entries(a).map(([id, v]) => [id, typeof v === "string" ? to(id, v) : Array.isArray(v) ? [...new Set(v.map((x) => to(id, x)))] : v]),
+  );
+}
+
 /** FlexiKeys is for children aged 2 to 18 (founders, 30 Oct 2026). */
 export const AGE_MIN = 2;
 export const AGE_MAX = 18;
@@ -112,9 +154,13 @@ function realDate(v: string): boolean {
   return y >= 1 && t.getUTCFullYear() === y && t.getUTCMonth() === m - 1 && t.getUTCDate() === d;
 }
 
-/** Why the server (questionnaire.py problem_with) would refuse this typed answer, for a calm message under the
- * field; null when it is fine. Choices are never wrong, so only dates and numbers are checked. */
-export function typedProblem(q: QQuestion, v: QAnswer, today: string): string | null {
+/** Why the server (questionnaire.py problem_with, older_than_child) would refuse this typed answer, for a calm
+ * message under the field; null when it is fine. Choices are never wrong, so only dates and numbers are checked. */
+export function typedProblem(q: QQuestion, v: QAnswer, a: QAnswers, today: string): string | null {
+  if (q.kind === "months" && typeof v === "number") {
+    const months = ageInMonths(a.A2, today);
+    return months !== null && v > months ? "older_than_child" : null;
+  }
   if (q.kind === "date" && typeof v === "string") {
     if (!realDate(v)) return "not_a_date";
     if (v > today) return "date_in_future";

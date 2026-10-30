@@ -40,6 +40,7 @@ test("a parent answers the new questionnaire on the server and gets a plan", asy
 
   await page.getByRole("button", { name: "I agree — continue" }).click();
   await pick(page, /given your child a diagnosis/, "Cerebral palsy");
+  await pick(page, /Which parts of the body are affected/, "Left arm"); // B61: no "Not sure"
   await page.locator("#q-B13 input[type=file]").setInputFiles({ name: "letter.pdf", mimeType: "application/pdf", buffer: Buffer.from("%PDF-1.4\n") });
   await expect(page.locator("#q-B13 li")).toHaveCount(1);
   await notSureToTheRest(page);

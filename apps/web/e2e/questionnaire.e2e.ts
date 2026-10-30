@@ -53,6 +53,7 @@ test("a parent answers the new questionnaire and gets a plan", async ({ page }, 
   await page.getByRole("button", { name: "I agree — continue" }).click();
   await expect(page.getByRole("heading", { level: 1, name: "Diagnosis and medical history" })).toBeVisible();
   await pick(page, /given your child a diagnosis/, "Cerebral palsy");
+  await pick(page, /Which parts of the body are affected/, "Left arm"); // B61: no "Not sure"
   await notSureToTheRest(page);
   await expect(page.getByRole("heading", { level: 1, name: "Cerebral palsy" })).toBeVisible(); // the CP module opened (R1)
 

@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import mine from "./backend/questionnaire.json";
-import { inLang, Q_BY_ID, QUESTIONNAIRE, shownOptions, typedProblem, visible, type QAnswer, type QAnswers } from "./questionnaire";
+import { bodyPattern, inLang, Q_BY_ID, QUESTIONNAIRE, shownOptions, typedProblem, visible, type QAnswer, type QAnswers } from "./questionnaire";
 
 // IQ1: the questionnaire file is the server's, and the cases below fix which questions each sample child is shown.
 // questionnaire_cases.json (here and a copy in apps/api/tests) makes the server prove the same. Regenerate with
@@ -11,7 +11,7 @@ const CASES: { name: string; answers: QAnswers }[] = [
   { name: "no answers yet", answers: {} },
   {
     name: "one-sided CP, walks alone (GMFCS I)",
-    answers: { A2: "2019-05-01", B1: ["cp"], B3: "left_side", CP1: "spastic", CP2: "one_side", C10: "i", C3: "free_30min", C6: "alone_7m", D1: "ii", G1: ["sentences"], G2: "i", H7: "regular" },
+    answers: { A2: "2019-05-01", B1: ["cp"], B3_parts: ["left_arm", "left_leg"], CP1: "spastic", CP2: "one_side", C10: "i", C3: "free_30min", C6: "alone_7m", D1: "ii", G1: ["sentences"], G2: "i", H7: "regular" },
   },
   {
     name: "CP, GMFCS V, cannot sit",
@@ -32,6 +32,9 @@ const CASES: { name: string; answers: QAnswers }[] = [
   { name: "delay and not sure", answers: { A2: "2022-06-01", B1: ["developmental_delay", "not_sure"], DD3: "yes" } },
   { name: "CP and autism, GMFCS II, MACS I", answers: { A2: "2019-01-01", B1: ["cp", "autism"], C10: "ii", D1: "i", D7: "not_yet", CP2: "legs" } },
   { name: "CP under 4, GMFCS II", answers: { A2: "2023-06-01", B1: ["cp"], C10: "ii", F5: ["glasses"] } },
+  { name: "old round: B3 right side", answers: { A2: "2019-05-01", B1: ["cp"], B3: "right_side" } },
+  { name: "right arm and back", answers: { A2: "2019-05-01", B1: ["cp"], B3_parts: ["right_arm", "trunk"] } },
+  { name: "both legs and the back", answers: { A2: "2019-05-01", B1: ["cp"], B3_parts: ["left_leg", "right_leg", "trunk"] } },
 ];
 
 const BACKEND = new URL("./backend/", import.meta.url);
@@ -50,7 +53,8 @@ describe("questionnaire (IQ1)", () => {
       if (typeof o.ref === "string") expect(QUESTIONNAIRE.defs, o.ref).toHaveProperty(o.ref);
       if (typeof o.q === "string") {
         expect(Q_BY_ID, o.q).toHaveProperty(o.q);
-        for (const v of (o.in as string[] | undefined) ?? []) expect(Q_BY_ID[o.q].options, `${o.q}=${v}`).toContain(v);
+        const known = [...(Q_BY_ID[o.q].options ?? []), ...Object.keys(Q_BY_ID[o.q].retired_options ?? {})]; // old answers still match (B61)
+        for (const v of (o.in as string[] | undefined) ?? []) expect(known, `${o.q}=${v}`).toContain(v);
       }
       Object.values(o).forEach((v) => (Array.isArray(v) ? v.forEach(walk) : walk(v)));
     };
@@ -94,7 +98,7 @@ describe("questionnaire (IQ1)", () => {
   });
 
   it("refuses the dates and numbers the server refuses (B60)", () => {
-    const p = (id: string, v: QAnswer) => typedProblem(Q_BY_ID[id], v, TODAY);
+    const p = (id: string, v: QAnswer) => typedProblem(Q_BY_ID[id], v, {}, TODAY);
     expect(p("A2", "2018-02-27")).toBeNull();
     expect(p("A2", "2018-02-31")).toBe("not_a_date");
     expect(p("A2", "0001-02-27")).toBe("age_out_of_range");
@@ -107,6 +111,34 @@ describe("questionnaire (IQ1)", () => {
     expect(p("A4", 104.5)).toBeNull();
     expect(p("A4_kg", 121)).toBe("out_of_range");
     expect(p("B8_date", "2026-01-10")).toBeNull();
+  });
+
+  it("refuses an age in months larger than the child's age (B61)", () => {
+    const born = { A2: "2019-05-01" }; // 89 months old on TODAY
+    expect(typedProblem(Q_BY_ID.B4, 90, born, TODAY)).toBe("older_than_child");
+    expect(typedProblem(Q_BY_ID.B4, 89, born, TODAY)).toBeNull();
+    expect(typedProblem(Q_BY_ID.DD2_walk, "not_yet", born, TODAY)).toBeNull();
+    expect(typedProblem(Q_BY_ID.DD2, 300, {}, TODAY)).toBeNull(); // no date of birth: nothing to compare
+  });
+
+  it("works out the body pattern from the parts ticked (B61)", () => {
+    const p = (parts: string[]) => bodyPattern({ B3_parts: parts });
+    expect(p(["right_arm"])).toBe("right_side");
+    expect(p(["right_arm", "right_leg", "face_mouth"])).toBe("right_side");
+    expect(p(["left_leg"])).toBe("left_side");
+    expect(p(["left_leg", "right_leg"])).toBe("mostly_legs");
+    expect(p(["left_leg", "right_leg", "left_arm"])).toBe("three_limbs");
+    expect(p(["left_leg", "right_leg", "left_arm", "right_arm"])).toBe("whole_body");
+    expect(p(["left_leg", "right_leg", "trunk"])).toBe("whole_body");
+    expect(p(["trunk"])).toBe("whole_body");
+    expect(p(["face_mouth"])).toBe("whole_body");
+    expect(p(["none"])).toBeNull();
+    expect(bodyPattern({})).toBeNull();
+    expect(bodyPattern({ B3: "left_side" })).toBe("left_side"); // an old round's answer
+    for (const name of ["one-sided CP, walks alone (GMFCS I)", "old round: B3 right side", "right arm and back"]) {
+      expect(visible(CASES.find((c) => c.name === name)!.answers, TODAY), name).toContain("CP15"); // ONE_SIDE
+    }
+    expect(visible(CASES.find((c) => c.name === "both legs and the back")!.answers, TODAY)).not.toContain("CP15");
   });
 
   it("follows the display rules", () => {

@@ -114,6 +114,11 @@ async def save_answers(
                 and not all(key.startswith(f"children/{child_id}/intake/") and storage.exists(key) for key in value)
             ):
                 raise AppError(422, "invalid_answer", question=qid, reason="not_uploaded")  # this child's, uploaded
+        given = {**(await _out(db, r)).answers, **body.answers}  # an age in months must fit the child's age (B61)
+        for qid, value in body.answers.items():
+            months = questionnaire.older_than_child(qid, value, given, datetime.now(TASHKENT).date())
+            if months is not None:
+                raise AppError(422, "invalid_answer", question=qid, reason="older_than_child", months=months)
     if any(health_of.values()):
         await require_consent(db, child_id, ConsentKind.health)
     for qid, health in health_of.items():

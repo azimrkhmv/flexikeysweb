@@ -1,5 +1,5 @@
 {
- "_note": "The CEO's parent intake questionnaire (16 Oct 2026, @Abdulloh Ochilov; therapist-reviewed), as data. Source of truth for the server (app/modules/intake/questionnaire.py) and the website (a copy in apps/web/src/content/backend/questionnaire.json, checked by questionnaire.test.ts). Question numbers never change and are never reused. `show` holds display rules R1-R19 and the follow-ups as one condition; `option_show` hides single options. Conditions: {q, in} (any of these answers), {q, answered}, {q, min/max} (numbers), {fact, in/min/max} with facts age (years), gmfcs, macs, cfcs (1-5, from C10/L2, D1, G2), {all}, {any}, {not}, and {ref} to a named rule in `defs`. `note` marks the team's drafts and open points for the physio.",
+ "_note": "The CEO's parent intake questionnaire (16 Oct 2026, @Abdulloh Ochilov; therapist-reviewed), as data. Source of truth for the server (app/modules/intake/questionnaire.py) and the website (a copy in apps/web/src/content/backend/questionnaire.json, checked by questionnaire.test.ts). Question numbers never change and are never reused. `show` holds display rules R1-R19 and the follow-ups as one condition; `option_show` hides single options. Conditions: {q, in} (any of these answers), {q, answered}, {q, min/max} (numbers), {fact, in/min/max} with facts age (years), gmfcs, macs, cfcs (1-5, from C10/L2, D1, G2), {all}, {any}, {not}, and {ref} to a named rule in `defs`. `note` marks the team's drafts and open points for the physio. Retired 30 Oct 2026, do not reuse: B3 (replaced by B3_parts; old B3 answers still count, see body_pattern), C2_side (B3_parts covers it). `retired_options` lists options no longer shown: old answers with them stay valid and map to the named option (null: kept as they are). The fact `pattern` is the body pattern from B3_parts.",
  "version": "2026-10-30",
  "steps": [
   "A",
@@ -242,7 +242,7 @@
      ]
     },
     {
-     "q": "B3",
+     "fact": "pattern",
      "in": [
       "right_side",
       "left_side"
@@ -830,8 +830,7 @@
     "down_syndrome",
     "autism",
     "other",
-    "no_diagnosis",
-    "not_sure"
+    "no_diagnosis"
    ],
    "max": null,
    "exclusive": null,
@@ -857,8 +856,7 @@
      "down_syndrome": "Down syndrome",
      "autism": "Autism",
      "other": "Other",
-     "no_diagnosis": "No diagnosis yet",
-     "not_sure": "Not sure"
+     "no_diagnosis": "No diagnosis yet"
     },
     "uz": {
      "cp": "Bolalar serebral falaji (BSF)",
@@ -867,8 +865,7 @@
      "down_syndrome": "Daun sindromi",
      "autism": "Autizm",
      "other": "Boshqa",
-     "no_diagnosis": "Hali tashxis qoʻyilmagan",
-     "not_sure": "Bilmayman"
+     "no_diagnosis": "Hali tashxis qoʻyilmagan"
     },
     "ru": {
      "cp": "Детский церебральный паралич (ДЦП)",
@@ -877,27 +874,33 @@
      "down_syndrome": "Синдром Дауна",
      "autism": "Аутизм",
      "other": "Другое",
-     "no_diagnosis": "Диагноза пока нет",
-     "not_sure": "Не уверен(а)"
+     "no_diagnosis": "Диагноза пока нет"
     }
-   }
+   },
+   "retired_options": {
+    "not_sure": null
+   },
+   "note": "30 Oct 2026: 'Not sure' removed (a parent who does not know picks 'No diagnosis yet'); old 'not_sure' answers stay valid and still count as not diagnosed (B61); physio check needed"
   },
   {
-   "id": "B3",
+   "id": "B3_parts",
    "step": "B",
-   "kind": "single",
+   "kind": "multi",
    "required": true,
    "health": true,
    "audience": "parent",
    "options": [
-    "right_side",
-    "left_side",
-    "mostly_legs",
-    "whole_body",
-    "not_sure"
+    "left_arm",
+    "right_arm",
+    "left_leg",
+    "right_leg",
+    "trunk",
+    "head_neck",
+    "face_mouth",
+    "none"
    ],
    "max": null,
-   "exclusive": null,
+   "exclusive": "none",
    "show": null,
    "option_show": null,
    "unit": null,
@@ -910,33 +913,43 @@
     "V"
    ],
    "text": {
-    "en": "Which parts of the body are most affected?",
-    "uz": "Tananing qaysi qismlariga koʻproq taʼsir qilgan?",
-    "ru": "Какие части тела затронуты больше всего?"
+    "en": "Which parts of the body are affected? Tick all that apply.",
+    "uz": "Tananing qaysi qismlariga taʼsir qilgan? Mos keladiganlarning hammasini belgilang.",
+    "ru": "Какие части тела затронуты? Отметьте всё подходящее."
    },
    "option_text": {
     "en": {
-     "right_side": "Right side",
-     "left_side": "Left side",
-     "mostly_legs": "Mostly legs",
-     "whole_body": "Whole body",
-     "not_sure": "Not sure"
+     "left_arm": "Left arm",
+     "right_arm": "Right arm",
+     "left_leg": "Left leg",
+     "right_leg": "Right leg",
+     "trunk": "Back and tummy (keeping balance when sitting)",
+     "head_neck": "Head and neck",
+     "face_mouth": "Face and mouth (eating, talking)",
+     "none": "None, my child moves like other children"
     },
     "uz": {
-     "right_side": "Oʻng tomoni",
-     "left_side": "Chap tomoni",
-     "mostly_legs": "Asosan oyoqlar",
-     "whole_body": "Butun tana",
-     "not_sure": "Bilmayman"
+     "left_arm": "Chap qoʻl",
+     "right_arm": "Oʻng qoʻl",
+     "left_leg": "Chap oyoq",
+     "right_leg": "Oʻng oyoq",
+     "trunk": "Orqa va qorin (oʻtirganda muvozanatni saqlash)",
+     "head_neck": "Bosh va boʻyin",
+     "face_mouth": "Yuz va ogʻiz (ovqatlanish, gapirish)",
+     "none": "Hech biri, farzandim tengdoshlari kabi harakatlanadi"
     },
     "ru": {
-     "right_side": "Правая сторона",
-     "left_side": "Левая сторона",
-     "mostly_legs": "В основном ноги",
-     "whole_body": "Всё тело",
-     "not_sure": "Не уверен(а)"
+     "left_arm": "Левая рука",
+     "right_arm": "Правая рука",
+     "left_leg": "Левая нога",
+     "right_leg": "Правая нога",
+     "trunk": "Спина и живот (держать равновесие сидя)",
+     "head_neck": "Голова и шея",
+     "face_mouth": "Лицо и рот (еда, речь)",
+     "none": "Ни одна, ребёнок двигается как сверстники"
     }
-   }
+   },
+   "note": "30 Oct 2026: new, replaces B3; the rules read the pattern worked out from it (questionnaire.py body_pattern): one side, both legs, three limbs or whole body. Our reading: limbs on both sides with the back or head and neck = whole body; one side with the back = that side (B61); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
   },
   {
    "id": "B4",
@@ -962,7 +975,8 @@
     "uz": "Tashxis qoʻyilgandagi yoshi",
     "ru": "Возраст, когда поставили диагноз"
    },
-   "option_text": null
+   "option_text": null,
+   "note": "30 Oct 2026: an age in months larger than the child's age is refused, with a message (B61); physio check needed"
   },
   {
    "id": "B5",
@@ -4051,7 +4065,8 @@
     "uz": "Farzandingiz necha yoshida boshini tuta boshlagan?",
     "ru": "В каком возрасте ребёнок начал держать голову?"
    },
-   "option_text": null
+   "option_text": null,
+   "note": "30 Oct 2026: an age in months larger than the child's age is refused, with a message (B61); physio check needed"
   },
   {
    "id": "DD2_sit",
@@ -4080,7 +4095,8 @@
     "uz": "Farzandingiz necha yoshida oʻtira boshlagan?",
     "ru": "В каком возрасте ребёнок начал сидеть?"
    },
-   "option_text": null
+   "option_text": null,
+   "note": "30 Oct 2026: an age in months larger than the child's age is refused, with a message (B61); physio check needed"
   },
   {
    "id": "DD2_walk",
@@ -4109,7 +4125,8 @@
     "uz": "Farzandingiz necha yoshida yura boshlagan?",
     "ru": "В каком возрасте ребёнок начал ходить?"
    },
-   "option_text": null
+   "option_text": null,
+   "note": "30 Oct 2026: an age in months larger than the child's age is refused, with a message (B61); physio check needed"
   },
   {
    "id": "DD2_word",
@@ -4138,7 +4155,8 @@
     "uz": "Farzandingiz necha yoshida ilk soʻzini aytgan?",
     "ru": "В каком возрасте ребёнок сказал первое слово?"
    },
-   "option_text": null
+   "option_text": null,
+   "note": "30 Oct 2026: an age in months larger than the child's age is refused, with a message (B61); physio check needed"
   },
   {
    "id": "DD3",
@@ -5411,92 +5429,6 @@
      "back_to_tummy": "Со спины на живот",
      "tummy_to_back": "С живота на спину",
      "both_ways": "В обе стороны, через оба бока"
-    }
-   }
-  },
-  {
-   "id": "C2_side",
-   "step": "C",
-   "kind": "single",
-   "required": false,
-   "health": false,
-   "audience": "parent",
-   "options": [
-    "right",
-    "left",
-    "same"
-   ],
-   "max": null,
-   "exclusive": null,
-   "show": {
-    "all": [
-     {
-      "any": [
-       {
-        "not": {
-         "q": "B1",
-         "answered": true
-        }
-       },
-       {
-        "q": "B1",
-        "in": [
-         "cp",
-         "developmental_delay",
-         "no_diagnosis",
-         "not_sure",
-         "other",
-         "down_syndrome",
-         "autism"
-        ]
-       }
-      ]
-     },
-     {
-      "ref": "R5_MOTOR"
-     },
-     {
-      "q": "C2",
-      "answered": true
-     },
-     {
-      "not": {
-       "q": "C2",
-       "in": [
-        "no"
-       ]
-      }
-     }
-    ]
-   },
-   "option_show": null,
-   "unit": null,
-   "range": null,
-   "picture": null,
-   "signup": false,
-   "feeds": [
-    "E"
-   ],
-   "text": {
-    "en": "Is one side harder?",
-    "uz": "Bir tomoni qiyinroqmi?",
-    "ru": "В одну сторону переворачиваться труднее?"
-   },
-   "option_text": {
-    "en": {
-     "right": "Right",
-     "left": "Left",
-     "same": "Same"
-    },
-    "uz": {
-     "right": "Oʻng",
-     "left": "Chap",
-     "same": "Bir xil"
-    },
-    "ru": {
-     "right": "В правую",
-     "left": "В левую",
-     "same": "Одинаково"
     }
    }
   },

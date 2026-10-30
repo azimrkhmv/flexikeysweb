@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import { FileUp, ShieldCheck, Trash2 } from "lucide-react";
 import { Button, Card, Field, Input, Textarea, useAction } from "@/components/ui";
-import { inLang, Q_BY_ID, QUESTIONNAIRE, shownOptions, typedProblem, visible, type QAnswer, type QAnswers, type QQuestion } from "@/content/questionnaire";
+import { ageInMonths, inLang, Q_BY_ID, QUESTIONNAIRE, shownOptions, typedProblem, upgrade, visible, type QAnswer, type QAnswers, type QQuestion } from "@/content/questionnaire";
 import { pView } from "@/content/questionnaireBridge";
 import { FormError, FormNote } from "@/features/auth/parts";
 import { api, sel, useDb } from "@/lib/api";
@@ -18,7 +18,7 @@ import { Ready } from "./Wizard";
 // videos) waits for IQ8 and section L is the therapist's (IQ6). Text comes from the data in the parent's language.
 
 // Name, birthday and the family facts (B60, TASKS.md section 3: replaces spec §5 for these) have no "Not sure".
-const NO_NOT_SURE = new Set(["A1", "A2", "A3", "A4", "A4_kg", "A5", "A7", "A9"]);
+const NO_NOT_SURE = new Set(["A1", "A2", "A3", "A4", "A4_kg", "A5", "A7", "A9", "B1", "B3_parts"]);
 const TEXT_MAX = 200;
 const LONGTEXT_MAX = 1000;
 const FILES_MAX = 5;
@@ -34,7 +34,7 @@ export function QuestionnaireWizard({ childId: initialChild, version }: { childI
   const [childId, setChildId] = useState<string | null>(initialChild ?? null);
   const child = childId ? sel.child(db, childId) : null;
   const round = childId ? sel.intakeRound(db, childId)?.round ?? 1 : 1;
-  const [answers, setAnswers] = useState<QAnswers>(() => (childId ? sel.intakeAnswers(db, childId, round) : {}));
+  const [answers, setAnswers] = useState<QAnswers>(() => (childId ? upgrade(sel.intakeAnswers(db, childId, round)) : {}));
   const health = childId ? sel.hasConsent(db, childId, "health") : false;
   const [declined, setDeclined] = useState(false);
   const [plan, setPlan] = useState<Roadmap | null>(null);
@@ -53,7 +53,7 @@ export function QuestionnaireWizard({ childId: initialChild, version }: { childI
   const step = steps[Math.min(i, steps.length - 1)];
   const questions = inStep(step);
   // Open: a required question without an answer, or an answer the server would refuse (its message shows under it).
-  const open = new Set(questions.filter((q) => (q.required && unanswered(answers[q.id])) || typedProblem(q, answers[q.id], today())).map((q) => q.id));
+  const open = new Set(questions.filter((q) => (q.required && unanswered(answers[q.id])) || typedProblem(q, answers[q.id], answers, today())).map((q) => q.id));
   const set = (id: string, v: QAnswer) => setAnswers((a) => ({ ...a, [id]: v }));
 
   const showFirstOpen = () => {
@@ -67,7 +67,7 @@ export function QuestionnaireWizard({ childId: initialChild, version }: { childI
     // ponytail: a cleared answer ("" or no option ticked) is not sent, so the server keeps the last one; add a
     // "clear" call when parents need it.
     const mine = Object.fromEntries(
-      Object.entries(answers).filter(([k, v]) => Q_BY_ID[k]?.step === step && !unanswered(v) && !typedProblem(Q_BY_ID[k], v, today())),
+      Object.entries(answers).filter(([k, v]) => Q_BY_ID[k]?.step === step && !unanswered(v) && !typedProblem(Q_BY_ID[k], v, answers, today())),
     ) as Record<string, IntakeValue>;
     if (!childId) {
       const c = await api.createChildFromIntake(mine, uiLang, version);
@@ -165,9 +165,9 @@ export function Question({ q, answers, set, childId }: { q: QQuestion; answers: 
   const text = inLang(q.text, uiLang);
   const label = text + (q.unit ? ` (${t(`intake.unit.${q.unit}`)})` : "") + (q.required ? "" : ` · ${t("intake.optional")}`);
   const hint = q.hint && <span className="mb-2 block text-xs text-muted">{inLang(q.hint, uiLang)}</span>;
-  const problem = typedProblem(q, v, today());
+  const problem = typedProblem(q, v, answers, today());
   const own = `intake.problem.${q.id}.${problem}`; // a question's own message, else the general one
-  const error = problem && (t(own) !== own ? t(own) : t(`intake.problem.${problem}`, { min: q.range?.[0] ?? "", max: q.range?.[1] ?? "" }));
+  const error = problem && (t(own) !== own ? t(own) : t(`intake.problem.${problem}`, { min: q.range?.[0] ?? "", max: q.range?.[1] ?? "", n: ageInMonths(answers.A2, today()) ?? "" }));
   const alert = error && <p role="alert" className="mt-2 text-sm font-semibold text-[#8f3a2c]">{error}</p>;
   const options = shownOptions(q.id, answers, today()) ?? [];
   const opt = (o: string) => (q.option_text ? inLang(q.option_text, uiLang, o) : o);
@@ -210,12 +210,16 @@ export function Question({ q, answers, set, childId }: { q: QQuestion; answers: 
         <fieldset>
           <legend className="mb-2 font-bold text-ink">{label}</legend>
           {hint}
-          <div className="flex flex-wrap items-center gap-2">
+          {/* The unit right after the number; "Not yet" and "Not sure" on their own line (B61). */}
+          <div className="flex items-center gap-2">
             <Input
               type="number" inputMode="numeric" min={0} max={240} step={1} className="w-28" aria-label={`${text} (${t("intake.months")})`}
               value={typeof v === "number" ? v : ""} onChange={(e) => set(q.id, number(e.target.value))}
             />
             <span className="text-sm font-semibold text-ink-2">{t("intake.months")}</span>
+          </div>
+          {alert}
+          <div className="mt-2 flex flex-wrap gap-2">
             <Choice name={q.id} type="radio" checked={v === "not_yet"} onChange={() => set(q.id, "not_yet")} label={t("intake.ability.0")} />
             {notSure}
           </div>
