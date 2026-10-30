@@ -25,7 +25,7 @@ def test_every_numbered_question_of_the_questionnaire_is_there() -> None:
     sections = {"A": 10, "B": 13, "C": 25, "D": 13, "E": 13, "F": 11, "G": 10, "H": 8, "I": 9, "J": 11, "L": 9,
                 "CP": 21, "DCD": 12, "DD": 6, "DS": 7, "AU": 8}  # fmt: skip
     moved = {"B2", "B9", "B12"}  # moved into the CP module (CP1, CP3, CP4); numbers are never reused
-    moved |= {"B3"}  # retired 30 Oct 2026: B3_parts replaces it (B61)
+    moved |= {"B3", "D12"}  # retired 30 Oct 2026: B3_parts, D12_spoon and D12_cup replace them (B61, B62)
     for prefix, last in sections.items():
         for n in range(1, last + 1):
             qid = f"{prefix}{n}"

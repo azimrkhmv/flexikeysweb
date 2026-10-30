@@ -923,12 +923,16 @@ decision; the source is "FlexiKeys — parent questionnaire fixes" (30 Oct 2026)
 - [x] **Bekzod** — `B61` Diagnosis and body parts: B1 without "Not sure", B3_parts replaces B3, C2_side deleted, ages in months checked against the child's age (items 7, 8, 13)
   - Done when: B1 has no "Not sure"; B3_parts replaces B3 and its pattern feeds every rule B3 fed; C2_side is gone; an age at diagnosis (or DD2/DD2_walk) larger than the child's age shows the message and is refused by the server; old saved answers still load
   - Needs: B60
-- [ ] **Bekzod** — `B62` Skill questions: wording and options (items 10, 11, 12, 14, 15, 16, 17, 19, 20, 21, 22, 23, 24, 25)
+- [x] **Bekzod** — `B62` Skill questions: wording and options (items 10, 11, 12, 14, 15, 16, 17, 19, 20, 21, 22, 23, 24, 25)
   - Done when: every text of the review's section 5 is in place in en and ru with a uz draft; hints show on the step questions; C1, C4, C7, D12 changes work with the rules and the bridge; the cases files cover the new ids
   - Needs: B61
 - [ ] **Bekzod** — `B63` Optional answers: clear by tapping again; "Not sure" on C14, C17, C19 (item 18)
   - Done when: tapping a chosen optional answer clears it, and the three questions show "Not sure"
   - Needs: B62
+- [ ] **Bekzod** — `B64` C1 (head control) "Not yet" or "Only for a short time" changes the child's setup: a tablet stand at eye level and supported seating (Home Kit and settings), and a flag for the therapist that switch access may be needed (review item 14, part 3)
+  - Done when: a child with C1 "Not yet" or "Only for a short time" gets the tablet stand and seating advice in the Home Kit and settings, and appears on the therapist's list with "switch access may be needed"
+  - Needs: B62
+  - Note (B62): nothing yet turns questionnaire answers into device or seating settings (`feeds: ["S"]` is only a label), so B62 did the wording and the show rule only, as the review said
 
 ## 6. Ask and collect
 

@@ -65,7 +65,8 @@ export function pView(a: QAnswers, today: string): PAnswers {
   p.P20 = talk.has("sentences") || talk.has("single_words") ? 2 : talk.has("sounds_gestures") ? 1 : talk.size ? 0 : undefined;
   p.P21 = talk.has("sentences") ? 2 : talk.has("single_words") ? 1 : talk.size ? 0 : undefined;
   p.P23 = ability(a.D4, { thumb_finger: 2, whole_hand: 1, cannot: 0 });
-  p.P24 = ability(a.D12, { yes: 2, with_help: 1, no: 0 }) ?? ability(a.D11, { fingers: 2, fist: 1, cant: 0 });
+  const held = { yes: 2, with_help: 1, no: 0 }; // the spoon, else the cup, else an old round's D12 (B62)
+  p.P24 = ability(a.D12_spoon, held) ?? ability(a.D12_cup, held) ?? ability(a.D12, held) ?? ability(a.D11, { fingers: 2, fist: 1, cant: 0 });
   p.P26 = ability(a.D7, { accurately: 2, big_only: 1, with_help: 1, not_yet: 0 });
   p.P27 = ability(a.C3, { free_30min: 2, free_few_min: 2, hands_5min: 1, hands_under_10s: 1, cant_sit: 0 });
   p.P29 = ability(a.F6, { normal: 2, hearing_aid: 1, hard: 1, deaf: 0 });

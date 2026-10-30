@@ -141,6 +141,16 @@ def test_months_numbers_and_times_are_kept(client: TestClient) -> None:
     assert saved(client, owner, child) == given
 
 
+def test_old_answers_with_retired_options_stay_valid(client: TestClient) -> None:
+    """B61, B62: an answer saved before an option was retired can be saved again."""
+    owner = parent(client)
+    child = add_child(client, owner)
+    health_consent(client, owner, child)
+    assert save(client, owner, child, {"B1": ["not_sure"], "C7": "under_7m"}).status_code == 200
+    assert save(client, owner, child, {"C7": "home", "C4": "walks", "D12_spoon": "no"}).status_code == 200
+    assert title(save(client, owner, child, {"C7": "far"})) == (422, "invalid_answer")
+
+
 def test_files_must_be_this_childs_uploads(client: TestClient, bucket: None) -> None:  # noqa: F811
     owner = parent(client)
     child = add_child(client, owner)

@@ -34,6 +34,8 @@ const CASES: { name: string; answers: QAnswers }[] = [
   { name: "pain often, nowhere marked", answers: { B1: ["cp"], E3: "often" } },
   { name: "pain sometimes, weak bones", answers: { B1: ["cp"], E3: "sometimes", E4: ["back", "left_foot"], E7: "yes", E7_where: ["shoulders"] } },
   { name: "implant", answers: { B1: ["other"], E13: "yes", E7: "no", DD4: "no" } },
+  { name: "spoon not yet, cup with help", answers: { B1: ["cp"], D12_spoon: "no", D12_cup: "with_help", D11: "fingers" } },
+  { name: "cup only", answers: { B1: ["cp"], D12_cup: "with_help", D11: "fingers" } },
 ];
 
 const BACKEND = new URL("./backend/", import.meta.url);

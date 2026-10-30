@@ -1,5 +1,5 @@
 {
- "_note": "The CEO's parent intake questionnaire (16 Oct 2026, @Abdulloh Ochilov; therapist-reviewed), as data. Source of truth for the server (app/modules/intake/questionnaire.py) and the website (a copy in apps/web/src/content/backend/questionnaire.json, checked by questionnaire.test.ts). Question numbers never change and are never reused. `show` holds display rules R1-R19 and the follow-ups as one condition; `option_show` hides single options. Conditions: {q, in} (any of these answers), {q, answered}, {q, min/max} (numbers), {fact, in/min/max} with facts age (years), gmfcs, macs, cfcs (1-5, from C10/L2, D1, G2), {all}, {any}, {not}, and {ref} to a named rule in `defs`. `note` marks the team's drafts and open points for the physio. Retired 30 Oct 2026, do not reuse: B3 (replaced by B3_parts; old B3 answers still count, see body_pattern), C2_side (B3_parts covers it). `retired_options` lists options no longer shown: old answers with them stay valid and map to the named option (null: kept as they are). The fact `pattern` is the body pattern from B3_parts.",
+ "_note": "The CEO's parent intake questionnaire (16 Oct 2026, @Abdulloh Ochilov; therapist-reviewed), as data. Source of truth for the server (app/modules/intake/questionnaire.py) and the website (a copy in apps/web/src/content/backend/questionnaire.json, checked by questionnaire.test.ts). Question numbers never change and are never reused. `show` holds display rules R1-R19 and the follow-ups as one condition; `option_show` hides single options. Conditions: {q, in} (any of these answers), {q, answered}, {q, min/max} (numbers), {fact, in/min/max} with facts age (years), gmfcs, macs, cfcs (1-5, from C10/L2, D1, G2), {all}, {any}, {not}, and {ref} to a named rule in `defs`. `note` marks the team's drafts and open points for the physio. Retired 30 Oct 2026, do not reuse: B3 (replaced by B3_parts; old B3 answers still count, see body_pattern), C2_side (B3_parts covers it). `retired_options` lists options no longer shown: old answers with them stay valid and map to the named option (null: kept as they are). The fact `pattern` is the body pattern from B3_parts. Retired 30 Oct 2026, do not reuse: D12 (replaced by D12_spoon and D12_cup; old D12 answers still feed P24).",
  "version": "2026-10-30",
  "steps": [
   "A",
@@ -4061,12 +4061,17 @@
     "T"
    ],
    "text": {
-    "en": "At what age did your child hold the head up?",
-    "uz": "Farzandingiz necha yoshida boshini tuta boshlagan?",
-    "ru": "В каком возрасте ребёнок начал держать голову?"
+    "en": "How old was your child (in months) when they first held their head up by themselves?",
+    "uz": "Farzandingiz necha oyligida boshini oʻzi tuta boshlagan?",
+    "ru": "Во сколько месяцев ребёнок начал сам держать голову?"
    },
    "option_text": null,
-   "note": "30 Oct 2026: an age in months larger than the child's age is refused, with a message (B61); physio check needed"
+   "note": "30 Oct 2026: an age in months larger than the child's age is refused, with a message (B61); physio check needed | 30 Oct 2026: question says 'in months', example hint (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)",
+   "hint": {
+    "en": "For example: 4",
+    "uz": "Masalan: 4",
+    "ru": "Например: 4"
+   }
   },
   {
    "id": "DD2_sit",
@@ -4121,12 +4126,12 @@
     "T"
    ],
    "text": {
-    "en": "At what age did your child walk?",
-    "uz": "Farzandingiz necha yoshida yura boshlagan?",
-    "ru": "В каком возрасте ребёнок начал ходить?"
+    "en": "How old was your child (in months) when they first walked by themselves?",
+    "uz": "Farzandingiz necha oyligida oʻzi yura boshlagan?",
+    "ru": "Во сколько месяцев ребёнок начал сам ходить?"
    },
    "option_text": null,
-   "note": "30 Oct 2026: an age in months larger than the child's age is refused, with a message (B61); physio check needed"
+   "note": "30 Oct 2026: an age in months larger than the child's age is refused, with a message (B61); physio check needed | 30 Oct 2026: question says 'in months' (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
   },
   {
    "id": "DD2_word",
@@ -4299,9 +4304,11 @@
    "health": true,
    "audience": "parent",
    "options": [
+    "always",
     "usually",
     "sometimes",
-    "rarely"
+    "rarely",
+    "never"
    ],
    "max": null,
    "exclusive": null,
@@ -4324,21 +4331,28 @@
    },
    "option_text": {
     "en": {
+     "always": "Always",
      "usually": "Usually",
      "sometimes": "Sometimes",
-     "rarely": "Rarely"
+     "rarely": "Rarely",
+     "never": "Never"
     },
     "uz": {
+     "always": "Har doim",
      "usually": "Odatda",
      "sometimes": "Baʼzan",
-     "rarely": "Kamdan-kam"
+     "rarely": "Kamdan-kam",
+     "never": "Hech qachon"
     },
     "ru": {
-     "usually": "Обычно да",
+     "always": "Всегда",
+     "usually": "Обычно",
      "sometimes": "Иногда",
-     "rarely": "Редко"
+     "rarely": "Редко",
+     "never": "Никогда"
     }
-   }
+   },
+   "note": "30 Oct 2026: 'Always' and 'Never' added; no rule reads DD5 yet: 'never' counts like 'rarely', 'always' like 'usually' (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
   },
   {
    "id": "DD6",
@@ -5322,33 +5336,39 @@
     "V"
    ],
    "text": {
-    "en": "Lying on the tummy, what can your child do?",
+    "en": "When lying on the tummy, what can your child do?",
     "uz": "Qorinda yotganda farzandingiz nima qila oladi?",
     "ru": "Что ребёнок может делать, лёжа на животе?"
    },
    "option_text": {
     "en": {
-     "cant_lift": "Can't lift head",
-     "lifts_briefly": "Lifts head briefly",
-     "forearms": "Leans on forearms, chest up",
+     "cant_lift": "Cannot lift the head yet",
+     "lifts_briefly": "Lifts the head for a moment",
+     "forearms": "Leans on the elbows, chest up",
      "straight_arms": "Leans on straight arms",
-     "reaches_one_arm": "Reaches for a toy, leaning on one arm"
+     "reaches_one_arm": "Leans on one arm and reaches for a toy with the other"
     },
     "uz": {
-     "cant_lift": "Boshini koʻtara olmaydi",
-     "lifts_briefly": "Boshini qisqa vaqt koʻtaradi",
-     "forearms": "Bilaklariga tayanib, koʻkragini koʻtaradi",
+     "cant_lift": "Hali boshini koʻtarmaydi",
+     "lifts_briefly": "Boshini bir zumga koʻtaradi",
+     "forearms": "Tirsaklariga tayanadi, koʻkragi koʻtarilgan",
      "straight_arms": "Toʻgʻri qoʻllariga tayanadi",
-     "reaches_one_arm": "Bir qoʻliga tayanib, oʻyinchoqqa qoʻl choʻzadi"
+     "reaches_one_arm": "Bir qoʻliga tayanib, ikkinchisi bilan oʻyinchoqqa qoʻl choʻzadi"
     },
     "ru": {
      "cant_lift": "Пока не поднимает голову",
      "lifts_briefly": "Ненадолго поднимает голову",
-     "forearms": "Опирается на предплечья, грудь поднята",
+     "forearms": "Опирается на локти, грудь поднята",
      "straight_arms": "Опирается на прямые руки",
-     "reaches_one_arm": "Тянется за игрушкой, опираясь на одну руку"
+     "reaches_one_arm": "Опирается на одну руку, другой тянется к игрушке"
     }
-   }
+   },
+   "hint": {
+    "en": "Choose the hardest one your child can do. The answers go from easiest to hardest.",
+    "uz": "Farzandingiz qila oladigan eng qiyin narsani tanlang. Javoblar osondan qiyinga qarab berilgan.",
+    "ru": "Выберите самое сложное, что ребёнок уже умеет. Ответы идут от лёгкого к сложному."
+   },
+   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: question and answers reworded (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
   },
   {
    "id": "C2",
@@ -5430,88 +5450,13 @@
      "tummy_to_back": "С живота на спину",
      "both_ways": "В обе стороны, через оба бока"
     }
-   }
-  },
-  {
-   "id": "C1",
-   "step": "C",
-   "kind": "single",
-   "required": true,
-   "health": false,
-   "audience": "parent",
-   "options": [
-    "no",
-    "briefly",
-    "steady"
-   ],
-   "max": null,
-   "exclusive": null,
-   "show": {
-    "all": [
-     {
-      "any": [
-       {
-        "not": {
-         "q": "B1",
-         "answered": true
-        }
-       },
-       {
-        "q": "B1",
-        "in": [
-         "cp",
-         "developmental_delay",
-         "no_diagnosis",
-         "not_sure",
-         "other",
-         "down_syndrome",
-         "autism"
-        ]
-       }
-      ]
-     },
-     {
-      "ref": "R5_MOTOR"
-     },
-     {
-      "not": {
-       "ref": "R8"
-      }
-     }
-    ]
    },
-   "option_show": null,
-   "unit": null,
-   "range": null,
-   "picture": null,
-   "signup": false,
-   "feeds": [
-    "E",
-    "V",
-    "S"
-   ],
-   "text": {
-    "en": "When you hold your child upright, can they hold their head up?",
-    "uz": "Farzandingizni tik ushlab turganingizda boshini tuta oladimi?",
-    "ru": "Когда вы держите ребёнка вертикально, он может держать голову?"
+   "hint": {
+    "en": "Choose the hardest one your child can do. The answers go from easiest to hardest.",
+    "uz": "Farzandingiz qila oladigan eng qiyin narsani tanlang. Javoblar osondan qiyinga qarab berilgan.",
+    "ru": "Выберите самое сложное, что ребёнок уже умеет. Ответы идут от лёгкого к сложному."
    },
-   "option_text": {
-    "en": {
-     "no": "No",
-     "briefly": "Only briefly",
-     "steady": "Yes, steady"
-    },
-    "uz": {
-     "no": "Yoʻq",
-     "briefly": "Faqat qisqa vaqt",
-     "steady": "Ha, barqaror"
-    },
-    "ru": {
-     "no": "Нет",
-     "briefly": "Только недолго",
-     "steady": "Да, уверенно"
-    }
-   }
+   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
   },
   {
    "id": "C13",
@@ -5683,7 +5628,13 @@
      "free_few_min": "Без опоры на руки, несколько минут",
      "free_30min": "Без опоры на руки, 30 мин и больше"
     }
-   }
+   },
+   "hint": {
+    "en": "Choose the hardest one your child can do. The answers go from easiest to hardest.",
+    "uz": "Farzandingiz qila oladigan eng qiyin narsani tanlang. Javoblar osondan qiyinga qarab berilgan.",
+    "ru": "Выберите самое сложное, что ребёнок уже умеет. Ответы идут от лёгкого к сложному."
+   },
+   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
   },
   {
    "id": "C15",
@@ -5698,10 +5649,11 @@
     "reach_right",
     "reach_above",
     "bend_floor",
-    "turn"
+    "turn",
+    "none_yet"
    ],
    "max": null,
-   "exclusive": null,
+   "exclusive": "none_yet",
    "show": {
     "all": [
      {
@@ -5740,36 +5692,40 @@
     "E"
    ],
    "text": {
-    "en": "While sitting, can your child...",
-    "uz": "Oʻtirgan holda farzandingiz...",
-    "ru": "Сидя, может ли ребёнок..."
+    "en": "While sitting, your child can… (tick all that apply)",
+    "uz": "Oʻtirgan holda farzandingiz… (mos keladiganlarning hammasini belgilang)",
+    "ru": "Сидя, ребёнок может… (отметьте всё подходящее)"
    },
    "option_text": {
     "en": {
-     "lean_forward": "Lean forward and come back",
-     "reach_left": "Reach a toy at the left side",
-     "reach_right": "Reach at the right side",
+     "lean_forward": "Lean forward and come back up",
+     "reach_left": "Reach for a toy on the left",
+     "reach_right": "Reach for a toy on the right",
      "reach_above": "Reach above the head",
-     "bend_floor": "Bend to the floor and come back",
-     "turn": "Turn without falling"
+     "bend_floor": "Bend down to the floor and come back up",
+     "turn": "Turn to look back without falling",
+     "none_yet": "None of these yet"
     },
     "uz": {
-     "lean_forward": "Oldinga engashib, qayta tiklana oladimi",
-     "reach_left": "Chap tomondagi oʻyinchoqqa qoʻl choʻza oladimi",
-     "reach_right": "Oʻng tomonga qoʻl choʻza oladimi",
-     "reach_above": "Bosh ustiga qoʻl choʻza oladimi",
-     "bend_floor": "Polga engashib, qayta tiklana oladimi",
-     "turn": "Yiqilmasdan burila oladimi"
+     "lean_forward": "Oldinga engashib, qayta qaddini rostlash",
+     "reach_left": "Chap tomondagi oʻyinchoqqa qoʻl choʻzish",
+     "reach_right": "Oʻng tomondagi oʻyinchoqqa qoʻl choʻzish",
+     "reach_above": "Qoʻllarini bosh ustiga koʻtarish",
+     "bend_floor": "Polga engashib, qayta qaddini rostlash",
+     "turn": "Yiqilmasdan orqaga oʻgirilib qarash",
+     "none_yet": "Hozircha bularning hech biri"
     },
     "ru": {
      "lean_forward": "Наклониться вперёд и вернуться",
      "reach_left": "Дотянуться до игрушки слева",
-     "reach_right": "Дотянуться справа",
-     "reach_above": "Дотянуться над головой",
+     "reach_right": "Дотянуться до игрушки справа",
+     "reach_above": "Поднять руки над головой",
      "bend_floor": "Наклониться к полу и вернуться",
-     "turn": "Повернуться и не упасть"
+     "turn": "Повернуться назад и не упасть",
+     "none_yet": "Пока ничего из этого"
     }
-   }
+   },
+   "note": "30 Oct 2026: same wording for left and right; 'None of these yet' (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
   },
   {
    "id": "C16",
@@ -5855,6 +5811,75 @@
    }
   },
   {
+   "id": "C6",
+   "step": "C",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "doesnt_step",
+    "gait_trainer",
+    "adult_trunk",
+    "walker_two_hands",
+    "one_hand",
+    "alone_few_m",
+    "alone_7m"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "V"
+   ],
+   "text": {
+    "en": "How does your child walk?",
+    "uz": "Farzandingiz qanday yuradi?",
+    "ru": "Как ребёнок ходит?"
+   },
+   "option_text": {
+    "en": {
+     "doesnt_step": "Doesn't step",
+     "gait_trainer": "Steps only in a gait trainer",
+     "adult_trunk": "A few steps with an adult holding them around the chest or waist",
+     "walker_two_hands": "With a walker or both hands held",
+     "one_hand": "Holding one hand",
+     "alone_few_m": "Alone, a few meters",
+     "alone_7m": "Alone, 7 m or more"
+    },
+    "uz": {
+     "doesnt_step": "Qadam tashlamaydi",
+     "gait_trainer": "Faqat yurish trenajorida qadam tashlaydi",
+     "adult_trunk": "Kattalar beli yoki koʻkragidan ushlasa, bir necha qadam",
+     "walker_two_hands": "Yurgich bilan yoki ikki qoʻlidan ushlab",
+     "one_hand": "Bir qoʻlidan ushlab",
+     "alone_few_m": "Oʻzi, bir necha metr",
+     "alone_7m": "Oʻzi, 7 m yoki undan koʻp"
+    },
+    "ru": {
+     "doesnt_step": "Пока не шагает",
+     "gait_trainer": "Шагает только в тренажёре для ходьбы",
+     "adult_trunk": "Несколько шагов, когда взрослый держит за пояс или за грудь",
+     "walker_two_hands": "С ходунками или за две руки",
+     "one_hand": "За одну руку",
+     "alone_few_m": "Сам, несколько метров",
+     "alone_7m": "Сам, 7 м и больше"
+    }
+   },
+   "hint": {
+    "en": "Choose the hardest one your child can do. The answers go from easiest to hardest.",
+    "uz": "Farzandingiz qila oladigan eng qiyin narsani tanlang. Javoblar osondan qiyinga qarab berilgan.",
+    "ru": "Выберите самое сложное, что ребёнок уже умеет. Ответы идут от лёгкого к сложному."
+   },
+   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: 'adult_trunk' reworded without 'trunk'; now asked before C4 (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
+  },
+  {
    "id": "C4",
    "step": "C",
    "kind": "single",
@@ -5867,29 +5892,43 @@
     "belly_crawl",
     "bottom_scoot",
     "crawls_2m",
-    "crawls_stairs"
+    "crawls_stairs",
+    "walks"
    ],
    "max": null,
    "exclusive": null,
    "show": {
-    "any": [
+    "all": [
      {
-      "not": {
-       "q": "B1",
-       "answered": true
-      }
+      "any": [
+       {
+        "not": {
+         "q": "B1",
+         "answered": true
+        }
+       },
+       {
+        "q": "B1",
+        "in": [
+         "cp",
+         "developmental_delay",
+         "no_diagnosis",
+         "not_sure",
+         "other",
+         "down_syndrome",
+         "autism"
+        ]
+       }
+      ]
      },
      {
-      "q": "B1",
-      "in": [
-       "cp",
-       "developmental_delay",
-       "no_diagnosis",
-       "not_sure",
-       "other",
-       "down_syndrome",
-       "autism"
-      ]
+      "not": {
+       "q": "C6",
+       "in": [
+        "alone_few_m",
+        "alone_7m"
+       ]
+      }
      }
     ]
    },
@@ -5908,30 +5947,39 @@
    },
    "option_text": {
     "en": {
-     "doesnt_move": "Doesn't move",
-     "rolls": "Rolls",
-     "belly_crawl": "Belly crawl",
-     "bottom_scoot": "Bottom scoot",
-     "crawls_2m": "Crawls on hands and knees, 2 m or more",
-     "crawls_stairs": "Crawls up stairs"
+     "doesnt_move": "Doesn't move around yet",
+     "rolls": "Rolls to get somewhere",
+     "belly_crawl": "Crawls on the tummy",
+     "bottom_scoot": "Moves while sitting on the bottom",
+     "crawls_2m": "Crawls on hands and knees across a room",
+     "crawls_stairs": "Crawls up stairs",
+     "walks": "Walks, so rarely crawls"
     },
     "uz": {
-     "doesnt_move": "Harakatlanmaydi",
-     "rolls": "Agʻanab",
-     "belly_crawl": "Qornida sudralib",
-     "bottom_scoot": "Oʻtirgan holda surilib",
-     "crawls_2m": "Toʻrt oyoqlab emaklaydi, 2 m yoki undan koʻp",
-     "crawls_stairs": "Zinaga emaklab chiqadi"
+     "doesnt_move": "Hali harakatlanmaydi",
+     "rolls": "Agʻanab joy oʻzgartiradi",
+     "belly_crawl": "Qornida sudralib emaklaydi",
+     "bottom_scoot": "Oʻtirgan holda surilib harakatlanadi",
+     "crawls_2m": "Toʻrt oyoqlab xona boʻylab emaklaydi",
+     "crawls_stairs": "Zinaga toʻrt oyoqlab chiqadi",
+     "walks": "Yuradi, shuning uchun deyarli emaklamaydi"
     },
     "ru": {
      "doesnt_move": "Пока не передвигается",
      "rolls": "Перекатывается",
      "belly_crawl": "Ползает на животе",
      "bottom_scoot": "Передвигается сидя, на попе",
-     "crawls_2m": "Ползает на четвереньках, 2 м и больше",
-     "crawls_stairs": "Заползает вверх по лестнице"
+     "crawls_2m": "Ползает на четвереньках по комнате",
+     "crawls_stairs": "Залезает по лестнице на четвереньках",
+     "walks": "Ходит, поэтому почти не ползает"
     }
-   }
+   },
+   "hint": {
+    "en": "Choose the hardest one your child can do. The answers go from easiest to hardest.",
+    "uz": "Farzandingiz qila oladigan eng qiyin narsani tanlang. Javoblar osondan qiyinga qarab berilgan.",
+    "ru": "Выберите самое сложное, что ребёнок уже умеет. Ответы идут от лёгкого к сложному."
+   },
+   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: answers reworded, 'Walks, so rarely crawls' added; not asked when the child walks alone (C6, now asked before C4) (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
   },
   {
    "id": "C17",
@@ -5987,33 +6035,39 @@
     "E"
    ],
    "text": {
-    "en": "Kneeling",
-    "uz": "Tizzalab turish",
-    "ru": "Стояние на коленях"
+    "en": "Kneeling: what can your child do?",
+    "uz": "Tizzada turish: farzandingiz nima qila oladi?",
+    "ru": "Стоя на коленях: что ребёнок может?"
    },
    "option_text": {
     "en": {
-     "cant": "Can't",
-     "hands_knees_10s": "On hands and knees, 10 sec",
-     "kneel_holding": "Upright kneeling, holding on",
-     "kneel_free": "Upright kneeling, hands free",
-     "half_kneel_stand": "One knee down, stands up from there"
+     "cant": "Cannot kneel yet",
+     "hands_knees_10s": "Stays on hands and knees without falling",
+     "kneel_holding": "Kneels upright, holding on to something",
+     "kneel_free": "Kneels upright without holding on",
+     "half_kneel_stand": "Stands up from kneeling on one knee"
     },
     "uz": {
-     "cant": "Hali qila olmaydi",
-     "hands_knees_10s": "Toʻrt oyoqlab, 10 soniya",
-     "kneel_holding": "Tizzada tik turadi, ushlab",
-     "kneel_free": "Tizzada tik turadi, qoʻllarisiz",
-     "half_kneel_stand": "Bir tizzada turib, oʻrnidan turadi"
+     "cant": "Hali tizzada tura olmaydi",
+     "hands_knees_10s": "Toʻrt oyoqlab yiqilmasdan turadi",
+     "kneel_holding": "Biror narsani ushlab, tizzada tik turadi",
+     "kneel_free": "Hech narsani ushlamasdan tizzada tik turadi",
+     "half_kneel_stand": "Bir tizzasiga tayanib oʻrnidan turadi"
     },
     "ru": {
      "cant": "Пока не может",
-     "hands_knees_10s": "На четвереньках, 10 сек",
-     "kneel_holding": "Стоит на коленях, держась",
-     "kneel_free": "Стоит на коленях без опоры",
-     "half_kneel_stand": "Стоит на одном колене и встаёт из этого положения"
+     "hands_knees_10s": "Стоит на четвереньках и не падает",
+     "kneel_holding": "Стоит на коленях прямо, держась за опору",
+     "kneel_free": "Стоит на коленях прямо без опоры",
+     "half_kneel_stand": "Встаёт, опираясь на одно колено"
     }
-   }
+   },
+   "hint": {
+    "en": "Choose the hardest one your child can do. The answers go from easiest to hardest.",
+    "uz": "Farzandingiz qila oladigan eng qiyin narsani tanlang. Javoblar osondan qiyinga qarab berilgan.",
+    "ru": "Выберите самое сложное, что ребёнок уже умеет. Ответы идут от лёгкого к сложному."
+   },
+   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: question and answers reworded (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
   },
   {
    "id": "C18",
@@ -6125,33 +6179,39 @@
     "E"
    ],
    "text": {
-    "en": "Sitting down from standing, and squatting",
-    "uz": "Tik turgan holatdan oʻtirish va choʻqqayish",
-    "ru": "Как ребёнок садится из положения стоя и приседает"
+    "en": "How does your child go from standing down to sitting or squatting?",
+    "uz": "Farzandingiz tik turgan holatdan oʻtirish yoki choʻqqayish uchun qanday pastga tushadi?",
+    "ru": "Как ребёнок опускается из положения стоя, чтобы сесть или присесть?"
    },
    "option_text": {
     "en": {
-     "drops": "Drops or falls",
-     "with_help": "With my help",
-     "holding": "Holding furniture, controlled",
-     "squats": "Squats and stands up alone",
-     "picks_toy": "Picks a toy off the floor and stands, hands free"
+     "drops": "Drops or falls down",
+     "with_help": "Needs my help",
+     "holding": "Holds on to furniture and goes down slowly",
+     "squats": "Squats and stands up again by themselves",
+     "picks_toy": "Squats, picks up a toy and stands up without holding on"
     },
     "uz": {
-     "drops": "Tushib ketadi yoki yiqiladi",
-     "with_help": "Mening yordamim bilan",
-     "holding": "Mebelni ushlab, ehtiyot boʻlib",
-     "squats": "Choʻqqayib, oʻzi turadi",
-     "picks_toy": "Poldan oʻyinchoqni olib, qoʻllarisiz turadi"
+     "drops": "Yiqiladi yoki shalop etib tushadi",
+     "with_help": "Mening yordamim kerak",
+     "holding": "Mebelni ushlab, sekin tushadi",
+     "squats": "Oʻzi choʻqqayadi va yana turadi",
+     "picks_toy": "Choʻqqayib, oʻyinchoqni oladi va hech narsani ushlamasdan turadi"
     },
     "ru": {
-     "drops": "Опускается резко или падает",
+     "drops": "Падает или плюхается",
      "with_help": "С моей помощью",
-     "holding": "Держась за мебель, плавно",
-     "squats": "Приседает и встаёт сам",
-     "picks_toy": "Поднимает игрушку с пола и встаёт без помощи рук"
+     "holding": "Держится за мебель и опускается медленно",
+     "squats": "Сам приседает и встаёт",
+     "picks_toy": "Приседает, поднимает игрушку и встаёт без опоры"
     }
-   }
+   },
+   "hint": {
+    "en": "Choose the hardest one your child can do. The answers go from easiest to hardest.",
+    "uz": "Farzandingiz qila oladigan eng qiyin narsani tanlang. Javoblar osondan qiyinga qarab berilgan.",
+    "ru": "Выберите самое сложное, что ребёнок уже умеет. Ответы идут от лёгкого к сложному."
+   },
+   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: question and answers reworded (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
   },
   {
    "id": "C5",
@@ -6218,7 +6278,7 @@
     "en": {
      "cant": "Can't",
      "stander": "Only in a stander",
-     "trunk_support": "With trunk support",
+     "trunk_support": "Stands with an adult holding them around the chest or waist",
      "bar_two_hands": "Holding a bar with both hands",
      "one_hand": "Holding with one hand",
      "alone_under_10s": "Alone, under 10 sec",
@@ -6228,7 +6288,7 @@
     "uz": {
      "cant": "Hali qila olmaydi",
      "stander": "Faqat vertikalizatorda",
-     "trunk_support": "Gavdasini ushlab turilsa",
+     "trunk_support": "Kattalar beli yoki koʻkragidan ushlasa, turadi",
      "bar_two_hands": "Tutqichni ikki qoʻli bilan ushlab",
      "one_hand": "Bir qoʻli bilan ushlab",
      "alone_under_10s": "Oʻzi, 10 soniyadan kam",
@@ -6238,14 +6298,20 @@
     "ru": {
      "cant": "Пока не стоит",
      "stander": "Только в вертикализаторе",
-     "trunk_support": "С поддержкой за туловище",
+     "trunk_support": "Стоит, когда взрослый держит за пояс или за грудь",
      "bar_two_hands": "Держась за поручень двумя руками",
      "one_hand": "Держась одной рукой",
      "alone_under_10s": "Сам, меньше 10 сек",
      "alone_10_60s": "Сам, 10–60 сек",
      "alone_over_1min": "Сам, больше 1 мин"
     }
-   }
+   },
+   "hint": {
+    "en": "Choose the hardest one your child can do. The answers go from easiest to hardest.",
+    "uz": "Farzandingiz qila oladigan eng qiyin narsani tanlang. Javoblar osondan qiyinga qarab berilgan.",
+    "ru": "Выберите самое сложное, что ребёнок уже умеет. Ответы идут от лёгкого к сложному."
+   },
+   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: 'trunk_support' reworded without 'trunk' (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
   },
   {
    "id": "C5_minutes",
@@ -6321,10 +6387,11 @@
     "reach_above",
     "bend_floor",
     "one_leg",
-    "kick"
+    "kick",
+    "none_yet"
    ],
    "max": null,
-   "exclusive": null,
+   "exclusive": "none_yet",
    "show": {
     "ref": "R5_MOTOR"
    },
@@ -6337,36 +6404,40 @@
     "E"
    ],
    "text": {
-    "en": "While standing, can your child...",
-    "uz": "Tik turgan holda farzandingiz...",
-    "ru": "Стоя, может ли ребёнок..."
+    "en": "While standing, your child can… (tick all that apply)",
+    "uz": "Tik turgan holda farzandingiz… (mos keladiganlarning hammasini belgilang)",
+    "ru": "Стоя, ребёнок может… (отметьте всё подходящее)"
    },
    "option_text": {
     "en": {
-     "shift_weight": "Shift weight foot to foot",
+     "shift_weight": "Move weight from one foot to the other",
      "turn_upper": "Turn the upper body",
      "reach_above": "Reach above the head",
-     "bend_floor": "Bend to the floor",
+     "bend_floor": "Bend down to the floor",
      "one_leg": "Stand on one leg",
-     "kick": "Kick a ball"
+     "kick": "Kick a ball",
+     "none_yet": "None of these yet"
     },
     "uz": {
-     "shift_weight": "Ogʻirligini bir oyoqdan boshqasiga oʻtkaza oladimi",
-     "turn_upper": "Gavdasining yuqori qismini bura oladimi",
-     "reach_above": "Bosh ustiga qoʻl choʻza oladimi",
-     "bend_floor": "Polga engasha oladimi",
-     "one_leg": "Bir oyoqda tura oladimi",
-     "kick": "Toʻpni tepa oladimi"
+     "shift_weight": "Ogʻirligini bir oyoqdan boshqasiga oʻtkazish",
+     "turn_upper": "Gavdasining yuqori qismini burish",
+     "reach_above": "Qoʻllarini bosh ustiga koʻtarish",
+     "bend_floor": "Polga engashish",
+     "one_leg": "Bir oyoqda turish",
+     "kick": "Toʻpni tepish",
+     "none_yet": "Hozircha bularning hech biri"
     },
     "ru": {
      "shift_weight": "Переносить вес с ноги на ногу",
-     "turn_upper": "Поворачивать верхнюю часть тела",
-     "reach_above": "Тянуться вверх над головой",
-     "bend_floor": "Наклоняться к полу",
+     "turn_upper": "Поворачивать верх тела",
+     "reach_above": "Поднять руки над головой",
+     "bend_floor": "Наклониться к полу",
      "one_leg": "Стоять на одной ноге",
-     "kick": "Ударить ногой по мячу"
+     "kick": "Ударить по мячу ногой",
+     "none_yet": "Пока ничего из этого"
     }
-   }
+   },
+   "note": "30 Oct 2026: reworded; 'None of these yet' (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
   },
   {
    "id": "C20_leg",
@@ -6485,69 +6556,6 @@
    }
   },
   {
-   "id": "C6",
-   "step": "C",
-   "kind": "single",
-   "required": true,
-   "health": false,
-   "audience": "parent",
-   "options": [
-    "doesnt_step",
-    "gait_trainer",
-    "adult_trunk",
-    "walker_two_hands",
-    "one_hand",
-    "alone_few_m",
-    "alone_7m"
-   ],
-   "max": null,
-   "exclusive": null,
-   "show": null,
-   "option_show": null,
-   "unit": null,
-   "range": null,
-   "picture": null,
-   "signup": false,
-   "feeds": [
-    "E",
-    "V"
-   ],
-   "text": {
-    "en": "How does your child walk?",
-    "uz": "Farzandingiz qanday yuradi?",
-    "ru": "Как ребёнок ходит?"
-   },
-   "option_text": {
-    "en": {
-     "doesnt_step": "Doesn't step",
-     "gait_trainer": "Steps only in a gait trainer",
-     "adult_trunk": "A few steps with an adult holding the trunk",
-     "walker_two_hands": "With a walker or both hands held",
-     "one_hand": "Holding one hand",
-     "alone_few_m": "Alone, a few meters",
-     "alone_7m": "Alone, 7 m or more"
-    },
-    "uz": {
-     "doesnt_step": "Qadam tashlamaydi",
-     "gait_trainer": "Faqat yurish trenajorida qadam tashlaydi",
-     "adult_trunk": "Kattalar gavdasidan ushlasa, bir necha qadam",
-     "walker_two_hands": "Yurgich bilan yoki ikki qoʻlidan ushlab",
-     "one_hand": "Bir qoʻlidan ushlab",
-     "alone_few_m": "Oʻzi, bir necha metr",
-     "alone_7m": "Oʻzi, 7 m yoki undan koʻp"
-    },
-    "ru": {
-     "doesnt_step": "Пока не шагает",
-     "gait_trainer": "Шагает только в тренажёре для ходьбы",
-     "adult_trunk": "Несколько шагов, когда взрослый держит за туловище",
-     "walker_two_hands": "С ходунками или за две руки",
-     "one_hand": "За одну руку",
-     "alone_few_m": "Сам, несколько метров",
-     "alone_7m": "Сам, 7 м и больше"
-    }
-   }
-  },
-  {
    "id": "C7",
    "step": "C",
    "kind": "single",
@@ -6555,10 +6563,10 @@
    "health": false,
    "audience": "parent",
    "options": [
-    "under_7m",
-    "7_100m",
-    "100_300m",
-    "over_300m"
+    "room",
+    "home",
+    "yard",
+    "outside"
    ],
    "max": null,
    "exclusive": null,
@@ -6584,30 +6592,37 @@
     "R"
    ],
    "text": {
-    "en": "Longest distance your child walks",
-    "uz": "Farzandingiz yuradigan eng uzoq masofa",
-    "ru": "Самое большое расстояние, которое проходит ребёнок"
+    "en": "How far can your child walk?",
+    "uz": "Farzandingiz qancha masofaga yura oladi?",
+    "ru": "Как далеко ребёнок может пройти?"
    },
    "option_text": {
     "en": {
-     "under_7m": "Under 7 m",
-     "7_100m": "7–100 m",
-     "100_300m": "100–300 m",
-     "over_300m": "Over 300 m"
+     "room": "Only inside one room (under 5 m)",
+     "home": "Around the home (5–50 m)",
+     "yard": "Around the yard or school (50–500 m)",
+     "outside": "Outside, more than 500 m (to the shop, the park)"
     },
     "uz": {
-     "under_7m": "7 m dan kam",
-     "7_100m": "7–100 m",
-     "100_300m": "100–300 m",
-     "over_300m": "300 m dan koʻp"
+     "room": "Faqat bitta xona ichida (5 m gacha)",
+     "home": "Uy ichida (5–50 m)",
+     "yard": "Hovli yoki maktab boʻylab (50–500 m)",
+     "outside": "Koʻchada, 500 m dan koʻp (doʻkongacha, bogʻgacha)"
     },
     "ru": {
-     "under_7m": "Меньше 7 м",
-     "7_100m": "7–100 м",
-     "100_300m": "100–300 м",
-     "over_300m": "Больше 300 м"
+     "room": "Только в пределах комнаты (до 5 м)",
+     "home": "По дому (5–50 м)",
+     "yard": "По двору или школе (50–500 м)",
+     "outside": "На улице, больше 500 м (до магазина, парка)"
     }
-   }
+   },
+   "retired_options": {
+    "under_7m": "room",
+    "7_100m": "home",
+    "100_300m": "yard",
+    "over_300m": "outside"
+   },
+   "note": "30 Oct 2026: new distances from the Functional Mobility Scale (5 / 50 / 500 m); old answers map under_7m->room, 7_100m->home, 100_300m->yard, over_300m->outside (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
   },
   {
    "id": "C7_help",
@@ -6743,10 +6758,11 @@
     "turns",
     "circle",
     "backward_help",
-    "backward_alone"
+    "backward_alone",
+    "none_yet"
    ],
    "max": null,
-   "exclusive": null,
+   "exclusive": "none_yet",
    "show": {
     "all": [
      {
@@ -6768,30 +6784,34 @@
     "E"
    ],
    "text": {
-    "en": "Turning and walking backward",
-    "uz": "Burilish va orqaga yurish",
-    "ru": "Повороты и ходьба назад"
+    "en": "When walking, your child can… (tick all that apply)",
+    "uz": "Yurganda farzandingiz… (mos keladiganlarning hammasini belgilang)",
+    "ru": "При ходьбе ребёнок может… (отметьте всё подходящее)"
    },
    "option_text": {
     "en": {
-     "turns": "Turns while walking",
-     "circle": "Walks in a circle",
-     "backward_help": "Walks backward with help",
-     "backward_alone": "Walks backward alone"
+     "turns": "Turn around while walking",
+     "circle": "Walk in a circle",
+     "backward_help": "Walk backward with help",
+     "backward_alone": "Walk backward without help",
+     "none_yet": "None of these yet"
     },
     "uz": {
-     "turns": "Yurib ketayotib buriladi",
-     "circle": "Aylana boʻylab yuradi",
-     "backward_help": "Yordam bilan orqaga yuradi",
-     "backward_alone": "Oʻzi orqaga yuradi"
+     "turns": "Yurib ketayotib orqaga burilish",
+     "circle": "Aylana boʻylab yurish",
+     "backward_help": "Yordam bilan orqaga yurish",
+     "backward_alone": "Yordamsiz orqaga yurish",
+     "none_yet": "Hozircha bularning hech biri"
     },
     "ru": {
-     "turns": "Поворачивает во время ходьбы",
-     "circle": "Ходит по кругу",
-     "backward_help": "Ходит назад с помощью",
-     "backward_alone": "Ходит назад сам"
+     "turns": "Развернуться на ходу",
+     "circle": "Пройти по кругу",
+     "backward_help": "Идти назад с помощью",
+     "backward_alone": "Идти назад без помощи",
+     "none_yet": "Пока ничего из этого"
     }
-   }
+   },
+   "note": "30 Oct 2026: reworded; 'None of these yet' (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
   },
   {
    "id": "C8",
@@ -7217,6 +7237,86 @@
    }
   },
   {
+   "id": "C1",
+   "step": "C",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "no",
+    "briefly",
+    "steady"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "any": [
+       {
+        "not": {
+         "q": "B1",
+         "answered": true
+        }
+       },
+       {
+        "q": "B1",
+        "in": [
+         "cp",
+         "developmental_delay",
+         "no_diagnosis",
+         "not_sure",
+         "other",
+         "down_syndrome",
+         "autism"
+        ]
+       }
+      ]
+     },
+     {
+      "ref": "R5_MOTOR"
+     },
+     {
+      "ref": "R6"
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "V",
+    "S"
+   ],
+   "text": {
+    "en": "When your child is held or sitting with support, can they hold their head up?",
+    "uz": "Farzandingizni qoʻlda koʻtarib turganingizda yoki u tayanib oʻtirganda boshini tuta oladimi?",
+    "ru": "Когда ребёнка держат на руках или он сидит с опорой, может ли он держать голову?"
+   },
+   "option_text": {
+    "en": {
+     "no": "Not yet",
+     "briefly": "Only for a short time",
+     "steady": "Yes, steady"
+    },
+    "uz": {
+     "no": "Hali yoʻq",
+     "briefly": "Qisqa vaqt",
+     "steady": "Ha, barqaror"
+    },
+    "ru": {
+     "no": "Пока нет",
+     "briefly": "Недолго",
+     "steady": "Да, уверенно"
+    }
+   },
+   "note": "30 Oct 2026: reworded; asked only when it matters (R6: GMFCS IV-V or can't sit), so it moved after C3 and C10; what 'Not yet' or 'Only for a short time' changes is task B64 (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
+  },
+  {
    "id": "C11",
    "step": "C",
    "kind": "single",
@@ -7601,27 +7701,28 @@
     "E"
    ],
    "text": {
-    "en": "How does your child pick up a small thing, like a raisin?",
-    "uz": "Farzandingiz mayiz kabi kichik narsani qanday oladi?",
-    "ru": "Как ребёнок берёт мелкий предмет, например изюминку?"
+    "en": "How does your child pick up something small, like a pea or a small piece of bread?",
+    "uz": "Farzandingiz noʻxat yoki kichik non boʻlagi kabi mayda narsani qanday oladi?",
+    "ru": "Как ребёнок берёт что-то маленькое, например горошину или кусочек хлеба?"
    },
    "option_text": {
     "en": {
-     "thumb_finger": "Thumb and finger",
-     "whole_hand": "Whole hand",
-     "cannot": "Cannot pick it up"
+     "thumb_finger": "With the thumb and one finger",
+     "whole_hand": "With the whole hand",
+     "cannot": "Cannot pick it up yet"
     },
     "uz": {
-     "thumb_finger": "Bosh barmoq va boshqa barmoq bilan",
+     "thumb_finger": "Bosh barmogʻi va bitta barmogʻi bilan",
      "whole_hand": "Butun kafti bilan",
      "cannot": "Hali ola olmaydi"
     },
     "ru": {
-     "thumb_finger": "Большим и другим пальцем",
+     "thumb_finger": "Большим и указательным пальцем",
      "whole_hand": "Всей ладонью",
-     "cannot": "Пока не получается взять"
+     "cannot": "Пока не может взять"
     }
-   }
+   },
+   "note": "30 Oct 2026: no 'raisin': a pea or a small piece of bread (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
   },
   {
    "id": "D5",
@@ -7916,27 +8017,33 @@
     "S"
    ],
    "text": {
-    "en": "Is the hand often in a fist, or the thumb inside the palm?",
-    "uz": "Qoʻli tez-tez mushtlangan boʻladimi yoki bosh barmogʻi kaft ichida boʻladimi?",
-    "ru": "Рука часто сжата в кулак или большой палец прижат к ладони?"
+    "en": "When your child is calm and not holding anything, is their hand tightly closed, like a fist?",
+    "uz": "Farzandingiz xotirjam boʻlib, hech narsa ushlamay turganda qoʻli musht kabi qattiq yumilgan boʻladimi?",
+    "ru": "Когда ребёнок спокоен и ничего не держит, его кисть крепко сжата, как кулак?"
    },
    "option_text": {
     "en": {
-     "never": "Never",
+     "never": "No, the hand is open",
      "sometimes": "Sometimes",
      "most": "Most of the time"
     },
     "uz": {
-     "never": "Hech qachon",
+     "never": "Yoʻq, qoʻli ochiq",
      "sometimes": "Baʼzan",
      "most": "Koʻp vaqt"
     },
     "ru": {
-     "never": "Никогда",
+     "never": "Нет, кисть раскрыта",
      "sometimes": "Иногда",
      "most": "Большую часть времени"
     }
-   }
+   },
+   "hint": {
+    "en": "The thumb may be hidden inside the fingers.",
+    "uz": "Bosh barmogʻi barmoqlar ichida yashiringan boʻlishi mumkin.",
+    "ru": "Большой палец может быть спрятан внутри."
+   },
+   "note": "30 Oct 2026: one clear sign (a fist when calm), with a hint (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
   },
   {
    "id": "D10_hand",
@@ -8071,7 +8178,7 @@
    }
   },
   {
-   "id": "D12",
+   "id": "D12_spoon",
    "step": "D",
    "kind": "single",
    "required": false,
@@ -8118,27 +8225,99 @@
     "E"
    ],
    "text": {
-    "en": "Can your child hold a spoon or cup alone?",
-    "uz": "Farzandingiz qoshiq yoki piyolani oʻzi ushlay oladimi?",
-    "ru": "Может ли ребёнок сам держать ложку или чашку?"
+    "en": "Can your child hold a spoon by themselves?",
+    "uz": "Farzandingiz qoshiqni oʻzi ushlay oladimi?",
+    "ru": "Может ли ребёнок сам держать ложку?"
    },
    "option_text": {
     "en": {
      "yes": "Yes",
      "with_help": "With help",
-     "no": "No"
+     "no": "Not yet"
     },
     "uz": {
      "yes": "Ha",
      "with_help": "Yordam bilan",
-     "no": "Yoʻq"
+     "no": "Hali yoʻq"
     },
     "ru": {
      "yes": "Да",
      "with_help": "С помощью",
-     "no": "Нет"
+     "no": "Пока нет"
     }
-   }
+   },
+   "note": "30 Oct 2026: new, replaces D12 (spoon and cup are different skills); the plan's P24 reads the spoon, else the cup (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
+  },
+  {
+   "id": "D12_cup",
+   "step": "D",
+   "kind": "single",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "yes",
+    "with_help",
+    "no"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "R5_MOTOR"
+     },
+     {
+      "all": [
+       {
+        "not": {
+         "fact": "macs",
+         "in": [
+          4,
+          5
+         ]
+        }
+       },
+       {
+        "not": {
+         "ref": "UNDER_4"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E"
+   ],
+   "text": {
+    "en": "Can your child hold a cup by themselves?",
+    "uz": "Farzandingiz piyolani oʻzi ushlay oladimi?",
+    "ru": "Может ли ребёнок сам держать чашку?"
+   },
+   "option_text": {
+    "en": {
+     "yes": "Yes",
+     "with_help": "With help",
+     "no": "Not yet"
+    },
+    "uz": {
+     "yes": "Ha",
+     "with_help": "Yordam bilan",
+     "no": "Hali yoʻq"
+    },
+    "ru": {
+     "yes": "Да",
+     "with_help": "С помощью",
+     "no": "Пока нет"
+    }
+   },
+   "note": "30 Oct 2026: new, replaces D12 (spoon and cup are different skills); the plan's P24 reads the spoon, else the cup (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
   },
   {
    "id": "D13",

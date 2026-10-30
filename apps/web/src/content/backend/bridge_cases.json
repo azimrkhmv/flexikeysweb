@@ -474,5 +474,50 @@
     "prone"
    ]
   }
+ },
+ {
+  "name": "spoon not yet, cup with help",
+  "today": "2026-10-22",
+  "answers": {
+   "B1": [
+    "cp"
+   ],
+   "D12_spoon": "no",
+   "D12_cup": "with_help",
+   "D11": "fingers"
+  },
+  "p": {
+   "P9": [
+    "cp"
+   ],
+   "P14": null,
+   "P24": 0,
+   "_hold": [],
+   "_restrictions": [
+    "high_intensity"
+   ]
+  }
+ },
+ {
+  "name": "cup only",
+  "today": "2026-10-22",
+  "answers": {
+   "B1": [
+    "cp"
+   ],
+   "D12_cup": "with_help",
+   "D11": "fingers"
+  },
+  "p": {
+   "P9": [
+    "cp"
+   ],
+   "P14": null,
+   "P24": 1,
+   "_hold": [],
+   "_restrictions": [
+    "high_intensity"
+   ]
+  }
  }
 ]

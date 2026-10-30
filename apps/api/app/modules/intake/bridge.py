@@ -89,7 +89,8 @@ def p_view(a: dict[str, Any], today: date) -> dict[str, Any]:
     p["P20"] = 2 if talk & {"sentences", "single_words"} else 1 if "sounds_gestures" in talk else 0 if talk else None
     p["P21"] = 2 if "sentences" in talk else 1 if "single_words" in talk else 0 if talk else None
     p["P23"] = _ability(a.get("D4"), {"thumb_finger": 2, "whole_hand": 1, "cannot": 0})
-    p["P24"] = _ability(a.get("D12"), {"yes": 2, "with_help": 1, "no": 0})
+    held = [_ability(a.get(q), {"yes": 2, "with_help": 1, "no": 0}) for q in ("D12_spoon", "D12_cup", "D12")]
+    p["P24"] = next((v for v in held if v is not None), None)  # the spoon, else the cup, else an old round's D12 (B62)
     if p["P24"] is None:
         p["P24"] = _ability(a.get("D11"), {"fingers": 2, "fist": 1, "cant": 0})
     p["P26"] = _ability(a.get("D7"), {"accurately": 2, "big_only": 1, "with_help": 1, "not_yet": 0})

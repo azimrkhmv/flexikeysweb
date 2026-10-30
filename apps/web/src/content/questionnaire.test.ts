@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import mine from "./backend/questionnaire.json";
-import { bodyPattern, inLang, Q_BY_ID, QUESTIONNAIRE, shownOptions, typedProblem, visible, type QAnswer, type QAnswers } from "./questionnaire";
+import { bodyPattern, inLang, Q_BY_ID, QUESTIONNAIRE, shownOptions, typedProblem, upgrade, visible, type QAnswer, type QAnswers } from "./questionnaire";
 
 // IQ1: the questionnaire file is the server's, and the cases below fix which questions each sample child is shown.
 // questionnaire_cases.json (here and a copy in apps/api/tests) makes the server prove the same. Regenerate with
@@ -121,6 +121,11 @@ describe("questionnaire (IQ1)", () => {
     expect(typedProblem(Q_BY_ID.DD2, 300, {}, TODAY)).toBeNull(); // no date of birth: nothing to compare
   });
 
+  it("shows old answers in today's options (B61, B62)", () => {
+    expect(upgrade({ C7: "7_100m", B1: ["not_sure", "cp"], C3: "cant_sit" })).toEqual({ C7: "home", B1: ["not_sure", "cp"], C3: "cant_sit" });
+    expect(Q_BY_ID.B1.options).not.toContain("not_sure");
+  });
+
   it("works out the body pattern from the parts ticked (B61)", () => {
     const p = (parts: string[]) => bodyPattern({ B3_parts: parts });
     expect(p(["right_arm"])).toBe("right_side");
@@ -148,11 +153,13 @@ describe("questionnaire (IQ1)", () => {
     for (const id of ["CP15", "CP16", "CP17", "CP7", "C9", "C10", "D1", "G2"]) expect(cp1, id).toContain(id);
     for (const id of ["C1", "C13", "C14", "C16", "CP19", "G4"]) expect(cp1, id).not.toContain(id); // R8, R13
     const cp5 = v("CP, GMFCS V, cannot sit");
-    for (const id of ["C7", "C8", "C9", "C21", "C22", "C23", "C24", "D11", "D12", "D13"]) expect(cp5, id).not.toContain(id); // R6, R10
+    for (const id of ["C7", "C8", "C9", "C21", "C22", "C23", "C24", "D11", "D12_spoon", "D12_cup", "D13"]) expect(cp5, id).not.toContain(id); // R6, R10
     for (const id of ["CP19", "CP20", "CP21", "C1", "C13", "C14", "G4", "E4"]) expect(cp5, id).toContain(id);
     expect(v("CP, GMFCS III")).not.toContain("C9"); // R7
     const au = v("autism only, no motor problem");
-    for (const id of ["C3", "C4", "C5", "C6", "C12", "E1", "AU8", "G2"]) expect(au, id).toContain(id);
+    for (const id of ["C3", "C5", "C6", "C12", "E1", "AU8", "G2"]) expect(au, id).toContain(id);
+    expect(au).not.toContain("C4"); // walks alone: no crawling question (B62)
+    expect(v("Down syndrome, age 3, cannot sit")).toContain("C4");
     for (const id of ["C1", "C2", "C10", "C13", "C17", "D1", "D2", "D7"]) expect(au, id).not.toContain(id); // R5
     for (const id of ["C2", "C17", "D2", "D7"]) expect(v("autism only, floppy muscles"), id).toContain(id);
     const dcd = v("DCD at school, understood by others");
@@ -166,7 +173,7 @@ describe("questionnaire (IQ1)", () => {
     for (const id of ["C10", "D1", "C2", "AU1", "CP18", "CP1"]) expect(both, id).toContain(id); // two modules open
     expect(both).not.toContain("D8"); // R12
     const small = v("CP under 4, GMFCS II");
-    for (const id of ["D11", "D12", "D13", "H7"]) expect(small, id).not.toContain(id); // R15
+    for (const id of ["D11", "D12_spoon", "D12_cup", "D13", "H7"]) expect(small, id).not.toContain(id); // R15
     expect(small).toContain("F5_help"); // R18
     const opts = (name: string, id: string) => shownOptions(id, CASES.find((c) => c.name === name)!.answers, TODAY);
     expect(opts("CP under 4, GMFCS II", "F3")).not.toContain("letters");
