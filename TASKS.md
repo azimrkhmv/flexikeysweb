@@ -938,6 +938,13 @@ decision; the source is "FlexiKeys — parent questionnaire fixes" (30 Oct 2026)
   - Done when: an optional answer saved, then cleared and saved again, is gone after a reload, in the demo and against the server (a "clear" in the save request; null stays "Not sure")
   - Needs: B63
 
+### Hosting (31 Oct 2026)
+
+- [x] **Bekzod** — Website demo on Vercel (mock mode, no server)
+  - Done when: the site opens at the `.vercel.app` address, sign-up and the questionnaire work in ru and en at
+    phone width, and `apps/web/DEPLOY-VERCEL.md` says how to redeploy.
+  - Needs: —
+
 ## 6. Ask and collect
 
 These are not programming. The named developer asks the right person and writes the answer **in this file**
