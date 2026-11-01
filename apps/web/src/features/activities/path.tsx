@@ -89,54 +89,57 @@ function PathRound({ shape, mirror, stones, index, last, next }: { shape: Shape;
       total={ROUNDS.length}
       action={solved && <ActionButton label={t(last ? "act.done" : "act.next")} onSelect={next} pulse />}
     >
-      <div
-        ref={box}
-        onPointerMove={onMove}
-        className="relative w-full max-w-4xl overflow-hidden rounded-fk-lg shadow-inner"
-        style={{ aspectRatio: `${W} / ${H}`, touchAction: "none", background: "linear-gradient(180deg,#eef7ea 0%,#e1f1de 100%)" }}
-      >
-        <svg viewBox={`0 0 ${W} ${H}`} className="absolute inset-0 size-full" aria-hidden>
-          <text x="60" y="520" fontSize="40">🌼</text>
-          <text x="880" y="80" fontSize="38">🌿</text>
-          <text x="470" y="540" fontSize="34">🌸</text>
-          <path d={d} fill="none" stroke="#f7f2e2" strokeWidth={Math.max(40, ctx.profile.traceTolerance * 1.2)} strokeLinecap="round" strokeLinejoin="round" />
-          <path d={d} fill="none" stroke="#cdbf98" strokeWidth="5" strokeDasharray="16 14" strokeLinecap="round" />
-          {reached > 0 && <path d={dDone} fill="none" stroke="#7fbf85" strokeWidth="12" strokeLinecap="round" strokeLinejoin="round" />}
-        </svg>
-        {pts.map(([x, y], k) => {
-          const isNext = k === reached + 1;
-          const isEnd = k === stones - 1;
-          const style = { left: `${(x / W) * 100}%`, top: `${(y / H) * 100}%` };
-          const dot = (
-            <span
-              className={`block rounded-full border-4 border-white shadow-soft ${k <= reached ? "bg-leaf" : isEnd ? "bg-sun" : isNext ? "bg-sky" : "bg-surface"}`}
-              style={{ width: size * 0.5, height: size * 0.5 }}
-            />
-          );
-          return isNext && !solved ? (
-            <Target
-              key={k}
-              label={t("act.stone", { n: k + 1 })}
-              onSelect={advance}
-              pulse
-              className="absolute grid -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full"
-              style={{ ...style, width: size, height: size }}
-            >
-              {dot}
-            </Target>
-          ) : (
-            <span key={k} className="absolute -translate-x-1/2 -translate-y-1/2" style={style} aria-hidden>
-              {dot}
-            </span>
-          );
-        })}
-        <span
-          className="pointer-events-none absolute -translate-x-1/2 -translate-y-[85%] text-5xl transition-all duration-500"
-          style={{ left: `${(cx / W) * 100}%`, top: `${(cy / H) * 100}%` }}
-          aria-hidden
+      {/* As wide as the room left allows at this shape, so the whole path fits a laptop screen (B66). */}
+      <div className="flex min-h-[180px] w-full flex-1 items-center justify-center [container-type:size]">
+        <div
+          ref={box}
+          onPointerMove={onMove}
+          className="relative max-w-4xl overflow-hidden rounded-fk-lg shadow-inner"
+          style={{ width: `min(100cqw, 100cqh * ${W} / ${H})`, aspectRatio: `${W} / ${H}`, touchAction: "none", background: "linear-gradient(180deg,#eef7ea 0%,#e1f1de 100%)" }}
         >
-          ☁️
-        </span>
+          <svg viewBox={`0 0 ${W} ${H}`} className="absolute inset-0 size-full" aria-hidden>
+            <text x="60" y="520" fontSize="40">🌼</text>
+            <text x="880" y="80" fontSize="38">🌿</text>
+            <text x="470" y="540" fontSize="34">🌸</text>
+            <path d={d} fill="none" stroke="#f7f2e2" strokeWidth={Math.max(40, ctx.profile.traceTolerance * 1.2)} strokeLinecap="round" strokeLinejoin="round" />
+            <path d={d} fill="none" stroke="#cdbf98" strokeWidth="5" strokeDasharray="16 14" strokeLinecap="round" />
+            {reached > 0 && <path d={dDone} fill="none" stroke="#7fbf85" strokeWidth="12" strokeLinecap="round" strokeLinejoin="round" />}
+          </svg>
+          {pts.map(([x, y], k) => {
+            const isNext = k === reached + 1;
+            const isEnd = k === stones - 1;
+            const style = { left: `${(x / W) * 100}%`, top: `${(y / H) * 100}%` };
+            const dot = (
+              <span
+                className={`block rounded-full border-4 border-white shadow-soft ${k <= reached ? "bg-leaf" : isEnd ? "bg-sun" : isNext ? "bg-sky" : "bg-surface"}`}
+                style={{ width: size * 0.5, height: size * 0.5 }}
+              />
+            );
+            return isNext && !solved ? (
+              <Target
+                key={k}
+                label={t("act.stone", { n: k + 1 })}
+                onSelect={advance}
+                pulse
+                className="absolute grid -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full"
+                style={{ ...style, width: size, height: size }}
+              >
+                {dot}
+              </Target>
+            ) : (
+              <span key={k} className="absolute -translate-x-1/2 -translate-y-1/2" style={style} aria-hidden>
+                {dot}
+              </span>
+            );
+          })}
+          <span
+            className="pointer-events-none absolute -translate-x-1/2 -translate-y-[85%] text-5xl transition-all duration-500"
+            style={{ left: `${(cx / W) * 100}%`, top: `${(cy / H) * 100}%` }}
+            aria-hidden
+          >
+            ☁️
+          </span>
+        </div>
       </div>
     </Frame>
   );

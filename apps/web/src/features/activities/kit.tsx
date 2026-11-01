@@ -184,17 +184,19 @@ export function Frame({
   });
 
   return (
-    <section className="flex h-full min-h-[480px] w-full flex-col rounded-fk-lg border border-line bg-surface p-4 shadow-soft sm:p-6">
-      <div className="flex items-center justify-between gap-4">
-        <span className="w-[76px]" />
-        <Dots total={total} done={done} />
-        <Target label={t("act.replay")} onSelect={sayAll} className="grid place-items-center rounded-full bg-sky-soft text-ink transition hover:bg-[#d6e6f8]">
+    // On a short, wide screen (`short`, B66) the prompt sits beside the speaker button and the action button floats
+    // over the bottom corner instead of keeping an empty row, so the whole game fits without scrolling.
+    <section className="relative flex h-full min-h-[480px] w-full flex-col rounded-fk-lg border border-line bg-surface p-4 shadow-soft sm:p-6 short:min-h-0 short:p-3">
+      <div className="grid grid-cols-[auto_1fr_auto] items-center gap-x-4">
+        <span className="w-[76px] short:row-span-2" />
+        <div className="flex justify-center"><Dots total={total} done={done} /></div>
+        <Target label={t("act.replay")} onSelect={sayAll} className="grid place-items-center rounded-full bg-sky-soft text-ink transition hover:bg-[#d6e6f8] short:row-span-2">
           <Volume2 className="size-8" aria-hidden />
         </Target>
+        <h2 className="col-span-3 mt-3 text-center text-2xl font-extrabold text-ink sm:text-3xl short:col-span-1 short:col-start-2 short:mt-1 short:text-2xl">{prompt}</h2>
       </div>
-      <h2 className="mt-3 text-center text-2xl font-extrabold text-ink sm:text-3xl">{prompt}</h2>
-      <div className="flex flex-1 flex-col items-center justify-center gap-6 py-4">{children}</div>
-      <div className="flex min-h-[84px] items-center justify-end">{action}</div>
+      <div className="flex flex-1 flex-col items-center justify-center gap-6 py-4 short:gap-3 short:py-2">{children}</div>
+      <div className="flex min-h-[84px] items-center justify-end short:pointer-events-none short:absolute short:bottom-3 short:right-3 short:min-h-0 short:[&>*]:pointer-events-auto">{action}</div>
     </section>
   );
 }

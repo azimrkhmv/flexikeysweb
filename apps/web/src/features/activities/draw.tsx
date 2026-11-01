@@ -286,7 +286,7 @@ function PaintBoard({ aspect, art, prompt, speak, speakKey, onFinish }: { aspect
           <PaintLayer strokes={paint.strokes} color={color} width={width} onStart={paint.add} onExtend={paint.extend} />
           {art && <div className="pointer-events-none absolute inset-0">{art}</div>}
         </div>
-        <div className="flex flex-col items-center gap-4 lg:max-w-56">
+        <div className="flex flex-col items-center gap-4 lg:max-w-56 short:lg:max-w-80 short:gap-3">
           <Palette color={color} onPick={setColor} />
           <div className="flex flex-wrap justify-center gap-3">
             <Target label={t("act.paint_for_me")} onSelect={forMe} className="rounded-full bg-sky-soft px-6 font-extrabold text-ink shadow-soft">

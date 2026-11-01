@@ -87,6 +87,10 @@ export function AdaptiveKeyboard({
   const reduced = forceReduced ?? (p.hintLevel >= 2 || narrow || ctx.access === "scan");
   const rows = reduced ? [reducedKeys(lang, needed)] : LAYOUTS[lang];
   const size = Math.max(64, Math.round(76 * p.keyScale));
+  // A row never wraps: keys shrink to fit the longest row in the keyboard's width (not below 64 px), so the whole
+  // keyboard stays in view on a laptop (B66). The +0.5 key leaves room for the lower rows' offset.
+  const most = Math.max(...rows.map((row) => row.length));
+  const key = `max(64px, min(${size}px, calc((100cqw - ${(most - 1) * p.spacing}px) / ${most + (reduced ? 0 : 0.5)})))`;
   // Physical key press → same debounce rule as on-screen keys (FR-KBD-3), then onKey.
   const pressRef = useRef<(k: string) => void>(null);
   useEffect(() => {
@@ -118,9 +122,9 @@ export function AdaptiveKeyboard({
   }, [lang, expected, disabled]);
 
   return (
-    <div role="group" aria-label={t("act.keyboard")} className="flex w-full flex-col items-center rounded-fk-lg bg-surface-2 p-3 shadow-inner" style={{ gap: p.spacing, touchAction: "none" }}>
+    <div role="group" aria-label={t("act.keyboard")} className="flex w-full flex-col items-center rounded-fk-lg bg-surface-2 p-3 shadow-inner [container-type:inline-size]" style={{ gap: p.spacing, touchAction: "none" }}>
       {rows.map((row, r) => (
-        <div key={r} className="flex flex-wrap justify-center" style={{ gap: p.spacing, paddingLeft: reduced ? 0 : r * size * 0.25 }}>
+        <div key={r} className="flex flex-wrap justify-center" style={{ gap: p.spacing, paddingLeft: reduced ? 0 : `calc(${key} * ${r * 0.25})` }}>
           {row.map((k) => {
             const isHint = hint === k;
             return (
@@ -134,7 +138,7 @@ export function AdaptiveKeyboard({
                 className={`grid place-items-center rounded-2xl border-b-4 text-3xl font-extrabold transition-[width,height] duration-300 ease-out ${
                   isHint ? "border-[#e8b930] bg-sun text-ink" : "border-line bg-surface text-ink hover:bg-sky-soft"
                 }`}
-                style={{ width: size, height: size, minWidth: 64, minHeight: 64 }}
+                style={{ width: key, height: key }}
               >
                 {k}
               </Target>
@@ -204,13 +208,13 @@ function TypeRound({ word, mode, needed, index, total, last, next }: { word: str
       action={solved && <ActionButton label={t(last ? "act.done" : "act.next")} onSelect={next} pulse />}
     >
       {mode === "letter" ? (
-        <span className={`grid size-40 place-items-center rounded-fk-lg text-8xl font-extrabold text-ink shadow-soft ${solved ? "bg-teal-soft" : "bg-sun-soft"}`}>{word}</span>
+        <span className={`grid size-40 place-items-center rounded-fk-lg text-8xl font-extrabold text-ink shadow-soft short:size-28 short:text-7xl ${solved ? "bg-teal-soft" : "bg-sun-soft"}`}>{word}</span>
       ) : (
         <div className="flex flex-wrap justify-center gap-2" aria-label={word}>
           {tokens.map((ch, k) => (
             <span
               key={k}
-              className={`grid h-24 min-w-20 place-items-center rounded-2xl border-b-4 px-3 text-6xl font-extrabold ${
+              className={`grid h-24 min-w-20 place-items-center rounded-2xl border-b-4 px-3 text-6xl font-extrabold short:h-20 short:min-w-16 short:text-5xl ${
                 k < pos ? "fk-pop border-teal bg-teal-soft text-ink" : k === pos ? "border-sky bg-surface text-ink/25" : "border-line bg-surface-2 text-ink/20"
               }`}
             >

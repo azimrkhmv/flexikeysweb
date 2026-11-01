@@ -22,8 +22,11 @@ DEFS: dict[str, Any] = DATA["defs"]
 LEVEL = {"i": 1, "ii": 2, "iii": 3, "iv": 4, "v": 5}
 VERSION: str = DATA["version"]  # the content's revision
 SET = "2026-10-16"  # the id a round stores (settings.intake_questionnaire): the CEO's questionnaire of 16 Oct
-# Name, birthday and the family facts have no "Not sure" (B60; TASKS.md section 3 replaces spec §5 for these).
-NO_NOT_SURE = {"A1", "A2", "A3", "A4", "A4_kg", "A5", "A7", "A9", "B1", "B3_parts"}
+# Questions with their own "Don't know" answer get no automatic "Not sure" (B66); an older round's None stays valid.
+OWN_DONT_KNOW = {"CP1", "DS1", "E1"}
+# No "Not sure": name, birthday and the family facts (B60; TASKS.md section 3 replaces spec §5 for these), and
+# OWN_DONT_KNOW. The website's NO_NOT_SURE (content/questionnaire.ts) is the same list.
+NO_NOT_SURE = {"A1", "A2", "A3", "A4", "A4_kg", "A5", "A7", "A9", "B1", "B3_parts"} | OWN_DONT_KNOW
 AGE_MIN, AGE_MAX = 2, 18  # FlexiKeys is for children aged 2 to 18 (founders, 30 Oct 2026)
 TEXT_MAX, LONGTEXT_MAX, FILES_MAX, CLIPS_MAX = 200, 1000, 5, 11  # 11 baseline video tasks (section K)
 FILE_KEY = re.compile(r"children/[0-9a-f-]{36}/intake/[0-9a-f-]{36}")
@@ -148,7 +151,7 @@ def _number(value: Any) -> bool:
 def problem_with(q: dict[str, Any], value: Any) -> str | None:
     """Why this value is not a valid answer to q, or None when it is. None = "Not sure" (or clearing an answer)."""
     if value is None:
-        return "answer_required" if q["required"] and q["id"] in NO_NOT_SURE else None
+        return "answer_required" if q["required"] and q["id"] in NO_NOT_SURE - OWN_DONT_KNOW else None
     lo, hi = q["range"] or (None, None)
     allowed = set(q["options"] or []) | set(q.get("retired_options") or {})  # old answers stay valid (B61)
     match q["kind"]:

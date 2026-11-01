@@ -168,30 +168,37 @@ function LightRound({ seq, index, next, last }: { seq: string[]; index: number; 
       total={3}
       action={solved && <ActionButton label={t(last ? "act.done" : "act.next")} onSelect={next} pulse />}
     >
-      <div className="relative aspect-[16/9] w-full max-w-3xl overflow-hidden rounded-fk-lg shadow-inner" style={{ background: "linear-gradient(180deg,#34497a 0%,#4a5f93 60%,#62709e 100%)" }}>
-        <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 size-full" aria-hidden>
-          <polyline points={done.map((id) => at(id).join(",")).join(" ")} fill="none" stroke="#f5d272" strokeWidth="0.8" strokeDasharray="2 1.5" opacity="0.8" />
-        </svg>
-        {STARS.map(([x, y], k) => {
-          const id = `star${k}`;
-          const on = (watching && seq[s.lit] === id) || done.includes(id);
-          return (
-            <Target
-              key={id}
-              label={t("act.star", { n: k + 1 })}
-              disabled={watching || solved}
-              onSelect={(info) => s.tap(id, info)}
-              pulse={s.hintId === id}
-              className="absolute grid -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full disabled:opacity-100"
-              style={{ left: `${x}%`, top: `${y}%`, width: size, height: size }}
-            >
-              <span
-                className={`block rounded-full transition-all duration-300 ${on ? "fk-glow bg-sun" : "bg-[#8d9cc4]"}`}
-                style={{ width: size * (on ? 0.55 : 0.32), height: size * (on ? 0.55 : 0.32), boxShadow: on ? "0 0 30px 10px rgb(245 210 114 / .55)" : undefined }}
-              />
-            </Target>
-          );
-        })}
+      {/* The sky takes the room left above "Watch again", as wide as that height allows, so the title, the whole sky
+          and the button fit a laptop screen (B66). */}
+      <div className="flex min-h-[180px] w-full flex-1 items-center justify-center [container-type:size]">
+        <div
+          className="relative aspect-[16/9] max-w-3xl overflow-hidden rounded-fk-lg shadow-inner"
+          style={{ width: "min(100cqw, 100cqh * 16 / 9)", background: "linear-gradient(180deg,#34497a 0%,#4a5f93 60%,#62709e 100%)" }}
+        >
+          <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 size-full" aria-hidden>
+            <polyline points={done.map((id) => at(id).join(",")).join(" ")} fill="none" stroke="#f5d272" strokeWidth="0.8" strokeDasharray="2 1.5" opacity="0.8" />
+          </svg>
+          {STARS.map(([x, y], k) => {
+            const id = `star${k}`;
+            const on = (watching && seq[s.lit] === id) || done.includes(id);
+            return (
+              <Target
+                key={id}
+                label={t("act.star", { n: k + 1 })}
+                disabled={watching || solved}
+                onSelect={(info) => s.tap(id, info)}
+                pulse={s.hintId === id}
+                className="absolute grid -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full disabled:opacity-100"
+                style={{ left: `${x}%`, top: `${y}%`, width: size, height: size }}
+              >
+                <span
+                  className={`block rounded-full transition-all duration-300 ${on ? "fk-glow bg-sun" : "bg-[#8d9cc4]"}`}
+                  style={{ width: size * (on ? 0.55 : 0.32), height: size * (on ? 0.55 : 0.32), boxShadow: on ? "0 0 30px 10px rgb(245 210 114 / .55)" : undefined }}
+                />
+              </Target>
+            );
+          })}
+        </div>
       </div>
       <WatchAgain onSelect={s.replay} disabled={watching || solved} />
     </Frame>

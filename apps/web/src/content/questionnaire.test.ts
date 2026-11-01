@@ -1,7 +1,8 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import mine from "./backend/questionnaire.json";
-import { bodyPattern, inLang, Q_BY_ID, QUESTIONNAIRE, shownOptions, typedProblem, upgrade, visible, type QAnswer, type QAnswers } from "./questionnaire";
+import { intake } from "@/messages/intake";
+import { bodyPattern, inLang, offersNotSure, Q_BY_ID, QUESTIONNAIRE, shownOptions, typedProblem, upgrade, visible, type QAnswer, type QAnswers } from "./questionnaire";
 
 // IQ1: the questionnaire file is the server's, and the cases below fix which questions each sample child is shown.
 // questionnaire_cases.json (here and a copy in apps/api/tests) makes the server prove the same. Regenerate with
@@ -76,6 +77,19 @@ describe("questionnaire (IQ1)", () => {
       }
     }
     expect(inLang(Q_BY_ID.A3.option_text!, "ru", "boy")).toBe(Q_BY_ID.A3.option_text!.ru.boy);
+  });
+
+  it("no question shows two answers with the same text, counting the automatic \"Not sure\" (B66)", () => {
+    for (const lang of ["en", "uz", "ru"] as const) {
+      for (const q of QUESTIONNAIRE.questions) {
+        const texts = (q.options ?? []).map((o) => inLang(q.option_text!, lang, o).trim().toLowerCase());
+        if (q.options && offersNotSure(q)) texts.push(intake[lang]["intake.notSure"].toLowerCase());
+        expect(texts.filter((x, k) => texts.indexOf(x) !== k), `${lang} ${q.id}`).toEqual([]);
+      }
+    }
+    for (const id of ["CP1", "DS1", "E1"]) expect(offersNotSure(Q_BY_ID[id]), id).toBe(false); // their own "Don't know"
+    expect(offersNotSure(Q_BY_ID.B5)).toBe(true); // keeps both (30 Oct), worded differently in uz
+    expect(upgrade({ DS1: null, C3: null })).toEqual({ DS1: "dont_know", C3: null }); // an older round's "Not sure"
   });
 
   it("each sample child sees the right questions (shared with the server)", () => {

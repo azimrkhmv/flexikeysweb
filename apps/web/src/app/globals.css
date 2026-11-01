@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* A short, wide screen (a laptop, a phone on its side): the game screens drop their spare room so the whole game
+   fits without scrolling (B66). */
+@custom-variant short (@media (max-height: 820px) and (orientation: landscape));
+
 /* FlexiKeys design tokens — calm, warm, friendly. No harsh colors, no red, no black. */
 :root {
   --fk-bg: #f7f6f1;

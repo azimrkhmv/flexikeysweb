@@ -411,7 +411,7 @@ export function ChildMode({ child }: { child: Child }) {
       const Engine = a ? (ENGINES[a.kind] as ComponentType<EngineProps>) : null;
       const { levelId: lvl, activityId: act } = view;
       body = (
-        <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col rounded-fk-lg border-4 border-white bg-surface/90 p-4 shadow-soft sm:p-6">
+        <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col rounded-fk-lg border-4 border-white bg-surface/90 p-4 shadow-soft sm:p-6 short:border-0 short:bg-transparent short:p-0 short:shadow-none">
           {a && Engine ? <Engine key={a.id} activity={a} onDone={() => finishActivity(lvl, act)} /> : null}
         </div>
       );
@@ -444,7 +444,7 @@ export function ChildMode({ child }: { child: Child }) {
       break;
     case "warmup":
       body = (
-        <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col rounded-fk-lg border-4 border-white bg-surface/90 p-4 shadow-soft sm:p-6">
+        <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col rounded-fk-lg border-4 border-white bg-surface/90 p-4 shadow-soft sm:p-6 short:border-0 short:bg-transparent short:p-0 short:shadow-none">
           <WarmUp
             onDone={() => {
               sfx("chime");

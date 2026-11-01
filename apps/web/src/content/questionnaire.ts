@@ -136,11 +136,26 @@ export function shownOptions(id: string, a: QAnswers, today: string): string[] |
   return q.options.filter((o) => holds(q.option_show?.[o], a, f));
 }
 
-/** Saved answers in today's options: a retired option shows as the option that replaced it (B61, B62). */
+/** Questions with their own "Don't know" answer: no automatic "Not sure" next to it (B66; in Uzbek both read
+ * "Bilmayman"). Same list as the server's OWN_DONT_KNOW. */
+export const OWN_DONT_KNOW = new Set(["CP1", "DS1", "E1"]);
+/** Questions without the automatic "Not sure": name, birthday and the family facts (B60, TASKS.md section 3
+ * replaces spec §5 for these), and OWN_DONT_KNOW. Same list as the server's. */
+export const NO_NOT_SURE = new Set(["A1", "A2", "A3", "A4", "A4_kg", "A5", "A7", "A9", "B1", "B3_parts", ...OWN_DONT_KNOW]);
+
+/** Does this question get the automatic "Not sure" (stored as null)? Required ones do, optional ones only with
+ * `not_sure` (B63), and never one that has a "not_sure" option of its own. */
+export const offersNotSure = (q: QQuestion) => (q.required || !!q.not_sure) && !NO_NOT_SURE.has(q.id) && !q.options?.includes("not_sure");
+
+/** Saved answers in today's options: a retired option shows as the option that replaced it (B61, B62); an older
+ * round's "Not sure" (null) on a question with its own "Don't know" shows as that answer (B66). */
 export function upgrade(a: QAnswers): QAnswers {
   const to = (id: string, v: string) => Q_BY_ID[id]?.retired_options?.[v] ?? v;
   return Object.fromEntries(
-    Object.entries(a).map(([id, v]) => [id, typeof v === "string" ? to(id, v) : Array.isArray(v) ? [...new Set(v.map((x) => to(id, x)))] : v]),
+    Object.entries(a).map(([id, v]) => [
+      id,
+      v === null && OWN_DONT_KNOW.has(id) ? "dont_know" : typeof v === "string" ? to(id, v) : Array.isArray(v) ? [...new Set(v.map((x) => to(id, x)))] : v,
+    ]),
   );
 }
 

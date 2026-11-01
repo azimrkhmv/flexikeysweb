@@ -9,7 +9,7 @@ name of the developer who does it.
 - **What we are building** is described in the founders' spec: `docs/product-spec-2026-10-06.pdf`. Where this file
   and the spec disagree, the spec wins — except for the three points listed in section 3.
 - `PRD.md` is the older product document. The spec replaced the parts where they disagree.
-- **Last updated:** 2026-10-30.
+- **Last updated:** 2026-11-01.
 
 **Contents:** 1. How we work · 2. Rules of the product · 3. Decisions already made · 4. Who does what ·
 5. Tasks (M0–M7) · 6. Ask and collect · 7. Accounts
@@ -104,6 +104,8 @@ Every task must keep these. They come from the spec.
 | Age never limits the plan (founders, 30 Oct 2026) | Every child aged 2–18 gets a plan made for them from the parent's answers and the child's results in the games. No "limited plan because of age" and no "flag for the therapist because of age". Age may still choose age-fitting content (game levels, exercises for small or big children); it never cuts the plan down. Other reasons for the limited plan (Free, "delay or not sure" in FA6) are not part of this decision |
 | Videos and voice | Higgsfield (videos) and ElevenLabs (voice), bought after Azim tests them; ElevenLabs' Uzbek is checked by native speakers first (V1, V2). Until then every video and audio spot holds a placeholder (C7) |
 | Research library | Open research about cerebral palsy, free to use. The assistant answers from it and names the source (A9.8) |
+| Health consent is required (Bekzod, founders' feedback, 1 Nov 2026) | The "Not now" button on the health consent screen is removed: a parent must agree to continue past step A. This replaces the 5 Oct brief's "health data is optional". The lawyer's check before the pilot (G7) now includes whether a required health consent is allowed |
+| Step-by-step skill questions: tick everything (Bekzod, founders' feedback, 1 Nov 2026) | The step-by-step skill questions (C2, C3, C4, C5, C6, C14, C17, C19) are answered by ticking everything the child can do; the app keeps the hardest one ticked as the answer. This replaces "choose the hardest one" from B62 |
 
 **Families**
 
@@ -938,6 +940,32 @@ decision; the source is "FlexiKeys — parent questionnaire fixes" (30 Oct 2026)
   - Done when: an optional answer saved, then cleared and saved again, is gone after a reload, in the demo and against the server (a "clear" in the save request; null stays "Not sure")
   - Needs: B63
 
+### Feedback fixes (1 Nov 2026)
+
+*The founders' and two beta testers' feedback (Uzbek, Russian and English UI, phone and laptop). Every point has a
+decision; the source is "FlexiKeys — founders' and beta testers' feedback fixes" (1 Nov 2026). Order: B66 to B70.*
+
+- [ ] **Bekzod** — `B66` Bugs: file upload on a phone, games on a laptop screen, "Bilmayman" twice (2.1, 2.2, 2.3)
+  - Done when: from a phone at the test address, a photo and a PDF upload in B10, B13, CP21, DD3_files and I4_files, and a voice note records and saves; at 1280×720 and 1366×768 every game's play area and buttons are visible without scrolling, and phone portrait still works; CP1, DS1, E1 show one "don't know" answer; B5 shows two different texts in uz; the new duplicate-text test passes
+  - Needs: —
+  - Done in code (1 Nov 2026): the upload links were signed for `http://localhost:9100`, which a phone cannot reach; `compose.yaml` now takes `S3_PUBLIC_ENDPOINT` from `.env` and `apps/web/README.md` "Testing on a phone" has the steps (MinIO's CORS already accepts PUT from any origin). All 58 games fit 1280×720 and 1366×768 without scrolling. CP1, DS1, E1, B5 and the test are done
+  - Still open: the upload check from a real phone at a tunnel address (B10, B13, CP21, DD3_files, I4_files, voice note). Claude had no phone; Bekzod checks it with the README steps, then ticks this task
+- [ ] **Bekzod** — `B67` Health consent required + section banners (3.1, 3.2)
+  - Done when: no "Not now" on the consent step and earlier decliners are asked again; every step opens with the banner (section number, large title, one-line intro) in en, ru, uz at phone width and in dark mode
+  - Needs: B66
+- [ ] **Bekzod** — `B68` Step questions: tick everything + "Write in your own words" (4.1)
+  - Done when: a parent can tick several answers; the saved value is the hardest one; the exclusive options work; old answers load with the right boxes ticked; cases cover a ticked set and the saved value
+  - Needs: B67
+- [ ] **Bekzod** — `B69` Diagnosis questions: B7 wording, CP1_types and `cp_type`, CP14 in step G (4.2, 4.3, 4.4)
+  - Done when: B7 shows the plain words; several CP types can be ticked and `cp_type` feeds every rule and P10 that CP1 fed; old CP1 answers still work; CP14 shows in G only when the child uses words
+  - Needs: B68
+- [ ] **Bekzod** — `B70` Wording and split questions (4.5–4.15)
+  - Done when: every text in 4.5–4.15 is in place in en and ru with a uz draft; D13, E6 and H5 are retired and replaced; E6_where and P35 work with new and old answers; I4_files takes a video; the cases files cover the new ids
+  - Needs: B69
+- [ ] **Bekzod** — `B71` Child mode's top bar is wider than a 390 px phone: Back, the name, My Voice, full screen and Pause do not fit, so Pause is cut off at the right edge (found during B66, 1 Nov 2026)
+  - Done when: at 360 and 390 px wide every top-bar button is fully visible and still at least the profile's target size
+  - Needs: —
+
 ### Hosting (31 Oct 2026)
 
 - [x] **Bekzod** — Website demo on Vercel (mock mode, no server)
@@ -1007,7 +1035,7 @@ These are not programming. The named developer asks the right person and writes 
   - Needed for: real visit reminders
 - [ ] **Azim** — `G6` Get the final consent texts in 4 languages. They must say that try records are kept on the server for 90 days
   - Needed for: F5
-- [ ] **Azim** — `G7` Get the lawyer's answers: may children's health data be stored abroad, and may data be sent to AI and voice companies abroad?
+- [ ] **Azim** — `G7` Get the lawyer's answers: may children's health data be stored abroad, and may data be sent to AI and voice companies abroad? And: check that required health consent is allowed (section 3, 1 Nov 2026)
   - Needed for: A9.2, F5
 
 - [x] **Azim** — `Q6` Compare SMS providers (Eskiz.uz and others): price and how to connect

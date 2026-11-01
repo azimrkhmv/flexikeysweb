@@ -122,6 +122,28 @@ NEXT_PUBLIC_API_MODE=live npm run dev            # here
 `FK_API_ORIGIN`, `FK_STORAGE_ORIGIN` and `NEXT_PUBLIC_API_MODE` are read at **build** time: Next bakes the
 rewrite and the security policy into `.next`. Changing them needs a rebuild.
 
+### Testing on a phone (live mode)
+
+The browser uploads files (B10, B13, CP21, DD3_files, I4_files, the voice note) **straight to the file storage**,
+with a link the server signs for `S3_PUBLIC_ENDPOINT`. That is `http://localhost:9100` by default. On a phone,
+`localhost` is the phone itself, and an `http` link from an `https` page is blocked too, so every upload fails with
+"Something went wrong" (B66, 1 Nov 2026). The storage needs its own public `https` address:
+
+1. Start the server and the website as above.
+2. Open two tunnels, one for the website and one for MinIO:
+   `cloudflared tunnel --url http://localhost:3000` and `cloudflared tunnel --url http://localhost:9100`.
+   Each prints an `https://….trycloudflare.com` address.
+3. In `../api/.env` set `S3_PUBLIC_ENDPOINT=https://<storage tunnel>` (no `/` at the end) and restart the server
+   (`uvicorn`, or `docker compose up -d`: `compose.yaml` takes the value from `.env`).
+4. Start the website with `FK_STORAGE_ORIGIN=https://<storage tunnel>` (the security policy allows uploads only
+   there; it is read at start and at build time).
+5. CORS: MinIO accepts `PUT` from any origin unless `MINIO_API_CORS_ALLOW_ORIGIN` is set. If it is, add the website
+   tunnel's address.
+6. On the phone open the website tunnel's address and upload a photo in B13 ("Upload documents from the doctor").
+
+Quick tunnels get a new address each time they start: repeat steps 3 and 4. With the production setup
+(`../../deploy/`), MinIO sits behind Caddy at `https://files.<domain>` and both values are that address.
+
 **Consent:** no consent record means no consent. For a child without the basic consent, child mode doesn't start.
 The parent sees why, and the Privacy tab offers **Give consent**.
 

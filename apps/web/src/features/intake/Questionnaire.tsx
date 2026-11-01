@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import { FileUp, ShieldCheck, Trash2 } from "lucide-react";
 import { Button, Card, Field, Input, Textarea, useAction } from "@/components/ui";
-import { ageInMonths, inLang, Q_BY_ID, QUESTIONNAIRE, shownOptions, typedProblem, upgrade, visible, type QAnswer, type QAnswers, type QQuestion } from "@/content/questionnaire";
+import { ageInMonths, inLang, offersNotSure, Q_BY_ID, QUESTIONNAIRE, shownOptions, typedProblem, upgrade, visible, type QAnswer, type QAnswers, type QQuestion } from "@/content/questionnaire";
 import { pView } from "@/content/questionnaireBridge";
 import { FormError, FormNote } from "@/features/auth/parts";
 import { api, sel, useDb } from "@/lib/api";
@@ -17,8 +17,6 @@ import { Ready } from "./Wizard";
 // Which questions show is the data's rules (visible, shownOptions), the same as the server's. Section K (baseline
 // videos) waits for IQ8 and section L is the therapist's (IQ6). Text comes from the data in the parent's language.
 
-// Name, birthday and the family facts (B60, TASKS.md section 3: replaces spec §5 for these) have no "Not sure".
-const NO_NOT_SURE = new Set(["A1", "A2", "A3", "A4", "A4_kg", "A5", "A7", "A9", "B1", "B3_parts"]);
 const TEXT_MAX = 200;
 const LONGTEXT_MAX = 1000;
 const FILES_MAX = 5;
@@ -173,7 +171,7 @@ export function Question({ q, answers, set, childId }: { q: QQuestion; answers: 
   const options = shownOptions(q.id, answers, today()) ?? [];
   const opt = (o: string) => (q.option_text ? inLang(q.option_text, uiLang, o) : o);
   const clear = q.required ? undefined : () => set(q.id, undefined); // undefined: not answered, unlike null ("Not sure")
-  const notSure = (q.required || q.not_sure) && !NO_NOT_SURE.has(q.id) && !options.includes("not_sure") && (
+  const notSure = offersNotSure(q) && (
     <Choice name={q.id} type="radio" checked={v === null} onChange={() => set(q.id, null)} onClear={clear} label={t("intake.notSure")} />
   );
   // A typed answer: the input in its label, and "Not sure" next to it (a label can't hold another label).

@@ -87,6 +87,8 @@ def test_not_sure_counts_except_name_birthday_and_family_facts(client: TestClien
     assert save(client, owner, child, {"C3": None, "J1": None}).status_code == 200
     for qid in ("A2", "A3", "A4", "A4_kg", "A5", "A7", "A9"):  # B60
         assert title(save(client, owner, child, {qid: None})) == (422, "invalid_answer"), qid
+    health_consent(client, owner, child)
+    assert save(client, owner, child, {"DS1": None, "E1": None}).status_code == 200  # an older round's (B66)
 
 
 def test_health_answers_need_the_consent_and_are_encrypted(client: TestClient) -> None:

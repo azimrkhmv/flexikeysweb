@@ -1,6 +1,6 @@
 {
- "_note": "The CEO's parent intake questionnaire (16 Oct 2026, @Abdulloh Ochilov; therapist-reviewed), as data. Source of truth for the server (app/modules/intake/questionnaire.py) and the website (a copy in apps/web/src/content/backend/questionnaire.json, checked by questionnaire.test.ts). Question numbers never change and are never reused. `show` holds display rules R1-R19 and the follow-ups as one condition; `option_show` hides single options. Conditions: {q, in} (any of these answers), {q, answered}, {q, min/max} (numbers), {fact, in/min/max} with facts age (years), gmfcs, macs, cfcs (1-5, from C10/L2, D1, G2), {all}, {any}, {not}, and {ref} to a named rule in `defs`. `note` marks the team's drafts and open points for the physio. Retired 30 Oct 2026, do not reuse: B3 (replaced by B3_parts; old B3 answers still count, see body_pattern), C2_side (B3_parts covers it). `retired_options` lists options no longer shown: old answers with them stay valid and map to the named option (null: kept as they are). The fact `pattern` is the body pattern from B3_parts. Retired 30 Oct 2026, do not reuse: D12 (replaced by D12_spoon and D12_cup; old D12 answers still feed P24). `not_sure: true` on an optional question: it still offers \"Not sure\" (stored as null).",
- "version": "2026-10-30",
+ "_note": "The CEO's parent intake questionnaire (16 Oct 2026, @Abdulloh Ochilov; therapist-reviewed), as data. Source of truth for the server (app/modules/intake/questionnaire.py) and the website (a copy in apps/web/src/content/backend/questionnaire.json, checked by questionnaire.test.ts). Question numbers never change and are never reused. `show` holds display rules R1-R19 and the follow-ups as one condition; `option_show` hides single options. Conditions: {q, in} (any of these answers), {q, answered}, {q, min/max} (numbers), {fact, in/min/max} with facts age (years), gmfcs, macs, cfcs (1-5, from C10/L2, D1, G2), {all}, {any}, {not}, and {ref} to a named rule in `defs`. `note` marks the team's drafts and open points for the physio. Retired 30 Oct 2026, do not reuse: B3 (replaced by B3_parts; old B3 answers still count, see body_pattern), C2_side (B3_parts covers it). `retired_options` lists options no longer shown: old answers with them stay valid and map to the named option (null: kept as they are). The fact `pattern` is the body pattern from B3_parts. Retired 30 Oct 2026, do not reuse: D12 (replaced by D12_spoon and D12_cup; old D12 answers still feed P24). `not_sure: true` on an optional question: it still offers \"Not sure\" (stored as null). CP1, DS1 and E1 have their own `dont_know` and no automatic \"Not sure\" (B66); an older round's null on them stays valid.",
+ "version": "2026-11-01",
  "steps": [
   "A",
   "B",
@@ -1022,7 +1022,7 @@
      "32_36": "32–36 hafta",
      "28_31": "28–31 hafta",
      "before_28": "28 haftadan oldin",
-     "dont_know": "Bilmayman"
+     "dont_know": "Maʼlum emas"
     },
     "ru": {
      "on_time": "В срок",
@@ -1031,7 +1031,8 @@
      "before_28": "Раньше 28 недель",
      "dont_know": "Не знаю"
     }
-   }
+   },
+   "note": "1 Nov 2026: uz 'dont_know' reads 'Maʼlum emas', so it differs from the automatic 'Not sure' ('Bilmayman') (B66)"
   },
   {
    "id": "B6",
