@@ -76,7 +76,9 @@ export function pView(a: QAnswers, today: string): PAnswers {
   const goals = [...new Set(list(a.J9).flatMap((g) => GOALS[g] ?? []))].slice(0, 3);
   p.P33 = goals.length ? goals : undefined;
   p.P34 = pick(a.J1, { "10": "10", "20": "20", "30": "30", "45": "30" });
-  p.P35 = pick(a.H5, { morning: "morning", midday: "afternoon", afternoon: "afternoon", evening: "evening" });
+  // B70: the first time ticked in H5_active, in day order; an old round's H5 when it is not answered.
+  const active = ["morning", "midday", "afternoon", "evening"].find((x) => list(a.H5_active).includes(x));
+  p.P35 = pick(active ?? a.H5, { morning: "morning", midday: "afternoon", afternoon: "afternoon", evening: "evening" });
   const likes = list(a.F9).filter((i) => ["music", "cars", "animals", "cartoons", "water", "balls"].includes(i));
   p.P37 = likes.length ? likes : undefined;
 

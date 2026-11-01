@@ -41,6 +41,10 @@ const CASES: { name: string; answers: QAnswers }[] = [
   { name: "CP types: spastic and dyskinetic", answers: { B1: ["cp"], CP1_types: ["spastic", "dyskinetic"] } },
   { name: "CP types: don't know", answers: { B1: ["cp"], CP1_types: ["dont_know"] } },
   { name: "CP types win over an old CP1", answers: { B1: ["cp"], CP1: "spastic", CP1_types: ["ataxic"] } },
+  // B70: P35 from the first time ticked in H5_active, in day order; the old H5 still counts; H5_calm feeds no rule yet.
+  { name: "active evening and midday, calm morning", answers: { B1: ["cp"], H5_active: ["evening", "midday"], H5_calm: ["morning"] } },
+  { name: "active wins over an old H5", answers: { B1: ["cp"], H5: "morning", H5_active: ["evening"] } },
+  { name: "skin: a sore now, buttons and zip", answers: { B1: ["cp"], E6_now: "yes", E6_often: "no", D13_buttons: "with_help", D13_zip: "no" } },
 ];
 
 const BACKEND = new URL("./backend/", import.meta.url);

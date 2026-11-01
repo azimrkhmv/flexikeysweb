@@ -204,6 +204,7 @@ export const intake = {
     "intake.P40.consent": "I agree to store these videos for my child's therapist",
     "intake.P40.add": "Add a video",
     "intake.files.add": "Add a file",
+    "intake.files.tooBig": "This file is larger than {mb} MB. Please choose a shorter video, or trim it on your phone first.",
     "intake.A1.nickname": "A nickname is fine.",
     "intake.unit.%": "%",
     "intake.unit.cm": "cm",
@@ -547,6 +548,7 @@ export const intake = {
     "intake.P40.consent": "Bu videolarni farzandimning mutaxassisi uchun saqlashga roziman",
     "intake.P40.add": "Video qoʻshish",
     "intake.files.add": "Fayl qoʻshish",
+    "intake.files.tooBig": "Bu fayl {mb} MB dan katta. Iltimos, qisqaroq video tanlang yoki uni avval telefoningizda qisqartiring.", // uz drafted 1 Nov 2026, native-speaker check (B44)
     "intake.A1.nickname": "Taxallus ham boʻladi.",
     "intake.unit.%": "%",
     "intake.unit.cm": "sm",
@@ -890,6 +892,7 @@ export const intake = {
     "intake.P40.consent": "Я согласен(на) хранить эти видео для специалиста ребёнка",
     "intake.P40.add": "Добавить видео",
     "intake.files.add": "Добавить файл",
+    "intake.files.tooBig": "Этот файл больше {mb} МБ. Выберите видео покороче или сначала обрежьте его на телефоне.",
     "intake.A1.nickname": "Можно указать домашнее имя или прозвище.",
     "intake.unit.%": "%",
     "intake.unit.cm": "см",

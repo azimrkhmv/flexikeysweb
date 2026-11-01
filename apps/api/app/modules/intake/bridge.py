@@ -104,8 +104,11 @@ def p_view(a: dict[str, Any], today: date) -> dict[str, Any]:
     p["P32"] = _ability(a.get("H2"), {"alone": 2, "helps": 1, "no": 0})
     p["P33"] = list(dict.fromkeys(g for goal in _list(a.get("J9")) for g in GOALS.get(goal, [])))[:3] or None
     p["P34"] = {"10": "10", "20": "20", "30": "30", "45": "30"}.get(a.get("J1"))  # type: ignore[arg-type]
+    # B70: the first time ticked in H5_active, in day order; an old round's H5 when it is not answered.
+    day = ("morning", "midday", "afternoon", "evening")
+    active = next((x for x in day if x in _list(a.get("H5_active"))), None)
     p["P35"] = {"morning": "morning", "midday": "afternoon", "afternoon": "afternoon", "evening": "evening"}.get(
-        a.get("H5")  # type: ignore[arg-type]
+        active or a.get("H5")  # type: ignore[arg-type]
     )
     p["P37"] = [
         i for i in _list(a.get("F9")) if i in ("music", "cars", "animals", "cartoons", "water", "balls")

@@ -46,6 +46,11 @@ const CASES: { name: string; answers: QAnswers }[] = [
   { name: "CP types: spastic and dyskinetic, no words", answers: { A2: "2023-03-01", B1: ["cp"], CP1_types: ["spastic", "dyskinetic"], C10: "v", C3: "cant_sit", G1: ["face_crying"] } },
   { name: "CP types: spastic only, sentences", answers: { A2: "2019-05-01", B1: ["cp"], CP1_types: ["spastic"], G1: ["sentences"] } },
   { name: "CP types: don't know", answers: { A2: "2019-05-01", B1: ["cp"], CP1_types: ["dont_know"], G1: ["single_words"] } },
+  // B70: E6_where opens for a sore now, a sore often, or an old round's E6.
+  { name: "skin: a sore now", answers: { A2: "2019-05-01", B1: ["cp"], E6_now: "yes", E6_often: "no" } },
+  { name: "skin: sores often", answers: { A2: "2019-05-01", B1: ["cp"], E6_now: "no", E6_often: "yes" } },
+  { name: "skin: no sores", answers: { A2: "2019-05-01", B1: ["cp"], E6_now: "no", E6_often: "no" } },
+  { name: "old round: E6 yes", answers: { A2: "2019-05-01", B1: ["cp"], E6: "yes" } },
 ];
 
 const BACKEND = new URL("./backend/", import.meta.url);
@@ -62,7 +67,9 @@ describe("questionnaire (IQ1)", () => {
       if (!c || typeof c !== "object") return;
       const o = c as Record<string, unknown>;
       if (typeof o.ref === "string") expect(QUESTIONNAIRE.defs, o.ref).toHaveProperty(o.ref);
-      if (typeof o.q === "string") {
+      if (typeof o.q === "string" && o.q === "E6") {
+        expect(o.in).toEqual(["yes"]); // retired (B70); E6_where still opens for an old round's "yes"
+      } else if (typeof o.q === "string") {
         expect(Q_BY_ID, o.q).toHaveProperty(o.q);
         const known = [...(Q_BY_ID[o.q].options ?? []), ...Object.keys(Q_BY_ID[o.q].retired_options ?? {})]; // old answers still match (B61)
         for (const v of (o.in as string[] | undefined) ?? []) expect(known, `${o.q}=${v}`).toContain(v);
@@ -233,7 +240,7 @@ describe("questionnaire (IQ1)", () => {
     for (const id of ["CP15", "CP16", "CP17", "CP7", "C9", "C10", "D1", "G2"]) expect(cp1, id).toContain(id);
     for (const id of ["C1", "C13", "C14", "C16", "CP19", "G4"]) expect(cp1, id).not.toContain(id); // R8, R13
     const cp5 = v("CP, GMFCS V, cannot sit");
-    for (const id of ["C7", "C8", "C9", "C21", "C22", "C23", "C24", "D11", "D12_spoon", "D12_cup", "D13"]) expect(cp5, id).not.toContain(id); // R6, R10
+    for (const id of ["C7", "C8", "C9", "C21", "C22", "C23", "C24", "D11", "D12_spoon", "D12_cup", "D13_buttons", "D13_zip"]) expect(cp5, id).not.toContain(id); // R6, R10
     for (const id of ["CP19", "CP20", "CP21", "C1", "C13", "C14", "G4", "E4"]) expect(cp5, id).toContain(id);
     expect(v("CP, GMFCS III")).not.toContain("C9"); // R7
     const au = v("autism only, no motor problem");
@@ -253,8 +260,14 @@ describe("questionnaire (IQ1)", () => {
     for (const id of ["C10", "D1", "C2", "AU1", "CP18", "CP1_types"]) expect(both, id).toContain(id); // two modules open
     expect(both).not.toContain("D8"); // R12
     const small = v("CP under 4, GMFCS II");
-    for (const id of ["D11", "D12_spoon", "D12_cup", "D13", "H7"]) expect(small, id).not.toContain(id); // R15
+    for (const id of ["D11", "D12_spoon", "D12_cup", "D13_buttons", "D13_zip", "H7"]) expect(small, id).not.toContain(id); // R15
     expect(small).toContain("F5_help"); // R18
+    for (const id of ["D13_buttons", "D13_zip", "E6_now", "E6_often", "H5_calm", "H5_active", "J9_other"]) expect(cp1, id).toContain(id); // B70
+    for (const id of ["D13", "E6", "H5"]) expect(Q_BY_ID[id], id).toBeUndefined(); // retired, ids never reused
+    expect(v("skin: a sore now")).toContain("E6_where");
+    expect(v("skin: sores often")).toContain("E6_where");
+    expect(v("old round: E6 yes")).toContain("E6_where");
+    expect(v("skin: no sores")).not.toContain("E6_where");
     const opts = (name: string, id: string) => shownOptions(id, CASES.find((c) => c.name === name)!.answers, TODAY);
     expect(opts("CP under 4, GMFCS II", "F3")).not.toContain("letters");
     expect(opts("CP under 4, GMFCS II", "C5")).not.toContain("stander"); // R8

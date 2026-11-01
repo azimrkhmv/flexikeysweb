@@ -20,6 +20,7 @@ import { Ready } from "./Wizard";
 const TEXT_MAX = 200;
 const LONGTEXT_MAX = 1000;
 const FILES_MAX = 5;
+const FILE_MAX_MB = 100; // one file, a video included (B70; the baseline clips have no limit of their own)
 const PARENT_STEPS = QUESTIONNAIRE.steps.filter((s) => s !== "K" && s !== "L");
 const today = () => new Date().toISOString().slice(0, 10);
 const unanswered = (v: QAnswer) => v === undefined || v === "" || (Array.isArray(v) && v.length === 0);
@@ -347,11 +348,14 @@ function OwnWords({ q, answers, set }: { q: QQuestion; answers: QAnswers; set: S
   );
 }
 
-/** Documents or photos (B10, B13, CP21, DD3, I4): up to 5, uploaded once the child exists (after section A). */
+/** Documents or photos (B10, B13, CP21, DD3, I4): up to 5, uploaded once the child exists (after section A). I4_files
+ * also takes a video of the child doing the exercises (B70), up to FILE_MAX_MB, checked here before the upload. */
 function Files({ q, label, answers, set, childId }: { q: QQuestion; label: string; answers: QAnswers; set: SetAnswer; childId: string | null }) {
   const t = useT();
   const add = useAction(api.uploadIntakeFile);
+  const [tooBig, setTooBig] = useState(false);
   const keys = Array.isArray(answers[q.id]) ? (answers[q.id] as string[]) : [];
+  const video = q.id === "I4_files";
   return (
     <div className="space-y-3">
       <p className="font-bold text-ink">{label}</p>
@@ -369,11 +373,13 @@ function Files({ q, label, answers, set, childId }: { q: QQuestion; label: strin
         <label className={chip}>
           <input
             type="file"
-            accept="image/*,application/pdf"
+            accept={video ? "image/*,application/pdf,video/*" : "image/*,application/pdf"}
             className="sr-only"
             onChange={async (e) => {
               const f = e.target.files?.[0];
               e.target.value = "";
+              setTooBig(!!f && f.size > FILE_MAX_MB * 1024 * 1024);
+              if (f && f.size > FILE_MAX_MB * 1024 * 1024) return;
               const key = f ? await add.run(childId, f) : undefined;
               if (key) set(q.id, [...keys, key]);
             }}
@@ -381,6 +387,7 @@ function Files({ q, label, answers, set, childId }: { q: QQuestion; label: strin
           <FileUp className="mr-2 size-4" aria-hidden /> {t("intake.files.add")}
         </label>
       )}
+      {tooBig && <p role="status" className="text-sm font-semibold text-ink-2">{t("intake.files.tooBig", { mb: FILE_MAX_MB })}</p>}
       {add.error && <p role="alert" className="text-sm font-semibold text-[#8f3a2c]">{add.error}</p>}
     </div>
   );

@@ -960,9 +960,10 @@ decision; the source is "FlexiKeys — founders' and beta testers' feedback fixe
 - [x] **Bekzod** — `B69` Diagnosis questions: B7 wording, CP1_types and `cp_type`, CP14 in step G (4.2, 4.3, 4.4)
   - Done when: B7 shows the plain words; several CP types can be ticked and `cp_type` feeds every rule and P10 that CP1 fed; old CP1 answers still work; CP14 shows in G only when the child uses words
   - Needs: B68
-- [ ] **Bekzod** — `B70` Wording and split questions (4.5–4.15)
+- [x] **Bekzod** — `B70` Wording and split questions (4.5–4.15)
   - Done when: every text in 4.5–4.15 is in place in en and ru with a uz draft; D13, E6 and H5 are retired and replaced; E6_where and P35 work with new and old answers; I4_files takes a video; the cases files cover the new ids
   - Needs: B69
+  - H5_calm stored; ask the physio whether it should set the time for stretching and massage.
 - [ ] **Bekzod** — `B71` Child mode's top bar is wider than a 390 px phone: Back, the name, My Voice, full screen and Pause do not fit, so Pause is cut off at the right edge (found during B66, 1 Nov 2026)
   - Done when: at 360 and 390 px wide every top-bar button is fully visible and still at least the profile's target size
   - Needs: —

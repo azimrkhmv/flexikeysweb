@@ -613,5 +613,79 @@
     "high_intensity"
    ]
   }
+ },
+ {
+  "name": "active evening and midday, calm morning",
+  "today": "2026-10-22",
+  "answers": {
+   "B1": [
+    "cp"
+   ],
+   "H5_active": [
+    "evening",
+    "midday"
+   ],
+   "H5_calm": [
+    "morning"
+   ]
+  },
+  "p": {
+   "P9": [
+    "cp"
+   ],
+   "P14": null,
+   "P35": "afternoon",
+   "_hold": [],
+   "_restrictions": [
+    "high_intensity"
+   ]
+  }
+ },
+ {
+  "name": "active wins over an old H5",
+  "today": "2026-10-22",
+  "answers": {
+   "B1": [
+    "cp"
+   ],
+   "H5": "morning",
+   "H5_active": [
+    "evening"
+   ]
+  },
+  "p": {
+   "P9": [
+    "cp"
+   ],
+   "P14": null,
+   "P35": "evening",
+   "_hold": [],
+   "_restrictions": [
+    "high_intensity"
+   ]
+  }
+ },
+ {
+  "name": "skin: a sore now, buttons and zip",
+  "today": "2026-10-22",
+  "answers": {
+   "B1": [
+    "cp"
+   ],
+   "E6_now": "yes",
+   "E6_often": "no",
+   "D13_buttons": "with_help",
+   "D13_zip": "no"
+  },
+  "p": {
+   "P9": [
+    "cp"
+   ],
+   "P14": null,
+   "_hold": [],
+   "_restrictions": [
+    "high_intensity"
+   ]
+  }
  }
 ]
