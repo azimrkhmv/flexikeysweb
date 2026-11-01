@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { FileUp, ShieldCheck, Trash2 } from "lucide-react";
 import { Button, Card, Field, Input, Textarea, useAction } from "@/components/ui";
 import { ageInMonths, inLang, ladderTicks, ladderToggle, ladderValue, offersNotSure, Q_BY_ID, QUESTIONNAIRE, shownOptions, typedProblem, upgrade, visible, type QAnswer, type QAnswers, type QQuestion } from "@/content/questionnaire";
@@ -56,6 +56,14 @@ export function QuestionnaireWizard({ childId: initialChild, version }: { childI
   });
   const step = steps[Math.min(i, steps.length - 1)];
   const questions = inStep(step);
+  // A new step opens at its banner (B67), not where the last one's Next button was; the title takes the focus so a
+  // screen reader reads the new section.
+  const opened = useRef(false);
+  useEffect(() => {
+    if (!opened.current) return void (opened.current = true);
+    window.scrollTo({ top: 0 });
+    document.getElementById("section-title")?.focus({ preventScroll: true });
+  }, [step]);
   // Open: a required question without an answer, or an answer the server would refuse (its message shows under it).
   const open = new Set(questions.filter((q) => (q.required && unanswered(answers[q.id])) || typedProblem(q, answers[q.id], answers, today())).map((q) => q.id));
   const set = (id: string, v: QAnswer) => setAnswers((a) => ({ ...a, [id]: v }));
@@ -172,7 +180,7 @@ function SectionBanner({ number, title, intro }: { number?: string; title: strin
   return (
     <header className="rounded-fk-lg bg-teal-soft px-5 py-5 sm:px-7">
       {number && <p className="text-sm font-bold text-ink-2">{number}</p>}
-      <h1 className="mt-1 text-3xl font-extrabold leading-tight text-ink sm:text-4xl">{title}</h1>
+      <h1 id="section-title" tabIndex={-1} className="mt-1 text-3xl font-extrabold leading-tight text-ink outline-none sm:text-4xl">{title}</h1>
       {intro && <p className="mt-2 text-base text-ink-2">{intro}</p>}
     </header>
   );
