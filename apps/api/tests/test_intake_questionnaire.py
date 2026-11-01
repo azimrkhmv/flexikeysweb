@@ -58,7 +58,7 @@ def complete(seed: dict[str, Any], health: bool = True) -> dict[str, Any]:
     return answers
 
 
-CP_WALKING = {"A2": "2019-05-01", "B1": ["cp"], "B3_parts": ["left_arm"], "CP1": "spastic", "CP2": "one_side",
+CP_WALKING = {"A2": "2019-05-01", "B1": ["cp"], "B3_parts": ["left_arm"], "CP1_types": ["spastic"], "CP2": "one_side",
               "C10": "i", "C6": "alone_7m"}  # fmt: skip
 
 

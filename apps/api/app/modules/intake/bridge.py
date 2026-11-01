@@ -15,6 +15,8 @@ restriction applies. ponytail: these mappings are the team's reading, listed und
 from datetime import date, timedelta
 from typing import Any
 
+from app.modules.intake.questionnaire import cp_type
+
 RECENT = timedelta(days=183)  # "surgery, cast or Botox in the last 6 months" (P15), the questionnaire's "recent"
 GMFCS_P12 = {"i": "walks", "ii": "walks_help", "iii": "walker", "iv": "wheelchair", "v": "needs_help_sit"}
 GOALS = {"sit": ["sit"], "stand": ["walk"], "walk": ["walk"], "hands_eat": ["eat", "hands"], "hold": ["hands"],
@@ -67,7 +69,7 @@ def p_view(a: dict[str, Any], today: date) -> dict[str, Any]:
          "other": "other", "no_diagnosis": "not_diagnosed", "not_sure": "not_diagnosed"}[d]
         for d in dx
     ) or None  # fmt: skip
-    p["P10"] = a.get("CP1")
+    p["P10"] = cp_type(a)  # B69: from CP1_types, or an old round's CP1
     p["P11"] = {"one_side": "one_side", "legs": "legs", "three_limbs": "whole_body", "whole_body": "whole_body"}.get(
         a.get("CP2")  # type: ignore[arg-type]
     )

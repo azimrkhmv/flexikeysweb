@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import mine from "./backend/questionnaire.json";
 import { intake } from "@/messages/intake";
-import { bodyPattern, inLang, ladderTicks, ladderToggle, ladderValue, offersNotSure, Q_BY_ID, QUESTIONNAIRE, shownOptions, typedProblem, upgrade, visible, type QAnswer, type QAnswers } from "./questionnaire";
+import { bodyPattern, cpType, inLang, ladderTicks, ladderToggle, ladderValue, offersNotSure, Q_BY_ID, QUESTIONNAIRE, shownOptions, typedProblem, upgrade, visible, type QAnswer, type QAnswers } from "./questionnaire";
 
 // IQ1: the questionnaire file is the server's, and the cases below fix which questions each sample child is shown.
 // questionnaire_cases.json (here and a copy in apps/api/tests) makes the server prove the same. Regenerate with
@@ -41,6 +41,11 @@ const CASES: { name: string; answers: QAnswers }[] = [
     name: "step questions ticked, own words",
     answers: { A2: "2020-04-01", B1: ["cp"], C3: "free_few_min", C3_note: "Sits in her chair with a belt", C6: "doesnt_step", C10: "iii" },
   },
+  // B69: several CP types ticked; CP14 (speech) shows in G only for ataxic or mixed CP and a child who uses words.
+  { name: "CP types: spastic and dyskinetic, sentences", answers: { A2: "2023-03-01", B1: ["cp"], CP1_types: ["spastic", "dyskinetic"], C10: "v", C3: "cant_sit", G1: ["sentences"] } },
+  { name: "CP types: spastic and dyskinetic, no words", answers: { A2: "2023-03-01", B1: ["cp"], CP1_types: ["spastic", "dyskinetic"], C10: "v", C3: "cant_sit", G1: ["face_crying"] } },
+  { name: "CP types: spastic only, sentences", answers: { A2: "2019-05-01", B1: ["cp"], CP1_types: ["spastic"], G1: ["sentences"] } },
+  { name: "CP types: don't know", answers: { A2: "2019-05-01", B1: ["cp"], CP1_types: ["dont_know"], G1: ["single_words"] } },
 ];
 
 const BACKEND = new URL("./backend/", import.meta.url);
@@ -93,7 +98,7 @@ describe("questionnaire (IQ1)", () => {
         expect(texts.filter((x, k) => texts.indexOf(x) !== k), `${lang} ${q.id}`).toEqual([]);
       }
     }
-    for (const id of ["CP1", "DS1", "E1"]) expect(offersNotSure(Q_BY_ID[id]), id).toBe(false); // their own "Don't know"
+    for (const id of ["CP1_types", "DS1", "E1"]) expect(offersNotSure(Q_BY_ID[id]), id).toBe(false); // their own "Don't know"
     expect(offersNotSure(Q_BY_ID.B5)).toBe(true); // keeps both (30 Oct), worded differently in uz
     expect(upgrade({ DS1: null, C3: null })).toEqual({ DS1: "dont_know", C3: null }); // an older round's "Not sure"
   });
@@ -128,6 +133,29 @@ describe("questionnaire (IQ1)", () => {
     for (const o of C3) expect(ladderValue(C3, ladderTicks(C3, o))).toBe(o); // a saved answer loads and saves unchanged
     const C5 = shownOptions("C5", { A2: "2019-05-01", B1: ["cp"], C10: "i" }, TODAY)!; // a hidden option is skipped
     expect(ladderTicks(C5, "one_hand")).toEqual(C5.slice(1, C5.indexOf("one_hand") + 1));
+  });
+
+  it("several CP types can be ticked; the rules read cp_type (B69)", () => {
+    expect(Q_BY_ID.CP1).toBeUndefined(); // retired, its id never reused
+    expect(Q_BY_ID.CP1_types).toMatchObject({ kind: "multi", required: true, health: true, exclusive: "dont_know" });
+    expect(JSON.stringify(QUESTIONNAIRE)).not.toContain('"q":"CP1"'); // every rule reads the fact
+    const t = (...types: string[]) => cpType({ CP1_types: types });
+    expect(t("spastic")).toBe("spastic");
+    expect(t("ataxic")).toBe("ataxic");
+    expect(t("spastic", "dyskinetic")).toBe("mixed");
+    expect(t("mixed")).toBe("mixed");
+    expect(t("dyskinetic", "mixed")).toBe("mixed");
+    expect(t("dont_know")).toBe("dont_know");
+    expect(cpType({ CP1: "ataxic" })).toBe("ataxic"); // an old round
+    expect(cpType({ CP1: "ataxic", CP1_types: ["spastic"] })).toBe("spastic");
+    expect(cpType({ CP1_types: null })).toBeNull(); // "Not sure"
+    expect(cpType({})).toBeNull();
+    expect(upgrade({ CP1: "dyskinetic" })).toEqual({ CP1: "dyskinetic", CP1_types: ["dyskinetic"] }); // an open old round
+    expect(upgrade({ CP1_types: null })).toEqual({ CP1_types: ["dont_know"] });
+    // CP14 (speech) moved to "Talking and understanding", right after G1.
+    const ids = QUESTIONNAIRE.questions.map((q) => q.id);
+    expect(Q_BY_ID.CP14.step).toBe("G");
+    expect(ids[ids.indexOf("G1") + 1]).toBe("CP14");
   });
 
   it("each sample child sees the right questions (shared with the server)", () => {
@@ -222,7 +250,7 @@ describe("questionnaire (IQ1)", () => {
     for (const id of ["DD1", "DD2", "DD3_files", "C3"]) expect(dd, id).toContain(id);
     for (const id of ["C10", "D1", "G2", "DD6"]) expect(dd, id).not.toContain(id); // R3
     const both = v("CP and autism, GMFCS II, MACS I");
-    for (const id of ["C10", "D1", "C2", "AU1", "CP18", "CP1"]) expect(both, id).toContain(id); // two modules open
+    for (const id of ["C10", "D1", "C2", "AU1", "CP18", "CP1_types"]) expect(both, id).toContain(id); // two modules open
     expect(both).not.toContain("D8"); // R12
     const small = v("CP under 4, GMFCS II");
     for (const id of ["D11", "D12_spoon", "D12_cup", "D13", "H7"]) expect(small, id).not.toContain(id); // R15

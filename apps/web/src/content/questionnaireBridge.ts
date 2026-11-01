@@ -1,4 +1,4 @@
-import type { QAnswer, QAnswers } from "./questionnaire";
+import { cpType, type QAnswer, type QAnswers } from "./questionnaire";
 
 // IQ3/IQ4: answers to the CEO's questionnaire read as the P1–P41 answers the plan engine uses, with the red flags
 // (`_hold`, `_restrictions`). The same rules as the server (apps/api/app/modules/intake/bridge.py);
@@ -43,7 +43,7 @@ export function pView(a: QAnswers, today: string): PAnswers {
   const p: Record<string, string | string[] | number | null | undefined> = { P1: a.A1 as string, P2: a.A2 as string, P3: a.A3 as string };
   const p9 = sorted([...dx].map((d) => DX[d]));
   p.P9 = p9.length ? p9 : undefined;
-  p.P10 = typeof a.CP1 === "string" ? a.CP1 : undefined;
+  p.P10 = cpType(a) ?? undefined; // B69: from CP1_types, or an old round's CP1
   p.P11 = pick(a.CP2, { one_side: "one_side", legs: "legs", three_limbs: "whole_body", whole_body: "whole_body" });
   p.P12 = movement(a);
   p.P13 = pick(a.B6, { no: "never", controlled: "last_year", still: "last_year" });

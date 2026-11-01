@@ -1,5 +1,5 @@
 {
- "_note": "The CEO's parent intake questionnaire (16 Oct 2026, @Abdulloh Ochilov; therapist-reviewed), as data. Source of truth for the server (app/modules/intake/questionnaire.py) and the website (a copy in apps/web/src/content/backend/questionnaire.json, checked by questionnaire.test.ts). Question numbers never change and are never reused. `show` holds display rules R1-R19 and the follow-ups as one condition; `option_show` hides single options. Conditions: {q, in} (any of these answers), {q, answered}, {q, min/max} (numbers), {fact, in/min/max} with facts age (years), gmfcs, macs, cfcs (1-5, from C10/L2, D1, G2), {all}, {any}, {not}, and {ref} to a named rule in `defs`. `note` marks the team's drafts and open points for the physio. Retired 30 Oct 2026, do not reuse: B3 (replaced by B3_parts; old B3 answers still count, see body_pattern), C2_side (B3_parts covers it). `retired_options` lists options no longer shown: old answers with them stay valid and map to the named option (null: kept as they are). The fact `pattern` is the body pattern from B3_parts. Retired 30 Oct 2026, do not reuse: D12 (replaced by D12_spoon and D12_cup; old D12 answers still feed P24). `not_sure: true` on an optional question: it still offers \"Not sure\" (stored as null). CP1, DS1 and E1 have their own `dont_know` and no automatic \"Not sure\" (B66); an older round's null on them stays valid. `step_intro`: one line under each section's title saying what it asks about (B67; uz text drafted 1 Nov 2026 — native-speaker check (B44)). `ladder: true` (B68): a step-by-step skill question shown as tick boxes; the saved value stays one option, the hardest one ticked (the last in `options` order). `<id>_note`: the parent's own words about that question.",
+ "_note": "The CEO's parent intake questionnaire (16 Oct 2026, @Abdulloh Ochilov; therapist-reviewed), as data. Source of truth for the server (app/modules/intake/questionnaire.py) and the website (a copy in apps/web/src/content/backend/questionnaire.json, checked by questionnaire.test.ts). Question numbers never change and are never reused. `show` holds display rules R1-R19 and the follow-ups as one condition; `option_show` hides single options. Conditions: {q, in} (any of these answers), {q, answered}, {q, min/max} (numbers), {fact, in/min/max} with facts age (years), gmfcs, macs, cfcs (1-5, from C10/L2, D1, G2), {all}, {any}, {not}, and {ref} to a named rule in `defs`. `note` marks the team's drafts and open points for the physio. Retired 30 Oct 2026, do not reuse: B3 (replaced by B3_parts; old B3 answers still count, see body_pattern), C2_side (B3_parts covers it). `retired_options` lists options no longer shown: old answers with them stay valid and map to the named option (null: kept as they are). The fact `pattern` is the body pattern from B3_parts. Retired 30 Oct 2026, do not reuse: D12 (replaced by D12_spoon and D12_cup; old D12 answers still feed P24). `not_sure: true` on an optional question: it still offers \"Not sure\" (stored as null). CP1, DS1 and E1 have their own `dont_know` and no automatic \"Not sure\" (B66); an older round's null on them stays valid. `step_intro`: one line under each section's title saying what it asks about (B67; uz text drafted 1 Nov 2026 — native-speaker check (B44)). `ladder: true` (B68): a step-by-step skill question shown as tick boxes; the saved value stays one option, the hardest one ticked (the last in `options` order). `<id>_note`: the parent's own words about that question. Retired 1 Nov 2026, do not reuse: CP1 (replaced by CP1_types; old CP1 answers still count, see the fact cp_type). The fact `cp_type` is the CP type from CP1_types: one type ticked is that type; `mixed`, or two or more of spastic, dyskinetic and ataxic, is `mixed`; `dont_know` is `dont_know`; without a CP1_types answer, an old round's CP1 answer.",
  "version": "2026-11-01",
  "steps": [
   "A",
@@ -1308,8 +1308,8 @@
      "spine": "Curved spine",
      "heart": "Heart",
      "breathing": "Breathing",
-     "reflux": "Reflux",
-     "shunt": "Hydrocephalus (shunt)",
+     "reflux": "Reflux (stomach problem: food comes back up)",
+     "shunt": "Hydrocephalus — fluid in the brain (shunt)",
      "none": "None"
     },
     "uz": {
@@ -1320,8 +1320,8 @@
      "spine": "Umurtqa pogʻonasi qiyshiqligi",
      "heart": "Yurak",
      "breathing": "Nafas olish",
-     "reflux": "Reflyuks",
-     "shunt": "Gidrotsefaliya (shunt)",
+     "reflux": "Reflyuks (oshqozon muammosi)",
+     "shunt": "Gidrotsefaliya — miyada suv yigʻilishi (shunt)",
      "none": "Hech biri"
     },
     "ru": {
@@ -1332,11 +1332,12 @@
      "spine": "Искривление позвоночника",
      "heart": "Сердце",
      "breathing": "Дыхание",
-     "reflux": "Рефлюкс",
-     "shunt": "Гидроцефалия (шунт)",
+     "reflux": "Рефлюкс (проблема с желудком: пища возвращается обратно)",
+     "shunt": "Гидроцефалия — скопление жидкости в мозге (шунт)",
      "none": "Нет"
     }
-   }
+   },
+   "note": "1 Nov 2026: 'reflux' and 'shunt' explained in plain words (B69); physio check needed"
   },
   {
    "id": "B8",
@@ -1706,9 +1707,9 @@
    "option_text": null
   },
   {
-   "id": "CP1",
+   "id": "CP1_types",
    "step": "CP",
-   "kind": "single",
+   "kind": "multi",
    "required": true,
    "health": true,
    "audience": "parent",
@@ -1720,7 +1721,7 @@
     "dont_know"
    ],
    "max": null,
-   "exclusive": null,
+   "exclusive": "dont_know",
    "show": {
     "ref": "module_cp"
    },
@@ -1761,7 +1762,8 @@
      "mixed": "Смешанный",
      "dont_know": "Не знаю"
     }
-   }
+   },
+   "note": "1 Nov 2026: replaces CP1: several types can be ticked; the fact `cp_type` reads it (B69); physio check needed"
   },
   {
    "id": "CP2",
@@ -2111,7 +2113,7 @@
       "ref": "module_cp"
      },
      {
-      "q": "CP1",
+      "fact": "cp_type",
       "in": [
        "spastic",
        "mixed"
@@ -2198,7 +2200,7 @@
       "ref": "module_cp"
      },
      {
-      "q": "CP1",
+      "fact": "cp_type",
       "in": [
        "spastic",
        "mixed"
@@ -2259,7 +2261,7 @@
       "ref": "module_cp"
      },
      {
-      "q": "CP1",
+      "fact": "cp_type",
       "in": [
        "spastic"
       ]
@@ -2323,7 +2325,7 @@
       "ref": "module_cp"
      },
      {
-      "q": "CP1",
+      "fact": "cp_type",
       "in": [
        "spastic",
        "mixed"
@@ -2376,7 +2378,7 @@
       "ref": "module_cp"
      },
      {
-      "q": "CP1",
+      "fact": "cp_type",
       "in": [
        "spastic",
        "mixed"
@@ -2427,7 +2429,7 @@
       "ref": "module_cp"
      },
      {
-      "q": "CP1",
+      "fact": "cp_type",
       "in": [
        "dyskinetic",
        "mixed"
@@ -2490,7 +2492,7 @@
       "ref": "module_cp"
      },
      {
-      "q": "CP1",
+      "fact": "cp_type",
       "in": [
        "dyskinetic",
        "mixed"
@@ -2552,7 +2554,7 @@
       "ref": "module_cp"
      },
      {
-      "q": "CP1",
+      "fact": "cp_type",
       "in": [
        "dyskinetic",
        "mixed"
@@ -2615,7 +2617,7 @@
       "ref": "module_cp"
      },
      {
-      "q": "CP1",
+      "fact": "cp_type",
       "in": [
        "ataxic",
        "mixed"
@@ -2674,7 +2676,7 @@
       "ref": "module_cp"
      },
      {
-      "q": "CP1",
+      "fact": "cp_type",
       "in": [
        "ataxic"
       ]
@@ -2708,65 +2710,6 @@
     },
     "ru": {
      "yes": "Да",
-     "no": "Нет"
-    }
-   }
-  },
-  {
-   "id": "CP14",
-   "step": "CP",
-   "kind": "single",
-   "required": false,
-   "health": true,
-   "audience": "parent",
-   "options": [
-    "yes",
-    "a_little",
-    "no"
-   ],
-   "max": null,
-   "exclusive": null,
-   "show": {
-    "all": [
-     {
-      "ref": "module_cp"
-     },
-     {
-      "q": "CP1",
-      "in": [
-       "ataxic",
-       "mixed"
-      ]
-     }
-    ]
-   },
-   "option_show": null,
-   "unit": null,
-   "range": null,
-   "picture": null,
-   "signup": false,
-   "feeds": [
-    "MV"
-   ],
-   "text": {
-    "en": "Is your child's speech slow or unclear?",
-    "uz": "Farzandingizning nutqi sekin yoki tushunarsizmi?",
-    "ru": "Речь ребёнка медленная или неразборчивая?"
-   },
-   "option_text": {
-    "en": {
-     "yes": "Yes",
-     "a_little": "A little",
-     "no": "No"
-    },
-    "uz": {
-     "yes": "Ha",
-     "a_little": "Biroz",
-     "no": "Yoʻq"
-    },
-    "ru": {
-     "yes": "Да",
-     "a_little": "Немного",
      "no": "Нет"
     }
    }
@@ -10506,6 +10449,73 @@
      "picture_cards": "Карточками с картинками или с помощью устройства"
     }
    }
+  },
+  {
+   "id": "CP14",
+   "step": "G",
+   "kind": "single",
+   "required": false,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "yes",
+    "a_little",
+    "no"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "ref": "module_cp"
+     },
+     {
+      "fact": "cp_type",
+      "in": [
+       "ataxic",
+       "mixed"
+      ]
+     },
+     {
+      "q": "G1",
+      "in": [
+       "sentences",
+       "single_words"
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "MV"
+   ],
+   "text": {
+    "en": "Is your child's speech slow or unclear?",
+    "uz": "Farzandingizning nutqi sekin yoki tushunarsizmi?",
+    "ru": "Речь ребёнка медленная или неразборчивая?"
+   },
+   "option_text": {
+    "en": {
+     "yes": "Yes",
+     "a_little": "A little",
+     "no": "No"
+    },
+    "uz": {
+     "yes": "Ha",
+     "a_little": "Biroz",
+     "no": "Yoʻq"
+    },
+    "ru": {
+     "yes": "Да",
+     "a_little": "Немного",
+     "no": "Нет"
+    }
+   },
+   "note": "1 Nov 2026: moved to step G after G1, asked only when the child uses words or sentences (B69); physio check needed"
   },
   {
    "id": "G2",

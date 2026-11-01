@@ -7,7 +7,7 @@ import data from "./backend/questionnaire.json";
 
 export type QAnswer = string | string[] | number | null | undefined;
 export type QAnswers = Record<string, QAnswer>;
-type Fact = "age" | "gmfcs" | "macs" | "cfcs" | "pattern";
+type Fact = "age" | "gmfcs" | "macs" | "cfcs" | "pattern" | "cp_type";
 export type Cond =
   | { ref: string }
   | { all: Cond[] }
@@ -106,10 +106,23 @@ export function bodyPattern(a: QAnswers): string | null {
   return "whole_body"; // limbs on both sides in another mix: the cautious reading
 }
 
-/** Age in years, the GMFCS, MACS and CFCS levels (1-5; a therapist's L2 wins over the parent's C10) and the body
- * pattern (bodyPattern). */
+/** B69: the CP type the rules and P10 read, from the types ticked in CP1_types: one type → that type; "mixed", or
+ * two or more types → "mixed"; "dont_know" → "dont_know". An old round's CP1 answer still counts. null: not
+ * answered or "Not sure". Same as the server's cp_type. */
+export function cpType(a: QAnswers): string | null {
+  const ticked = a.CP1_types;
+  if (!Array.isArray(ticked) || !ticked.length) return typeof a.CP1 === "string" ? a.CP1 : null;
+  const types = ["spastic", "dyskinetic", "ataxic"].filter((t) => ticked.includes(t));
+  if (ticked.includes("mixed") || types.length >= 2) return "mixed";
+  if (types.length) return types[0];
+  return ticked.includes("dont_know") ? "dont_know" : null;
+}
+
+/** Age in years, the GMFCS, MACS and CFCS levels (1-5; a therapist's L2 wins over the parent's C10), the body
+ * pattern (bodyPattern) and the CP type (cpType). */
 export const facts = (a: QAnswers, today: string): Record<Fact, number | string | null> => ({
   pattern: bodyPattern(a),
+  cp_type: cpType(a),
   age: years(a.A2, today),
   gmfcs: level(a.L2 || a.C10),
   macs: level(a.D1),
@@ -148,7 +161,7 @@ export function shownOptions(id: string, a: QAnswers, today: string): string[] |
 
 /** Questions with their own "Don't know" answer: no automatic "Not sure" next to it (B66; in Uzbek both read
  * "Bilmayman"). Same list as the server's OWN_DONT_KNOW. */
-export const OWN_DONT_KNOW = new Set(["CP1", "DS1", "E1"]);
+export const OWN_DONT_KNOW = new Set(["CP1", "CP1_types", "DS1", "E1"]);
 /** Questions without the automatic "Not sure": name, birthday and the family facts (B60, TASKS.md section 3
  * replaces spec §5 for these), and OWN_DONT_KNOW. Same list as the server's. */
 export const NO_NOT_SURE = new Set(["A1", "A2", "A3", "A4", "A4_kg", "A5", "A7", "A9", "B1", "B3_parts", ...OWN_DONT_KNOW]);
@@ -184,12 +197,17 @@ export function ladderValue(options: string[], ticked: string[]): string | undef
  * round's "Not sure" (null) on a question with its own "Don't know" shows as that answer (B66). */
 export function upgrade(a: QAnswers): QAnswers {
   const to = (id: string, v: string) => Q_BY_ID[id]?.retired_options?.[v] ?? v;
-  return Object.fromEntries(
+  const dontKnow = (id: string) => (Q_BY_ID[id]?.kind === "multi" ? ["dont_know"] : "dont_know");
+  const out: QAnswers = Object.fromEntries(
     Object.entries(a).map(([id, v]) => [
       id,
-      v === null && OWN_DONT_KNOW.has(id) ? "dont_know" : typeof v === "string" ? to(id, v) : Array.isArray(v) ? [...new Set(v.map((x) => to(id, x)))] : v,
+      v === null && OWN_DONT_KNOW.has(id) ? dontKnow(id) : typeof v === "string" ? to(id, v) : Array.isArray(v) ? [...new Set(v.map((x) => to(id, x)))] : v,
     ]),
   );
+  // B69: an open round answered with the retired CP1 shows that type ticked in CP1_types.
+  const cp1 = out.CP1;
+  if (out.CP1_types === undefined && typeof cp1 === "string" && Q_BY_ID.CP1_types?.options?.includes(cp1)) out.CP1_types = [cp1];
+  return out;
 }
 
 /** FlexiKeys is for children aged 2 to 18 (founders, 30 Oct 2026). */

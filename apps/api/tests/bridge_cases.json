@@ -519,5 +519,99 @@
     "high_intensity"
    ]
   }
+ },
+ {
+  "name": "CP types: spastic only",
+  "today": "2026-10-22",
+  "answers": {
+   "B1": [
+    "cp"
+   ],
+   "CP1_types": [
+    "spastic"
+   ]
+  },
+  "p": {
+   "P9": [
+    "cp"
+   ],
+   "P10": "spastic",
+   "P14": null,
+   "_hold": [],
+   "_restrictions": [
+    "high_intensity"
+   ]
+  }
+ },
+ {
+  "name": "CP types: spastic and dyskinetic",
+  "today": "2026-10-22",
+  "answers": {
+   "B1": [
+    "cp"
+   ],
+   "CP1_types": [
+    "spastic",
+    "dyskinetic"
+   ]
+  },
+  "p": {
+   "P9": [
+    "cp"
+   ],
+   "P10": "mixed",
+   "P14": null,
+   "_hold": [],
+   "_restrictions": [
+    "high_intensity"
+   ]
+  }
+ },
+ {
+  "name": "CP types: don't know",
+  "today": "2026-10-22",
+  "answers": {
+   "B1": [
+    "cp"
+   ],
+   "CP1_types": [
+    "dont_know"
+   ]
+  },
+  "p": {
+   "P9": [
+    "cp"
+   ],
+   "P10": "dont_know",
+   "P14": null,
+   "_hold": [],
+   "_restrictions": [
+    "high_intensity"
+   ]
+  }
+ },
+ {
+  "name": "CP types win over an old CP1",
+  "today": "2026-10-22",
+  "answers": {
+   "B1": [
+    "cp"
+   ],
+   "CP1": "spastic",
+   "CP1_types": [
+    "ataxic"
+   ]
+  },
+  "p": {
+   "P9": [
+    "cp"
+   ],
+   "P10": "ataxic",
+   "P14": null,
+   "_hold": [],
+   "_restrictions": [
+    "high_intensity"
+   ]
+  }
  }
 ]

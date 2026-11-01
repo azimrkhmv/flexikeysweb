@@ -36,6 +36,11 @@ const CASES: { name: string; answers: QAnswers }[] = [
   { name: "implant", answers: { B1: ["other"], E13: "yes", E7: "no", DD4: "no" } },
   { name: "spoon not yet, cup with help", answers: { B1: ["cp"], D12_spoon: "no", D12_cup: "with_help", D11: "fingers" } },
   { name: "cup only", answers: { B1: ["cp"], D12_cup: "with_help", D11: "fingers" } },
+  // B69: P10 from the CP types ticked (the cases above keep an old round's CP1).
+  { name: "CP types: spastic only", answers: { B1: ["cp"], CP1_types: ["spastic"] } },
+  { name: "CP types: spastic and dyskinetic", answers: { B1: ["cp"], CP1_types: ["spastic", "dyskinetic"] } },
+  { name: "CP types: don't know", answers: { B1: ["cp"], CP1_types: ["dont_know"] } },
+  { name: "CP types win over an old CP1", answers: { B1: ["cp"], CP1: "spastic", CP1_types: ["ataxic"] } },
 ];
 
 const BACKEND = new URL("./backend/", import.meta.url);

@@ -23,7 +23,7 @@ LEVEL = {"i": 1, "ii": 2, "iii": 3, "iv": 4, "v": 5}
 VERSION: str = DATA["version"]  # the content's revision
 SET = "2026-10-16"  # the id a round stores (settings.intake_questionnaire): the CEO's questionnaire of 16 Oct
 # Questions with their own "Don't know" answer get no automatic "Not sure" (B66); an older round's None stays valid.
-OWN_DONT_KNOW = {"CP1", "DS1", "E1"}
+OWN_DONT_KNOW = {"CP1", "CP1_types", "DS1", "E1"}
 # No "Not sure": name, birthday and the family facts (B60; TASKS.md section 3 replaces spec §5 for these), and
 # OWN_DONT_KNOW. The website's NO_NOT_SURE (content/questionnaire.ts) is the same list.
 NO_NOT_SURE = {"A1", "A2", "A3", "A4", "A4_kg", "A5", "A7", "A9", "B1", "B3_parts"} | OWN_DONT_KNOW
@@ -77,11 +77,31 @@ def body_pattern(answers: Answers) -> str | None:
     return "whole_body"  # limbs on both sides in another mix: the cautious reading
 
 
+CP_TYPES = ("spastic", "dyskinetic", "ataxic")
+
+
+def cp_type(answers: Answers) -> str | None:
+    """B69: the CP type the rules and P10 read, from the types ticked in CP1_types: one type -> that type; "mixed", or
+    two or more types -> "mixed"; "dont_know" -> "dont_know". An old round's CP1 answer still counts. None: not
+    answered or "Not sure"."""
+    ticked = answers.get("CP1_types")
+    if not isinstance(ticked, list) or not ticked:
+        old = answers.get("CP1")
+        return old if isinstance(old, str) else None
+    types = [t for t in CP_TYPES if t in ticked]
+    if "mixed" in ticked or len(types) >= 2:
+        return "mixed"
+    if types:
+        return types[0]
+    return "dont_know" if "dont_know" in ticked else None
+
+
 def facts(answers: Answers, today: date) -> dict[str, int | str | None]:
-    """Age in years, the GMFCS, MACS and CFCS levels (1-5; a therapist's L2 wins over the parent's C10) and the body
-    pattern (body_pattern)."""
+    """Age in years, the GMFCS, MACS and CFCS levels (1-5; a therapist's L2 wins over the parent's C10), the body
+    pattern (body_pattern) and the CP type (cp_type)."""
     return {
         "pattern": body_pattern(answers),
+        "cp_type": cp_type(answers),
         "age": _years(answers.get("A2"), today),
         "gmfcs": LEVEL.get(answers.get("L2") or answers.get("C10")),  # type: ignore[arg-type]
         "macs": LEVEL.get(answers.get("D1")),  # type: ignore[arg-type]
