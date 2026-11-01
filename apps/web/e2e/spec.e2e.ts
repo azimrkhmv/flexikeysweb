@@ -111,26 +111,15 @@ test("grey Next points at the question still open", async ({ page }) => {
   await expect(page.getByRole("button", { name: "I agree — continue" })).toBeVisible(); // moved on
 });
 
-test("health consent declined → games only", async ({ page }, info) => {
+test("health consent is required: no Not now, only agree or go back (B67)", async ({ page }, info) => {
   test.skip(info.project.name !== "desktop");
   await setup(page);
   await signUpByPhone(page, "+998 93 555 98 76");
   await childStep(page, "Malika");
-  await page.getByRole("button", { name: "Not now" }).click();
-  await expect(page.getByText("the plan will have games and Find help only")).toBeVisible();
-  await abilities(page, "talking");
-  await abilities(page, "hands and moving");
-  await abilities(page, "seeing, hearing, daily life");
-  await page.getByRole("group", { name: /do better in the next 3 months/ }).getByText("Understand more").click();
-  await pick(page, /How much time/, "10 minutes");
-  await next(page);
-  await skip(page);
-  await skip(page);
-  await page.getByRole("button", { name: "Make the plan" }).click();
-  await expect(page.getByText("Four weeks of games.")).toBeVisible();
-  await page.getByRole("link", { name: "See the plan" }).click();
-  await expect(page.getByText("Exercises", { exact: true })).toHaveCount(0);
-  await expect(page.getByText("Games", { exact: true }).first()).toBeVisible();
+  await expect(page.getByRole("button", { name: "I agree — continue" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Not now" })).toHaveCount(0);
+  await page.getByRole("button", { name: "Back" }).click();
+  await expect(page.getByLabel("Child's first name")).toHaveValue("Malika"); // step A again
 });
 
 test("physio approves a queued video; the decision is recorded", async ({ page }) => {

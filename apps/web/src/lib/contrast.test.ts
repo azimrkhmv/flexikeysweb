@@ -32,6 +32,8 @@ const TEXT: [string, string, string][] = [
   ["white on primary buttons", WHITE, token("primary")],
   ["primary text on soft buttons", token("primary"), token("primary-soft")],
   ["primary links on page", token("primary"), token("bg")],
+  ["section banner title on teal-soft (B67)", token("ink"), token("teal-soft")],
+  ["section banner number and intro on teal-soft (B67)", token("ink-2"), token("teal-soft")],
 ];
 
 describe("token contrast (WCAG 2.2 AA)", () => {

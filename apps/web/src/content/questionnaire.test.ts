@@ -71,6 +71,7 @@ describe("questionnaire (IQ1)", () => {
   it("every question, option and section has Uzbek and Russian text (IQ5)", () => {
     for (const lang of ["uz", "ru"]) {
       for (const s of QUESTIONNAIRE.steps) expect(QUESTIONNAIRE.step_text[lang]?.[s], `${lang} ${s}`).toBeTruthy();
+      for (const s of QUESTIONNAIRE.steps) expect(QUESTIONNAIRE.step_intro[lang]?.[s], `intro ${lang} ${s}`).toBeTruthy(); // B67
       for (const q of QUESTIONNAIRE.questions) {
         expect(q.text[lang], `${lang} ${q.id}`).toBeTruthy();
         for (const o of q.options ?? []) expect(q.option_text?.[lang]?.[o], `${lang} ${q.id}.${o}`).toBeTruthy();

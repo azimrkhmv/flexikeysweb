@@ -81,6 +81,16 @@ def test_a_new_round_uses_the_new_questionnaire_and_is_finished_by_its_rules(cli
     assert done.json()["completedAt"] is not None
 
 
+def test_a_round_is_finished_only_with_the_health_consent(client: TestClient) -> None:
+    """B67: the health consent is required (TASKS.md section 3, 1 Nov 2026); there is no "Not now"."""
+    owner = parent(client)
+    child = add_child(client, owner)
+    assert save(client, owner, child, complete({"A2": "2019-05-01"}, health=False)).status_code == 200
+    assert title(finish(client, owner, child)) == (403, "child_consent_required")
+    health_consent(client, owner, child)
+    assert title(finish(client, owner, child)) == (422, "round_incomplete")  # now the health questions are asked
+
+
 def test_not_sure_counts_except_name_birthday_and_family_facts(client: TestClient) -> None:
     owner = parent(client)
     child = add_child(client, owner)

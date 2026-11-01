@@ -6,7 +6,7 @@ import { FileUp, ShieldCheck, Trash2 } from "lucide-react";
 import { Button, Card, Field, Input, Textarea, useAction } from "@/components/ui";
 import { ageInMonths, inLang, offersNotSure, Q_BY_ID, QUESTIONNAIRE, shownOptions, typedProblem, upgrade, visible, type QAnswer, type QAnswers, type QQuestion } from "@/content/questionnaire";
 import { pView } from "@/content/questionnaireBridge";
-import { FormError, FormNote } from "@/features/auth/parts";
+import { FormError } from "@/features/auth/parts";
 import { api, sel, useDb } from "@/lib/api";
 import { useT, useLang } from "@/lib/i18n";
 import type { IntakeValue, Roadmap } from "@/lib/types";
@@ -34,15 +34,18 @@ export function QuestionnaireWizard({ childId: initialChild, version }: { childI
   const round = childId ? sel.intakeRound(db, childId)?.round ?? 1 : 1;
   const [answers, setAnswers] = useState<QAnswers>(() => (childId ? upgrade(sel.intakeAnswers(db, childId, round)) : {}));
   const health = childId ? sel.hasConsent(db, childId, "health") : false;
-  const [declined, setDeclined] = useState(false);
   const [plan, setPlan] = useState<Roadmap | null>(null);
   const [markedStep, setMarkedStep] = useState<string | null>(null);
   const act = useAction(async (fn: () => Promise<unknown>) => fn());
 
-  // Questions this parent is asked now; health questions only with the health consent.
-  const shown = visible(answers, today()).map((id) => Q_BY_ID[id]).filter((q) => !q.health || health);
+  // Questions this parent is asked now; health questions only with the health consent. The consent is required
+  // (TASKS.md section 3, 1 Nov 2026; B67): there is no "Not now", so its step stays until the parent agrees.
+  const all = visible(answers, today()).map((id) => Q_BY_ID[id]);
+  const shown = all.filter((q) => !q.health || health);
   const inStep = (s: string) => shown.filter((q) => q.step === s);
-  const steps = ["A", ...(health || declined ? [] : ["health_consent"]), ...PARENT_STEPS.filter((s) => s !== "A" && inStep(s).length)];
+  const steps = ["A", ...(health ? [] : ["health_consent"]), ...PARENT_STEPS.filter((s) => s !== "A" && inStep(s).length)];
+  // "Section 3 of 9": the sections this parent will see once they agree (the consent step is not one).
+  const sections = PARENT_STEPS.filter((s) => s === "A" || all.some((q) => q.step === s));
   const [i, setI] = useState(() => {
     // Resume at the first step with a required question open; the health consent until it is decided.
     const k = childId ? steps.findIndex((s) => s === "health_consent" || inStep(s).some((q) => q.required && unanswered(answers[q.id]))) : 0;
@@ -91,14 +94,19 @@ export function QuestionnaireWizard({ childId: initialChild, version }: { childI
 
   return (
     <div className="mx-auto max-w-2xl">
-      <p className="mb-1 text-sm font-bold text-muted">{t("intake.progress", { n: i + 1, total: steps.length })}</p>
-      <div className="mb-6 h-2 overflow-hidden rounded-full bg-surface-2" aria-hidden>
+      <div className="mb-4 h-2 overflow-hidden rounded-full bg-surface-2" aria-hidden>
         <div className="h-full rounded-full bg-teal transition-all" style={{ width: `${((i + 1) / steps.length) * 100}%` }} />
       </div>
-      <h1 className="text-2xl font-extrabold text-ink sm:text-3xl">
-        {step === "health_consent" ? t("intake.step.health_consent") : inLang(QUESTIONNAIRE.step_text, uiLang, step)}
-      </h1>
-      {step === "A" && <p className="mt-2 text-ink-2">{t("auth.details.ages")}</p>}
+      {step === "health_consent" ? (
+        <SectionBanner title={t("intake.step.health_consent")} />
+      ) : (
+        <SectionBanner
+          number={t("intake.section", { n: sections.indexOf(step) + 1, total: sections.length })}
+          title={inLang(QUESTIONNAIRE.step_text, uiLang, step)}
+          intro={inLang(QUESTIONNAIRE.step_intro, uiLang, step)}
+        />
+      )}
+      {step === "A" && <p className="mt-3 text-ink-2">{t("auth.details.ages")}</p>}
 
       {step === "health_consent" ? (
         <Card className="mt-6 space-y-4 p-5">
@@ -106,11 +114,11 @@ export function QuestionnaireWizard({ childId: initialChild, version }: { childI
           <p className="text-ink">{t("intake.health.lead")}</p>
           <p className="text-sm text-ink-2">{t("intake.health.points")}</p>
           <FormError>{act.error}</FormError>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <Button variant="ghost" onClick={() => setI(i - 1)}>{t("intake.back")}</Button>
             <Button size="lg" pending={act.pending} onClick={() => act.run(async () => { await api.setConsent(childId!, "health", true); })}>
               {t("intake.health.yes")}
             </Button>
-            <Button size="lg" variant="outline" onClick={() => setDeclined(true)}>{t("intake.health.no")}</Button>
           </div>
         </Card>
       ) : (
@@ -122,7 +130,6 @@ export function QuestionnaireWizard({ childId: initialChild, version }: { childI
             else next();
           }}
         >
-          {declined && i === 1 && <FormNote>{t("intake.health.declined")}</FormNote>}
           {questions.map((q) => {
             const mark = markedStep === step && open.has(q.id);
             return (
@@ -150,6 +157,18 @@ export function QuestionnaireWizard({ childId: initialChild, version }: { childI
         </form>
       )}
     </div>
+  );
+}
+
+/** The start of each section (B67): "Section 3 of 9", the title in large bold type (about twice the question text)
+ * and one line on what the section asks about, on a soft brand colour (text ≥ 4.5:1, lib/contrast.test.ts). */
+function SectionBanner({ number, title, intro }: { number?: string; title: string; intro?: string }) {
+  return (
+    <header className="rounded-fk-lg bg-teal-soft px-5 py-5 sm:px-7">
+      {number && <p className="text-sm font-bold text-ink-2">{number}</p>}
+      <h1 className="mt-1 text-3xl font-extrabold leading-tight text-ink sm:text-4xl">{title}</h1>
+      {intro && <p className="mt-2 text-base text-ink-2">{intro}</p>}
+    </header>
   );
 }
 

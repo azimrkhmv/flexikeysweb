@@ -141,6 +141,9 @@ export const intakeApi = {
   async finishIntake(childId: string, round: number) {
     const { user } = requireChildAccess(childId, FAMILY);
     const db = read();
+    // The CEO's questionnaire needs the health consent, as on the server (B67, TASKS.md section 3, 1 Nov 2026).
+    const questionnaire = db.intakeRounds.find((x) => x.childId === childId && x.round === round)?.questionnaire ?? "p41";
+    if (questionnaire !== "p41" && !sel.hasConsent(db, childId, "health")) throw new ApiError("consent_required");
     const plan = { ...buildRoadmap(planInput(db, childId, round), db.videos), id: id(), createdAt: iso() };
     write((d) => {
       d.roadmaps.push(plan);

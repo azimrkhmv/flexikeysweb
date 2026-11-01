@@ -1232,6 +1232,7 @@ export interface paths {
         /**
          * Finish Round
          * @description Close the round once every required question has an answer ("Not sure" counts), and build the plan (A4.4).
+         *     A round of the CEO's questionnaire also needs the health consent: 403 child_consent_required (B67).
          */
         post: operations["finish_round_api_v1_children__child_id__intake__number__finish_post"];
         delete?: never;

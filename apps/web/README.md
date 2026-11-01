@@ -43,7 +43,7 @@ You can reset all demo data from **Admin → Support**.
   English), phone + SMS code (WebOTP autofill on Android), basic consent, city and district (`src/content/districts.ts`).
   Uzbek Cyrillic is transliterated from the Uzbek catalog (`src/lib/cyrillic.ts`); content stays in uz/ru/en.
 - **Parent intake P1–P41** (`/parent/children/new`, questions as data in `src/content/intake.ts`): saved as you go,
-  "Not sure" stored as `null`, health consent gate (declined = games only), 3-month re-intake pre-filled.
+  "Not sure" stored as `null`, health consent gate (required since 1 Nov 2026: no "Not now"; a consent taken back later in Privacy = games only), 3-month re-intake pre-filled.
 - **Video library + physio review** (`/physio`, `src/content/exercises.ts`): only approved language versions reach a roadmap.
 - **Roadmap engine** (`src/lib/roadmap.ts`, tests in `roadmap.test.ts`): deterministic rules, safety filters that are
   tested over every restriction / seizure / surgery / movement-level combination, 4 weeks, daily count from P34.

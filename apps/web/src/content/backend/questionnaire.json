@@ -1,5 +1,5 @@
 {
- "_note": "The CEO's parent intake questionnaire (16 Oct 2026, @Abdulloh Ochilov; therapist-reviewed), as data. Source of truth for the server (app/modules/intake/questionnaire.py) and the website (a copy in apps/web/src/content/backend/questionnaire.json, checked by questionnaire.test.ts). Question numbers never change and are never reused. `show` holds display rules R1-R19 and the follow-ups as one condition; `option_show` hides single options. Conditions: {q, in} (any of these answers), {q, answered}, {q, min/max} (numbers), {fact, in/min/max} with facts age (years), gmfcs, macs, cfcs (1-5, from C10/L2, D1, G2), {all}, {any}, {not}, and {ref} to a named rule in `defs`. `note` marks the team's drafts and open points for the physio. Retired 30 Oct 2026, do not reuse: B3 (replaced by B3_parts; old B3 answers still count, see body_pattern), C2_side (B3_parts covers it). `retired_options` lists options no longer shown: old answers with them stay valid and map to the named option (null: kept as they are). The fact `pattern` is the body pattern from B3_parts. Retired 30 Oct 2026, do not reuse: D12 (replaced by D12_spoon and D12_cup; old D12 answers still feed P24). `not_sure: true` on an optional question: it still offers \"Not sure\" (stored as null). CP1, DS1 and E1 have their own `dont_know` and no automatic \"Not sure\" (B66); an older round's null on them stays valid.",
+ "_note": "The CEO's parent intake questionnaire (16 Oct 2026, @Abdulloh Ochilov; therapist-reviewed), as data. Source of truth for the server (app/modules/intake/questionnaire.py) and the website (a copy in apps/web/src/content/backend/questionnaire.json, checked by questionnaire.test.ts). Question numbers never change and are never reused. `show` holds display rules R1-R19 and the follow-ups as one condition; `option_show` hides single options. Conditions: {q, in} (any of these answers), {q, answered}, {q, min/max} (numbers), {fact, in/min/max} with facts age (years), gmfcs, macs, cfcs (1-5, from C10/L2, D1, G2), {all}, {any}, {not}, and {ref} to a named rule in `defs`. `note` marks the team's drafts and open points for the physio. Retired 30 Oct 2026, do not reuse: B3 (replaced by B3_parts; old B3 answers still count, see body_pattern), C2_side (B3_parts covers it). `retired_options` lists options no longer shown: old answers with them stay valid and map to the named option (null: kept as they are). The fact `pattern` is the body pattern from B3_parts. Retired 30 Oct 2026, do not reuse: D12 (replaced by D12_spoon and D12_cup; old D12 answers still feed P24). `not_sure: true` on an optional question: it still offers \"Not sure\" (stored as null). CP1, DS1 and E1 have their own `dont_know` and no automatic \"Not sure\" (B66); an older round's null on them stays valid. `step_intro`: one line under each section's title saying what it asks about (B67; uz text drafted 1 Nov 2026 — native-speaker check (B44)).",
  "version": "2026-11-01",
  "steps": [
   "A",
@@ -77,6 +77,65 @@
    "J": "Цели и время",
    "K": "Видео для начальной оценки",
    "L": "Оценка терапевта"
+  }
+ },
+ "step_intro": {
+  "en": {
+   "A": "Your child's name, birthday, height and weight, and who lives at home.",
+   "B": "What doctors have said about your child: diagnosis, other conditions, surgery and medicines.",
+   "CP": "A few more questions about your child's cerebral palsy.",
+   "DCD": "A few more questions about coordination.",
+   "DD": "When your child first did things, like holding the head up or walking.",
+   "DS": "A few more questions about Down syndrome.",
+   "AU": "A few more questions about autism.",
+   "C": "How your child lies, rolls, sits, crawls, stands and walks.",
+   "D": "How your child uses their hands: holding, picking up, eating, dressing.",
+   "E": "Body and health: pain, muscles, skin, bones, touch and eating.",
+   "F": "Seeing, hearing, and how long your child can pay attention.",
+   "G": "How your child talks, understands and shows what they want.",
+   "H": "Your child's day: eating, dressing, sleep and the best times to play.",
+   "I": "Therapy and exercises your child has had so far.",
+   "J": "Your goals for the next 3 months and how much time you have.",
+   "K": "Short videos of your child moving, for the therapist.",
+   "L": "For the therapist: assessment and goals."
+  },
+  "uz": {
+   "A": "Farzandingizning ismi, tugʻilgan sanasi, boʻyi va vazni hamda uyda kimlar yashashi.",
+   "B": "Shifokorlar farzandingiz haqida nima degan: tashxis, boshqa holatlar, operatsiyalar va dorilar.",
+   "CP": "Farzandingizdagi BSF haqida yana bir nechta savol.",
+   "DCD": "Harakat muvofiqligi haqida yana bir nechta savol.",
+   "DD": "Farzandingiz biror narsani birinchi marta qachon qilgan: boshini tutish, yurish.",
+   "DS": "Daun sindromi haqida yana bir nechta savol.",
+   "AU": "Autizm haqida yana bir nechta savol.",
+   "C": "Farzandingiz qanday yotadi, agʻanaydi, oʻtiradi, emaklaydi, turadi va yuradi.",
+   "D": "Farzandingiz qoʻllarini qanday ishlatadi: ushlaydi, oladi, ovqatlanadi, kiyinadi.",
+   "E": "Tana va sogʻliq: ogʻriq, mushaklar, teri, suyaklar, teginish va ovqatlanish.",
+   "F": "Koʻrish, eshitish va farzandingiz diqqatini qancha vaqt jamlay olishi.",
+   "G": "Farzandingiz qanday gapiradi, tushunadi va nima xohlashini qanday koʻrsatadi.",
+   "H": "Farzandingizning kuni: ovqat, kiyinish, uyqu va oʻynash uchun eng yaxshi vaqt.",
+   "I": "Farzandingiz shu paytgacha olgan terapiya va mashqlar.",
+   "J": "Keyingi 3 oy uchun maqsadlaringiz va qancha vaqtingiz borligi.",
+   "K": "Terapevt uchun farzandingiz harakatlarining qisqa videolari.",
+   "L": "Terapevt uchun: baholash va maqsadlar."
+  },
+  "ru": {
+   "A": "Имя, дата рождения, рост и вес ребёнка и кто живёт с ним дома.",
+   "B": "Что говорили врачи: диагноз, другие состояния, операции и лекарства.",
+   "CP": "Ещё несколько вопросов о ДЦП ребёнка.",
+   "DCD": "Ещё несколько вопросов о координации.",
+   "DD": "Когда ребёнок впервые начал делать разное: держать голову, ходить.",
+   "DS": "Ещё несколько вопросов о синдроме Дауна.",
+   "AU": "Ещё несколько вопросов об аутизме.",
+   "C": "Как ребёнок лежит, переворачивается, сидит, ползает, стоит и ходит.",
+   "D": "Как ребёнок пользуется руками: держит, берёт, ест, одевается.",
+   "E": "Тело и здоровье: боль, мышцы, кожа, кости, прикосновения и еда.",
+   "F": "Зрение, слух и сколько ребёнок может удерживать внимание.",
+   "G": "Как ребёнок говорит, понимает и показывает, чего хочет.",
+   "H": "День ребёнка: еда, одевание, сон и лучшее время для игр.",
+   "I": "Какие занятия и упражнения у ребёнка уже были.",
+   "J": "Ваши цели на ближайшие 3 месяца и сколько у вас есть времени.",
+   "K": "Короткие видео движений ребёнка для терапевта.",
+   "L": "Для терапевта: оценка и цели."
   }
  },
  "defs": {

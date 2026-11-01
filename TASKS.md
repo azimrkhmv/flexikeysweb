@@ -950,7 +950,7 @@ decision; the source is "FlexiKeys — founders' and beta testers' feedback fixe
   - Needs: —
   - Done in code (1 Nov 2026): the upload links were signed for `http://localhost:9100`, which a phone cannot reach; `compose.yaml` now takes `S3_PUBLIC_ENDPOINT` from `.env` and `apps/web/README.md` "Testing on a phone" has the steps (MinIO's CORS already accepts PUT from any origin). All 58 games fit 1280×720 and 1366×768 without scrolling. CP1, DS1, E1, B5 and the test are done
   - Still open: the upload check from a real phone at a tunnel address (B10, B13, CP21, DD3_files, I4_files, voice note). Claude had no phone; Bekzod checks it with the README steps, then ticks this task
-- [ ] **Bekzod** — `B67` Health consent required + section banners (3.1, 3.2)
+- [x] **Bekzod** — `B67` Health consent required + section banners (3.1, 3.2)
   - Done when: no "Not now" on the consent step and earlier decliners are asked again; every step opens with the banner (section number, large title, one-line intro) in en, ru, uz at phone width and in dark mode
   - Needs: B66
 - [ ] **Bekzod** — `B68` Step questions: tick everything + "Write in your own words" (4.1)

@@ -44,7 +44,15 @@ export interface QQuestion {
   note?: string;
 }
 
-export const QUESTIONNAIRE = data as unknown as { version: string; steps: string[]; step_text: Record<string, Record<string, string>>; defs: Record<string, Cond>; questions: QQuestion[] };
+export const QUESTIONNAIRE = data as unknown as {
+  version: string;
+  steps: string[];
+  step_text: Record<string, Record<string, string>>;
+  /** One line under each section's title: what it asks about (B67). */
+  step_intro: Record<string, Record<string, string>>;
+  defs: Record<string, Cond>;
+  questions: QQuestion[];
+};
 export const Q_BY_ID: Record<string, QQuestion> = Object.fromEntries(QUESTIONNAIRE.questions.map((q) => [q.id, q]));
 /** A question's, option's or section's text in the parent's language (IQ5). */
 export function inLang(texts: Record<string, Record<string, string>> | Record<string, string>, ui: Lang, key?: string): string {

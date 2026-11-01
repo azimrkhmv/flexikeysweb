@@ -166,12 +166,15 @@ async def finish_round(
     db: Annotated[AsyncSession, Depends(get_session)],
     ai: Annotated[Ai, Depends(get_ai)],
 ) -> RoundOut:
-    """Close the round once every required question has an answer ("Not sure" counts), and build the plan (A4.4)."""
+    """Close the round once every required question has an answer ("Not sure" counts), and build the plan (A4.4).
+    A round of the CEO's questionnaire also needs the health consent: 403 child_consent_required (B67)."""
     child = await get_visible_child(db, user, child_id)
     r = await _round(db, child_id, number)
     if r.completed_at is not None:
         raise AppError(409, "round_finished")
     answers = (await _out(db, r)).answers
+    if r.questionnaire != "p41":  # the health consent is required (TASKS.md section 3, 1 Nov 2026; B67)
+        await require_consent(db, child_id, ConsentKind.health)
     health = await has_consent(db, child_id, ConsentKind.health)
     today = datetime.now(TASHKENT).date()
     if r.questionnaire == "p41":

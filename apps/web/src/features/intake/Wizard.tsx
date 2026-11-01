@@ -5,7 +5,7 @@ import { useState } from "react";
 import { ShieldCheck } from "lucide-react";
 import { Button, Card, LinkButton, useAction } from "@/components/ui";
 import { openQuestions, STEPS, stepComplete, visibleQuestions, type Answers, type Step } from "@/content/intake";
-import { FormError, FormNote } from "@/features/auth/parts";
+import { FormError } from "@/features/auth/parts";
 import { api, ApiError, sel, useDb } from "@/lib/api";
 import { useT, useLang } from "@/lib/i18n";
 import type { IntakeValue, Roadmap } from "@/lib/types";
@@ -26,15 +26,15 @@ export function IntakeWizard({ childId: initialChild }: { childId?: string }) {
   const [answers, setAnswers] = useState<Answers>(() => (childId ? sel.intakeAnswers(db, childId, round) : {}));
   const previous = childId && round > 1 ? sel.intakeAnswers(db, childId, round - 1) : {};
   const health = childId ? sel.hasConsent(db, childId, "health") : false;
-  const [declined, setDeclined] = useState(false);
   const [i, setI] = useState(() => (childId ? firstOpenStep(answers, health) : 0));
   const [plan, setPlan] = useState<Roadmap | null>(null);
   // "Next" looks grey while a required question is open; pressing it shows which one (B1).
   const [markedStep, setMarkedStep] = useState<string | null>(null);
   const act = useAction(async (fn: () => Promise<unknown>) => fn());
 
-  // Steps that apply: section B only with health consent; the consent screen only until it's decided.
-  const steps = STEPS.filter((s) => (s.id === "health_consent" ? !health && !declined : !s.health || health));
+  // Steps that apply: section B only with health consent; the consent screen until the parent agrees (it is
+  // required since 1 Nov 2026: no "Not now", B67).
+  const steps = STEPS.filter((s) => (s.id === "health_consent" ? !health : !s.health || health));
   const step = steps[Math.min(i, steps.length - 1)];
   const set = (id: string, v: IntakeValue | undefined) => setAnswers((a) => ({ ...a, [id]: v }));
   const open = new Set(openQuestions(step, answers).map((q) => q.id));
@@ -98,10 +98,10 @@ export function IntakeWizard({ childId: initialChild }: { childId?: string }) {
           <p className="text-sm text-ink-2">{t("intake.health.points")}</p>
           <FormError>{act.error}</FormError>
           <div className="flex flex-wrap gap-3">
+            {i > 0 && <Button variant="ghost" onClick={() => setI(i - 1)}>{t("intake.back")}</Button>}
             <Button size="lg" pending={act.pending} onClick={() => act.run(async () => { await api.setConsent(childId!, "health", true); })}>
               {t("intake.health.yes")}
             </Button>
-            <Button size="lg" variant="outline" onClick={() => setDeclined(true)}>{t("intake.health.no")}</Button>
           </div>
         </Card>
       ) : (
@@ -113,7 +113,6 @@ export function IntakeWizard({ childId: initialChild }: { childId?: string }) {
             else next();
           }}
         >
-          {declined && step.id === "talk" && <FormNote>{t("intake.health.declined")}</FormNote>}
           {visibleQuestions(step, answers).map((q) => {
             const mark = marked && open.has(q.id);
             return (
