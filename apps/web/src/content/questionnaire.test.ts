@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import mine from "./backend/questionnaire.json";
 import { intake } from "@/messages/intake";
-import { bodyPattern, inLang, offersNotSure, Q_BY_ID, QUESTIONNAIRE, shownOptions, typedProblem, upgrade, visible, type QAnswer, type QAnswers } from "./questionnaire";
+import { bodyPattern, inLang, ladderTicks, ladderToggle, ladderValue, offersNotSure, Q_BY_ID, QUESTIONNAIRE, shownOptions, typedProblem, upgrade, visible, type QAnswer, type QAnswers } from "./questionnaire";
 
 // IQ1: the questionnaire file is the server's, and the cases below fix which questions each sample child is shown.
 // questionnaire_cases.json (here and a copy in apps/api/tests) makes the server prove the same. Regenerate with
@@ -36,6 +36,11 @@ const CASES: { name: string; answers: QAnswers }[] = [
   { name: "old round: B3 right side", answers: { A2: "2019-05-01", B1: ["cp"], B3: "right_side" } },
   { name: "right arm and back", answers: { A2: "2019-05-01", B1: ["cp"], B3_parts: ["right_arm", "trunk"] } },
   { name: "both legs and the back", answers: { A2: "2019-05-01", B1: ["cp"], B3_parts: ["left_leg", "right_leg", "trunk"] } },
+  {
+    // B68: "with hands under 10 s" and "alone a few minutes" ticked on C3 save the hardest; C6 "can't" alone.
+    name: "step questions ticked, own words",
+    answers: { A2: "2020-04-01", B1: ["cp"], C3: "free_few_min", C3_note: "Sits in her chair with a belt", C6: "doesnt_step", C10: "iii" },
+  },
 ];
 
 const BACKEND = new URL("./backend/", import.meta.url);
@@ -91,6 +96,38 @@ describe("questionnaire (IQ1)", () => {
     for (const id of ["CP1", "DS1", "E1"]) expect(offersNotSure(Q_BY_ID[id]), id).toBe(false); // their own "Don't know"
     expect(offersNotSure(Q_BY_ID.B5)).toBe(true); // keeps both (30 Oct), worded differently in uz
     expect(upgrade({ DS1: null, C3: null })).toEqual({ DS1: "dont_know", C3: null }); // an older round's "Not sure"
+  });
+
+  it("step-by-step questions: tick everything, the hardest one is saved (B68)", () => {
+    const ladders = QUESTIONNAIRE.questions.filter((q) => q.ladder).map((q) => q.id);
+    expect(ladders.sort()).toEqual(["C14", "C17", "C19", "C2", "C3", "C4", "C5", "C6"]);
+    for (const id of ladders) {
+      const q = Q_BY_ID[id];
+      expect(q.kind, id).toBe("single"); // one answer in the data: rules, bridge and old answers unchanged
+      const note = QUESTIONNAIRE.questions[QUESTIONNAIRE.questions.indexOf(q) + 1];
+      expect(note.id, id).toBe(`${id}_note`); // its "own words" box right after it, shown with it
+      expect([note.kind, note.required, note.step, note.show, note.health]).toEqual(["text", false, q.step, q.show, q.health]);
+      expect(q.hint?.en).toBe("Tick everything your child can do. We use the hardest one.");
+    }
+    const C3 = Q_BY_ID.C3.options!; // cant_sit, hands_under_10s, hands_5min, free_few_min, free_30min
+    // A ticked set and the answer saved for it.
+    const tap = (...taps: string[]) => taps.reduce((t, o) => ladderToggle(C3, t, o), [] as string[]);
+    expect(ladderValue(C3, tap("hands_under_10s", "free_few_min"))).toBe("free_few_min");
+    expect(ladderValue(C3, tap("free_few_min", "hands_under_10s"))).toBe("free_few_min"); // order of taps doesn't matter
+    expect(ladderValue(C3, tap("hands_under_10s", "free_few_min", "free_few_min"))).toBe("hands_under_10s"); // untick: worked out again
+    expect(ladderValue(C3, tap("hands_under_10s", "hands_under_10s"))).toBeUndefined(); // nothing ticked: no answer
+    // "Can't sit" stands alone: it clears the others, and any other box clears it.
+    expect(tap("hands_under_10s", "hands_5min", "cant_sit")).toEqual(["cant_sit"]);
+    expect(tap("cant_sit", "hands_5min")).toEqual(["hands_5min"]);
+    expect(ladderValue(C3, tap("cant_sit"))).toBe("cant_sit");
+    // A saved answer ticks itself and every box before it, never "can't".
+    expect(ladderTicks(C3, "hands_5min")).toEqual(["hands_under_10s", "hands_5min"]);
+    expect(ladderTicks(C3, "cant_sit")).toEqual(["cant_sit"]);
+    expect(ladderTicks(C3, null)).toEqual([]); // "Not sure"
+    expect(ladderTicks(C3, undefined)).toEqual([]);
+    for (const o of C3) expect(ladderValue(C3, ladderTicks(C3, o))).toBe(o); // a saved answer loads and saves unchanged
+    const C5 = shownOptions("C5", { A2: "2019-05-01", B1: ["cp"], C10: "i" }, TODAY)!; // a hidden option is skipped
+    expect(ladderTicks(C5, "one_hand")).toEqual(C5.slice(1, C5.indexOf("one_hand") + 1));
   });
 
   it("each sample child sees the right questions (shared with the server)", () => {

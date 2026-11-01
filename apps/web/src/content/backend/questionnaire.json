@@ -1,5 +1,5 @@
 {
- "_note": "The CEO's parent intake questionnaire (16 Oct 2026, @Abdulloh Ochilov; therapist-reviewed), as data. Source of truth for the server (app/modules/intake/questionnaire.py) and the website (a copy in apps/web/src/content/backend/questionnaire.json, checked by questionnaire.test.ts). Question numbers never change and are never reused. `show` holds display rules R1-R19 and the follow-ups as one condition; `option_show` hides single options. Conditions: {q, in} (any of these answers), {q, answered}, {q, min/max} (numbers), {fact, in/min/max} with facts age (years), gmfcs, macs, cfcs (1-5, from C10/L2, D1, G2), {all}, {any}, {not}, and {ref} to a named rule in `defs`. `note` marks the team's drafts and open points for the physio. Retired 30 Oct 2026, do not reuse: B3 (replaced by B3_parts; old B3 answers still count, see body_pattern), C2_side (B3_parts covers it). `retired_options` lists options no longer shown: old answers with them stay valid and map to the named option (null: kept as they are). The fact `pattern` is the body pattern from B3_parts. Retired 30 Oct 2026, do not reuse: D12 (replaced by D12_spoon and D12_cup; old D12 answers still feed P24). `not_sure: true` on an optional question: it still offers \"Not sure\" (stored as null). CP1, DS1 and E1 have their own `dont_know` and no automatic \"Not sure\" (B66); an older round's null on them stays valid. `step_intro`: one line under each section's title saying what it asks about (B67; uz text drafted 1 Nov 2026 — native-speaker check (B44)).",
+ "_note": "The CEO's parent intake questionnaire (16 Oct 2026, @Abdulloh Ochilov; therapist-reviewed), as data. Source of truth for the server (app/modules/intake/questionnaire.py) and the website (a copy in apps/web/src/content/backend/questionnaire.json, checked by questionnaire.test.ts). Question numbers never change and are never reused. `show` holds display rules R1-R19 and the follow-ups as one condition; `option_show` hides single options. Conditions: {q, in} (any of these answers), {q, answered}, {q, min/max} (numbers), {fact, in/min/max} with facts age (years), gmfcs, macs, cfcs (1-5, from C10/L2, D1, G2), {all}, {any}, {not}, and {ref} to a named rule in `defs`. `note` marks the team's drafts and open points for the physio. Retired 30 Oct 2026, do not reuse: B3 (replaced by B3_parts; old B3 answers still count, see body_pattern), C2_side (B3_parts covers it). `retired_options` lists options no longer shown: old answers with them stay valid and map to the named option (null: kept as they are). The fact `pattern` is the body pattern from B3_parts. Retired 30 Oct 2026, do not reuse: D12 (replaced by D12_spoon and D12_cup; old D12 answers still feed P24). `not_sure: true` on an optional question: it still offers \"Not sure\" (stored as null). CP1, DS1 and E1 have their own `dont_know` and no automatic \"Not sure\" (B66); an older round's null on them stays valid. `step_intro`: one line under each section's title saying what it asks about (B67; uz text drafted 1 Nov 2026 — native-speaker check (B44)). `ladder: true` (B68): a step-by-step skill question shown as tick boxes; the saved value stays one option, the hardest one ticked (the last in `options` order). `<id>_note`: the parent's own words about that question.",
  "version": "2026-11-01",
  "steps": [
   "A",
@@ -5424,12 +5424,73 @@
     }
    },
    "hint": {
-    "en": "Choose the hardest one your child can do. The answers go from easiest to hardest.",
-    "uz": "Farzandingiz qila oladigan eng qiyin narsani tanlang. Javoblar osondan qiyinga qarab berilgan.",
-    "ru": "Выберите самое сложное, что ребёнок уже умеет. Ответы идут от лёгкого к сложному."
+    "en": "Tick everything your child can do. We use the hardest one.",
+    "uz": "Farzandingiz qila oladigan hamma narsani belgilang. Biz eng qiyinini hisobga olamiz.",
+    "ru": "Отметьте всё, что ребёнок умеет. Мы учтём самое сложное."
    },
-   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: question and answers reworded (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: offers 'Not sure' although optional, stored as null like a required question's (B63); physio check needed",
-   "not_sure": true
+   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: question and answers reworded (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: offers 'Not sure' although optional, stored as null like a required question's (B63); physio check needed | 1 Nov 2026: answered by ticking everything the child can do; the saved value is the hardest one ticked (`ladder`, B68); new hint; physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)",
+   "not_sure": true,
+   "ladder": true
+  },
+  {
+   "id": "C14_note",
+   "step": "C",
+   "kind": "text",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "any": [
+       {
+        "not": {
+         "q": "B1",
+         "answered": true
+        }
+       },
+       {
+        "q": "B1",
+        "in": [
+         "cp",
+         "developmental_delay",
+         "no_diagnosis",
+         "not_sure",
+         "other",
+         "down_syndrome",
+         "autism"
+        ]
+       }
+      ]
+     },
+     {
+      "ref": "R5_MOTOR"
+     },
+     {
+      "not": {
+       "ref": "R8"
+      }
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "T"
+   ],
+   "text": {
+    "en": "In your own words",
+    "uz": "Oʻz soʻzlaringiz bilan",
+    "ru": "Своими словами"
+   },
+   "option_text": null,
+   "note": "1 Nov 2026: new: the parent's own words about C14, opened by the link 'Write in your own words'; no rule reads it (B68); physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)"
   },
   {
    "id": "C2",
@@ -5513,11 +5574,67 @@
     }
    },
    "hint": {
-    "en": "Choose the hardest one your child can do. The answers go from easiest to hardest.",
-    "uz": "Farzandingiz qila oladigan eng qiyin narsani tanlang. Javoblar osondan qiyinga qarab berilgan.",
-    "ru": "Выберите самое сложное, что ребёнок уже умеет. Ответы идут от лёгкого к сложному."
+    "en": "Tick everything your child can do. We use the hardest one.",
+    "uz": "Farzandingiz qila oladigan hamma narsani belgilang. Biz eng qiyinini hisobga olamiz.",
+    "ru": "Отметьте всё, что ребёнок умеет. Мы учтём самое сложное."
    },
-   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
+   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 1 Nov 2026: answered by ticking everything the child can do; the saved value is the hardest one ticked (`ladder`, B68); new hint; physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)",
+   "ladder": true
+  },
+  {
+   "id": "C2_note",
+   "step": "C",
+   "kind": "text",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "any": [
+       {
+        "not": {
+         "q": "B1",
+         "answered": true
+        }
+       },
+       {
+        "q": "B1",
+        "in": [
+         "cp",
+         "developmental_delay",
+         "no_diagnosis",
+         "not_sure",
+         "other",
+         "down_syndrome",
+         "autism"
+        ]
+       }
+      ]
+     },
+     {
+      "ref": "R5_MOTOR"
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "T"
+   ],
+   "text": {
+    "en": "In your own words",
+    "uz": "Oʻz soʻzlaringiz bilan",
+    "ru": "Своими словами"
+   },
+   "option_text": null,
+   "note": "1 Nov 2026: new: the parent's own words about C2, opened by the link 'Write in your own words'; no rule reads it (B68); physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)"
   },
   {
    "id": "C13",
@@ -5691,11 +5808,60 @@
     }
    },
    "hint": {
-    "en": "Choose the hardest one your child can do. The answers go from easiest to hardest.",
-    "uz": "Farzandingiz qila oladigan eng qiyin narsani tanlang. Javoblar osondan qiyinga qarab berilgan.",
-    "ru": "Выберите самое сложное, что ребёнок уже умеет. Ответы идут от лёгкого к сложному."
+    "en": "Tick everything your child can do. We use the hardest one.",
+    "uz": "Farzandingiz qila oladigan hamma narsani belgilang. Biz eng qiyinini hisobga olamiz.",
+    "ru": "Отметьте всё, что ребёнок умеет. Мы учтём самое сложное."
    },
-   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
+   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 1 Nov 2026: answered by ticking everything the child can do; the saved value is the hardest one ticked (`ladder`, B68); new hint; physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)",
+   "ladder": true
+  },
+  {
+   "id": "C3_note",
+   "step": "C",
+   "kind": "text",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "any": [
+     {
+      "not": {
+       "q": "B1",
+       "answered": true
+      }
+     },
+     {
+      "q": "B1",
+      "in": [
+       "cp",
+       "developmental_delay",
+       "no_diagnosis",
+       "not_sure",
+       "other",
+       "down_syndrome",
+       "autism"
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "T"
+   ],
+   "text": {
+    "en": "In your own words",
+    "uz": "Oʻz soʻzlaringiz bilan",
+    "ru": "Своими словами"
+   },
+   "option_text": null,
+   "note": "1 Nov 2026: new: the parent's own words about C3, opened by the link 'Write in your own words'; no rule reads it (B68); physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)"
   },
   {
    "id": "C15",
@@ -5934,11 +6100,39 @@
     }
    },
    "hint": {
-    "en": "Choose the hardest one your child can do. The answers go from easiest to hardest.",
-    "uz": "Farzandingiz qila oladigan eng qiyin narsani tanlang. Javoblar osondan qiyinga qarab berilgan.",
-    "ru": "Выберите самое сложное, что ребёнок уже умеет. Ответы идут от лёгкого к сложному."
+    "en": "Tick everything your child can do. We use the hardest one.",
+    "uz": "Farzandingiz qila oladigan hamma narsani belgilang. Biz eng qiyinini hisobga olamiz.",
+    "ru": "Отметьте всё, что ребёнок умеет. Мы учтём самое сложное."
    },
-   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: 'adult_trunk' reworded without 'trunk'; now asked before C4 (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
+   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: 'adult_trunk' reworded without 'trunk'; now asked before C4 (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 1 Nov 2026: answered by ticking everything the child can do; the saved value is the hardest one ticked (`ladder`, B68); new hint; physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)",
+   "ladder": true
+  },
+  {
+   "id": "C6_note",
+   "step": "C",
+   "kind": "text",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "T"
+   ],
+   "text": {
+    "en": "In your own words",
+    "uz": "Oʻz soʻzlaringiz bilan",
+    "ru": "Своими словами"
+   },
+   "option_text": null,
+   "note": "1 Nov 2026: new: the parent's own words about C6, opened by the link 'Write in your own words'; no rule reads it (B68); physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)"
   },
   {
    "id": "C4",
@@ -6036,11 +6230,73 @@
     }
    },
    "hint": {
-    "en": "Choose the hardest one your child can do. The answers go from easiest to hardest.",
-    "uz": "Farzandingiz qila oladigan eng qiyin narsani tanlang. Javoblar osondan qiyinga qarab berilgan.",
-    "ru": "Выберите самое сложное, что ребёнок уже умеет. Ответы идут от лёгкого к сложному."
+    "en": "Tick everything your child can do. We use the hardest one.",
+    "uz": "Farzandingiz qila oladigan hamma narsani belgilang. Biz eng qiyinini hisobga olamiz.",
+    "ru": "Отметьте всё, что ребёнок умеет. Мы учтём самое сложное."
    },
-   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: answers reworded, 'Walks, so rarely crawls' added; not asked when the child walks alone (C6, now asked before C4) (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
+   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: answers reworded, 'Walks, so rarely crawls' added; not asked when the child walks alone (C6, now asked before C4) (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 1 Nov 2026: answered by ticking everything the child can do; the saved value is the hardest one ticked (`ladder`, B68); new hint; physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)",
+   "ladder": true
+  },
+  {
+   "id": "C4_note",
+   "step": "C",
+   "kind": "text",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "any": [
+       {
+        "not": {
+         "q": "B1",
+         "answered": true
+        }
+       },
+       {
+        "q": "B1",
+        "in": [
+         "cp",
+         "developmental_delay",
+         "no_diagnosis",
+         "not_sure",
+         "other",
+         "down_syndrome",
+         "autism"
+        ]
+       }
+      ]
+     },
+     {
+      "not": {
+       "q": "C6",
+       "in": [
+        "alone_few_m",
+        "alone_7m"
+       ]
+      }
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "T"
+   ],
+   "text": {
+    "en": "In your own words",
+    "uz": "Oʻz soʻzlaringiz bilan",
+    "ru": "Своими словами"
+   },
+   "option_text": null,
+   "note": "1 Nov 2026: new: the parent's own words about C4, opened by the link 'Write in your own words'; no rule reads it (B68); physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)"
   },
   {
    "id": "C17",
@@ -6124,12 +6380,68 @@
     }
    },
    "hint": {
-    "en": "Choose the hardest one your child can do. The answers go from easiest to hardest.",
-    "uz": "Farzandingiz qila oladigan eng qiyin narsani tanlang. Javoblar osondan qiyinga qarab berilgan.",
-    "ru": "Выберите самое сложное, что ребёнок уже умеет. Ответы идут от лёгкого к сложному."
+    "en": "Tick everything your child can do. We use the hardest one.",
+    "uz": "Farzandingiz qila oladigan hamma narsani belgilang. Biz eng qiyinini hisobga olamiz.",
+    "ru": "Отметьте всё, что ребёнок умеет. Мы учтём самое сложное."
    },
-   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: question and answers reworded (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: offers 'Not sure' although optional, stored as null like a required question's (B63); physio check needed",
-   "not_sure": true
+   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: question and answers reworded (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: offers 'Not sure' although optional, stored as null like a required question's (B63); physio check needed | 1 Nov 2026: answered by ticking everything the child can do; the saved value is the hardest one ticked (`ladder`, B68); new hint; physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)",
+   "not_sure": true,
+   "ladder": true
+  },
+  {
+   "id": "C17_note",
+   "step": "C",
+   "kind": "text",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "any": [
+       {
+        "not": {
+         "q": "B1",
+         "answered": true
+        }
+       },
+       {
+        "q": "B1",
+        "in": [
+         "cp",
+         "developmental_delay",
+         "no_diagnosis",
+         "not_sure",
+         "other",
+         "down_syndrome",
+         "autism"
+        ]
+       }
+      ]
+     },
+     {
+      "ref": "R5_MOTOR"
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "T"
+   ],
+   "text": {
+    "en": "In your own words",
+    "uz": "Oʻz soʻzlaringiz bilan",
+    "ru": "Своими словами"
+   },
+   "option_text": null,
+   "note": "1 Nov 2026: new: the parent's own words about C17, opened by the link 'Write in your own words'; no rule reads it (B68); physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)"
   },
   {
    "id": "C18",
@@ -6269,12 +6581,42 @@
     }
    },
    "hint": {
-    "en": "Choose the hardest one your child can do. The answers go from easiest to hardest.",
-    "uz": "Farzandingiz qila oladigan eng qiyin narsani tanlang. Javoblar osondan qiyinga qarab berilgan.",
-    "ru": "Выберите самое сложное, что ребёнок уже умеет. Ответы идут от лёгкого к сложному."
+    "en": "Tick everything your child can do. We use the hardest one.",
+    "uz": "Farzandingiz qila oladigan hamma narsani belgilang. Biz eng qiyinini hisobga olamiz.",
+    "ru": "Отметьте всё, что ребёнок умеет. Мы учтём самое сложное."
    },
-   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: question and answers reworded (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: offers 'Not sure' although optional, stored as null like a required question's (B63); physio check needed",
-   "not_sure": true
+   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: question and answers reworded (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: offers 'Not sure' although optional, stored as null like a required question's (B63); physio check needed | 1 Nov 2026: answered by ticking everything the child can do; the saved value is the hardest one ticked (`ladder`, B68); new hint; physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)",
+   "not_sure": true,
+   "ladder": true
+  },
+  {
+   "id": "C19_note",
+   "step": "C",
+   "kind": "text",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "ref": "R5_MOTOR"
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "T"
+   ],
+   "text": {
+    "en": "In your own words",
+    "uz": "Oʻz soʻzlaringiz bilan",
+    "ru": "Своими словами"
+   },
+   "option_text": null,
+   "note": "1 Nov 2026: new: the parent's own words about C19, opened by the link 'Write in your own words'; no rule reads it (B68); physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)"
   },
   {
    "id": "C5",
@@ -6370,11 +6712,60 @@
     }
    },
    "hint": {
-    "en": "Choose the hardest one your child can do. The answers go from easiest to hardest.",
-    "uz": "Farzandingiz qila oladigan eng qiyin narsani tanlang. Javoblar osondan qiyinga qarab berilgan.",
-    "ru": "Выберите самое сложное, что ребёнок уже умеет. Ответы идут от лёгкого к сложному."
+    "en": "Tick everything your child can do. We use the hardest one.",
+    "uz": "Farzandingiz qila oladigan hamma narsani belgilang. Biz eng qiyinini hisobga olamiz.",
+    "ru": "Отметьте всё, что ребёнок умеет. Мы учтём самое сложное."
    },
-   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: 'trunk_support' reworded without 'trunk' (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
+   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: 'trunk_support' reworded without 'trunk' (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 1 Nov 2026: answered by ticking everything the child can do; the saved value is the hardest one ticked (`ladder`, B68); new hint; physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)",
+   "ladder": true
+  },
+  {
+   "id": "C5_note",
+   "step": "C",
+   "kind": "text",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "any": [
+     {
+      "not": {
+       "q": "B1",
+       "answered": true
+      }
+     },
+     {
+      "q": "B1",
+      "in": [
+       "cp",
+       "developmental_delay",
+       "no_diagnosis",
+       "not_sure",
+       "other",
+       "down_syndrome",
+       "autism"
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "T"
+   ],
+   "text": {
+    "en": "In your own words",
+    "uz": "Oʻz soʻzlaringiz bilan",
+    "ru": "Своими словами"
+   },
+   "option_text": null,
+   "note": "1 Nov 2026: new: the parent's own words about C5, opened by the link 'Write in your own words'; no rule reads it (B68); physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)"
   },
   {
    "id": "C5_minutes",

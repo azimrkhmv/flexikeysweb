@@ -953,9 +953,10 @@ decision; the source is "FlexiKeys — founders' and beta testers' feedback fixe
 - [x] **Bekzod** — `B67` Health consent required + section banners (3.1, 3.2)
   - Done when: no "Not now" on the consent step and earlier decliners are asked again; every step opens with the banner (section number, large title, one-line intro) in en, ru, uz at phone width and in dark mode
   - Needs: B66
-- [ ] **Bekzod** — `B68` Step questions: tick everything + "Write in your own words" (4.1)
+- [x] **Bekzod** — `B68` Step questions: tick everything + "Write in your own words" (4.1)
   - Done when: a parent can tick several answers; the saved value is the hardest one; the exclusive options work; old answers load with the right boxes ticked; cases cover a ticked set and the saved value
   - Needs: B67
+  - Note (1 Nov 2026): the `<id>_note` answers are saved with the round like every answer, but no screen shows a therapist the parent's questionnaire answers yet, so there is nowhere to show them; they will appear with that screen
 - [ ] **Bekzod** — `B69` Diagnosis questions: B7 wording, CP1_types and `cp_type`, CP14 in step G (4.2, 4.3, 4.4)
   - Done when: B7 shows the plain words; several CP types can be ticked and `cp_type` feeds every rule and P10 that CP1 fed; old CP1 answers still work; CP14 shows in G only when the child uses words
   - Needs: B68

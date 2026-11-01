@@ -42,6 +42,8 @@ export interface QQuestion {
   /** A short help line under the question, in smaller grey text (B60, B62). */
   hint?: Record<string, string>;
   note?: string;
+  /** A step-by-step skill question: tick boxes on screen, still one answer (the hardest ticked) in the data (B68). */
+  ladder?: boolean;
 }
 
 export const QUESTIONNAIRE = data as unknown as {
@@ -154,6 +156,29 @@ export const NO_NOT_SURE = new Set(["A1", "A2", "A3", "A4", "A4_kg", "A5", "A7",
 /** Does this question get the automatic "Not sure" (stored as null)? Required ones do, optional ones only with
  * `not_sure` (B63), and never one that has a "not_sure" option of its own. */
 export const offersNotSure = (q: QQuestion) => (q.required || !!q.not_sure) && !NO_NOT_SURE.has(q.id) && !q.options?.includes("not_sure");
+
+// Step-by-step skill questions (`ladder`, B68): the parent ticks everything the child can do, the answer stays one
+// option, the hardest one ticked. `options` is the list shown (in order, easiest first); its first option ("can't")
+// stands alone, like "Not sure" (null), which is not a tick box here.
+
+/** The boxes to tick for a saved answer: the saved option and every one before it, except the first ("can't"). */
+export function ladderTicks(options: string[], v: QAnswer): string[] {
+  if (typeof v !== "string") return [];
+  const at = options.indexOf(v);
+  if (at < 0) return [];
+  return at === 0 ? [v] : options.slice(1, at + 1);
+}
+
+/** The boxes after tapping `o`: the first option clears the rest, any other clears the first; a ticked box unticks. */
+export function ladderToggle(options: string[], ticked: string[], o: string): string[] {
+  const on = new Set(ticked.includes(o) ? ticked.filter((x) => x !== o) : o === options[0] ? [o] : [...ticked.filter((x) => x !== options[0]), o]);
+  return options.filter((x) => on.has(x));
+}
+
+/** The answer saved for the ticked boxes: the hardest one (last in `options` order); nothing ticked = no answer. */
+export function ladderValue(options: string[], ticked: string[]): string | undefined {
+  return options.filter((x) => ticked.includes(x)).at(-1);
+}
 
 /** Saved answers in today's options: a retired option shows as the option that replaced it (B61, B62); an older
  * round's "Not sure" (null) on a question with its own "Don't know" shows as that answer (B66). */

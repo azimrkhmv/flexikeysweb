@@ -12,6 +12,7 @@ export const intake = {
     "intake.saved": "Saved. You can come back any time.",
     "intake.optional": "Optional",
     "intake.notSure": "Not sure",
+    "intake.ownWords": "Write in your own words",
     "intake.date.day": "Day",
     "intake.date.month": "Month",
     "intake.date.year": "Year",
@@ -354,6 +355,7 @@ export const intake = {
     "intake.saved": "Saqlandi. Istalgan vaqtda qaytishingiz mumkin.",
     "intake.optional": "Ixtiyoriy",
     "intake.notSure": "Bilmayman",
+    "intake.ownWords": "Oʻz soʻzlaringiz bilan yozing", // uz drafted 1 Nov 2026, native-speaker check (B44)
     "intake.date.day": "Kun",
     "intake.date.month": "Oy",
     "intake.date.year": "Yil",
@@ -696,6 +698,7 @@ export const intake = {
     "intake.saved": "Сохранено. Можно вернуться в любой момент.",
     "intake.optional": "Необязательно",
     "intake.notSure": "Не уверен(а)",
+    "intake.ownWords": "Написать своими словами",
     "intake.date.day": "День",
     "intake.date.month": "Месяц",
     "intake.date.year": "Год",

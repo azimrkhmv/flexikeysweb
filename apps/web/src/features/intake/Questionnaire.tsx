@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import { FileUp, ShieldCheck, Trash2 } from "lucide-react";
 import { Button, Card, Field, Input, Textarea, useAction } from "@/components/ui";
-import { ageInMonths, inLang, offersNotSure, Q_BY_ID, QUESTIONNAIRE, shownOptions, typedProblem, upgrade, visible, type QAnswer, type QAnswers, type QQuestion } from "@/content/questionnaire";
+import { ageInMonths, inLang, ladderTicks, ladderToggle, ladderValue, offersNotSure, Q_BY_ID, QUESTIONNAIRE, shownOptions, typedProblem, upgrade, visible, type QAnswer, type QAnswers, type QQuestion } from "@/content/questionnaire";
 import { pView } from "@/content/questionnaireBridge";
 import { FormError } from "@/features/auth/parts";
 import { api, sel, useDb } from "@/lib/api";
@@ -23,6 +23,8 @@ const FILES_MAX = 5;
 const PARENT_STEPS = QUESTIONNAIRE.steps.filter((s) => s !== "K" && s !== "L");
 const today = () => new Date().toISOString().slice(0, 10);
 const unanswered = (v: QAnswer) => v === undefined || v === "" || (Array.isArray(v) && v.length === 0);
+/** `C2_note` and the like: the "own words" box of a step-by-step question, shown in that question's card (B68). */
+const isOwnWords = (q: QQuestion) => q.id.endsWith("_note") && !!Q_BY_ID[q.id.slice(0, -"_note".length)]?.ladder;
 
 export function QuestionnaireWizard({ childId: initialChild, version }: { childId?: string; version: string }) {
   const t = useT();
@@ -131,11 +133,14 @@ export function QuestionnaireWizard({ childId: initialChild, version }: { childI
           }}
         >
           {questions.map((q) => {
+            if (isOwnWords(q)) return null; // shown inside its question's card
             const mark = markedStep === step && open.has(q.id);
+            const note = q.ladder ? questions.find((n) => n.id === `${q.id}_note`) : undefined;
             return (
               <div key={q.id} id={`q-${q.id}`} className="scroll-mt-24">
                 <Card className={`p-5 ${mark ? "ring-4 ring-sun" : ""}`}>
                   <Question q={q} answers={answers} set={set} childId={childId} />
+                  {note && <OwnWords q={note} answers={answers} set={set} />}
                   {q.id === "A1" && <p className="mt-2 text-xs text-muted">{t("intake.A1.nickname")}</p>}
                   {mark && <p className="mt-3 text-sm font-bold text-ink">{t("intake.answerThis")}</p>}
                 </Card>
@@ -258,6 +263,7 @@ export function Question({ q, answers, set, childId }: { q: QQuestion; answers: 
     case "file":
       return <Files q={q} label={label} answers={answers} set={set} childId={childId} />;
     case "single":
+      if (q.ladder) return <Ladder q={q} v={v} options={options} set={set} label={label} hint={hint} opt={opt} notSure={notSure} />;
       return (
         <fieldset>
           <legend className="mb-2 font-bold text-ink">{label}</legend>
@@ -289,6 +295,55 @@ export function Question({ q, answers, set, childId }: { q: QQuestion; answers: 
         {notSure}
       </div>
     </fieldset>
+  );
+}
+
+/** A step-by-step skill question (B68): tick everything the child can do; the answer saved is the hardest one ticked
+ * (content/questionnaire.ts ladderValue), so rules and old answers are unchanged. The ticks live here; a saved
+ * answer (or "Not sure") ticks the saved option and every one before it. */
+function Ladder({ q, v, options, set, label, hint, opt, notSure }: {
+  q: QQuestion; v: QAnswer; options: string[]; set: SetAnswer; label: string; hint: ReactNode; opt: (o: string) => string; notSure: ReactNode;
+}) {
+  const [mine, setMine] = useState(() => ladderTicks(options, v));
+  // Answer changed elsewhere ("Not sure" chosen, a round loaded): the boxes follow the saved answer.
+  const ticked = ladderValue(options, mine) === (v ?? undefined) ? mine : ladderTicks(options, v);
+  const toggle = (o: string) => {
+    const next = ladderToggle(options, ticked, o);
+    setMine(next);
+    set(q.id, ladderValue(options, next));
+  };
+  return (
+    <fieldset>
+      <legend className="mb-2 font-bold text-ink">{label}</legend>
+      {hint}
+      <div className="flex flex-wrap gap-2">
+        {options.map((o) => <Choice key={o} name={q.id} type="checkbox" checked={ticked.includes(o)} onChange={() => toggle(o)} label={opt(o)} />)}
+        {notSure}
+      </div>
+    </fieldset>
+  );
+}
+
+/** "Write in your own words" under a step-by-step question (B68): a small link that opens the `<id>_note` box (open
+ * from the start when it has text). Stored with the answers; no rule reads it. */
+function OwnWords({ q, answers, set }: { q: QQuestion; answers: QAnswers; set: SetAnswer }) {
+  const t = useT();
+  const [uiLang] = useLang();
+  const v = answers[q.id];
+  const [open, setOpen] = useState(typeof v === "string" && v !== "");
+  if (!open) {
+    return (
+      <button type="button" onClick={() => setOpen(true)} className="mt-3 text-sm font-bold text-primary underline underline-offset-4">
+        {t("intake.ownWords")}
+      </button>
+    );
+  }
+  return (
+    <div className="mt-4">
+      <Field label={`${inLang(q.text, uiLang)} · ${t("intake.optional")}`}>
+        <Input autoFocus={!v} value={typeof v === "string" ? v : ""} maxLength={TEXT_MAX} onChange={(e) => set(q.id, e.target.value)} />
+      </Field>
+    </div>
   );
 }
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Mic, Square, Trash2, Video } from "lucide-react";
+import { Check, Mic, Square, Trash2, Video } from "lucide-react";
 import { Button, Checkbox, Field, Input, Select, Textarea, useAction } from "@/components/ui";
 import { allowsNotSure, P39_MAX, P40_MAX_CLIPS, type Answers, type Question } from "@/content/intake";
 import { api, sel, useDb } from "@/lib/api";
@@ -17,11 +17,16 @@ export const chip =
   "inline-flex min-h-12 cursor-pointer items-center rounded-2xl border border-line px-4 py-2 text-sm font-bold text-ink transition hover:bg-surface-2 has-checked:border-teal has-checked:bg-teal-soft has-focus-visible:ring-4 has-focus-visible:ring-primary-soft";
 
 /** A chip with a radio or checkbox inside. `onClear`: a radio already chosen is cleared by choosing it again (a click,
- * or Space on the keyboard; B63). */
+ * or Space on the keyboard; B63). A checkbox chip shows a small box with a tick, so "tick several" is clear (B68). */
 export function Choice({ name, type, checked, onChange, label, onClear }: { name: string; type: "radio" | "checkbox"; checked: boolean; onChange: () => void; label: string; onClear?: () => void }) {
   return (
     <label className={chip}>
       <input type={type} name={name} checked={checked} onChange={onChange} onClick={checked ? onClear : undefined} className="sr-only" />
+      {type === "checkbox" && (
+        <span aria-hidden className={`mr-2 grid size-5 shrink-0 place-items-center rounded-md border-2 ${checked ? "border-teal bg-teal text-white" : "border-line bg-surface"}`}>
+          {checked && <Check className="size-3.5" strokeWidth={3.5} />}
+        </span>
+      )}
       {label}
     </label>
   );
