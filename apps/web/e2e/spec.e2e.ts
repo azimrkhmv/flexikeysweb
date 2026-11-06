@@ -118,7 +118,7 @@ test("health consent is required: no Not now, only agree or go back (B67)", asyn
   await childStep(page, "Malika");
   await expect(page.getByRole("button", { name: "I agree — continue" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Not now" })).toHaveCount(0);
-  await page.getByRole("button", { name: "Back" }).click();
+  await page.getByRole("button", { name: "Back", exact: true }).click(); // "Send feedback" also holds "back"
   await expect(page.getByLabel("Child's first name")).toHaveValue("Malika"); // step A again
 });
 
