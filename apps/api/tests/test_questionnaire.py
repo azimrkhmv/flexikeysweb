@@ -42,11 +42,21 @@ def test_every_numbered_question_of_the_questionnaire_is_there() -> None:
     moved |= {"CP1"}  # retired 1 Nov 2026: CP1_types replaces it (B69)
     moved |= {"D13", "E6", "H5"}  # retired 1 Nov 2026: D13_buttons/_zip, E6_now/_often, H5_calm/_active (B70)
     moved |= {"A7"}  # retired 5 Nov 2026: A7_langs replaces it (B72)
+    moved |= {"I8"}  # retired 5 Nov 2026: I8_place and I8_lang replace it (B75)
     for prefix, last in sections.items():
         for n in range(1, last + 1):
             qid = f"{prefix}{n}"
             assert qid in QUESTIONS or qid in moved, qid
     assert DATA["version"] == "2026-11-05"  # parent questionnaire review 2 (B72)
+
+
+def test_an_old_center_answer_moves_to_its_two_replacements() -> None:
+    """B75: I8 is retired; its answer shows as I8_place and I8_lang, and a new answer wins."""
+    assert "I8" not in QUESTIONS
+    moved = upgrade({"I8": ["state", "private", "uzbek_doctor", "russian_doctor"]})
+    assert (moved["I8_place"], moved["I8_lang"]) == (["state", "private"], ["uz", "ru"])
+    assert "I8_lang" not in upgrade({"I8": ["state"]})
+    assert "I8_place" not in upgrade({"I8": ["state"], "I8_lang": ["en"]})
 
 
 def test_an_old_home_language_answer_still_finishes_a_round() -> None:

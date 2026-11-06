@@ -13,7 +13,10 @@ from typing import Any, Literal
 Level = Literal[1, 2, 3]
 
 P14_TAGS = ("jumping", "prone", "neck_flexion", "single_leg_weight")
-GOALS = ("walk", "hands", "sit", "communicate", "understand", "eat", "play_others", "school")
+GOALS = (
+    "walk", "hands", "sit", "communicate", "understand", "eat", "play_others", "school",
+    "memory", "attention", "literacy", "numeracy",
+)  # fmt: skip
 DEFAULT_GOALS = ("hands", "sit", "communicate")  # P33 "Not sure": start broad and gentle
 # P12 to GMFCS I to V. "Not sure" stays None (= sitting exercises only until a therapist confirms).
 P12_GMFCS = {"walks": 1, "walks_help": 2, "walker": 3, "wheelchair": 4, "needs_help_sit": 5}

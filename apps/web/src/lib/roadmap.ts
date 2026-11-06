@@ -10,7 +10,7 @@ export const ROADMAP_DAYS = 28;
 export const GAME_LIMIT_MIN = 20;
 const GAME_SLOT_MIN = 5;
 const P14_TAGS: Restriction[] = ["jumping", "prone", "neck_flexion", "single_leg_weight"];
-const GOALS: GoalKey[] = ["walk", "hands", "sit", "communicate", "understand", "eat", "play_others", "school"];
+const GOALS: GoalKey[] = ["walk", "hands", "sit", "communicate", "understand", "eat", "play_others", "school", "memory", "attention", "literacy", "numeracy"];
 /** P33 "Not sure": start broad and gentle. */
 const DEFAULT_GOALS: GoalKey[] = ["hands", "sit", "communicate"];
 
@@ -24,6 +24,11 @@ const GOAL_GAMES: Record<GoalKey, ActivityKind[]> = {
   eat: ["sort", "find_same"],
   play_others: ["story", "scene"],
   school: ["count", "type", "trace"],
+  // B75: the games of each skill area (lib/skill.ts).
+  memory: ["sequence", "missing", "light_path"],
+  attention: ["find_same", "scene", "story"],
+  literacy: ["listen_pick", "type", "sentence"],
+  numeracy: ["count"],
 };
 
 export interface PlanInput {

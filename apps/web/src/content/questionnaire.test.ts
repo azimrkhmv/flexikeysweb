@@ -61,6 +61,10 @@ const CASES: { name: string; answers: QAnswers }[] = [
   { name: "DCD, always understood", answers: { A2: "2017-11-11", B1: ["dcd"], G3: "always" } },
   { name: "old round: both of a pair ticked", answers: { A2: "2019-05-01", B1: ["cp"], C22: ["turns", "backward_help", "backward_alone"], C24: ["step_over_help", "step_over_alone", "grass"] } },
   { name: "only with help", answers: { A2: "2019-05-01", B1: ["cp"], C22: ["backward_help"], C24: ["step_over_help"] } },
+  // B75: an old I8 answer shows as I8_place and I8_lang.
+  { name: "old round: I8", answers: { I8: ["state", "private", "uzbek_doctor", "russian_doctor"] } },
+  { name: "old round: I8, place only", answers: { I8: ["private"] } },
+  { name: "I8 replaced", answers: { I8: ["state"], I8_lang: ["en"] } },
 ];
 
 const BACKEND = new URL("./backend/", import.meta.url);
@@ -182,7 +186,7 @@ describe("questionnaire (IQ1)", () => {
       answers,
       visible: visible(answers, TODAY),
       home: Object.fromEntries(["uz", "ru", "en"].map((ui) => [ui, homeLanguage(answers, ui)])),
-      upgraded: Object.fromEntries(["A7_langs", "C22", "C24"].flatMap((id) => { const v = upgrade(answers)[id]; return v === undefined ? [] : [[id, v]]; })),
+      upgraded: Object.fromEntries(["A7_langs", "C22", "C24", "I8_place", "I8_lang"].flatMap((id) => { const v = upgrade(answers)[id]; return v === undefined ? [] : [[id, v]]; })),
       options: Object.fromEntries(
         QUESTIONNAIRE.questions.filter((q) => q.option_show).map((q) => [q.id, shownOptions(q.id, answers, TODAY)]),
       ),
@@ -267,6 +271,17 @@ describe("questionnaire (IQ1)", () => {
     expect(upgrade({ C22: ["backward_help", "backward_alone"] }).C22).toEqual(["backward_alone"]);
     expect(upgrade({ C22: ["backward_help", "turns"] }).C22).toEqual(["backward_help", "turns"]);
     expect(upgrade({ C24: ["step_over_help", "step_over_alone"] }).C24).toEqual(["step_over_alone"]);
+  });
+
+  it("the old center question maps to the two new ones (B75)", () => {
+    expect(Q_BY_ID.I8).toBeUndefined(); // retired, its id never reused
+    for (const id of ["I8_place", "I8_lang"]) expect(Q_BY_ID[id]).toMatchObject({ kind: "multi", required: false, step: "I", feeds: ["R"], exclusive: "any" });
+    const ids = QUESTIONNAIRE.questions.map((q) => q.id);
+    expect(ids[ids.indexOf("I8_place") + 1]).toBe("I8_lang");
+    expect(upgrade({ I8: ["state", "russian_doctor"] })).toMatchObject({ I8_place: ["state"], I8_lang: ["ru"] });
+    expect(upgrade({ I8: ["private", "uzbek_doctor"] })).toMatchObject({ I8_place: ["private"], I8_lang: ["uz"] });
+    expect(upgrade({ I8: ["uzbek_doctor"] }).I8_place).toBeUndefined();
+    expect(upgrade({ I8: ["state"], I8_place: ["online"] }).I8_place).toEqual(["online"]); // a new answer wins
   });
 
   it("every option of a grouped question is in exactly one group (B74)", () => {

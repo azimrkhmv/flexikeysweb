@@ -20,7 +20,9 @@ from app.modules.intake.questionnaire import cp_type
 RECENT = timedelta(days=183)  # "surgery, cast or Botox in the last 6 months" (P15), the questionnaire's "recent"
 GMFCS_P12 = {"i": "walks", "ii": "walks_help", "iii": "walker", "iv": "wheelchair", "v": "needs_help_sit"}
 GOALS = {"sit": ["sit"], "stand": ["walk"], "walk": ["walk"], "hands_eat": ["eat", "hands"], "hold": ["hands"],
-         "communicate": ["communicate"], "tablet": ["understand"], "school": ["school"]}  # fmt: skip
+         "communicate": ["communicate"], "tablet": ["understand"], "school": ["school"], "memory": ["memory"],
+         "attention": ["attention"], "speech": ["communicate"],
+         "letters_numbers": ["literacy", "numeracy"]}  # fmt: skip
 SURGERY_PART = {"hip": ["legs"], "tendon": ["legs"], "spine": ["trunk"], "shunt": ["head_neck"],
                 "other": ["legs", "arms", "hands", "trunk", "head_neck"]}  # fmt: skip
 BODY_PART = {"head_neck": "head_neck", "shoulders": "arms", "back": "trunk", "hips": "legs", "left_arm": "arms",

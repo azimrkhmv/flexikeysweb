@@ -687,5 +687,91 @@
     "high_intensity"
    ]
   }
+ },
+ {
+  "name": "goals: memory, attention, speech",
+  "today": "2026-10-22",
+  "answers": {
+   "B1": [
+    "developmental_delay"
+   ],
+   "J9": [
+    "memory",
+    "attention",
+    "speech"
+   ]
+  },
+  "p": {
+   "P9": [
+    "other"
+   ],
+   "P14": null,
+   "P33": [
+    "memory",
+    "attention",
+    "communicate"
+   ],
+   "_hold": [],
+   "_restrictions": [
+    "high_intensity",
+    "leg_balance"
+   ]
+  }
+ },
+ {
+  "name": "goals: speech and communicate are one goal",
+  "today": "2026-10-22",
+  "answers": {
+   "B1": [
+    "cp"
+   ],
+   "J9": [
+    "speech",
+    "communicate",
+    "walk"
+   ]
+  },
+  "p": {
+   "P9": [
+    "cp"
+   ],
+   "P14": null,
+   "P33": [
+    "communicate",
+    "walk"
+   ],
+   "_hold": [],
+   "_restrictions": [
+    "high_intensity"
+   ]
+  }
+ },
+ {
+  "name": "goals: letters and numbers",
+  "today": "2026-10-22",
+  "answers": {
+   "B1": [
+    "cp"
+   ],
+   "J9": [
+    "letters_numbers",
+    "sit"
+   ]
+  },
+  "p": {
+   "P9": [
+    "cp"
+   ],
+   "P14": null,
+   "P33": [
+    "literacy",
+    "numeracy",
+    "sit"
+   ],
+   "_hold": [],
+   "_restrictions": [
+    "high_intensity"
+   ]
+  }
  }
 ]

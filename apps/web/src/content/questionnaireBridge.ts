@@ -6,7 +6,7 @@ import { cpType, type QAnswer, type QAnswers } from "./questionnaire";
 
 const RECENT_DAYS = 183;
 const GMFCS_P12: Record<string, string> = { i: "walks", ii: "walks_help", iii: "walker", iv: "wheelchair", v: "needs_help_sit" };
-const GOALS: Record<string, string[]> = { sit: ["sit"], stand: ["walk"], walk: ["walk"], hands_eat: ["eat", "hands"], hold: ["hands"], communicate: ["communicate"], tablet: ["understand"], school: ["school"] };
+const GOALS: Record<string, string[]> = { sit: ["sit"], stand: ["walk"], walk: ["walk"], hands_eat: ["eat", "hands"], hold: ["hands"], communicate: ["communicate"], tablet: ["understand"], school: ["school"], memory: ["memory"], attention: ["attention"], speech: ["communicate"], letters_numbers: ["literacy", "numeracy"] };
 const SURGERY_PART: Record<string, string[]> = { hip: ["legs"], tendon: ["legs"], spine: ["trunk"], shunt: ["head_neck"], other: ["legs", "arms", "hands", "trunk", "head_neck"] };
 const BODY_PART: Record<string, string> = {
   head_neck: "head_neck", shoulders: "arms", back: "trunk", hips: "legs", left_arm: "arms", right_arm: "arms", left_hand: "hands",

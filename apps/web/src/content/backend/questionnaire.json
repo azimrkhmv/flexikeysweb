@@ -1,5 +1,5 @@
 {
- "_note": "The CEO's parent intake questionnaire (16 Oct 2026, @Abdulloh Ochilov; therapist-reviewed), as data. Source of truth for the server (app/modules/intake/questionnaire.py) and the website (a copy in apps/web/src/content/backend/questionnaire.json, checked by questionnaire.test.ts). Question numbers never change and are never reused. `show` holds display rules R1-R19 and the follow-ups as one condition; `option_show` hides single options. Conditions: {q, in} (any of these answers), {q, answered}, {q, min/max} (numbers), {fact, in/min/max} with facts age (years), gmfcs, macs, cfcs (1-5, from C10/L2, D1, G2), {all}, {any}, {not}, and {ref} to a named rule in `defs`. `note` marks the team's drafts and open points for the physio. Retired 30 Oct 2026, do not reuse: B3 (replaced by B3_parts; old B3 answers still count, see body_pattern), C2_side (B3_parts covers it). `retired_options` lists options no longer shown: old answers with them stay valid and map to the named option (null: kept as they are). The fact `pattern` is the body pattern from B3_parts. Retired 30 Oct 2026, do not reuse: D12 (replaced by D12_spoon and D12_cup; old D12 answers still feed P24). `not_sure: true` on an optional question: it still offers \"Not sure\" (stored as null). CP1, DS1 and E1 have their own `dont_know` and no automatic \"Not sure\" (B66); an older round's null on them stays valid. `step_intro`: one line under each section's title saying what it asks about (B67; uz text drafted 1 Nov 2026 — native-speaker check (B44)). `ladder: true` (B68): a step-by-step skill question shown as tick boxes; the saved value stays one option, the hardest one ticked (the last in `options` order). `<id>_note`: the parent's own words about that question. Retired 1 Nov 2026, do not reuse: CP1 (replaced by CP1_types; old CP1 answers still count, see the fact cp_type). The fact `cp_type` is the CP type from CP1_types: one type ticked is that type; `mixed`, or two or more of spastic, dyskinetic and ataxic, is `mixed`; `dont_know` is `dont_know`; without a CP1_types answer, an old round's CP1 answer. Retired 1 Nov 2026, do not reuse: D13 (replaced by D13_buttons and D13_zip). Retired 1 Nov 2026, do not reuse: E6 (replaced by E6_now and E6_often; an old E6 'yes' still opens E6_where). Retired 1 Nov 2026, do not reuse: H5 (replaced by H5_calm and H5_active; P35 reads H5_active, else an old H5 answer). Retired 5 Nov 2026, do not reuse: A7 (replaced by A7_langs, which keeps A7's option ids uzbek, russian and other; old A7 answers still count, see home_language). Height and weight (A4, A4_kg) are always saved in cm and kg; ft, in and lb are converted on the website only (B72). `option_groups`: the options shown under small headings (`text` null: no heading). `pair` (B74): one skill, two choices, shown as one row: the \"by themselves\" option maps to its \"only with help\" option, `pair_text` holds the row's text under the first; an old answer with both ticked counts as \"by themselves\". `follow_up: true`: shown right under the question before it, indented. `not_sure_text`: this question's own words for the automatic \"Not sure\".",
+ "_note": "The CEO's parent intake questionnaire (16 Oct 2026, @Abdulloh Ochilov; therapist-reviewed), as data. Source of truth for the server (app/modules/intake/questionnaire.py) and the website (a copy in apps/web/src/content/backend/questionnaire.json, checked by questionnaire.test.ts). Question numbers never change and are never reused. `show` holds display rules R1-R19 and the follow-ups as one condition; `option_show` hides single options. Conditions: {q, in} (any of these answers), {q, answered}, {q, min/max} (numbers), {fact, in/min/max} with facts age (years), gmfcs, macs, cfcs (1-5, from C10/L2, D1, G2), {all}, {any}, {not}, and {ref} to a named rule in `defs`. `note` marks the team's drafts and open points for the physio. Retired 30 Oct 2026, do not reuse: B3 (replaced by B3_parts; old B3 answers still count, see body_pattern), C2_side (B3_parts covers it). `retired_options` lists options no longer shown: old answers with them stay valid and map to the named option (null: kept as they are). The fact `pattern` is the body pattern from B3_parts. Retired 30 Oct 2026, do not reuse: D12 (replaced by D12_spoon and D12_cup; old D12 answers still feed P24). `not_sure: true` on an optional question: it still offers \"Not sure\" (stored as null). CP1, DS1 and E1 have their own `dont_know` and no automatic \"Not sure\" (B66); an older round's null on them stays valid. `step_intro`: one line under each section's title saying what it asks about (B67; uz text drafted 1 Nov 2026 — native-speaker check (B44)). `ladder: true` (B68): a step-by-step skill question shown as tick boxes; the saved value stays one option, the hardest one ticked (the last in `options` order). `<id>_note`: the parent's own words about that question. Retired 1 Nov 2026, do not reuse: CP1 (replaced by CP1_types; old CP1 answers still count, see the fact cp_type). The fact `cp_type` is the CP type from CP1_types: one type ticked is that type; `mixed`, or two or more of spastic, dyskinetic and ataxic, is `mixed`; `dont_know` is `dont_know`; without a CP1_types answer, an old round's CP1 answer. Retired 1 Nov 2026, do not reuse: D13 (replaced by D13_buttons and D13_zip). Retired 1 Nov 2026, do not reuse: E6 (replaced by E6_now and E6_often; an old E6 'yes' still opens E6_where). Retired 1 Nov 2026, do not reuse: H5 (replaced by H5_calm and H5_active; P35 reads H5_active, else an old H5 answer). Retired 5 Nov 2026, do not reuse: A7 (replaced by A7_langs, which keeps A7's option ids uzbek, russian and other; old A7 answers still count, see home_language). Height and weight (A4, A4_kg) are always saved in cm and kg; ft, in and lb are converted on the website only (B72). `option_groups`: the options shown under small headings (`text` null: no heading). `pair` (B74): one skill, two choices, shown as one row: the \"by themselves\" option maps to its \"only with help\" option, `pair_text` holds the row's text under the first; an old answer with both ticked counts as \"by themselves\". `follow_up: true`: shown right under the question before it, indented. `not_sure_text`: this question's own words for the automatic \"Not sure\". Retired 5 Nov 2026, do not reuse: I8 (replaced by I8_place and I8_lang; old I8 answers map to them, see upgrade).",
  "version": "2026-11-05",
  "steps": [
   "A",
@@ -12151,7 +12151,7 @@
    }
   },
   {
-   "id": "I8",
+   "id": "I8_place",
    "step": "I",
    "kind": "multi",
    "required": false,
@@ -12160,11 +12160,13 @@
    "options": [
     "state",
     "private",
-    "uzbek_doctor",
-    "russian_doctor"
+    "home_visits",
+    "online",
+    "low_cost",
+    "any"
    ],
    "max": null,
-   "exclusive": null,
+   "exclusive": "any",
    "show": null,
    "option_show": null,
    "unit": null,
@@ -12175,30 +12177,88 @@
     "R"
    ],
    "text": {
-    "en": "Preferred center type",
-    "uz": "Qanday markazni afzal koʻrasiz",
-    "ru": "Какой центр вам удобнее"
+    "en": "What kind of help would suit you? (tick all that apply)",
+    "uz": "Sizga qanday yordam mos keladi? (mos keladiganlarning hammasini belgilang)",
+    "ru": "Какая помощь вам подходит? (отметьте всё подходящее)"
    },
    "option_text": {
     "en": {
-     "state": "State",
-     "private": "Private",
-     "uzbek_doctor": "Doctor speaks Uzbek",
-     "russian_doctor": "Doctor speaks Russian"
+     "state": "State center",
+     "private": "Private center",
+     "home_visits": "Home visits (a therapist comes to you)",
+     "online": "Online sessions",
+     "low_cost": "Free or low cost",
+     "any": "No preference"
     },
     "uz": {
-     "state": "Davlat",
-     "private": "Xususiy",
-     "uzbek_doctor": "Shifokor oʻzbekcha gapiradi",
-     "russian_doctor": "Shifokor ruscha gapiradi"
+     "state": "Davlat markazi",
+     "private": "Xususiy markaz",
+     "home_visits": "Mutaxassis uyga keladi",
+     "online": "Onlayn mashgʻulotlar",
+     "low_cost": "Bepul yoki arzon",
+     "any": "Farqi yoʻq"
     },
     "ru": {
-     "state": "Государственный",
-     "private": "Частный",
-     "uzbek_doctor": "Врач говорит по-узбекски",
-     "russian_doctor": "Врач говорит по-русски"
+     "state": "Государственный центр",
+     "private": "Частный центр",
+     "home_visits": "Специалист приходит домой",
+     "online": "Онлайн-занятия",
+     "low_cost": "Бесплатно или недорого",
+     "any": "Без разницы"
     }
-   }
+   },
+   "note": "5 Nov 2026: new, replaces I8 with I8_lang (B75); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)"
+  },
+  {
+   "id": "I8_lang",
+   "step": "I",
+   "kind": "multi",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "uz",
+    "ru",
+    "en",
+    "any"
+   ],
+   "max": null,
+   "exclusive": "any",
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "R"
+   ],
+   "text": {
+    "en": "What language should the specialist speak? (tick all that apply)",
+    "uz": "Mutaxassis qaysi tilda gapirishi kerak? (mos keladiganlarning hammasini belgilang)",
+    "ru": "На каком языке должен говорить специалист? (отметьте всё подходящее)"
+   },
+   "option_text": {
+    "en": {
+     "uz": "Uzbek",
+     "ru": "Russian",
+     "en": "English",
+     "any": "Any language"
+    },
+    "uz": {
+     "uz": "Oʻzbek tili",
+     "ru": "Rus tili",
+     "en": "Ingliz tili",
+     "any": "Istalgan til"
+    },
+    "ru": {
+     "uz": "Узбекский",
+     "ru": "Русский",
+     "en": "Английский",
+     "any": "Любой"
+    }
+   },
+   "note": "5 Nov 2026: new, replaces I8 with I8_place (B75); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)"
   },
   {
    "id": "I9",
@@ -12705,9 +12765,13 @@
     "walk",
     "hands_eat",
     "hold",
-    "communicate",
-    "tablet",
     "less_pain",
+    "communicate",
+    "memory",
+    "attention",
+    "speech",
+    "letters_numbers",
+    "tablet",
     "school",
     "other"
    ],
@@ -12737,9 +12801,13 @@
      "walk": "Walk",
      "hands_eat": "Use hands to eat",
      "hold": "Hold things",
-     "communicate": "Communicate needs",
-     "tablet": "Play on tablet",
      "less_pain": "Less pain or stiffness",
+     "communicate": "Communicate needs",
+     "memory": "Remember things better",
+     "attention": "Focus for longer",
+     "speech": "Speak more clearly",
+     "letters_numbers": "Learn letters and numbers",
+     "tablet": "Play on tablet",
      "school": "Get ready for school",
      "other": "Other"
     },
@@ -12749,9 +12817,13 @@
      "walk": "Yurish",
      "hands_eat": "Ovqatlanishda qoʻllarini ishlatish",
      "hold": "Narsalarni ushlash",
-     "communicate": "Ehtiyojlarini bildirish",
-     "tablet": "Planshetda oʻynash",
      "less_pain": "Ogʻriq yoki qattiqlik kamayishi",
+     "communicate": "Ehtiyojlarini bildirish",
+     "memory": "Yaxshiroq eslab qolish",
+     "attention": "Diqqatni uzoqroq jamlash",
+     "speech": "Tushunarliroq gapirish",
+     "letters_numbers": "Harf va raqamlarni oʻrganish",
+     "tablet": "Planshetda oʻynash",
      "school": "Maktabga tayyorlanish",
      "other": "Boshqa"
     },
@@ -12761,13 +12833,57 @@
      "walk": "Ходить",
      "hands_eat": "Есть, помогая себе руками",
      "hold": "Держать предметы",
-     "communicate": "Сообщать о своих нуждах",
-     "tablet": "Играть на планшете",
      "less_pain": "Меньше боли или напряжения",
+     "communicate": "Сообщать о своих нуждах",
+     "memory": "Лучше запоминать",
+     "attention": "Дольше удерживать внимание",
+     "speech": "Говорить понятнее",
+     "letters_numbers": "Учить буквы и цифры",
+     "tablet": "Играть на планшете",
      "school": "Подготовиться к школе",
      "other": "Другое"
     }
-   }
+   },
+   "option_groups": [
+    {
+     "text": {
+      "en": "Body and movement",
+      "uz": "Tana va harakat",
+      "ru": "Тело и движения"
+     },
+     "options": [
+      "sit",
+      "stand",
+      "walk",
+      "hands_eat",
+      "hold",
+      "less_pain"
+     ]
+    },
+    {
+     "text": {
+      "en": "Thinking, talking and learning",
+      "uz": "Fikrlash, nutq va oʻqish",
+      "ru": "Мышление, речь и учёба"
+     },
+     "options": [
+      "communicate",
+      "memory",
+      "attention",
+      "speech",
+      "letters_numbers",
+      "tablet",
+      "school"
+     ]
+    },
+    {
+     "text": null,
+     "options": [
+      "other"
+     ]
+    }
+   ],
+   "note": "5 Nov 2026: four new goals: memory, attention, speech, letters_numbers; options under two headings (B75); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)"
   },
   {
    "id": "J9_other",

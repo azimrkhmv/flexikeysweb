@@ -4870,6 +4870,72 @@
     "lang": "uz",
     "answers": {
      "P9": [
+      "speech_delay"
+     ],
+     "P12": "walks",
+     "P13": "never",
+     "P14": [
+      "nothing"
+     ],
+     "P15": "no",
+     "P17": "no",
+     "P20": 1,
+     "P21": 1,
+     "P23": 2,
+     "P24": 2,
+     "P26": 2,
+     "P33": [
+      "memory",
+      "attention",
+      "literacy"
+     ],
+     "P34": "30"
+    },
+    "healthConsent": true
+   },
+   "sha256": "03e9889b053989ede5a06451782bdb419cac1a1c127641415a57df759901d7e2"
+  },
+  {
+   "input": {
+    "childId": "c1",
+    "round": 1,
+    "birthDate": "2019-05-01",
+    "startDate": "2026-10-12",
+    "lang": "uz",
+    "answers": {
+     "P9": [
+      "speech_delay"
+     ],
+     "P12": "walks",
+     "P13": "never",
+     "P14": [
+      "nothing"
+     ],
+     "P15": "no",
+     "P17": "no",
+     "P20": 1,
+     "P21": 1,
+     "P23": 2,
+     "P24": 2,
+     "P26": 2,
+     "P33": [
+      "numeracy"
+     ],
+     "P34": "20"
+    },
+    "healthConsent": true
+   },
+   "sha256": "3d4d5c48010f75ca4037d95def11641080b9eb2503ecc03e5d3742290054e800"
+  },
+  {
+   "input": {
+    "childId": "c1",
+    "round": 1,
+    "birthDate": "2019-05-01",
+    "startDate": "2026-10-12",
+    "lang": "uz",
+    "answers": {
+     "P9": [
       "cp"
      ],
      "P12": "walks",

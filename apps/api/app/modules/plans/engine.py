@@ -33,6 +33,11 @@ GOAL_GAMES: dict[str, tuple[str, ...]] = {
     "eat": ("sort", "find_same"),
     "play_others": ("story", "scene"),
     "school": ("count", "type", "trace"),
+    # B75: the games of each skill area.
+    "memory": ("sequence", "missing", "light_path"),
+    "attention": ("find_same", "scene", "story"),
+    "literacy": ("listen_pick", "type", "sentence"),
+    "numeracy": ("count",),
 }
 GAMES: tuple[str, ...] = tuple(dict.fromkeys(k for kinds in GOAL_GAMES.values() for k in kinds))  # the fixed set
 # The tools in the standard Home Kit box.

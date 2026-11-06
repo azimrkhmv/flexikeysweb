@@ -72,7 +72,7 @@ def plan_json(i: dict[str, Any]) -> str:
 
 
 def test_all_cases_are_here() -> None:
-    assert len(DATA["cases"]) == 284
+    assert len(DATA["cases"]) == 286
 
 
 @pytest.mark.parametrize("case", DATA["cases"], ids=lambda c: hashlib.sha256(str(c["input"]).encode()).hexdigest()[:8])

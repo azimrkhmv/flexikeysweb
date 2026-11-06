@@ -392,7 +392,7 @@ export interface IntakeRound {
 export type Restriction = "jumping" | "prone" | "neck_flexion" | "single_leg_weight" | "standing" | "walking" | "high_intensity" | "leg_balance" | "mouth_face";
 export type BodyArea = "legs" | "arms" | "hands" | "trunk" | "head_neck" | "mouth_face";
 /** P33 goals. */
-export type GoalKey = "walk" | "hands" | "sit" | "communicate" | "understand" | "eat" | "play_others" | "school";
+export type GoalKey = "walk" | "hands" | "sit" | "communicate" | "understand" | "eat" | "play_others" | "school" | "memory" | "attention" | "literacy" | "numeracy";
 export type AgeBand = "2-4" | "5-8" | "9-12" | "13-20";
 export type VideoStatus = "generated" | "changes_requested" | "rejected" | "approved";
 

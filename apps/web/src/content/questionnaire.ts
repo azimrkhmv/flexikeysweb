@@ -240,6 +240,11 @@ export function toggleOption(q: QQuestion, picked: string[], o: string): string[
   return q.max && next.length > q.max ? picked : next;
 }
 
+const I8_MOVES: Record<string, Record<string, string>> = {
+  I8_place: { state: "state", private: "private" },
+  I8_lang: { uzbek_doctor: "uz", russian_doctor: "ru" },
+};
+
 /** Saved answers in today's options: a retired option shows as the option that replaced it (B61, B62); an older
  * round's "Not sure" (null) on a question with its own "Don't know" shows as that answer (B66); an old answer with
  * both choices of a pair ticked counts as "by themselves" (B74). */
@@ -257,6 +262,13 @@ export function upgrade(a: QAnswers): QAnswers {
   if (out.CP1_types === undefined && typeof cp1 === "string" && Q_BY_ID.CP1_types?.options?.includes(cp1)) out.CP1_types = [cp1];
   // B72: an old round's A7 shows that language ticked in A7_langs (the same option ids).
   if (out.A7_langs === undefined && typeof out.A7 === "string") out.A7_langs = [out.A7];
+  // B75: an old round's I8 shows as its two replacements.
+  if (Array.isArray(out.I8) && out.I8_place === undefined && out.I8_lang === undefined) {
+    for (const [id, map] of Object.entries(I8_MOVES)) {
+      const moved = out.I8.flatMap((o) => map[o] ?? []);
+      if (moved.length) out[id] = moved;
+    }
+  }
   for (const [id, v] of Object.entries(out)) {
     const pairs = Object.entries(Q_BY_ID[id]?.pair ?? {});
     if (pairs.length && Array.isArray(v)) out[id] = v.filter((x) => !pairs.some(([alone, help]) => x === help && v.includes(alone)));

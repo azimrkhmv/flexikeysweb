@@ -17,10 +17,26 @@ const BY_GOAL: Partial<Record<GoalKey, PlaceNeed>> = {
   understand: "learning",
   school: "learning",
   play_others: "learning",
+  memory: "learning",
+  attention: "learning",
+  literacy: "learning",
+  numeracy: "learning",
 };
 export function needsFor(goals: GoalKey[]): PlaceNeed[] {
   const first = [...new Set(goals.map((g) => BY_GOAL[g]).filter((n): n is PlaceNeed => !!n))];
   return [...first, ...NEEDS.filter((n) => !first.includes(n))];
+}
+
+/** The parent's wishes (I8_place, I8_lang; B75) move the places that fit them up, and "Free or low cost" puts the
+ * cheapest first; places that fit equally keep their order, and none is taken off the list. `home_visits` and `online`
+ * have no field in the places data yet, and `any` matches nothing, so they change nothing. */
+export function rankPlaces<T extends Place>(places: T[], wish: { place: string[]; lang: string[] }): T[] {
+  const cheap = wish.place.includes("low_cost");
+  const state = (p: T) => p.kind === "state_centre";
+  const fit = (p: T) =>
+    Number(p.languages.some((l) => wish.lang.includes(l))) + Number(wish.place.includes("state") && state(p)) + Number(wish.place.includes("private") && !state(p));
+  const cost = (p: T) => p.priceMin ?? (state(p) ? 0 : Number.MAX_SAFE_INTEGER); // a state centre without a price is free
+  return [...places].sort((x, y) => fit(y) - fit(x) || (cheap ? cost(x) - cost(y) : 0));
 }
 
 const DAY = 86_400_000;

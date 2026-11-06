@@ -113,12 +113,23 @@ def home_language(answers: Answers, ui: str) -> str | None:
     return ui if ui in langs else langs[0]
 
 
+I8_MOVES = {
+    "I8_place": {"state": "state", "private": "private"},
+    "I8_lang": {"uzbek_doctor": "uz", "russian_doctor": "ru"},
+}
+
+
 def upgrade(answers: Answers) -> Answers:
     """Saved answers in today's questions: an old round's answer to a retired question also counts as its replacement,
     as on the website (content/questionnaire.ts upgrade), so an open old round can still be finished."""
     out = dict(answers)
     if "A7_langs" not in out and isinstance(out.get("A7"), str):
         out["A7_langs"] = [out["A7"]]  # B72: the same option ids
+    old_i8 = out.get("I8")
+    if isinstance(old_i8, list) and "I8_place" not in out and "I8_lang" not in out:  # B75
+        for qid, moves in I8_MOVES.items():
+            if moved := [moves[o] for o in old_i8 if o in moves]:
+                out[qid] = moved
     for qid, value in out.items():
         pairs = QUESTIONS[qid].get("pair") if qid in QUESTIONS else None
         if pairs and isinstance(value, list):  # B74: both of a pair ticked counts as "by themselves"

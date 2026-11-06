@@ -3,15 +3,18 @@
 import { useState } from "react";
 import { CalendarPlus, LocateFixed, MapPin, Phone, Send } from "lucide-react";
 import { Button, Card, Chip, Empty, LinkButton, PageHeader, Textarea, useAction } from "@/components/ui";
-import { needsFor } from "@/content/places";
+import { needsFor, rankPlaces } from "@/content/places";
+import { upgrade } from "@/content/questionnaire";
+import { rulesView } from "@/content/questionnaireBridge";
 import { districtName, regionName } from "@/content/districts";
 import { fmtDate, fmtSum } from "@/lib/format";
 import { api, sel, useDb } from "@/lib/api";
+import { localDate } from "@/lib/api/schema";
 import { useLang, useT } from "@/lib/i18n";
 import type { GoalKey, Place, PlaceNeed, ReportReason } from "@/lib/types";
 
-// B34 (spec §11): the parent picks a need in plain words; free state centres first, then private places by distance.
-// "I'm not sure" never guesses: it suggests the child's doctor or a free state centre. Game results are never used
+// B34 (spec §11): the parent picks a need in plain words; free state centres first, then private places by distance,
+// and places that fit the wishes in I8_place and I8_lang above the others (B75). "I'm not sure" never guesses: it suggests the child's doctor or a free state centre. Game results are never used
 // to send a family to a particular doctor (that would be a medical referral).
 
 type Pick = PlaceNeed | "unsure";
@@ -167,14 +170,20 @@ export default function FindHelp() {
   const [pos, setPos] = useState<{ lat: number; lng: number } | undefined>();
   const [noPos, setNoPos] = useState(false);
   if (!me) return null;
-  // The child's own goals (P33) put the most relevant needs first.
-  const goals = sel.childrenOf(db, me.id).flatMap((c) => {
+  const rounds = sel.childrenOf(db, me.id).flatMap((c) => {
     const round = sel.intakeRound(db, c.id);
-    const p33 = round ? sel.intakeAnswers(db, c.id, round.round).P33 : undefined;
+    return round ? [{ questionnaire: round.questionnaire, answers: sel.intakeAnswers(db, c.id, round.round) }] : [];
+  });
+  // The child's own goals (P33) put the most relevant needs first.
+  const goals = rounds.flatMap((r) => {
+    const p33 = rulesView(r.questionnaire, r.answers, localDate()).P33;
     return Array.isArray(p33) ? (p33 as GoalKey[]) : [];
   });
   const picks: Pick[] = [...needsFor(goals), "unsure"];
-  const places = pick === null ? [] : sel.places(db, pick === "unsure" ? null : pick, me, pos).filter((p) => pick !== "unsure" || p.kind === "state_centre");
+  const wishes = rounds.map((r) => upgrade(r.answers));
+  const ticked = (id: string) => wishes.flatMap((w) => (Array.isArray(w[id]) ? (w[id] as string[]) : []));
+  const found = pick === null ? [] : sel.places(db, pick === "unsure" ? null : pick, me, pos).filter((p) => pick !== "unsure" || p.kind === "state_centre");
+  const places = rankPlaces(found, { place: ticked("I8_place"), lang: ticked("I8_lang") });
   const locate = () =>
     navigator.geolocation?.getCurrentPosition(
       (p) => setPos({ lat: p.coords.latitude, lng: p.coords.longitude }),

@@ -45,6 +45,10 @@ const CASES: { name: string; answers: QAnswers }[] = [
   { name: "active evening and midday, calm morning", answers: { B1: ["cp"], H5_active: ["evening", "midday"], H5_calm: ["morning"] } },
   { name: "active wins over an old H5", answers: { B1: ["cp"], H5: "morning", H5_active: ["evening"] } },
   { name: "skin: a sore now, buttons and zip", answers: { B1: ["cp"], E6_now: "yes", E6_often: "no", D13_buttons: "with_help", D13_zip: "no" } },
+  // B75: the thinking and learning goals; `speech` feeds what "Communicate needs" feeds.
+  { name: "goals: memory, attention, speech", answers: { B1: ["developmental_delay"], J9: ["memory", "attention", "speech"] } },
+  { name: "goals: speech and communicate are one goal", answers: { B1: ["cp"], J9: ["speech", "communicate", "walk"] } },
+  { name: "goals: letters and numbers", answers: { B1: ["cp"], J9: ["letters_numbers", "sit"] } },
 ];
 
 const BACKEND = new URL("./backend/", import.meta.url);

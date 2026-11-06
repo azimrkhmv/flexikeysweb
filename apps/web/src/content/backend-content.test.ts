@@ -63,6 +63,8 @@ function roadmapCases() {
     input({ ...base, P33: null, P34: null, P23: 0, P24: 0, P26: null }, { tools: ["putty", "cards"] }),
     input({ ...base, P17: "sometimes", P33: ["communicate", "eat", "school"] }, { birthDate: "2008-10-12" }),
     input(base, { therapist: { restrictions: [], goals: ["sit"], assign: [], exclude: [], legBalanceApproved: false } }),
+    input({ ...base, P33: ["memory", "attention", "literacy"], P34: "30" }), // B75
+    input({ ...base, P33: ["numeracy"] }),
   ];
   // Every 7th of the safety combinations in lib/roadmap.test.ts.
   const p12 = ["walks", "walks_help", "walker", "wheelchair", "needs_help_sit", null];

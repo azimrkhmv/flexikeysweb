@@ -990,9 +990,12 @@ has a decision; the source is "FlexiKeys — parent questionnaire review 2" (5 N
   - Done when: every text in section 5 is in place in en and ru with a uz draft; paired options untick each other and old double answers load as "by themselves"; new `always` / `never` / `not_sure` options work with the rules; the cases files cover the new ids
   - Needs: B73
   - Note (6 Nov 2026): no rule reads B7 `intellectual`, G3 `always` is outside G2_SHOW as `mostly` is, and no rule reads H8, so nothing got easier. G7 feeds no code, so it has the "first words and pictures" hint. `walker` and `u_support` explanations are drafts for the physio; `walker` overlaps `rollator`
-- [ ] **Bekzod** — `B75` Help nearby and goals (6.1, 6.2)
+- [x] **Bekzod** — `B75` Help nearby and goals (6.1, 6.2)
   - Done when: the old center question is retired and its answers map to `_place` / `_lang`; places use the new answers where data allows; J9 shows the four new goals in two groups and they feed the plan (or the TASKS line is written)
   - Needs: B74
+  - home_visits stored; places data has no field for it yet.
+  - online stored; places data has no field for it yet (only a clinic's slots have one).
+  - Note (6 Nov 2026): no code read I8, so `rankPlaces` is new: places that fit the language and kind wishes go first, and "Free or low cost" puts the cheapest first; no place is hidden. Find help now reads goals through `rulesView` (it read raw P33, which the new questionnaire never saves). The plan keeps at most 3 goals after mapping (`.slice(0, 3)`, unchanged), and "Learn letters and numbers" and "Use hands to eat" are two goals each, so a third pick can drop out
 - [ ] **Bekzod** — `B76` Quick check and hiding baby questions (4.1, 4.2)
   - Done when: a test in `questionnaire.test.ts` counts the questions shown for personas M, W and S and passes (M's limit: see "Optional questions folded" in section 3); skipped sections are not counted or shown; typical answers are worked out on read and labelled in the therapist view; old children without QC answers see everything as before
   - Needs: B75

@@ -91,6 +91,14 @@ describe("roadmap engine", () => {
     expect(r.days.every((d) => d.exercises.length === 0 && d.games.length > 0)).toBe(true);
   });
 
+  it("the thinking and learning goals choose their area's games (B75)", () => {
+    const games = (...goals: string[]) => [...new Set(buildRoadmap(input({ P33: goals, P34: "30" }, { healthConsent: false }), LIB).days.flatMap((d) => d.games.map((g) => g.kind)))].sort();
+    expect(games("memory")).toEqual(["light_path", "missing", "sequence"]);
+    expect(games("attention")).toEqual(["find_same", "scene", "story"]);
+    expect(games("literacy")).toEqual(["listen_pick", "sentence", "type"]);
+    expect(games("numeracy")).toEqual(["count"]);
+  });
+
   it("therapist goals override the parent's (T7 over P33)", () => {
     const r = buildRoadmap(input(base, { therapist: { restrictions: [], goals: ["sit"], assign: [], exclude: [], legBalanceApproved: false } }), LIB);
     expect(r.reasons.filter((x) => x.slot === "exercise").every((x) => x.goal === "sit")).toBe(true);
