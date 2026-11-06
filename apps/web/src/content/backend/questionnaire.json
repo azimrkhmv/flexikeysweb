@@ -1,5 +1,5 @@
 {
- "_note": "The CEO's parent intake questionnaire (16 Oct 2026, @Abdulloh Ochilov; therapist-reviewed), as data. Source of truth for the server (app/modules/intake/questionnaire.py) and the website (a copy in apps/web/src/content/backend/questionnaire.json, checked by questionnaire.test.ts). Question numbers never change and are never reused. `show` holds display rules R1-R19 and the follow-ups as one condition; `option_show` hides single options. Conditions: {q, in} (any of these answers), {q, answered}, {q, min/max} (numbers), {fact, in/min/max} with facts age (years), gmfcs, macs, cfcs (1-5, from C10/L2, D1, G2), {all}, {any}, {not}, and {ref} to a named rule in `defs`. `note` marks the team's drafts and open points for the physio. Retired 30 Oct 2026, do not reuse: B3 (replaced by B3_parts; old B3 answers still count, see body_pattern), C2_side (B3_parts covers it). `retired_options` lists options no longer shown: old answers with them stay valid and map to the named option (null: kept as they are). The fact `pattern` is the body pattern from B3_parts. Retired 30 Oct 2026, do not reuse: D12 (replaced by D12_spoon and D12_cup; old D12 answers still feed P24). `not_sure: true` on an optional question: it still offers \"Not sure\" (stored as null). CP1, DS1 and E1 have their own `dont_know` and no automatic \"Not sure\" (B66); an older round's null on them stays valid. `step_intro`: one line under each section's title saying what it asks about (B67; uz text drafted 1 Nov 2026 — native-speaker check (B44)). `ladder: true` (B68): a step-by-step skill question shown as tick boxes; the saved value stays one option, the hardest one ticked (the last in `options` order). `<id>_note`: the parent's own words about that question. Retired 1 Nov 2026, do not reuse: CP1 (replaced by CP1_types; old CP1 answers still count, see the fact cp_type). The fact `cp_type` is the CP type from CP1_types: one type ticked is that type; `mixed`, or two or more of spastic, dyskinetic and ataxic, is `mixed`; `dont_know` is `dont_know`; without a CP1_types answer, an old round's CP1 answer. Retired 1 Nov 2026, do not reuse: D13 (replaced by D13_buttons and D13_zip). Retired 1 Nov 2026, do not reuse: E6 (replaced by E6_now and E6_often; an old E6 'yes' still opens E6_where). Retired 1 Nov 2026, do not reuse: H5 (replaced by H5_calm and H5_active; P35 reads H5_active, else an old H5 answer). Retired 5 Nov 2026, do not reuse: A7 (replaced by A7_langs, which keeps A7's option ids uzbek, russian and other; old A7 answers still count, see home_language). Height and weight (A4, A4_kg) are always saved in cm and kg; ft, in and lb are converted on the website only (B72).",
+ "_note": "The CEO's parent intake questionnaire (16 Oct 2026, @Abdulloh Ochilov; therapist-reviewed), as data. Source of truth for the server (app/modules/intake/questionnaire.py) and the website (a copy in apps/web/src/content/backend/questionnaire.json, checked by questionnaire.test.ts). Question numbers never change and are never reused. `show` holds display rules R1-R19 and the follow-ups as one condition; `option_show` hides single options. Conditions: {q, in} (any of these answers), {q, answered}, {q, min/max} (numbers), {fact, in/min/max} with facts age (years), gmfcs, macs, cfcs (1-5, from C10/L2, D1, G2), {all}, {any}, {not}, and {ref} to a named rule in `defs`. `note` marks the team's drafts and open points for the physio. Retired 30 Oct 2026, do not reuse: B3 (replaced by B3_parts; old B3 answers still count, see body_pattern), C2_side (B3_parts covers it). `retired_options` lists options no longer shown: old answers with them stay valid and map to the named option (null: kept as they are). The fact `pattern` is the body pattern from B3_parts. Retired 30 Oct 2026, do not reuse: D12 (replaced by D12_spoon and D12_cup; old D12 answers still feed P24). `not_sure: true` on an optional question: it still offers \"Not sure\" (stored as null). CP1, DS1 and E1 have their own `dont_know` and no automatic \"Not sure\" (B66); an older round's null on them stays valid. `step_intro`: one line under each section's title saying what it asks about (B67; uz text drafted 1 Nov 2026 — native-speaker check (B44)). `ladder: true` (B68): a step-by-step skill question shown as tick boxes; the saved value stays one option, the hardest one ticked (the last in `options` order). `<id>_note`: the parent's own words about that question. Retired 1 Nov 2026, do not reuse: CP1 (replaced by CP1_types; old CP1 answers still count, see the fact cp_type). The fact `cp_type` is the CP type from CP1_types: one type ticked is that type; `mixed`, or two or more of spastic, dyskinetic and ataxic, is `mixed`; `dont_know` is `dont_know`; without a CP1_types answer, an old round's CP1 answer. Retired 1 Nov 2026, do not reuse: D13 (replaced by D13_buttons and D13_zip). Retired 1 Nov 2026, do not reuse: E6 (replaced by E6_now and E6_often; an old E6 'yes' still opens E6_where). Retired 1 Nov 2026, do not reuse: H5 (replaced by H5_calm and H5_active; P35 reads H5_active, else an old H5 answer). Retired 5 Nov 2026, do not reuse: A7 (replaced by A7_langs, which keeps A7's option ids uzbek, russian and other; old A7 answers still count, see home_language). Height and weight (A4, A4_kg) are always saved in cm and kg; ft, in and lb are converted on the website only (B72). `option_groups`: the options shown under small headings (`text` null: no heading). `pair` (B74): one skill, two choices, shown as one row: the \"by themselves\" option maps to its \"only with help\" option, `pair_text` holds the row's text under the first; an old answer with both ticked counts as \"by themselves\". `follow_up: true`: shown right under the question before it, indented. `not_sure_text`: this question's own words for the automatic \"Not sure\".",
  "version": "2026-11-05",
  "steps": [
   "A",
@@ -1307,7 +1307,7 @@
     "en": {
      "vision": "Vision problem",
      "hearing": "Hearing problem",
-     "intellectual": "Intellectual disability",
+     "intellectual": "Learning or thinking difficulties (slower to learn, understand or remember)",
      "hip": "Hip problem",
      "spine": "Curved spine",
      "heart": "Heart",
@@ -1319,7 +1319,7 @@
     "uz": {
      "vision": "Koʻrish muammosi",
      "hearing": "Eshitish muammosi",
-     "intellectual": "Aqliy rivojlanish buzilishi",
+     "intellectual": "Oʻrganish va fikrlashdagi qiyinchiliklar (sekinroq oʻrganadi, tushunadi yoki eslab qoladi)",
      "hip": "Son boʻgʻimi muammosi",
      "spine": "Umurtqa pogʻonasi qiyshiqligi",
      "heart": "Yurak",
@@ -1331,7 +1331,7 @@
     "ru": {
      "vision": "Проблемы со зрением",
      "hearing": "Проблемы со слухом",
-     "intellectual": "Интеллектуальные нарушения",
+     "intellectual": "Трудности с обучением и мышлением (медленнее учится, понимает или запоминает)",
      "hip": "Проблемы с тазобедренным суставом",
      "spine": "Искривление позвоночника",
      "heart": "Сердце",
@@ -1341,7 +1341,7 @@
      "none": "Нет"
     }
    },
-   "note": "1 Nov 2026: 'reflux' and 'shunt' explained in plain words (B69); physio check needed"
+   "note": "1 Nov 2026: 'reflux' and 'shunt' explained in plain words (B69); physio check needed 5 Nov 2026: 'intellectual' reworded in softer words and now also covers mild cases (B74); no rule reads the option; physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)"
   },
   {
    "id": "B8",
@@ -1537,6 +1537,7 @@
    "health": true,
    "audience": "parent",
    "options": [
+    "none",
     "gait_trainer",
     "rollator",
     "walker",
@@ -1554,8 +1555,7 @@
     "wheelchair",
     "special_chair",
     "glasses",
-    "hearing_aid",
-    "none"
+    "hearing_aid"
    ],
    "max": null,
    "exclusive": "none",
@@ -1577,69 +1577,132 @@
    },
    "option_text": {
     "en": {
-     "gait_trainer": "Gait trainer",
-     "rollator": "Rollator or frame",
-     "walker": "Walker",
-     "u_support": "U-shaped support",
+     "none": "None",
+     "gait_trainer": "Gait trainer (frame with a seat or belt that holds the body while walking)",
+     "rollator": "Rollator or walking frame (with handles)",
+     "walker": "Walker (frame without a seat that the child pushes or lifts forward)",
+     "u_support": "U-shaped support (U-shaped frame; the child stands inside it)",
      "crutches": "Crutches",
-     "quad_cane": "Quad cane",
+     "quad_cane": "Quad cane (cane with 4 small feet)",
      "cane": "Cane",
-     "hip_orthosis": "Hip orthosis",
-     "knee_orthosis": "Knee orthosis",
-     "afo": "Ankle-foot orthosis (AFO)",
-     "insoles": "Insoles",
+     "hip_orthosis": "Hip brace (orthosis)",
+     "knee_orthosis": "Knee brace (orthosis)",
+     "afo": "Ankle-foot brace (AFO), from the foot to below the knee",
+     "insoles": "Insoles (special inserts inside the shoes)",
      "ortho_shoes": "Orthopedic shoes",
-     "hand_splint": "Hand splint",
-     "stander": "Stander",
+     "hand_splint": "Hand splint (holds the hand and wrist in place)",
+     "stander": "Stander (frame that holds the child standing)",
      "wheelchair": "Wheelchair",
-     "special_chair": "Special chair",
+     "special_chair": "Special chair (seat with support)",
      "glasses": "Glasses",
-     "hearing_aid": "Hearing aid",
-     "none": "None"
+     "hearing_aid": "Hearing aid"
     },
     "uz": {
-     "gait_trainer": "Yurish trenajori",
-     "rollator": "Gʻildirakli yurgich yoki ramka",
-     "walker": "Yurgich",
-     "u_support": "U shaklidagi tayanch",
+     "none": "Hech biri",
+     "gait_trainer": "Yurish trenajori (yurganda tanani ushlab turadigan oʻrindiqli yoki kamarli ramka)",
+     "rollator": "Rollator yoki yurish ramkasi (tutqichli)",
+     "walker": "Yurgich (oʻrindiqsiz ramka, bola uni oldinga suradi)",
+     "u_support": "U shaklidagi tayanch (U harfi shaklidagi ramka, bola uning ichida turadi)",
      "crutches": "Qoʻltiqtayoq",
-     "quad_cane": "Toʻrt oyoqli hassa",
+     "quad_cane": "Toʻrt oyoqli hassa (4 ta kichik tayanchi bor)",
      "cane": "Hassa",
      "hip_orthosis": "Son ortezi",
      "knee_orthosis": "Tizza ortezi",
-     "afo": "Boldir-oyoq panjasi ortezi (AFO)",
-     "insoles": "Ortopedik patak",
+     "afo": "Boldir-oyoq panjasi ortezi (AFO), oyoq panjasidan tizzagacha",
+     "insoles": "Ortopedik patak (poyabzal ichiga qoʻyiladi)",
      "ortho_shoes": "Ortopedik poyabzal",
-     "hand_splint": "Qoʻl shinasi",
-     "stander": "Vertikalizator",
+     "hand_splint": "Qoʻl shinasi (qoʻl va bilakni bir holatda ushlab turadi)",
+     "stander": "Vertikalizator (bolani tik holatda ushlab turadi)",
      "wheelchair": "Nogironlar aravachasi",
-     "special_chair": "Maxsus stul",
+     "special_chair": "Maxsus stul (tayanchli)",
      "glasses": "Koʻzoynak",
-     "hearing_aid": "Eshitish apparati",
-     "none": "Hech biri"
+     "hearing_aid": "Eshitish apparati"
     },
     "ru": {
-     "gait_trainer": "Тренажёр для ходьбы",
-     "rollator": "Роллатор или рама",
-     "walker": "Ходунки",
-     "u_support": "U-образная опора",
+     "none": "Нет",
+     "gait_trainer": "Ходунки с поддержкой тела (гейт-тренер)",
+     "rollator": "Роллатор или ходунки (с ручками)",
+     "walker": "Ходунки (рама без сиденья, ребёнок двигает её вперёд)",
+     "u_support": "U-образная опора (рама в форме буквы U, ребёнок стоит внутри)",
      "crutches": "Костыли",
-     "quad_cane": "Трость с четырьмя опорами",
+     "quad_cane": "Трость с 4 опорами",
      "cane": "Трость",
-     "hip_orthosis": "Ортез на тазобедренный сустав",
+     "hip_orthosis": "Ортез на бедро",
      "knee_orthosis": "Ортез на колено",
-     "afo": "Ортез на голеностоп (AFO)",
-     "insoles": "Стельки",
+     "afo": "Ортез на голеностоп (от стопы до колена)",
+     "insoles": "Ортопедические стельки",
      "ortho_shoes": "Ортопедическая обувь",
      "hand_splint": "Шина на кисть",
-     "stander": "Вертикализатор",
+     "stander": "Вертикализатор (держит ребёнка стоя)",
      "wheelchair": "Инвалидная коляска",
-     "special_chair": "Специальный стул",
+     "special_chair": "Специальный стул (с поддержкой)",
      "glasses": "Очки",
-     "hearing_aid": "Слуховой аппарат",
-     "none": "Нет"
+     "hearing_aid": "Слуховой аппарат"
     }
-   }
+   },
+   "option_groups": [
+    {
+     "text": null,
+     "options": [
+      "none"
+     ]
+    },
+    {
+     "text": {
+      "en": "For walking",
+      "uz": "Yurish uchun",
+      "ru": "Для ходьбы"
+     },
+     "options": [
+      "gait_trainer",
+      "rollator",
+      "walker",
+      "u_support",
+      "crutches",
+      "quad_cane",
+      "cane"
+     ]
+    },
+    {
+     "text": {
+      "en": "Braces and shoes",
+      "uz": "Ortez va poyabzal",
+      "ru": "Ортезы и обувь"
+     },
+     "options": [
+      "hip_orthosis",
+      "knee_orthosis",
+      "afo",
+      "insoles",
+      "ortho_shoes",
+      "hand_splint"
+     ]
+    },
+    {
+     "text": {
+      "en": "Sitting and standing",
+      "uz": "Oʻtirish va turish",
+      "ru": "Сидеть и стоять"
+     },
+     "options": [
+      "stander",
+      "wheelchair",
+      "special_chair"
+     ]
+    },
+    {
+     "text": {
+      "en": "Seeing and hearing",
+      "uz": "Koʻrish va eshitish",
+      "ru": "Зрение и слух"
+     },
+     "options": [
+      "glasses",
+      "hearing_aid"
+     ]
+    }
+   ],
+   "note": "5 Nov 2026: every hard word explained, 'None' first, options under four headings (B74); 'walker' and 'u_support' explanations are ours, and 'walker' overlaps 'rollator'; physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)"
   },
   {
    "id": "B11_details",
@@ -6877,9 +6940,9 @@
     "E"
    ],
    "text": {
-    "en": "On which leg?",
-    "uz": "Qaysi oyoqda?",
-    "ru": "На какой ноге?"
+    "en": "Stand on one leg — on which leg?",
+    "uz": "Bir oyoqda turish — qaysi oyoqda?",
+    "ru": "Стоять на одной ноге — на какой ноге?"
    },
    "option_text": {
     "en": {
@@ -6897,7 +6960,9 @@
      "right": "На правой",
      "both": "На обеих"
     }
-   }
+   },
+   "follow_up": true,
+   "note": "5 Nov 2026: says which skill it asks about; shown right under C20 (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)"
   },
   {
    "id": "C20_foot",
@@ -6935,9 +7000,9 @@
     "E"
    ],
    "text": {
-    "en": "With which foot?",
-    "uz": "Qaysi oyogʻi bilan?",
-    "ru": "Какой ногой?"
+    "en": "Kick a ball — with which foot?",
+    "uz": "Toʻpni tepish — qaysi oyoq bilan?",
+    "ru": "Ударить по мячу — какой ногой?"
    },
    "option_text": {
     "en": {
@@ -6955,7 +7020,9 @@
      "right": "Правой",
      "both": "Обеими"
     }
-   }
+   },
+   "follow_up": true,
+   "note": "5 Nov 2026: says which skill it asks about; shown right under C20 (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)"
   },
   {
    "id": "C7",
@@ -7213,7 +7280,21 @@
      "none_yet": "Пока ничего из этого"
     }
    },
-   "note": "30 Oct 2026: reworded; 'None of these yet' (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
+   "note": "30 Oct 2026: reworded; 'None of these yet' (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) 5 Nov 2026: the two backward options are one row with two choices (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)",
+   "pair": {
+    "backward_alone": "backward_help"
+   },
+   "pair_text": {
+    "en": {
+     "backward_alone": "Walk backward"
+    },
+    "uz": {
+     "backward_alone": "Orqaga yurish"
+    },
+    "ru": {
+     "backward_alone": "Идти назад"
+    }
+   }
   },
   {
    "id": "C8",
@@ -7357,10 +7438,11 @@
     "step_over_help",
     "step_over_alone",
     "slope_up",
-    "slope_down"
+    "slope_down",
+    "none_yet"
    ],
    "max": null,
-   "exclusive": null,
+   "exclusive": "none_yet",
    "show": {
     "all": [
      {
@@ -7382,9 +7464,9 @@
     "E"
    ],
    "text": {
-    "en": "Outside surfaces",
-    "uz": "Tashqaridagi yuzalar",
-    "ru": "Ходьба на улице"
+    "en": "Outside, your child can… (tick all that apply)",
+    "uz": "Koʻchada farzandingiz… (mos keladiganlarning hammasini belgilang)",
+    "ru": "На улице ребёнок может… (отметьте всё подходящее)"
    },
    "option_text": {
     "en": {
@@ -7392,23 +7474,41 @@
      "step_over_help": "Steps over a 10–15 cm object with help",
      "step_over_alone": "Steps over a 10–15 cm object alone",
      "slope_up": "Walks up a slope",
-     "slope_down": "Walks down a slope"
+     "slope_down": "Walks down a slope",
+     "none_yet": "None of these yet"
     },
     "uz": {
      "grass": "Maysa yoki notekis yerda yuradi",
      "step_over_help": "Yordam bilan 10–15 sm li narsadan hatlab oʻtadi",
      "step_over_alone": "Oʻzi 10–15 sm li narsadan hatlab oʻtadi",
      "slope_up": "Qiyalikka chiqadi",
-     "slope_down": "Qiyalikdan tushadi"
+     "slope_down": "Qiyalikdan tushadi",
+     "none_yet": "Hozircha bularning hech biri"
     },
     "ru": {
      "grass": "Ходит по траве или неровной земле",
      "step_over_help": "Перешагивает предмет высотой 10–15 см с помощью",
      "step_over_alone": "Перешагивает предмет высотой 10–15 см сам",
      "slope_up": "Поднимается в горку",
-     "slope_down": "Спускается с горки"
+     "slope_down": "Спускается с горки",
+     "none_yet": "Пока ничего из этого"
     }
-   }
+   },
+   "pair": {
+    "step_over_alone": "step_over_help"
+   },
+   "pair_text": {
+    "en": {
+     "step_over_alone": "Step over a 10–15 cm object (like a shoebox)"
+    },
+    "uz": {
+     "step_over_alone": "10–15 sm li narsadan hatlab oʻtish (masalan, poyabzal qutisi)"
+    },
+    "ru": {
+     "step_over_alone": "Перешагнуть предмет 10–15 см (например, коробку от обуви)"
+    }
+   },
+   "note": "5 Nov 2026: renamed; the two step-over options are one row with two choices; new 'None of these yet' (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)"
   },
   {
    "id": "C9",
@@ -8628,28 +8728,28 @@
     "E"
    ],
    "text": {
-    "en": "Can your child hold a spoon by themselves?",
-    "uz": "Farzandingiz qoshiqni oʻzi ushlay oladimi?",
-    "ru": "Может ли ребёнок сам держать ложку?"
+    "en": "Can your child hold a spoon?",
+    "uz": "Farzandingiz qoshiqni ushlay oladimi?",
+    "ru": "Может ли ребёнок держать ложку?"
    },
    "option_text": {
     "en": {
-     "yes": "Yes",
-     "with_help": "With help",
+     "yes": "Yes, by themselves",
+     "with_help": "With some help",
      "no": "Not yet"
     },
     "uz": {
-     "yes": "Ha",
-     "with_help": "Yordam bilan",
+     "yes": "Ha, oʻzi",
+     "with_help": "Biroz yordam bilan",
      "no": "Hali yoʻq"
     },
     "ru": {
-     "yes": "Да",
-     "with_help": "С помощью",
+     "yes": "Да, сам",
+     "with_help": "С небольшой помощью",
      "no": "Пока нет"
     }
    },
-   "note": "30 Oct 2026: new, replaces D12 (spoon and cup are different skills); the plan's P24 reads the spoon, else the cup (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
+   "note": "30 Oct 2026: new, replaces D12 (spoon and cup are different skills); the plan's P24 reads the spoon, else the cup (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) 5 Nov 2026: 'by themselves' moved from the question to the answer (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)"
   },
   {
    "id": "D12_cup",
@@ -8699,28 +8799,28 @@
     "E"
    ],
    "text": {
-    "en": "Can your child hold a cup by themselves?",
-    "uz": "Farzandingiz piyolani oʻzi ushlay oladimi?",
-    "ru": "Может ли ребёнок сам держать чашку?"
+    "en": "Can your child hold a cup?",
+    "uz": "Farzandingiz piyolani ushlay oladimi?",
+    "ru": "Может ли ребёнок держать чашку?"
    },
    "option_text": {
     "en": {
-     "yes": "Yes",
-     "with_help": "With help",
+     "yes": "Yes, by themselves",
+     "with_help": "With some help",
      "no": "Not yet"
     },
     "uz": {
-     "yes": "Ha",
-     "with_help": "Yordam bilan",
+     "yes": "Ha, oʻzi",
+     "with_help": "Biroz yordam bilan",
      "no": "Hali yoʻq"
     },
     "ru": {
-     "yes": "Да",
-     "with_help": "С помощью",
+     "yes": "Да, сам",
+     "with_help": "С небольшой помощью",
      "no": "Пока нет"
     }
    },
-   "note": "30 Oct 2026: new, replaces D12 (spoon and cup are different skills); the plan's P24 reads the spoon, else the cup (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
+   "note": "30 Oct 2026: new, replaces D12 (spoon and cup are different skills); the plan's P24 reads the spoon, else the cup (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) 5 Nov 2026: 'by themselves' moved from the question to the answer (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)"
   },
   {
    "id": "D13_buttons",
@@ -8770,28 +8870,28 @@
     "E"
    ],
    "text": {
-    "en": "Can your child do up buttons by themselves?",
-    "uz": "Farzandingiz tugmani oʻzi qadab-ocha oladimi?",
-    "ru": "Может ли ребёнок сам застёгивать пуговицы?"
+    "en": "Can your child do up buttons?",
+    "uz": "Farzandingiz tugmani qadab-ocha oladimi?",
+    "ru": "Может ли ребёнок застёгивать пуговицы?"
    },
    "option_text": {
     "en": {
-     "yes": "Yes",
-     "with_help": "With help",
+     "yes": "Yes, by themselves",
+     "with_help": "With some help",
      "no": "Not yet"
     },
     "uz": {
-     "yes": "Ha",
-     "with_help": "Yordam bilan",
+     "yes": "Ha, oʻzi",
+     "with_help": "Biroz yordam bilan",
      "no": "Hali yoʻq"
     },
     "ru": {
-     "yes": "Да",
-     "with_help": "С помощью",
+     "yes": "Да, сам",
+     "with_help": "С небольшой помощью",
      "no": "Пока нет"
     }
    },
-   "note": "1 Nov 2026: replaces D13 with buttons and the zipper apart (B70); physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)"
+   "note": "1 Nov 2026: replaces D13 with buttons and the zipper apart (B70); physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44) 5 Nov 2026: 'by themselves' moved from the question to the answer (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)"
   },
   {
    "id": "D13_zip",
@@ -8841,28 +8941,28 @@
     "E"
    ],
    "text": {
-    "en": "Can your child do up a zipper by themselves?",
-    "uz": "Farzandingiz zamokni oʻzi qadab-ocha oladimi?",
-    "ru": "Может ли ребёнок сам застёгивать молнию?"
+    "en": "Can your child do up a zipper?",
+    "uz": "Farzandingiz zamokni qadab-ocha oladimi?",
+    "ru": "Может ли ребёнок застёгивать молнию?"
    },
    "option_text": {
     "en": {
-     "yes": "Yes",
-     "with_help": "With help",
+     "yes": "Yes, by themselves",
+     "with_help": "With some help",
      "no": "Not yet"
     },
     "uz": {
-     "yes": "Ha",
-     "with_help": "Yordam bilan",
+     "yes": "Ha, oʻzi",
+     "with_help": "Biroz yordam bilan",
      "no": "Hali yoʻq"
     },
     "ru": {
-     "yes": "Да",
-     "with_help": "С помощью",
+     "yes": "Да, сам",
+     "with_help": "С небольшой помощью",
      "no": "Пока нет"
     }
    },
-   "note": "1 Nov 2026: replaces D13 with buttons and the zipper apart (B70); physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)"
+   "note": "1 Nov 2026: replaces D13 with buttons and the zipper apart (B70); physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44) 5 Nov 2026: 'by themselves' moved from the question to the answer (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)"
   },
   {
    "id": "E1",
@@ -10730,6 +10830,7 @@
    "health": false,
    "audience": "parent",
    "options": [
+    "always",
     "mostly",
     "sometimes",
     "rarely",
@@ -10747,30 +10848,34 @@
     "MV"
    ],
    "text": {
-    "en": "Do people outside the family understand your child?",
-    "uz": "Oiladan tashqaridagi odamlar farzandingizni tushunadimi?",
-    "ru": "Понимают ли ребёнка люди вне семьи?"
+    "en": "How often do people outside the family understand what your child says?",
+    "uz": "Oiladan tashqaridagi odamlar farzandingiz gapini qanchalik tez-tez tushunadi?",
+    "ru": "Как часто люди вне семьи понимают, что говорит ребёнок?"
    },
    "option_text": {
     "en": {
-     "mostly": "Mostly",
+     "always": "Always",
+     "mostly": "Most of the time",
      "sometimes": "Sometimes",
      "rarely": "Rarely",
      "never": "Never"
     },
     "uz": {
+     "always": "Doim",
      "mostly": "Koʻpincha",
      "sometimes": "Baʼzan",
      "rarely": "Kamdan-kam",
      "never": "Hech qachon"
     },
     "ru": {
-     "mostly": "В основном да",
+     "always": "Всегда",
+     "mostly": "Чаще всего",
      "sometimes": "Иногда",
      "rarely": "Редко",
      "never": "Никогда"
     }
-   }
+   },
+   "note": "5 Nov 2026: reworded; new 'Always', which counts like 'mostly' (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)"
   },
   {
    "id": "G4",
@@ -10971,9 +11076,9 @@
     "MV"
    ],
    "text": {
-    "en": "What does your child most need to tell you?",
-    "uz": "Farzandingiz sizga eng koʻp nimani aytishi kerak?",
-    "ru": "Что ребёнку важнее всего сообщить вам?"
+    "en": "What does your child most often need to tell you? (tick all that apply)",
+    "uz": "Farzandingiz sizga koʻpincha nimani aytishi kerak boʻladi? (mos keladiganlarning hammasini belgilang)",
+    "ru": "Что ребёнку чаще всего нужно вам сказать? (отметьте всё подходящее)"
    },
    "option_text": {
     "en": {
@@ -11015,7 +11120,13 @@
      "happy": "Мне весело",
      "bored": "Скучно"
     }
-   }
+   },
+   "hint": {
+    "en": "This helps us choose your child's first words and pictures.",
+    "uz": "Bu farzandingiz uchun birinchi soʻz va rasmlarni tanlashga yordam beradi.",
+    "ru": "Это поможет выбрать первые слова и картинки для ребёнка."
+   },
+   "note": "5 Nov 2026: reworded, new hint; the talking board does not read this question yet, so the hint is the 'first words and pictures' one (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)"
   },
   {
    "id": "G8",
@@ -11160,24 +11271,25 @@
    },
    "option_text": {
     "en": {
-     "self": "Feeds self",
+     "self": "Eats without help",
      "some_help": "With some help",
      "i_feed": "I feed them",
-     "tube": "Tube"
+     "tube": "With a feeding tube"
     },
     "uz": {
-     "self": "Oʻzi ovqatlanadi",
+     "self": "Yordamsiz ovqatlanadi",
      "some_help": "Biroz yordam bilan",
      "i_feed": "Men ovqatlantiraman",
      "tube": "Zond orqali"
     },
     "ru": {
-     "self": "Ест сам",
+     "self": "Ест сам, без помощи",
      "some_help": "С небольшой помощью",
      "i_feed": "Я кормлю",
      "tube": "Через зонд"
     }
-   }
+   },
+   "note": "5 Nov 2026: 'self' and 'tube' reworded (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)"
   },
   {
    "id": "H2",
@@ -11203,27 +11315,28 @@
     "E"
    ],
    "text": {
-    "en": "Does your child help with dressing?",
-    "uz": "Farzandingiz kiyinishda yordam beradimi?",
-    "ru": "Помогает ли ребёнок, когда его одевают?"
+    "en": "How does your child get dressed?",
+    "uz": "Farzandingiz qanday kiyinadi?",
+    "ru": "Как ребёнок одевается?"
    },
    "option_text": {
     "en": {
-     "alone": "Dresses alone",
-     "helps": "Helps (pushes arm in)",
-     "no": "Doesn't help"
+     "alone": "By themselves",
+     "helps": "Needs some help (for example, pushes an arm into the sleeve)",
+     "no": "I dress them"
     },
     "uz": {
-     "alone": "Oʻzi kiyinadi",
-     "helps": "Yordam beradi (qoʻlini yengga tiqadi)",
-     "no": "Yordam bermaydi"
+     "alone": "Oʻzi",
+     "helps": "Biroz yordam bilan (masalan, qoʻlini yengga oʻzi tiqadi)",
+     "no": "Men toʻliq kiyintiraman"
     },
     "ru": {
-     "alone": "Одевается сам",
-     "helps": "Помогает (просовывает руку)",
-     "no": "Пока не помогает"
+     "alone": "Сам",
+     "helps": "С небольшой помощью (например, сам продевает руку в рукав)",
+     "no": "Я одеваю его полностью"
     }
-   }
+   },
+   "note": "5 Nov 2026: question and answers reworded (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)"
   },
   {
    "id": "H3",
@@ -11250,27 +11363,28 @@
     "A"
    ],
    "text": {
-    "en": "Toilet",
-    "uz": "Hojatxona",
-    "ru": "Туалет"
+    "en": "Does your child use the toilet?",
+    "uz": "Farzandingiz hojatxonaga oʻzi boradimi?",
+    "ru": "Ходит ли ребёнок в туалет сам?"
    },
    "option_text": {
     "en": {
-     "trained": "Trained",
-     "partly": "Partly",
-     "diapers": "Diapers"
+     "trained": "Yes, by themselves",
+     "partly": "Sometimes, or with help",
+     "diapers": "Not yet, uses diapers"
     },
     "uz": {
-     "trained": "Oʻrgangan",
-     "partly": "Qisman",
-     "diapers": "Taglik"
+     "trained": "Ha, oʻzi",
+     "partly": "Baʼzan yoki yordam bilan",
+     "diapers": "Hali yoʻq, taglik taqadi"
     },
     "ru": {
-     "trained": "Ходит в туалет",
-     "partly": "Частично",
-     "diapers": "Подгузники"
+     "trained": "Да, сам",
+     "partly": "Иногда или с помощью",
+     "diapers": "Пока нет, в подгузниках"
     }
-   }
+   },
+   "note": "5 Nov 2026: question and answers reworded (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)"
   },
   {
    "id": "H4",
@@ -11608,9 +11722,11 @@
    "health": false,
    "audience": "parent",
    "options": [
+    "always",
     "often",
     "sometimes",
-    "rarely"
+    "rarely",
+    "never"
    ],
    "max": null,
    "exclusive": null,
@@ -11631,21 +11747,34 @@
    },
    "option_text": {
     "en": {
+     "always": "Always",
      "often": "Often",
      "sometimes": "Sometimes",
-     "rarely": "Rarely"
+     "rarely": "Rarely",
+     "never": "Never"
     },
     "uz": {
+     "always": "Doim",
      "often": "Tez-tez",
      "sometimes": "Baʼzan",
-     "rarely": "Kamdan-kam"
+     "rarely": "Kamdan-kam",
+     "never": "Hech qachon"
     },
     "ru": {
+     "always": "Всегда",
      "often": "Часто",
      "sometimes": "Иногда",
-     "rarely": "Редко"
+     "rarely": "Редко",
+     "never": "Никогда"
     }
-   }
+   },
+   "not_sure": true,
+   "not_sure_text": {
+    "en": "Not sure",
+    "uz": "Bilmayman",
+    "ru": "Не знаю"
+   },
+   "note": "5 Nov 2026: new 'Always' (counts like 'often'), 'Never' (like 'rarely') and 'Not sure', stored as null (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)"
   },
   {
    "id": "I1",

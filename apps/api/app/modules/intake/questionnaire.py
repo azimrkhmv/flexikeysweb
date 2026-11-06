@@ -119,6 +119,10 @@ def upgrade(answers: Answers) -> Answers:
     out = dict(answers)
     if "A7_langs" not in out and isinstance(out.get("A7"), str):
         out["A7_langs"] = [out["A7"]]  # B72: the same option ids
+    for qid, value in out.items():
+        pairs = QUESTIONS[qid].get("pair") if qid in QUESTIONS else None
+        if pairs and isinstance(value, list):  # B74: both of a pair ticked counts as "by themselves"
+            out[qid] = [v for v in value if not any(v == help_ and alone in value for alone, help_ in pairs.items())]
     return out
 
 

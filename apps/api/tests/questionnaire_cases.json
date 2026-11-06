@@ -145,6 +145,7 @@
    "ru": null,
    "en": null
   },
+  "upgraded": {},
   "options": {
    "C5": [
     "cant",
@@ -339,6 +340,7 @@
    "ru": null,
    "en": null
   },
+  "upgraded": {},
   "options": {
    "C5": [
     "cant",
@@ -531,6 +533,7 @@
    "ru": null,
    "en": null
   },
+  "upgraded": {},
   "options": {
    "C5": [
     "cant",
@@ -718,6 +721,7 @@
    "ru": null,
    "en": null
   },
+  "upgraded": {},
   "options": {
    "C5": [
     "cant",
@@ -891,6 +895,7 @@
    "ru": null,
    "en": null
   },
+  "upgraded": {},
   "options": {
    "C5": [
     "cant",
@@ -1046,6 +1051,7 @@
    "ru": null,
    "en": null
   },
+  "upgraded": {},
   "options": {
    "C5": [
     "cant",
@@ -1232,6 +1238,7 @@
    "ru": null,
    "en": null
   },
+  "upgraded": {},
   "options": {
    "C5": [
     "cant",
@@ -1413,6 +1420,7 @@
    "ru": null,
    "en": null
   },
+  "upgraded": {},
   "options": {
    "C5": [
     "cant",
@@ -1585,6 +1593,7 @@
    "ru": null,
    "en": null
   },
+  "upgraded": {},
   "options": {
    "C5": [
     "cant",
@@ -1771,6 +1780,7 @@
    "ru": null,
    "en": null
   },
+  "upgraded": {},
   "options": {
    "C5": [
     "cant",
@@ -1962,6 +1972,7 @@
    "ru": null,
    "en": null
   },
+  "upgraded": {},
   "options": {
    "C5": [
     "cant",
@@ -2137,6 +2148,7 @@
    "ru": null,
    "en": null
   },
+  "upgraded": {},
   "options": {
    "C5": [
     "cant",
@@ -2320,6 +2332,7 @@
    "ru": null,
    "en": null
   },
+  "upgraded": {},
   "options": {
    "C5": [
     "cant",
@@ -2509,6 +2522,7 @@
    "ru": null,
    "en": null
   },
+  "upgraded": {},
   "options": {
    "C5": [
     "cant",
@@ -2696,6 +2710,7 @@
    "ru": null,
    "en": null
   },
+  "upgraded": {},
   "options": {
    "C5": [
     "cant",
@@ -2881,6 +2896,7 @@
    "ru": null,
    "en": null
   },
+  "upgraded": {},
   "options": {
    "C5": [
     "cant",
@@ -3071,6 +3087,7 @@
    "ru": null,
    "en": null
   },
+  "upgraded": {},
   "options": {
    "C5": [
     "cant",
@@ -3258,6 +3275,7 @@
    "ru": null,
    "en": null
   },
+  "upgraded": {},
   "options": {
    "C5": [
     "cant",
@@ -3447,6 +3465,7 @@
    "ru": null,
    "en": null
   },
+  "upgraded": {},
   "options": {
    "C5": [
     "cant",
@@ -3635,6 +3654,7 @@
    "ru": null,
    "en": null
   },
+  "upgraded": {},
   "options": {
    "C5": [
     "cant",
@@ -3820,6 +3840,7 @@
    "ru": null,
    "en": null
   },
+  "upgraded": {},
   "options": {
    "C5": [
     "cant",
@@ -4005,6 +4026,7 @@
    "ru": null,
    "en": null
   },
+  "upgraded": {},
   "options": {
    "C5": [
     "cant",
@@ -4189,6 +4211,7 @@
    "ru": null,
    "en": null
   },
+  "upgraded": {},
   "options": {
    "C5": [
     "cant",
@@ -4373,6 +4396,7 @@
    "ru": null,
    "en": null
   },
+  "upgraded": {},
   "options": {
    "C5": [
     "cant",
@@ -4549,6 +4573,11 @@
    "uz": "en",
    "ru": "en",
    "en": "en"
+  },
+  "upgraded": {
+   "A7_langs": [
+    "en"
+   ]
   },
   "options": {
    "C5": [
@@ -4728,6 +4757,12 @@
    "ru": "ru",
    "en": "uz"
   },
+  "upgraded": {
+   "A7_langs": [
+    "uzbek",
+    "russian"
+   ]
+  },
   "options": {
    "C5": [
     "cant",
@@ -4906,6 +4941,12 @@
    "ru": "ru",
    "en": "ru"
   },
+  "upgraded": {
+   "A7_langs": [
+    "other",
+    "russian"
+   ]
+  },
   "options": {
    "C5": [
     "cant",
@@ -5083,6 +5124,11 @@
    "ru": "other",
    "en": "other"
   },
+  "upgraded": {
+   "A7_langs": [
+    "other"
+   ]
+  },
   "options": {
    "C5": [
     "cant",
@@ -5257,6 +5303,581 @@
    "uz": "ru",
    "ru": "ru",
    "en": "ru"
+  },
+  "upgraded": {
+   "A7_langs": [
+    "russian"
+   ]
+  },
+  "options": {
+   "C5": [
+    "cant",
+    "stander",
+    "trunk_support",
+    "bar_two_hands",
+    "one_hand",
+    "alone_under_10s",
+    "alone_10_60s",
+    "alone_over_1min"
+   ],
+   "D7": [
+    "accurately",
+    "big_only",
+    "with_help",
+    "not_yet"
+   ],
+   "F3": [
+    "colors",
+    "shapes",
+    "animals",
+    "numbers",
+    "letters",
+    "none"
+   ]
+  }
+ },
+ {
+  "name": "DCD, always understood",
+  "today": "2026-10-22",
+  "answers": {
+   "A2": "2017-11-11",
+   "B1": [
+    "dcd"
+   ],
+   "G3": "always"
+  },
+  "visible": [
+   "A1",
+   "A2",
+   "A3",
+   "A4",
+   "A4_kg",
+   "A5",
+   "A7_langs",
+   "A9",
+   "A10",
+   "B1",
+   "B3_parts",
+   "B4",
+   "B5",
+   "B6",
+   "B7",
+   "B8",
+   "B10",
+   "B10_photo",
+   "B11",
+   "B13",
+   "DCD1",
+   "DCD2",
+   "DCD3",
+   "DCD4",
+   "DCD5",
+   "DCD6",
+   "DCD7",
+   "DCD8",
+   "DCD10",
+   "DCD11",
+   "DCD12",
+   "C6",
+   "C6_note",
+   "C19",
+   "C19_note",
+   "C20",
+   "C7",
+   "C21",
+   "C22",
+   "C8",
+   "C23",
+   "C24",
+   "C9",
+   "C11",
+   "C12",
+   "C25",
+   "D2",
+   "D3",
+   "D4",
+   "D5",
+   "D6",
+   "D7",
+   "D8",
+   "D9",
+   "D10",
+   "D11",
+   "D12_spoon",
+   "D12_cup",
+   "D13_buttons",
+   "D13_zip",
+   "E1",
+   "E3",
+   "E5",
+   "E6_now",
+   "E6_often",
+   "E7",
+   "E8",
+   "E9",
+   "E10",
+   "E11",
+   "E12",
+   "E13",
+   "F1",
+   "F2",
+   "F3",
+   "F4",
+   "F5",
+   "F6",
+   "F7",
+   "F8",
+   "F9",
+   "F9_character",
+   "F10",
+   "F11",
+   "G1",
+   "G3",
+   "G4",
+   "G5",
+   "G6",
+   "G7",
+   "G8",
+   "G9",
+   "G10",
+   "H1",
+   "H2",
+   "H3",
+   "H4",
+   "H5_calm",
+   "H5_active",
+   "H6",
+   "H6_nap",
+   "H6_bed",
+   "H7",
+   "H8",
+   "I1",
+   "I3",
+   "I4",
+   "I4_files",
+   "I5",
+   "I6",
+   "I7",
+   "I8",
+   "I9",
+   "J1",
+   "J2",
+   "J3",
+   "J4",
+   "J5",
+   "J6",
+   "J7",
+   "J8",
+   "J8_internet",
+   "J9",
+   "J9_other",
+   "J10",
+   "J11",
+   "K1"
+  ],
+  "home": {
+   "uz": null,
+   "ru": null,
+   "en": null
+  },
+  "upgraded": {},
+  "options": {
+   "C5": [
+    "cant",
+    "stander",
+    "trunk_support",
+    "bar_two_hands",
+    "one_hand",
+    "alone_under_10s",
+    "alone_10_60s",
+    "alone_over_1min"
+   ],
+   "D7": [
+    "accurately",
+    "big_only",
+    "with_help",
+    "not_yet"
+   ],
+   "F3": [
+    "colors",
+    "shapes",
+    "animals",
+    "numbers",
+    "letters",
+    "none"
+   ]
+  }
+ },
+ {
+  "name": "old round: both of a pair ticked",
+  "today": "2026-10-22",
+  "answers": {
+   "A2": "2019-05-01",
+   "B1": [
+    "cp"
+   ],
+   "C22": [
+    "turns",
+    "backward_help",
+    "backward_alone"
+   ],
+   "C24": [
+    "step_over_help",
+    "step_over_alone",
+    "grass"
+   ]
+  },
+  "visible": [
+   "A1",
+   "A2",
+   "A3",
+   "A4",
+   "A4_kg",
+   "A5",
+   "A7_langs",
+   "A9",
+   "A10",
+   "B1",
+   "B3_parts",
+   "B4",
+   "B5",
+   "B6",
+   "B7",
+   "B8",
+   "B10",
+   "B10_photo",
+   "B11",
+   "B13",
+   "CP1_types",
+   "CP2",
+   "CP3",
+   "CP4",
+   "C14",
+   "C14_note",
+   "C2",
+   "C2_note",
+   "C13",
+   "C3",
+   "C3_note",
+   "C15",
+   "C16",
+   "C6",
+   "C6_note",
+   "C4",
+   "C4_note",
+   "C17",
+   "C17_note",
+   "C18",
+   "C19",
+   "C19_note",
+   "C5",
+   "C5_note",
+   "C20",
+   "C7",
+   "C21",
+   "C22",
+   "C8",
+   "C23",
+   "C24",
+   "C9",
+   "C10",
+   "C11",
+   "C12",
+   "C25",
+   "D1",
+   "D2",
+   "D3",
+   "D4",
+   "D5",
+   "D6",
+   "D7",
+   "D8",
+   "D9",
+   "D10",
+   "D11",
+   "D12_spoon",
+   "D12_cup",
+   "D13_buttons",
+   "D13_zip",
+   "E1",
+   "E3",
+   "E5",
+   "E6_now",
+   "E6_often",
+   "E7",
+   "E8",
+   "E9",
+   "E10",
+   "E11",
+   "E12",
+   "E13",
+   "F1",
+   "F2",
+   "F3",
+   "F4",
+   "F5",
+   "F6",
+   "F7",
+   "F8",
+   "F9",
+   "F9_character",
+   "F10",
+   "F11",
+   "G1",
+   "G2",
+   "G3",
+   "G4",
+   "G5",
+   "G6",
+   "G7",
+   "G8",
+   "G9",
+   "G10",
+   "H1",
+   "H2",
+   "H3",
+   "H4",
+   "H5_calm",
+   "H5_active",
+   "H6",
+   "H6_nap",
+   "H6_bed",
+   "H7",
+   "H8",
+   "I1",
+   "I3",
+   "I4",
+   "I4_files",
+   "I5",
+   "I6",
+   "I7",
+   "I8",
+   "I9",
+   "J1",
+   "J2",
+   "J3",
+   "J4",
+   "J5",
+   "J6",
+   "J7",
+   "J8",
+   "J8_internet",
+   "J9",
+   "J9_other",
+   "J10",
+   "J11",
+   "K1"
+  ],
+  "home": {
+   "uz": null,
+   "ru": null,
+   "en": null
+  },
+  "upgraded": {
+   "C22": [
+    "turns",
+    "backward_alone"
+   ],
+   "C24": [
+    "step_over_alone",
+    "grass"
+   ]
+  },
+  "options": {
+   "C5": [
+    "cant",
+    "stander",
+    "trunk_support",
+    "bar_two_hands",
+    "one_hand",
+    "alone_under_10s",
+    "alone_10_60s",
+    "alone_over_1min"
+   ],
+   "D7": [
+    "accurately",
+    "big_only",
+    "with_help",
+    "not_yet"
+   ],
+   "F3": [
+    "colors",
+    "shapes",
+    "animals",
+    "numbers",
+    "letters",
+    "none"
+   ]
+  }
+ },
+ {
+  "name": "only with help",
+  "today": "2026-10-22",
+  "answers": {
+   "A2": "2019-05-01",
+   "B1": [
+    "cp"
+   ],
+   "C22": [
+    "backward_help"
+   ],
+   "C24": [
+    "step_over_help"
+   ]
+  },
+  "visible": [
+   "A1",
+   "A2",
+   "A3",
+   "A4",
+   "A4_kg",
+   "A5",
+   "A7_langs",
+   "A9",
+   "A10",
+   "B1",
+   "B3_parts",
+   "B4",
+   "B5",
+   "B6",
+   "B7",
+   "B8",
+   "B10",
+   "B10_photo",
+   "B11",
+   "B13",
+   "CP1_types",
+   "CP2",
+   "CP3",
+   "CP4",
+   "C14",
+   "C14_note",
+   "C2",
+   "C2_note",
+   "C13",
+   "C3",
+   "C3_note",
+   "C15",
+   "C16",
+   "C6",
+   "C6_note",
+   "C4",
+   "C4_note",
+   "C17",
+   "C17_note",
+   "C18",
+   "C19",
+   "C19_note",
+   "C5",
+   "C5_note",
+   "C20",
+   "C7",
+   "C21",
+   "C22",
+   "C8",
+   "C23",
+   "C24",
+   "C9",
+   "C10",
+   "C11",
+   "C12",
+   "C25",
+   "D1",
+   "D2",
+   "D3",
+   "D4",
+   "D5",
+   "D6",
+   "D7",
+   "D8",
+   "D9",
+   "D10",
+   "D11",
+   "D12_spoon",
+   "D12_cup",
+   "D13_buttons",
+   "D13_zip",
+   "E1",
+   "E3",
+   "E5",
+   "E6_now",
+   "E6_often",
+   "E7",
+   "E8",
+   "E9",
+   "E10",
+   "E11",
+   "E12",
+   "E13",
+   "F1",
+   "F2",
+   "F3",
+   "F4",
+   "F5",
+   "F6",
+   "F7",
+   "F8",
+   "F9",
+   "F9_character",
+   "F10",
+   "F11",
+   "G1",
+   "G2",
+   "G3",
+   "G4",
+   "G5",
+   "G6",
+   "G7",
+   "G8",
+   "G9",
+   "G10",
+   "H1",
+   "H2",
+   "H3",
+   "H4",
+   "H5_calm",
+   "H5_active",
+   "H6",
+   "H6_nap",
+   "H6_bed",
+   "H7",
+   "H8",
+   "I1",
+   "I3",
+   "I4",
+   "I4_files",
+   "I5",
+   "I6",
+   "I7",
+   "I8",
+   "I9",
+   "J1",
+   "J2",
+   "J3",
+   "J4",
+   "J5",
+   "J6",
+   "J7",
+   "J8",
+   "J8_internet",
+   "J9",
+   "J9_other",
+   "J10",
+   "J11",
+   "K1"
+  ],
+  "home": {
+   "uz": null,
+   "ru": null,
+   "en": null
+  },
+  "upgraded": {
+   "C22": [
+    "backward_help"
+   ],
+   "C24": [
+    "step_over_help"
+   ]
   },
   "options": {
    "C5": [

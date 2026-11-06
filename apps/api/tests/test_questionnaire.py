@@ -30,6 +30,8 @@ def test_the_server_shows_what_the_website_shows(case: dict[str, Any]) -> None:
         assert shown_options(qid, case["answers"], today) == options, qid
     for ui, language in case["home"].items():
         assert home_language(case["answers"], ui) == language, ui
+    for qid, value in case["upgraded"].items():
+        assert upgrade(case["answers"])[qid] == value, qid
 
 
 def test_every_numbered_question_of_the_questionnaire_is_there() -> None:

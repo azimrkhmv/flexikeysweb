@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import mine from "./backend/questionnaire.json";
 import { intake } from "@/messages/intake";
-import { bodyPattern, cmFromFtIn, cpType, ftInFromCm, homeLanguage, inLang, kgFromLb, ladderTicks, ladderToggle, ladderValue, lbFromKg, offersNotSure, Q_BY_ID, QUESTIONNAIRE, shownOptions, typedProblem, upgrade, visible, type QAnswer, type QAnswers } from "./questionnaire";
+import { bodyPattern, cmFromFtIn, cpType, ftInFromCm, homeLanguage, inLang, kgFromLb, ladderTicks, ladderToggle, ladderValue, lbFromKg, offersNotSure, Q_BY_ID, QUESTIONNAIRE, shownOptions, toggleOption, typedProblem, upgrade, visible, type QAnswer, type QAnswers } from "./questionnaire";
 
 // IQ1: the questionnaire file is the server's, and the cases below fix which questions each sample child is shown.
 // questionnaire_cases.json (here and a copy in apps/api/tests) makes the server prove the same. Regenerate with
@@ -57,6 +57,10 @@ const CASES: { name: string; answers: QAnswers }[] = [
   { name: "home: other and russian", answers: { A7_langs: ["other", "russian"] } },
   { name: "home: only other", answers: { A7_langs: ["other"] } },
   { name: "old round: A7 russian", answers: { A7: "russian" } },
+  // B74: `always` counts like `mostly` (no G2 for a DCD child); an old answer with both of a pair counts as "by themselves".
+  { name: "DCD, always understood", answers: { A2: "2017-11-11", B1: ["dcd"], G3: "always" } },
+  { name: "old round: both of a pair ticked", answers: { A2: "2019-05-01", B1: ["cp"], C22: ["turns", "backward_help", "backward_alone"], C24: ["step_over_help", "step_over_alone", "grass"] } },
+  { name: "only with help", answers: { A2: "2019-05-01", B1: ["cp"], C22: ["backward_help"], C24: ["step_over_help"] } },
 ];
 
 const BACKEND = new URL("./backend/", import.meta.url);
@@ -178,6 +182,7 @@ describe("questionnaire (IQ1)", () => {
       answers,
       visible: visible(answers, TODAY),
       home: Object.fromEntries(["uz", "ru", "en"].map((ui) => [ui, homeLanguage(answers, ui)])),
+      upgraded: Object.fromEntries(["A7_langs", "C22", "C24"].flatMap((id) => { const v = upgrade(answers)[id]; return v === undefined ? [] : [[id, v]]; })),
       options: Object.fromEntries(
         QUESTIONNAIRE.questions.filter((q) => q.option_show).map((q) => [q.id, shownOptions(q.id, answers, TODAY)]),
       ),
@@ -245,6 +250,31 @@ describe("questionnaire (IQ1)", () => {
     expect(homeLanguage({ A7: "russian", A7_langs: ["en"] }, "uz")).toBe("en");
     expect(homeLanguage({}, "uz")).toBeNull();
     expect(upgrade({ A7: "uzbek" })).toEqual({ A7: "uzbek", A7_langs: ["uzbek"] }); // an open old round
+  });
+
+  it("the two choices of a pair untick each other (B74)", () => {
+    const C22 = Q_BY_ID.C22;
+    const tap = (...taps: string[]) => taps.reduce((p, o) => toggleOption(C22, p, o), [] as string[]);
+    expect(tap("backward_help", "backward_alone")).toEqual(["backward_alone"]);
+    expect(tap("backward_alone", "backward_help")).toEqual(["backward_help"]);
+    expect(tap("backward_alone", "backward_alone")).toEqual([]); // tapping a ticked choice unticks it
+    expect(tap("turns", "backward_help", "circle")).toEqual(["turns", "backward_help", "circle"]);
+    expect(tap("backward_help", "none_yet")).toEqual(["none_yet"]);
+    expect(tap("none_yet", "backward_help")).toEqual(["backward_help"]);
+    expect(toggleOption(Q_BY_ID.C24, ["step_over_alone"], "step_over_help")).toEqual(["step_over_help"]);
+    expect(toggleOption(Q_BY_ID.C24, ["grass"], "none_yet")).toEqual(["none_yet"]);
+    expect(toggleOption(Q_BY_ID.J9, ["sit", "stand", "walk"], "hold")).toEqual(["sit", "stand", "walk"]); // past "Pick up to 3"
+    expect(upgrade({ C22: ["backward_help", "backward_alone"] }).C22).toEqual(["backward_alone"]);
+    expect(upgrade({ C22: ["backward_help", "turns"] }).C22).toEqual(["backward_help", "turns"]);
+    expect(upgrade({ C24: ["step_over_help", "step_over_alone"] }).C24).toEqual(["step_over_alone"]);
+  });
+
+  it("every option of a grouped question is in exactly one group (B74)", () => {
+    for (const q of QUESTIONNAIRE.questions.filter((x) => x.option_groups)) {
+      expect(q.option_groups!.flatMap((g) => g.options).sort(), q.id).toEqual([...q.options!].sort());
+      for (const g of q.option_groups!) if (g.text) for (const l of ["en", "uz", "ru"]) expect(g.text[l], `${q.id} ${l}`).toBeTruthy();
+    }
+    expect(Q_BY_ID.B11.options![0]).toBe("none");
   });
 
   it("refuses an age in months larger than the child's age (B61)", () => {

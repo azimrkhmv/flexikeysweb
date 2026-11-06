@@ -986,9 +986,10 @@ has a decision; the source is "FlexiKeys — parent questionnaire review 2" (5 N
   - Done when: entering each section forward shows the big title, which moves into the banner; back navigation and reduced motion show no intro; it works at phone width and in dark mode
   - Needs: B72
   - Note (6 Nov 2026): no animation package in the project, so `SectionIntro.tsx` uses the browser's own animations. About 1.7 s in all. The website has no dark theme yet; the layer uses the banner's colour tokens, so it follows when one comes. Checked in Edge at 360 px and 1366×768
-- [ ] **Bekzod** — `B74` Wording and options (5.1–5.11)
+- [x] **Bekzod** — `B74` Wording and options (5.1–5.11)
   - Done when: every text in section 5 is in place in en and ru with a uz draft; paired options untick each other and old double answers load as "by themselves"; new `always` / `never` / `not_sure` options work with the rules; the cases files cover the new ids
   - Needs: B73
+  - Note (6 Nov 2026): no rule reads B7 `intellectual`, G3 `always` is outside G2_SHOW as `mostly` is, and no rule reads H8, so nothing got easier. G7 feeds no code, so it has the "first words and pictures" hint. `walker` and `u_support` explanations are drafts for the physio; `walker` overlaps `rollator`
 - [ ] **Bekzod** — `B75` Help nearby and goals (6.1, 6.2)
   - Done when: the old center question is retired and its answers map to `_place` / `_lang`; places use the new answers where data allows; J9 shows the four new goals in two groups and they feed the plan (or the TASKS line is written)
   - Needs: B74

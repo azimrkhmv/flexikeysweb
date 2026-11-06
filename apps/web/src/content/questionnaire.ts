@@ -44,6 +44,16 @@ export interface QQuestion {
   note?: string;
   /** A step-by-step skill question: tick boxes on screen, still one answer (the hardest ticked) in the data (B68). */
   ladder?: boolean;
+  /** The options under small headings (B74); a group with `text` null has no heading. */
+  option_groups?: { text: Record<string, string> | null; options: string[] }[];
+  /** One skill, two choices (B74): a "by themselves" option → its "only with help" option, shown as one row with the
+   * text in `pair_text` (language → "by themselves" option → text). The saved value stays the array of option ids. */
+  pair?: Record<string, string>;
+  pair_text?: Record<string, Record<string, string>>;
+  /** This question's own words for the automatic "Not sure" (B74). */
+  not_sure_text?: Record<string, string>;
+  /** Shown right under the question before it, indented, as part of it (B74). */
+  follow_up?: boolean;
 }
 
 export const QUESTIONNAIRE = data as unknown as {
@@ -219,8 +229,20 @@ export function ladderValue(options: string[], ticked: string[]): string | undef
   return options.filter((x) => ticked.includes(x)).at(-1);
 }
 
+/** A tick-all question's boxes after tapping `o`: the exclusive option stands alone, the two choices of a pair untick
+ * each other (B74), and past `max` nothing changes. */
+export function toggleOption(q: QQuestion, picked: string[], o: string): string[] {
+  if (o === q.exclusive) return picked.includes(o) ? [] : [o];
+  if (picked.includes(o)) return picked.filter((x) => x !== o);
+  const pairs = Object.entries(q.pair ?? {});
+  const other = pairs.find(([alone]) => alone === o)?.[1] ?? pairs.find(([, help]) => help === o)?.[0];
+  const next = [...picked.filter((x) => x !== q.exclusive && x !== other), o];
+  return q.max && next.length > q.max ? picked : next;
+}
+
 /** Saved answers in today's options: a retired option shows as the option that replaced it (B61, B62); an older
- * round's "Not sure" (null) on a question with its own "Don't know" shows as that answer (B66). */
+ * round's "Not sure" (null) on a question with its own "Don't know" shows as that answer (B66); an old answer with
+ * both choices of a pair ticked counts as "by themselves" (B74). */
 export function upgrade(a: QAnswers): QAnswers {
   const to = (id: string, v: string) => Q_BY_ID[id]?.retired_options?.[v] ?? v;
   const dontKnow = (id: string) => (Q_BY_ID[id]?.kind === "multi" ? ["dont_know"] : "dont_know");
@@ -235,6 +257,10 @@ export function upgrade(a: QAnswers): QAnswers {
   if (out.CP1_types === undefined && typeof cp1 === "string" && Q_BY_ID.CP1_types?.options?.includes(cp1)) out.CP1_types = [cp1];
   // B72: an old round's A7 shows that language ticked in A7_langs (the same option ids).
   if (out.A7_langs === undefined && typeof out.A7 === "string") out.A7_langs = [out.A7];
+  for (const [id, v] of Object.entries(out)) {
+    const pairs = Object.entries(Q_BY_ID[id]?.pair ?? {});
+    if (pairs.length && Array.isArray(v)) out[id] = v.filter((x) => !pairs.some(([alone, help]) => x === help && v.includes(alone)));
+  }
   return out;
 }
 

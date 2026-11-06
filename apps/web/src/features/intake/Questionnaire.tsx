@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { FileUp, ShieldCheck, Trash2 } from "lucide-react";
 import { Button, Card, Field, Input, Textarea, useAction } from "@/components/ui";
-import { ageInMonths, cmFromFtIn, ftInFromCm, inLang, kgFromLb, ladderTicks, ladderToggle, ladderValue, lbFromKg, offersNotSure, Q_BY_ID, QUESTIONNAIRE, shownOptions, typedProblem, upgrade, visible, type QAnswer, type QAnswers, type QQuestion } from "@/content/questionnaire";
+import { ageInMonths, cmFromFtIn, ftInFromCm, inLang, kgFromLb, ladderTicks, ladderToggle, ladderValue, lbFromKg, offersNotSure, Q_BY_ID, QUESTIONNAIRE, shownOptions, toggleOption, typedProblem, upgrade, visible, type QAnswer, type QAnswers, type QQuestion } from "@/content/questionnaire";
 import { pView } from "@/content/questionnaireBridge";
 import { FormError } from "@/features/auth/parts";
 import { api, sel, useDb } from "@/lib/api";
@@ -175,7 +175,7 @@ export function QuestionnaireWizard({ childId: initialChild, version }: { childI
             const mark = markedStep === step && open.has(q.id);
             const note = q.ladder ? questions.find((n) => n.id === `${q.id}_note`) : undefined;
             return (
-              <div key={q.id} id={`q-${q.id}`} className="scroll-mt-24">
+              <div key={q.id} id={`q-${q.id}`} className={`scroll-mt-24 ${q.follow_up ? "-mt-3 ml-4 border-l-2 border-teal pl-3" : ""}`}>
                 <Card className={`p-5 ${mark ? "ring-4 ring-sun" : ""}`}>
                   <Question q={q} answers={answers} set={set} childId={childId} />
                   {note && <OwnWords q={note} answers={answers} set={set} />}
@@ -237,7 +237,7 @@ export function Question({ q, answers, set, childId }: { q: QQuestion; answers: 
   const opt = (o: string) => (q.option_text ? inLang(q.option_text, uiLang, o) : o);
   const clear = q.required ? undefined : () => set(q.id, undefined); // undefined: not answered, unlike null ("Not sure")
   const notSure = offersNotSure(q) && (
-    <Choice name={q.id} type="radio" checked={v === null} onChange={() => set(q.id, null)} onClear={clear} label={t("intake.notSure")} />
+    <Choice name={q.id} type="radio" checked={v === null} onChange={() => set(q.id, null)} onClear={clear} label={q.not_sure_text ? inLang(q.not_sure_text, uiLang) : t("intake.notSure")} />
   );
   // A typed answer: the input in its label, and "Not sure" next to it (a label can't hold another label).
   const typed = (input: ReactNode) => (
@@ -319,12 +319,24 @@ export function Question({ q, answers, set, childId }: { q: QQuestion; answers: 
   }
   // multi
   const picked = Array.isArray(v) ? v : [];
-  const toggle = (o: string) => {
-    if (o === q.exclusive) return set(q.id, picked.includes(o) ? [] : [o]);
-    const next = picked.includes(o) ? picked.filter((x) => x !== o) : [...picked.filter((x) => x !== q.exclusive), o];
-    if (q.max && next.length > q.max) return;
-    set(q.id, next);
+  const box = (o: string, text: string) => <Choice key={o} name={q.id} type="checkbox" checked={picked.includes(o)} onChange={() => set(q.id, toggleOption(q, picked, o))} label={text} />;
+  // A pair is one row: the skill, then its two choices (B74).
+  const row = (alone: string, help: string) => {
+    const skill = q.pair_text ? inLang(q.pair_text, uiLang, alone) : alone;
+    return (
+      <div key={alone} role="group" aria-label={skill} className="w-full rounded-2xl border border-line p-3">
+        <p className="mb-2 text-sm font-bold text-ink">{skill}</p>
+        <div className="flex flex-wrap gap-2">{box(alone, t("intake.pair.alone"))}{box(help, t("intake.pair.help"))}</div>
+      </div>
+    );
   };
+  const helps = Object.values(q.pair ?? {});
+  const list = (os: string[], last?: ReactNode) => (
+    <div className="flex flex-wrap gap-2">
+      {os.filter((o) => !helps.includes(o)).map((o) => (q.pair?.[o] ? row(o, q.pair[o]) : box(o, opt(o))))}
+      {last}
+    </div>
+  );
   return (
     <fieldset>
       <legend className="mb-2 font-bold text-ink">
@@ -332,10 +344,20 @@ export function Question({ q, answers, set, childId }: { q: QQuestion; answers: 
         {q.max && <span className="ml-2 text-xs font-semibold text-muted">{t("intake.pickUpTo", { n: q.max })}</span>}
       </legend>
       {hint}
-      <div className="flex flex-wrap gap-2">
-        {options.map((o) => <Choice key={o} name={q.id} type="checkbox" checked={picked.includes(o)} onChange={() => toggle(o)} label={opt(o)} />)}
-        {notSure}
-      </div>
+      {q.option_groups ? (
+        <div className="space-y-3">
+          {q.option_groups.map((g, n) => {
+            const mine = g.options.filter((o) => options.includes(o));
+            return mine.length > 0 && (
+              <div key={n}>
+                {g.text && <p className="mb-2 text-sm font-bold text-ink-2">{inLang(g.text, uiLang)}</p>}
+                {list(mine)}
+              </div>
+            );
+          })}
+          {notSure && <div className="flex">{notSure}</div>}
+        </div>
+      ) : list(options, notSure)}
     </fieldset>
   );
 }
