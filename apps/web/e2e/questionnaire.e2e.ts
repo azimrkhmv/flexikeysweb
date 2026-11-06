@@ -22,6 +22,46 @@ async function notSureToTheRest(page: Page) {
   await expect(h1).not.toHaveText(before);
 }
 
+test("a section opens with its big title going forward, never going back (B73)", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop", "one journey is enough");
+  await setup(page);
+  await page.goto("/signup");
+  await page.getByLabel("Phone number").fill("+998 93 555 40 17");
+  await page.getByRole("button", { name: "Send the code" }).click();
+  const code = (await page.getByText(/Your code is \d{6}/).innerText()).match(/\d{6}/)![0];
+  await page.getByLabel("Code from the SMS").fill(code);
+  await page.getByRole("button", { name: "Continue" }).click();
+  await page.getByLabel("District").selectOption("Yunusobod");
+  await page.getByText("I agree to FlexiKeys storing").click();
+  await page.getByRole("button", { name: "Continue" }).click();
+  await expect(page).toHaveURL(/\/parent\/children\/new/);
+  await page.goto("/parent/children/new?q=2026-10-16");
+
+  const intro = page.locator("[data-to=section-title]");
+  await expect(page.getByRole("heading", { level: 1, name: "About your child and family" })).toBeVisible();
+  await expect(intro).toHaveCount(0); // the section the page opened at has none
+  await page.getByLabel(/What is your child's name/).fill("Malika");
+  await birthDate(page, "2019-05-01");
+  await pick(page, "Boy or girl?", "Girl");
+  await page.getByLabel("Height (cm)").fill("110");
+  await page.getByLabel("Weight (kg)").fill("18");
+  await pick(page, "Who is filling this in?", "Mother");
+  await pick(page, /^Languages you speak with your child at home/, "Uzbek");
+  await pick(page, "How many adults can help with exercises at home?", "Only me");
+  await page.getByRole("button", { name: "Next" }).click();
+  await page.getByRole("button", { name: "I agree — continue" }).click();
+
+  await expect(intro).toHaveText("Diagnosis and medical history");
+  await expect(intro).toHaveCount(0); // gone by itself, in under 2 seconds
+  await expect(page.getByRole("heading", { level: 1, name: "Diagnosis and medical history" })).toBeFocused(); // read once
+  await page.getByRole("button", { name: "Back" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "About your child and family" })).toBeVisible();
+  await expect(intro).toHaveCount(0);
+  await page.getByRole("button", { name: "Next" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "Diagnosis and medical history" })).toBeVisible();
+  await expect(intro).toHaveCount(0); // already seen in this visit
+});
+
 test("a parent answers the new questionnaire and gets a plan", async ({ page }, info) => {
   test.skip(info.project.name !== "desktop", "one full journey is enough");
   test.setTimeout(120_000);

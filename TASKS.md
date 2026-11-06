@@ -982,9 +982,10 @@ has a decision; the source is "FlexiKeys — parent questionnaire review 2" (5 N
   - Done when: Day / Month / Year are equal and start empty; height 30–250 cm and weight 5–200 kg on the website and the server; ft-in and lb work and save cm / kg; no number field shows arrows or changes on mouse wheel; A5 shows "Caregiver"; A7_langs takes several languages including English and old A7 answers still work
   - Needs: —
   - Note (6 Nov 2026): equal boxes from 640 px up; on a phone Month is 1.5× the others, because "September" does not fit an equal box at 360 px. A7's real option ids are `uzbek`, `russian`, `other`, so A7_langs keeps them and adds `en`; `homeLanguage` gives uz / ru / en / other. No code read A7, so nothing changes for English yet: `homeLanguage` is ready for the first screen that needs it. kg had no rounding, so lb converts to one decimal (11 lb = 5.0 kg passes the 5 kg check)
-- [ ] **Bekzod** — `B73` Section intro screen (3)
+- [x] **Bekzod** — `B73` Section intro screen (3)
   - Done when: entering each section forward shows the big title, which moves into the banner; back navigation and reduced motion show no intro; it works at phone width and in dark mode
   - Needs: B72
+  - Note (6 Nov 2026): no animation package in the project, so `SectionIntro.tsx` uses the browser's own animations. About 1.7 s in all. The website has no dark theme yet; the layer uses the banner's colour tokens, so it follows when one comes. Checked in Edge at 360 px and 1366×768
 - [ ] **Bekzod** — `B74` Wording and options (5.1–5.11)
   - Done when: every text in section 5 is in place in en and ru with a uz draft; paired options untick each other and old double answers load as "by themselves"; new `always` / `never` / `not_sure` options work with the rules; the cases files cover the new ids
   - Needs: B73

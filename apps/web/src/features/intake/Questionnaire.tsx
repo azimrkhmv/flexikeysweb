@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { FileUp, ShieldCheck, Trash2 } from "lucide-react";
 import { Button, Card, Field, Input, Textarea, useAction } from "@/components/ui";
 import { ageInMonths, cmFromFtIn, ftInFromCm, inLang, kgFromLb, ladderTicks, ladderToggle, ladderValue, lbFromKg, offersNotSure, Q_BY_ID, QUESTIONNAIRE, shownOptions, typedProblem, upgrade, visible, type QAnswer, type QAnswers, type QQuestion } from "@/content/questionnaire";
@@ -12,6 +12,7 @@ import { useT, useLang } from "@/lib/i18n";
 import { persisted, useStore, type Persisted } from "@/lib/store";
 import type { IntakeValue, Roadmap } from "@/lib/types";
 import { chip, Choice, DateInput, NumberInput } from "./Fields";
+import { SectionIntro, wantsIntro } from "./SectionIntro";
 import { Ready } from "./Wizard";
 
 // IQ4: the CEO's parent questionnaire (content/questionnaire.json), one screen per section, saved as the parent goes.
@@ -57,14 +58,25 @@ export function QuestionnaireWizard({ childId: initialChild, version }: { childI
   });
   const step = steps[Math.min(i, steps.length - 1)];
   const questions = inStep(step);
+  // B73: the intro screen plays when a parent goes forward into a section for the first time in this visit: not on
+  // the section the page opened at, not going back. "hold": the big title; "move": it moves into the banner.
+  const seen = useRef(new Set<string>());
+  const [intro, setIntro] = useState<"hold" | "move" | null>(null);
+  const startMove = useCallback(() => setIntro("move"), []);
+  const endIntro = useCallback(() => setIntro(null), []);
+  const enter = (to: string | undefined) => {
+    if (to && to !== "health_consent" && !seen.current.has(to) && wantsIntro()) setIntro("hold");
+  };
   // A new step opens at its banner (B67), not where the last one's Next button was; the title takes the focus so a
-  // screen reader reads the new section.
+  // screen reader reads the new section, once the intro screen is over.
   const opened = useRef(false);
+  const introOn = intro !== null;
   useEffect(() => {
+    seen.current.add(step);
     if (!opened.current) return void (opened.current = true);
     window.scrollTo({ top: 0 });
-    document.getElementById("section-title")?.focus({ preventScroll: true });
-  }, [step]);
+    if (!introOn) document.getElementById("section-title")?.focus({ preventScroll: true });
+  }, [step, introOn]);
   // Open: a required question without an answer, or an answer the server would refuse (its message shows under it).
   const open = new Set(questions.filter((q) => (q.required && unanswered(answers[q.id])) || typedProblem(q, answers[q.id], answers, today())).map((q) => q.id));
   const set = (id: string, v: QAnswer) => setAnswers((a) => ({ ...a, [id]: v }));
@@ -95,14 +107,32 @@ export function QuestionnaireWizard({ childId: initialChild, version }: { childI
   const next = () =>
     act.run(async () => {
       const id = await save();
-      if (i + 1 < steps.length) return setI(i + 1);
+      if (i + 1 < steps.length) {
+        enter(steps[i + 1]);
+        return setI(i + 1);
+      }
       setPlan(await api.finishIntake(id, round));
     });
+
+  // The first section after the consent. Before the save: saving already moves the wizard on to that section.
+  const agree = async () => {
+    enter(sections[1]);
+    await api.setConsent(childId!, "health", true).catch((e) => {
+      setIntro(null);
+      throw e;
+    });
+  };
 
   if (plan && child) {
     const p34 = pView(answers, today()).P34;
     return <Ready name={child.name} plan={plan} minutes={p34 === "30" ? 30 : p34 === "20" ? 20 : 10} childId={child.id} />;
   }
+
+  const sectionTexts = {
+    number: t("intake.section", { n: sections.indexOf(step) + 1, total: sections.length }),
+    title: inLang(QUESTIONNAIRE.step_text, uiLang, step),
+    intro: inLang(QUESTIONNAIRE.step_intro, uiLang, step),
+  };
 
   return (
     <div className="mx-auto max-w-2xl">
@@ -112,14 +142,12 @@ export function QuestionnaireWizard({ childId: initialChild, version }: { childI
       {step === "health_consent" ? (
         <SectionBanner title={t("intake.step.health_consent")} />
       ) : (
-        <SectionBanner
-          number={t("intake.section", { n: sections.indexOf(step) + 1, total: sections.length })}
-          title={inLang(QUESTIONNAIRE.step_text, uiLang, step)}
-          intro={inLang(QUESTIONNAIRE.step_intro, uiLang, step)}
-        />
+        <SectionBanner {...sectionTexts} phase={intro} />
       )}
+      {intro && step !== "health_consent" && <SectionIntro {...sectionTexts} onMove={startMove} onDone={endIntro} />}
       {step === "A" && <p className="mt-3 text-ink-2">{t("auth.details.ages")}</p>}
 
+      <div className={intro === "hold" && step !== "health_consent" ? "opacity-0" : "opacity-100 transition-opacity duration-500"}>
       {step === "health_consent" ? (
         <Card className="mt-6 space-y-4 p-5">
           <ShieldCheck className="size-8 text-teal" aria-hidden />
@@ -128,7 +156,7 @@ export function QuestionnaireWizard({ childId: initialChild, version }: { childI
           <FormError>{act.error}</FormError>
           <div className="flex flex-wrap items-center gap-3">
             <Button variant="ghost" onClick={() => setI(i - 1)}>{t("intake.back")}</Button>
-            <Button size="lg" pending={act.pending} onClick={() => act.run(async () => { await api.setConsent(childId!, "health", true); })}>
+            <Button size="lg" pending={act.pending} onClick={() => act.run(agree)}>
               {t("intake.health.yes")}
             </Button>
           </div>
@@ -171,18 +199,21 @@ export function QuestionnaireWizard({ childId: initialChild, version }: { childI
           </div>
         </form>
       )}
+      </div>
     </div>
   );
 }
 
 /** The start of each section (B67): "Section 3 of 9", the title in large bold type (about twice the question text)
- * and one line on what the section asks about, on a soft brand colour (text ≥ 4.5:1, lib/contrast.test.ts). */
-function SectionBanner({ number, title, intro }: { number?: string; title: string; intro?: string }) {
+ * and one line on what the section asks about, on a soft brand colour (text ≥ 4.5:1, lib/contrast.test.ts).
+ * `phase`: the intro screen is playing; its texts are on their way here and these fade in as they arrive (B73). */
+function SectionBanner({ number, title, intro, phase }: { number?: string; title: string; intro?: string; phase?: "hold" | "move" | null }) {
+  const texts = phase === "hold" ? "[&>*]:opacity-0" : phase === "move" ? "[&>*]:transition-opacity [&>*]:delay-300 [&>*]:duration-200" : "";
   return (
-    <header className="rounded-fk-lg bg-teal-soft px-5 py-5 sm:px-7">
-      {number && <p className="text-sm font-bold text-ink-2">{number}</p>}
+    <header className={`rounded-fk-lg bg-teal-soft px-5 py-5 sm:px-7 ${texts}`}>
+      {number && <p id="section-number" className="text-sm font-bold text-ink-2">{number}</p>}
       <h1 id="section-title" tabIndex={-1} className="mt-1 text-3xl font-extrabold leading-tight text-ink outline-none sm:text-4xl">{title}</h1>
-      {intro && <p className="mt-2 text-base text-ink-2">{intro}</p>}
+      {intro && <p id="section-intro" className="mt-2 text-base text-ink-2">{intro}</p>}
     </header>
   );
 }
