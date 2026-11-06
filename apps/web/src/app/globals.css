@@ -63,6 +63,17 @@ html {
   -webkit-text-size-adjust: 100%;
 }
 
+/* Number boxes in the questionnaire: no up/down arrows (B72). */
+.no-spin {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+.no-spin::-webkit-inner-spin-button,
+.no-spin::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 /* A bare `grid` gets one shrinkable column, so wide children (tables in overflow-x-auto) can't push the page wider.
    Any grid-cols-* utility overrides this because utilities sit in a later layer. */
 @layer base {

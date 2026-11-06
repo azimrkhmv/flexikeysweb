@@ -43,10 +43,10 @@ test("a parent answers the new questionnaire and gets a plan", async ({ page }, 
   await page.getByLabel(/What is your child's name/).fill("Malika");
   await birthDate(page, "2019-05-01");
   await pick(page, "Boy or girl?", "Girl");
-  await page.getByLabel(/^Height/).fill("110"); // B60: required, no "Not sure"
-  await page.getByLabel(/^Weight/).fill("18");
+  await page.getByLabel("Height (cm)").fill("110"); // B60: required, no "Not sure"
+  await page.getByLabel("Weight (kg)").fill("18");
   await pick(page, "Who is filling this in?", "Mother");
-  await pick(page, "Language you speak with your child at home", "Uzbek");
+  await pick(page, /^Languages you speak with your child at home/, "Uzbek");
   await pick(page, "How many adults can help with exercises at home?", "Only me");
   await notSureToTheRest(page);
 

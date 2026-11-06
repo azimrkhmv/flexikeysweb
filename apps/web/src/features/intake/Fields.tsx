@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type InputHTMLAttributes } from "react";
 import { Check, Mic, Square, Trash2, Video } from "lucide-react";
 import { Button, Checkbox, Field, Input, Select, Textarea, useAction } from "@/components/ui";
 import { allowsNotSure, P39_MAX, P40_MAX_CLIPS, type Answers, type Question } from "@/content/intake";
@@ -38,8 +38,15 @@ const MONTHS: Record<Lang, string[]> = {
   uz: ["Yanvar", "Fevral", "Mart", "Aprel", "May", "Iyun", "Iyul", "Avgust", "Sentabr", "Oktabr", "Noyabr", "Dekabr"],
 };
 
-/** Day · month · year in one row, the same whatever the browser's language (B60); the value stays "YYYY-MM-DD".
- * Until the year has 4 digits the answer stays empty, so typing "2018" never shows a wrong age on the way. */
+/** A number box without the browser's up/down arrows; the mouse wheel scrolls the page instead of changing a focused
+ * number (B72). */
+export function NumberInput(props: InputHTMLAttributes<HTMLInputElement>) {
+  return <Input {...props} type="number" className={`no-spin ${props.className ?? ""}`} onWheel={(e) => e.currentTarget.blur()} />;
+}
+
+/** Day · month · year in one row of equal boxes, empty until typed, the same whatever the browser's language (B60,
+ * B72); the value stays "YYYY-MM-DD". Until the year has 4 digits the answer stays empty, so typing "2018" never
+ * shows a wrong age on the way. */
 export function DateInput({ value, onChange }: { value: string; onChange: (v: string | undefined) => void }) {
   const t = useT();
   const [lang] = useLang();
@@ -51,17 +58,18 @@ export function DateInput({ value, onChange }: { value: string; onChange: (v: st
     onChange(n.d && n.m && /^\d{4}$/.test(n.y) ? `${n.y}-${n.m.padStart(2, "0")}-${n.d.padStart(2, "0")}` : undefined);
   };
   return (
-    <div className="grid grid-cols-[4.5rem_minmax(0,1fr)_5.5rem] gap-2">
-      <Input
-        type="number" inputMode="numeric" min={1} max={31} placeholder={t("intake.date.day")} aria-label={t("intake.date.day")}
+    // Equal boxes; on a phone Month gets 1.5× so "September" is not cut at 360 px.
+    <div className="grid grid-cols-[1fr_1.5fr_1fr] gap-2 sm:grid-cols-3">
+      <NumberInput
+        inputMode="numeric" placeholder={t("intake.date.day")} aria-label={t("intake.date.day")}
         value={parts.d} onChange={(e) => change({ d: e.target.value.slice(0, 2) })}
       />
-      <Select aria-label={t("intake.date.month")} value={parts.m} onChange={(e) => change({ m: e.target.value })}>
+      <Select aria-label={t("intake.date.month")} className="!px-2" value={parts.m} onChange={(e) => change({ m: e.target.value })}>
         <option value="" disabled>{t("intake.date.month")}</option>
         {MONTHS[lang].map((name, i) => <option key={name} value={String(i + 1)}>{name}</option>)}
       </Select>
-      <Input
-        type="number" inputMode="numeric" min={1} placeholder={t("intake.date.year")} aria-label={t("intake.date.year")}
+      <NumberInput
+        inputMode="numeric" placeholder={t("intake.date.year")} aria-label={t("intake.date.year")}
         value={parts.y} onChange={(e) => change({ y: e.target.value.slice(0, 4) })}
       />
     </div>

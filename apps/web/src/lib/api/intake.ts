@@ -5,7 +5,7 @@
 import { dailyQuestionOn } from "@/content/daily";
 import { FREE } from "@/content/plans";
 import type { Answers } from "@/content/intake";
-import { Q_BY_ID } from "@/content/questionnaire";
+import { Q_BY_ID, upgrade } from "@/content/questionnaire";
 import { rulesView } from "@/content/questionnaireBridge";
 import { type Lang } from "../i18n";
 import { buildRoadmap } from "../roadmap";
@@ -162,7 +162,7 @@ export const intakeApi = {
     // Same as the server: a new round asks the set in use now, with last time's answers to the questions it still has.
     const questionnaire = await intakeApi.intakeQuestionnaire();
     const prev = last ? sel.intakeAnswers(read(), childId, last.round) : {};
-    const kept = (last?.questionnaire ?? "p41") === questionnaire ? prev : Object.fromEntries(Object.entries(prev).filter(([q]) => q in Q_BY_ID));
+    const kept = (last?.questionnaire ?? "p41") === questionnaire ? upgrade(prev) as Answers : Object.fromEntries(Object.entries(prev).filter(([q]) => q in Q_BY_ID));
     write((db) => {
       db.intakeRounds.push({ childId, round, questionnaire, startedAt: iso() });
     });

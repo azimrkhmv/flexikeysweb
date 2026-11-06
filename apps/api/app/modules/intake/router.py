@@ -216,7 +216,7 @@ async def start_next_round(
     await db.flush()
     keep_health = await has_consent(db, child_id, ConsentKind.health)
     daily = await daily_updates(db, child_id, since=last.completed_at)  # the profile moved by the daily questions
-    old = await db.scalars(select(IntakeAnswer).where(IntakeAnswer.round_id == last.id))
+    old = list(await db.scalars(select(IntakeAnswer).where(IntakeAnswer.round_id == last.id)))
 
     def health_question(qid: str) -> bool | None:
         """True or False when the new round asks this question, None when it does not."""
@@ -237,6 +237,11 @@ async def start_next_round(
                     answered_by=a.answered_by,
                 )
             )
+    if new.questionnaire != "p41":  # a retired question's answer moves on as its replacement (never a health answer)
+        plain = {a.question_id: a.value for a in old if a.value is not None}
+        for qid, value in questionnaire.upgrade(plain).items():
+            if qid not in plain and health_question(qid) is False:
+                db.add(IntakeAnswer(round_id=new.id, question_id=qid, value=value, answered_by=user.id))
     await db.commit()
     return await _out(db, new)
 

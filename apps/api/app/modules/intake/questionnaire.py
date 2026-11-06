@@ -26,7 +26,7 @@ SET = "2026-10-16"  # the id a round stores (settings.intake_questionnaire): the
 OWN_DONT_KNOW = {"CP1", "CP1_types", "DS1", "E1"}
 # No "Not sure": name, birthday and the family facts (B60; TASKS.md section 3 replaces spec §5 for these), and
 # OWN_DONT_KNOW. The website's NO_NOT_SURE (content/questionnaire.ts) is the same list.
-NO_NOT_SURE = {"A1", "A2", "A3", "A4", "A4_kg", "A5", "A7", "A9", "B1", "B3_parts"} | OWN_DONT_KNOW
+NO_NOT_SURE = {"A1", "A2", "A3", "A4", "A4_kg", "A5", "A7_langs", "A9", "B1", "B3_parts"} | OWN_DONT_KNOW
 AGE_MIN, AGE_MAX = 2, 18  # FlexiKeys is for children aged 2 to 18 (founders, 30 Oct 2026)
 TEXT_MAX, LONGTEXT_MAX, FILES_MAX, CLIPS_MAX = 200, 1000, 5, 11  # 11 baseline video tasks (section K)
 FILE_KEY = re.compile(r"children/[0-9a-f-]{36}/intake/[0-9a-f-]{36}")
@@ -94,6 +94,32 @@ def cp_type(answers: Answers) -> str | None:
     if types:
         return types[0]
     return "dont_know" if "dont_know" in ticked else None
+
+
+HOME_CODE = {"uzbek": "uz", "russian": "ru", "en": "en", "other": "other"}
+
+
+def home_language(answers: Answers, ui: str) -> str | None:
+    """B72: the language spoken with the child at home, from the ones ticked in A7_langs: one language -> that one;
+    several -> the app's language if it is ticked, otherwise the first of uz, ru, en; only "other" -> "other". An old
+    round's A7 answer still counts. None: not answered. Same as the website's homeLanguage."""
+    ticked = answers.get("A7_langs")
+    if not isinstance(ticked, list) or not ticked:
+        return HOME_CODE.get(answers.get("A7"))  # type: ignore[arg-type]
+    codes = [HOME_CODE.get(o) for o in ticked]
+    langs = [lang for lang in ("uz", "ru", "en") if lang in codes]
+    if not langs:
+        return "other" if "other" in codes else None
+    return ui if ui in langs else langs[0]
+
+
+def upgrade(answers: Answers) -> Answers:
+    """Saved answers in today's questions: an old round's answer to a retired question also counts as its replacement,
+    as on the website (content/questionnaire.ts upgrade), so an open old round can still be finished."""
+    out = dict(answers)
+    if "A7_langs" not in out and isinstance(out.get("A7"), str):
+        out["A7_langs"] = [out["A7"]]  # B72: the same option ids
+    return out
 
 
 def facts(answers: Answers, today: date) -> dict[str, int | str | None]:
@@ -244,6 +270,7 @@ def check_answer(question_id: str, value: Any) -> dict[str, Any]:
 def missing_answers(answers: Answers, health_consent: bool, today: date) -> list[str]:
     """Required questions this child's parent is shown and has not answered ("Not sure" counts as answered).
     Without the health consent the health questions are not asked, as on the website."""
+    answers = upgrade(answers)
     return [
         qid
         for qid in visible(answers, today)

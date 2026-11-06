@@ -1,6 +1,6 @@
 {
- "_note": "The CEO's parent intake questionnaire (16 Oct 2026, @Abdulloh Ochilov; therapist-reviewed), as data. Source of truth for the server (app/modules/intake/questionnaire.py) and the website (a copy in apps/web/src/content/backend/questionnaire.json, checked by questionnaire.test.ts). Question numbers never change and are never reused. `show` holds display rules R1-R19 and the follow-ups as one condition; `option_show` hides single options. Conditions: {q, in} (any of these answers), {q, answered}, {q, min/max} (numbers), {fact, in/min/max} with facts age (years), gmfcs, macs, cfcs (1-5, from C10/L2, D1, G2), {all}, {any}, {not}, and {ref} to a named rule in `defs`. `note` marks the team's drafts and open points for the physio. Retired 30 Oct 2026, do not reuse: B3 (replaced by B3_parts; old B3 answers still count, see body_pattern), C2_side (B3_parts covers it). `retired_options` lists options no longer shown: old answers with them stay valid and map to the named option (null: kept as they are). The fact `pattern` is the body pattern from B3_parts. Retired 30 Oct 2026, do not reuse: D12 (replaced by D12_spoon and D12_cup; old D12 answers still feed P24). `not_sure: true` on an optional question: it still offers \"Not sure\" (stored as null). CP1, DS1 and E1 have their own `dont_know` and no automatic \"Not sure\" (B66); an older round's null on them stays valid. `step_intro`: one line under each section's title saying what it asks about (B67; uz text drafted 1 Nov 2026 — native-speaker check (B44)). `ladder: true` (B68): a step-by-step skill question shown as tick boxes; the saved value stays one option, the hardest one ticked (the last in `options` order). `<id>_note`: the parent's own words about that question. Retired 1 Nov 2026, do not reuse: CP1 (replaced by CP1_types; old CP1 answers still count, see the fact cp_type). The fact `cp_type` is the CP type from CP1_types: one type ticked is that type; `mixed`, or two or more of spastic, dyskinetic and ataxic, is `mixed`; `dont_know` is `dont_know`; without a CP1_types answer, an old round's CP1 answer. Retired 1 Nov 2026, do not reuse: D13 (replaced by D13_buttons and D13_zip). Retired 1 Nov 2026, do not reuse: E6 (replaced by E6_now and E6_often; an old E6 'yes' still opens E6_where). Retired 1 Nov 2026, do not reuse: H5 (replaced by H5_calm and H5_active; P35 reads H5_active, else an old H5 answer).",
- "version": "2026-11-01",
+ "_note": "The CEO's parent intake questionnaire (16 Oct 2026, @Abdulloh Ochilov; therapist-reviewed), as data. Source of truth for the server (app/modules/intake/questionnaire.py) and the website (a copy in apps/web/src/content/backend/questionnaire.json, checked by questionnaire.test.ts). Question numbers never change and are never reused. `show` holds display rules R1-R19 and the follow-ups as one condition; `option_show` hides single options. Conditions: {q, in} (any of these answers), {q, answered}, {q, min/max} (numbers), {fact, in/min/max} with facts age (years), gmfcs, macs, cfcs (1-5, from C10/L2, D1, G2), {all}, {any}, {not}, and {ref} to a named rule in `defs`. `note` marks the team's drafts and open points for the physio. Retired 30 Oct 2026, do not reuse: B3 (replaced by B3_parts; old B3 answers still count, see body_pattern), C2_side (B3_parts covers it). `retired_options` lists options no longer shown: old answers with them stay valid and map to the named option (null: kept as they are). The fact `pattern` is the body pattern from B3_parts. Retired 30 Oct 2026, do not reuse: D12 (replaced by D12_spoon and D12_cup; old D12 answers still feed P24). `not_sure: true` on an optional question: it still offers \"Not sure\" (stored as null). CP1, DS1 and E1 have their own `dont_know` and no automatic \"Not sure\" (B66); an older round's null on them stays valid. `step_intro`: one line under each section's title saying what it asks about (B67; uz text drafted 1 Nov 2026 — native-speaker check (B44)). `ladder: true` (B68): a step-by-step skill question shown as tick boxes; the saved value stays one option, the hardest one ticked (the last in `options` order). `<id>_note`: the parent's own words about that question. Retired 1 Nov 2026, do not reuse: CP1 (replaced by CP1_types; old CP1 answers still count, see the fact cp_type). The fact `cp_type` is the CP type from CP1_types: one type ticked is that type; `mixed`, or two or more of spastic, dyskinetic and ataxic, is `mixed`; `dont_know` is `dont_know`; without a CP1_types answer, an old round's CP1 answer. Retired 1 Nov 2026, do not reuse: D13 (replaced by D13_buttons and D13_zip). Retired 1 Nov 2026, do not reuse: E6 (replaced by E6_now and E6_often; an old E6 'yes' still opens E6_where). Retired 1 Nov 2026, do not reuse: H5 (replaced by H5_calm and H5_active; P35 reads H5_active, else an old H5 answer). Retired 5 Nov 2026, do not reuse: A7 (replaced by A7_langs, which keeps A7's option ids uzbek, russian and other; old A7 answers still count, see home_language). Height and weight (A4, A4_kg) are always saved in cm and kg; ft, in and lb are converted on the website only (B72).",
+ "version": "2026-11-05",
  "steps": [
   "A",
   "B",
@@ -534,8 +534,8 @@
    "option_show": null,
    "unit": "cm",
    "range": [
-    60,
-    200
+    30,
+    250
    ],
    "picture": null,
    "signup": false,
@@ -556,7 +556,7 @@
     "uz": "Taxminiy raqam ham boʻladi.",
     "ru": "Можно примерно."
    },
-   "note": "30 Oct 2026: required, no 'Not sure', height 60-200 for ages 2-18, hint (B60); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
+   "note": "30 Oct 2026: required, no 'Not sure', height 60-200 for ages 2-18, hint (B60); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) 5 Nov 2026: height 30-250 cm, entered in cm or ft and in, always saved in cm (B72); physio check needed."
   },
   {
    "id": "A4_kg",
@@ -572,8 +572,8 @@
    "option_show": null,
    "unit": "kg",
    "range": [
-    6,
-    120
+    5,
+    200
    ],
    "picture": null,
    "signup": false,
@@ -594,7 +594,7 @@
     "uz": "Taxminiy raqam ham boʻladi.",
     "ru": "Можно примерно."
    },
-   "note": "30 Oct 2026: required, no 'Not sure', weight 6-120 for ages 2-18, hint (B60); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
+   "note": "30 Oct 2026: required, no 'Not sure', weight 6-120 for ages 2-18, hint (B60); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) 5 Nov 2026: weight 5-200 kg (a heavy 18-year-old could not finish before), entered in kg or lb, always saved in kg (B72); physio check needed."
   },
   {
    "id": "A5",
@@ -630,22 +630,22 @@
      "mother": "Mother",
      "father": "Father",
      "grandparent": "Grandparent",
-     "other_caregiver": "Other caregiver"
+     "other_caregiver": "Caregiver"
     },
     "uz": {
      "mother": "Onasi",
      "father": "Otasi",
      "grandparent": "Buvisi yoki bobosi",
-     "other_caregiver": "Boshqa qaraydigan kishi"
+     "other_caregiver": "Vasiy yoki enaga"
     },
     "ru": {
      "mother": "Мама",
      "father": "Папа",
      "grandparent": "Бабушка или дедушка",
-     "other_caregiver": "Другой взрослый, который ухаживает за ребёнком"
+     "other_caregiver": "Опекун или няня"
     }
    },
-   "note": "30 Oct 2026: no 'Not sure' (B60); physio check needed"
+   "note": "30 Oct 2026: no 'Not sure' (B60); physio check needed 5 Nov 2026: 'Other caregiver' is now 'Caregiver' (B72); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)"
   },
   {
    "id": "A6",
@@ -695,15 +695,16 @@
    "note": "Chosen at sign-up (language first, spec §4); Uzbek Cyrillic is open with the CEO."
   },
   {
-   "id": "A7",
+   "id": "A7_langs",
    "step": "A",
-   "kind": "single",
+   "kind": "multi",
    "required": true,
    "health": false,
    "audience": "parent",
    "options": [
     "uzbek",
     "russian",
+    "en",
     "other"
    ],
    "max": null,
@@ -718,28 +719,31 @@
     "MV"
    ],
    "text": {
-    "en": "Language you speak with your child at home",
-    "uz": "Uyda farzandingiz bilan qaysi tilda gaplashasiz?",
-    "ru": "На каком языке вы говорите с ребёнком дома"
+    "en": "Languages you speak with your child at home (tick all that apply)",
+    "uz": "Uyda farzandingiz bilan qaysi tillarda gaplashasiz? (mos keladiganlarning hammasini belgilang)",
+    "ru": "На каких языках вы говорите с ребёнком дома? (отметьте всё подходящее)"
    },
    "option_text": {
     "en": {
      "uzbek": "Uzbek",
      "russian": "Russian",
+     "en": "English",
      "other": "Other"
     },
     "uz": {
      "uzbek": "Oʻzbek tili",
      "russian": "Rus tili",
+     "en": "Ingliz tili",
      "other": "Boshqa til"
     },
     "ru": {
      "uzbek": "Узбекский",
      "russian": "Русский",
+     "en": "Английский",
      "other": "Другой"
     }
    },
-   "note": "30 Oct 2026: no 'Not sure' (B60); physio check needed"
+   "note": "5 Nov 2026: new, replaces A7: several languages, English added; the rules read the home language worked out from it (questionnaire.py home_language) (B72); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)"
   },
   {
    "id": "A8",

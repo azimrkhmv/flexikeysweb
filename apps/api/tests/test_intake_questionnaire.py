@@ -1,6 +1,7 @@
 """IQ2: a round of the CEO's questionnaire is saved a few answers at a time, continued later and finished by its own
 display rules; health answers are encrypted; a round keeps its question set, so old P1-P41 rounds still open."""
 
+import uuid
 from collections.abc import Iterator
 from datetime import date, timedelta
 from typing import Any
@@ -8,12 +9,15 @@ from typing import Any
 import httpx2
 import pytest
 from fastapi.testclient import TestClient
+from sqlalchemy import select
 
+from app.db import SessionLocal
 from app.main import app
 from app.modules.intake import questionnaire
+from app.modules.intake.models import IntakeAnswer, IntakeRound
 from app.settings import settings
 from tests.test_children import API, add_child, parent
-from tests.test_intake_rounds import finish
+from tests.test_intake_rounds import finish, next_round, three_months_pass
 from tests.test_intake_save import health_consent, raw, save, saved
 from tests.test_storage import bucket  # noqa: F401 (makes the test bucket)
 from tests.test_videos_register import title
@@ -81,6 +85,31 @@ def test_a_new_round_uses_the_new_questionnaire_and_is_finished_by_its_rules(cli
     assert done.json()["completedAt"] is not None
 
 
+def test_an_old_home_language_answer_finishes_its_round_and_moves_to_the_next_one(client: TestClient) -> None:
+    """B72: a round saved before A7_langs has A7; it still finishes, and the next round has A7_langs ticked."""
+    owner = parent(client)
+    child = add_child(client, owner)
+    health_consent(client, owner, child)
+    assert save(client, owner, child, complete(CP_WALKING)).status_code == 200
+
+    async def as_saved_before() -> None:
+        async with SessionLocal() as db:
+            row = await db.scalar(
+                select(IntakeAnswer)
+                .join(IntakeRound, IntakeAnswer.round_id == IntakeRound.id)
+                .where(IntakeRound.child_id == uuid.UUID(child), IntakeAnswer.question_id == "A7_langs")
+            )
+            assert row is not None
+            row.question_id, row.value = "A7", "russian"
+            await db.commit()
+
+    client.portal.call(as_saved_before)  # type: ignore[union-attr]
+    assert finish(client, owner, child).status_code == 200
+    three_months_pass(client, child)
+    r = next_round(client, owner, child).json()
+    assert r["answers"]["A7_langs"] == ["russian"] and "A7" not in r["answers"]
+
+
 def test_a_round_is_finished_only_with_the_health_consent(client: TestClient) -> None:
     """B67: the health consent is required (TASKS.md section 3, 1 Nov 2026); there is no "Not now"."""
     owner = parent(client)
@@ -95,7 +124,7 @@ def test_not_sure_counts_except_name_birthday_and_family_facts(client: TestClien
     owner = parent(client)
     child = add_child(client, owner)
     assert save(client, owner, child, {"C3": None, "J1": None}).status_code == 200
-    for qid in ("A2", "A3", "A4", "A4_kg", "A5", "A7", "A9"):  # B60
+    for qid in ("A2", "A3", "A4", "A4_kg", "A5", "A7_langs", "A9"):  # B60
         assert title(save(client, owner, child, {qid: None})) == (422, "invalid_answer"), qid
     health_consent(client, owner, child)
     assert save(client, owner, child, {"DS1": None, "E1": None}).status_code == 200  # an older round's (B66)
@@ -122,8 +151,12 @@ def test_health_answers_need_the_consent_and_are_encrypted(client: TestClient) -
         ({"J9": ["sit", "stand", "walk", "hold"]}, "too_many"),
         ({"B7": ["none", "heart"]}, "exclusive_option"),
         ({"A4": 500}, "out_of_range"),
-        ({"A4": 59}, "out_of_range"),  # B60: 60-200 cm, 6-120 kg for ages 2-18
-        ({"A4_kg": 121}, "out_of_range"),
+        ({"A4": 29}, "out_of_range"),  # B72: 30-250 cm, 5-200 kg
+        ({"A4": 251}, "out_of_range"),
+        ({"A4_kg": 4.9}, "out_of_range"),
+        ({"A4_kg": 201}, "out_of_range"),
+        ({"A7": "russian"}, "unknown_question"),  # retired; A7_langs replaces it (B72)
+        ({"A7_langs": ["russian", "klingon"]}, "not_an_option"),
         ({"A2": "2018-02-31"}, "not_a_date"),
         ({"A2": "0001-02-27"}, "age_out_of_range"),
         ({"A2": "2099-01-01"}, "date_in_future"),

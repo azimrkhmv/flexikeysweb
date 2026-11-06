@@ -118,6 +118,32 @@ export function cpType(a: QAnswers): string | null {
   return ticked.includes("dont_know") ? "dont_know" : null;
 }
 
+const HOME_CODE: Record<string, string> = { uzbek: "uz", russian: "ru", en: "en", other: "other" };
+
+/** B72: the language spoken with the child at home, from the ones ticked in A7_langs: one language → that one; several
+ * → the app's language if it is ticked, otherwise the first of uz, ru, en; only "other" → "other". An old round's A7
+ * answer still counts. null: not answered. Same as the server's home_language. */
+export function homeLanguage(a: QAnswers, ui: string): string | null {
+  const ticked = a.A7_langs;
+  if (!Array.isArray(ticked) || !ticked.length) return typeof a.A7 === "string" ? (HOME_CODE[a.A7] ?? null) : null;
+  const codes = ticked.map((o) => HOME_CODE[o]);
+  const langs = ["uz", "ru", "en"].filter((l) => codes.includes(l));
+  if (!langs.length) return codes.includes("other") ? "other" : null;
+  return langs.includes(ui) ? ui : langs[0];
+}
+
+const INCH_CM = 2.54;
+const LB_KG = 0.45359237;
+/** B72: height and weight in US units, converted here only; the server always gets cm and kg. kg keeps one decimal, so
+ * 11 lb is 5.0 kg and the range's own ends (1 ft 0 in – 8 ft 2 in, 11 – 440 lb) pass the cm and kg check. */
+export const cmFromFtIn = (ft: number, inches: number) => Math.round((ft * 12 + inches) * INCH_CM);
+export const kgFromLb = (lb: number) => Math.round(lb * LB_KG * 10) / 10;
+export const lbFromKg = (kg: number) => Math.round(kg / LB_KG);
+export function ftInFromCm(cm: number): { ft: number; inches: number } {
+  const all = Math.round(cm / INCH_CM);
+  return { ft: Math.floor(all / 12), inches: all % 12 };
+}
+
 /** Age in years, the GMFCS, MACS and CFCS levels (1-5; a therapist's L2 wins over the parent's C10), the body
  * pattern (bodyPattern) and the CP type (cpType). */
 export const facts = (a: QAnswers, today: string): Record<Fact, number | string | null> => ({
@@ -164,7 +190,7 @@ export function shownOptions(id: string, a: QAnswers, today: string): string[] |
 export const OWN_DONT_KNOW = new Set(["CP1", "CP1_types", "DS1", "E1"]);
 /** Questions without the automatic "Not sure": name, birthday and the family facts (B60, TASKS.md section 3
  * replaces spec §5 for these), and OWN_DONT_KNOW. Same list as the server's. */
-export const NO_NOT_SURE = new Set(["A1", "A2", "A3", "A4", "A4_kg", "A5", "A7", "A9", "B1", "B3_parts", ...OWN_DONT_KNOW]);
+export const NO_NOT_SURE = new Set(["A1", "A2", "A3", "A4", "A4_kg", "A5", "A7_langs", "A9", "B1", "B3_parts", ...OWN_DONT_KNOW]);
 
 /** Does this question get the automatic "Not sure" (stored as null)? Required ones do, optional ones only with
  * `not_sure` (B63), and never one that has a "not_sure" option of its own. */
@@ -207,6 +233,8 @@ export function upgrade(a: QAnswers): QAnswers {
   // B69: an open round answered with the retired CP1 shows that type ticked in CP1_types.
   const cp1 = out.CP1;
   if (out.CP1_types === undefined && typeof cp1 === "string" && Q_BY_ID.CP1_types?.options?.includes(cp1)) out.CP1_types = [cp1];
+  // B72: an old round's A7 shows that language ticked in A7_langs (the same option ids).
+  if (out.A7_langs === undefined && typeof out.A7 === "string") out.A7_langs = [out.A7];
   return out;
 }
 

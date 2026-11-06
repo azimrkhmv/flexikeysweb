@@ -4,13 +4,14 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { FileUp, ShieldCheck, Trash2 } from "lucide-react";
 import { Button, Card, Field, Input, Textarea, useAction } from "@/components/ui";
-import { ageInMonths, inLang, ladderTicks, ladderToggle, ladderValue, offersNotSure, Q_BY_ID, QUESTIONNAIRE, shownOptions, typedProblem, upgrade, visible, type QAnswer, type QAnswers, type QQuestion } from "@/content/questionnaire";
+import { ageInMonths, cmFromFtIn, ftInFromCm, inLang, kgFromLb, ladderTicks, ladderToggle, ladderValue, lbFromKg, offersNotSure, Q_BY_ID, QUESTIONNAIRE, shownOptions, typedProblem, upgrade, visible, type QAnswer, type QAnswers, type QQuestion } from "@/content/questionnaire";
 import { pView } from "@/content/questionnaireBridge";
 import { FormError } from "@/features/auth/parts";
 import { api, sel, useDb } from "@/lib/api";
 import { useT, useLang } from "@/lib/i18n";
+import { persisted, useStore, type Persisted } from "@/lib/store";
 import type { IntakeValue, Roadmap } from "@/lib/types";
-import { chip, Choice, DateInput } from "./Fields";
+import { chip, Choice, DateInput, NumberInput } from "./Fields";
 import { Ready } from "./Wizard";
 
 // IQ4: the CEO's parent questionnaire (content/questionnaire.json), one screen per section, saved as the parent goes.
@@ -235,8 +236,9 @@ export function Question({ q, answers, set, childId }: { q: QQuestion; answers: 
     case "time":
       return typed(<Input type="time" value={str} onChange={(e) => set(q.id, e.target.value || undefined)} />);
     case "number":
+      if (q.id === "A4" || q.id === "A4_kg") return <Measure q={q} v={v} set={set} problem={!!problem} hint={hint} />;
       return typed(
-        <Input type="number" inputMode="decimal" min={q.range?.[0]} max={q.range?.[1]} value={typeof v === "number" ? v : ""} onChange={(e) => set(q.id, number(e.target.value))} />,
+        <NumberInput inputMode="decimal" min={q.range?.[0]} max={q.range?.[1]} value={typeof v === "number" ? v : ""} onChange={(e) => set(q.id, number(e.target.value))} />,
       );
     case "months":
       return (
@@ -245,8 +247,8 @@ export function Question({ q, answers, set, childId }: { q: QQuestion; answers: 
           {hint}
           {/* The unit right after the number; "Not yet" and "Not sure" on their own line (B61). */}
           <div className="grid grid-cols-[7rem_auto] items-center justify-start gap-2">
-            <Input
-              type="number" inputMode="numeric" min={0} max={240} step={1} aria-label={`${text} (${t("intake.months")})`}
+            <NumberInput
+              inputMode="numeric" min={0} max={240} step={1} aria-label={`${text} (${t("intake.months")})`}
               value={typeof v === "number" ? v : ""} onChange={(e) => set(q.id, number(e.target.value))}
             />
             <span className="text-sm font-semibold text-ink-2">{t("intake.months")}</span>
@@ -304,6 +306,76 @@ export function Question({ q, answers, set, childId }: { q: QQuestion; answers: 
         {notSure}
       </div>
     </fieldset>
+  );
+}
+
+const heightUnit = persisted<"cm" | "ftin">("fk_unit_height", "cm", { accept: (u) => u === "cm" || u === "ftin" });
+const weightUnit = persisted<"kg" | "lb">("fk_unit_weight", "kg", { accept: (u) => u === "kg" || u === "lb" });
+
+/** Height (cm | ft, in) or weight (kg | lb), B72. The answer is always cm or kg: US units are converted here, and a
+ * saved answer is converted back for display. The choice is kept on this device; without storage it stays metric. */
+function Measure({ q, v, set, problem, hint }: { q: QQuestion; v: QAnswer; set: SetAnswer; problem: boolean; hint: ReactNode }) {
+  const t = useT();
+  const [uiLang] = useLang();
+  const height = q.id === "A4";
+  const store = (height ? heightUnit : weightUnit) as Persisted<string>;
+  const unit = useStore(store);
+  const us = unit === "ftin" || unit === "lb";
+  const saved = typeof v === "number" ? v : undefined;
+  // What the parent typed in US units; shown while it still means the saved answer, so "5" stays "5" on the way to "5 ft 7".
+  const [typed, setTyped] = useState({ a: "", b: "" });
+  const toSaved = (x: typeof typed) => {
+    if (!x.a && !x.b) return undefined;
+    return height ? cmFromFtIn(Number(x.a), Number(x.b)) : kgFromLb(Number(x.a));
+  };
+  const fromSaved = () => {
+    if (saved === undefined) return { a: "", b: "" };
+    if (!height) return { a: String(lbFromKg(saved)), b: "" };
+    const { ft, inches } = ftInFromCm(saved);
+    return { a: String(ft), b: String(inches) };
+  };
+  const shown = toSaved(typed) === saved ? typed : fromSaved();
+  const type = (x: typeof typed) => {
+    setTyped(x);
+    set(q.id, toSaved(x));
+  };
+  const pick = (u: string) => {
+    try {
+      store.set(u);
+    } catch {
+      /* full storage: the choice lasts until the page closes */
+    }
+  };
+  const box = (label: string, value: string, change: (s: string) => void, mode: "numeric" | "decimal") => (
+    <div className="grid grid-cols-[minmax(0,6rem)_auto] items-center justify-start gap-2">
+      <NumberInput inputMode={mode} aria-label={`${inLang(q.text, uiLang)} (${label})`} value={value} onChange={(e) => change(e.target.value)} />
+      <span className="text-sm font-semibold text-ink-2">{label}</span>
+    </div>
+  );
+  const units = height ? ["cm", "ftin"] : ["kg", "lb"];
+  return (
+    <div role="group" aria-labelledby={`${q.id}-label`}>
+      <div className="mb-2 flex items-center justify-between gap-3">
+        <span id={`${q.id}-label`} className="font-bold text-ink">{inLang(q.text, uiLang)}</span>
+        <div className="inline-flex shrink-0 rounded-full bg-surface-2 p-0.5">
+          {units.map((u) => (
+            <button
+              key={u} type="button" aria-pressed={unit === u} onClick={() => pick(u)}
+              className={`min-h-9 rounded-full px-3 text-sm font-bold ${unit === u ? "bg-teal text-white" : "text-ink-2"}`}
+            >
+              {t(`intake.unit.${u}`)}
+            </button>
+          ))}
+        </div>
+      </div>
+      {hint}
+      <div className="flex flex-wrap gap-3">
+        {!us && box(t(`intake.unit.${unit}`), saved === undefined ? "" : String(saved), (s) => set(q.id, s === "" ? undefined : Number(s)), height ? "numeric" : "decimal")}
+        {us && box(t(`intake.unit.${height ? "ft" : "lb"}`), shown.a, (a) => type({ ...shown, a }), height ? "numeric" : "decimal")}
+        {us && height && box(t("intake.unit.in"), shown.b, (b) => type({ ...shown, b }), "numeric")}
+      </div>
+      {problem && <p role="alert" className="mt-2 text-sm font-semibold text-[#8f3a2c]">{t(`intake.problem.${q.id}.out_of_range${us ? ".us" : ""}`)}</p>}
+    </div>
   );
 }
 

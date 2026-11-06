@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import mine from "./backend/questionnaire.json";
 import { intake } from "@/messages/intake";
-import { bodyPattern, cpType, inLang, ladderTicks, ladderToggle, ladderValue, offersNotSure, Q_BY_ID, QUESTIONNAIRE, shownOptions, typedProblem, upgrade, visible, type QAnswer, type QAnswers } from "./questionnaire";
+import { bodyPattern, cmFromFtIn, cpType, ftInFromCm, homeLanguage, inLang, kgFromLb, ladderTicks, ladderToggle, ladderValue, lbFromKg, offersNotSure, Q_BY_ID, QUESTIONNAIRE, shownOptions, typedProblem, upgrade, visible, type QAnswer, type QAnswers } from "./questionnaire";
 
 // IQ1: the questionnaire file is the server's, and the cases below fix which questions each sample child is shown.
 // questionnaire_cases.json (here and a copy in apps/api/tests) makes the server prove the same. Regenerate with
@@ -51,6 +51,12 @@ const CASES: { name: string; answers: QAnswers }[] = [
   { name: "skin: sores often", answers: { A2: "2019-05-01", B1: ["cp"], E6_now: "no", E6_often: "yes" } },
   { name: "skin: no sores", answers: { A2: "2019-05-01", B1: ["cp"], E6_now: "no", E6_often: "no" } },
   { name: "old round: E6 yes", answers: { A2: "2019-05-01", B1: ["cp"], E6: "yes" } },
+  // B72: the home language from the languages ticked, or an old round's A7.
+  { name: "home: one language", answers: { A7_langs: ["en"] } },
+  { name: "home: two languages", answers: { A7_langs: ["uzbek", "russian"] } },
+  { name: "home: other and russian", answers: { A7_langs: ["other", "russian"] } },
+  { name: "home: only other", answers: { A7_langs: ["other"] } },
+  { name: "old round: A7 russian", answers: { A7: "russian" } },
 ];
 
 const BACKEND = new URL("./backend/", import.meta.url);
@@ -171,6 +177,7 @@ describe("questionnaire (IQ1)", () => {
       today: TODAY,
       answers,
       visible: visible(answers, TODAY),
+      home: Object.fromEntries(["uz", "ru", "en"].map((ui) => [ui, homeLanguage(answers, ui)])),
       options: Object.fromEntries(
         QUESTIONNAIRE.questions.filter((q) => q.option_show).map((q) => [q.id, shownOptions(q.id, answers, TODAY)]),
       ),
@@ -194,10 +201,50 @@ describe("questionnaire (IQ1)", () => {
     expect(p("A2", "2007-10-23")).toBeNull(); // still 18 until tomorrow
     expect(p("A2", "2007-10-22")).toBe("age_out_of_range"); // 19 today
     expect(p("A2", "2024-10-22")).toBeNull(); // 2 today
-    expect(p("A4", 59)).toBe("out_of_range");
+    expect(p("A4", 29)).toBe("out_of_range");
+    expect(p("A4", 30)).toBeNull(); // B72: 30-250 cm, 5-200 kg
+    expect(p("A4", 250)).toBeNull();
+    expect(p("A4", 251)).toBe("out_of_range");
     expect(p("A4", 104.5)).toBeNull();
-    expect(p("A4_kg", 121)).toBe("out_of_range");
+    expect(p("A4_kg", 4.9)).toBe("out_of_range");
+    expect(p("A4_kg", 200)).toBeNull();
+    expect(p("A4_kg", 201)).toBe("out_of_range");
     expect(p("B8_date", "2026-01-10")).toBeNull();
+  });
+
+  it("height and weight in US units are saved as cm and kg (B72)", () => {
+    const p = (id: string, v: number) => typedProblem(Q_BY_ID[id], v, {}, TODAY);
+    expect(cmFromFtIn(5, 7)).toBe(170);
+    expect(kgFromLb(100)).toBe(45.4);
+    // The ends of the range the message names pass; one step outside does not.
+    for (const [ft, inches] of [[1, 0], [8, 2]]) expect(p("A4", cmFromFtIn(ft, inches)), `${ft} ft ${inches} in`).toBeNull();
+    expect(p("A4", cmFromFtIn(0, 11))).toBe("out_of_range");
+    expect(p("A4", cmFromFtIn(8, 3))).toBe("out_of_range");
+    for (const lb of [11, 440]) expect(p("A4_kg", kgFromLb(lb)), `${lb} lb`).toBeNull();
+    expect(p("A4_kg", kgFromLb(10))).toBe("out_of_range");
+    expect(p("A4_kg", kgFromLb(442))).toBe("out_of_range");
+    // A saved answer shows what the parent typed, at every step of the range.
+    for (let ft = 1; ft <= 8; ft++) for (let inches = 0; inches < 12; inches++) expect(ftInFromCm(cmFromFtIn(ft, inches))).toEqual({ ft, inches });
+    for (let lb = 11; lb <= 440; lb++) expect(lbFromKg(kgFromLb(lb))).toBe(lb);
+  });
+
+  it("the home language comes from the languages ticked (B72)", () => {
+    expect(Q_BY_ID.A7).toBeUndefined(); // retired, its id never reused
+    expect(Q_BY_ID.A7_langs).toMatchObject({ kind: "multi", required: true, step: "A", feeds: ["MV"] });
+    expect(offersNotSure(Q_BY_ID.A7_langs)).toBe(false);
+    const h = (ui: string, ...langs: string[]) => homeLanguage({ A7_langs: langs }, ui);
+    expect(h("en", "russian")).toBe("ru"); // one ticked: that one, whatever the app's language
+    expect(h("ru", "en")).toBe("en");
+    expect(h("ru", "uzbek", "russian")).toBe("ru"); // several: the app's language if it is ticked
+    expect(h("en", "uzbek", "russian")).toBe("uz"); // otherwise the first of uz, ru, en
+    expect(h("uz", "en", "russian")).toBe("ru");
+    expect(h("en", "other", "russian")).toBe("ru");
+    expect(h("en", "other")).toBe("other");
+    expect(homeLanguage({ A7: "russian" }, "uz")).toBe("ru"); // an old round
+    expect(homeLanguage({ A7: "other" }, "uz")).toBe("other");
+    expect(homeLanguage({ A7: "russian", A7_langs: ["en"] }, "uz")).toBe("en");
+    expect(homeLanguage({}, "uz")).toBeNull();
+    expect(upgrade({ A7: "uzbek" })).toEqual({ A7: "uzbek", A7_langs: ["uzbek"] }); // an open old round
   });
 
   it("refuses an age in months larger than the child's age (B61)", () => {

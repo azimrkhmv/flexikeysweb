@@ -978,9 +978,10 @@ decision; the source is "FlexiKeys — founders' and beta testers' feedback fixe
 *Bekzod filled in the whole questionnaire again as a parent (English UI) on the build with the 1 Nov fixes. Every point
 has a decision; the source is "FlexiKeys — parent questionnaire review 2" (5 Nov 2026). Order: B72 to B76.*
 
-- [ ] **Bekzod** — `B72` Step A: date fields, height and weight units and ranges, no arrows, Caregiver, home languages (2.1–2.6)
+- [x] **Bekzod** — `B72` Step A: date fields, height and weight units and ranges, no arrows, Caregiver, home languages (2.1–2.6)
   - Done when: Day / Month / Year are equal and start empty; height 30–250 cm and weight 5–200 kg on the website and the server; ft-in and lb work and save cm / kg; no number field shows arrows or changes on mouse wheel; A5 shows "Caregiver"; A7_langs takes several languages including English and old A7 answers still work
   - Needs: —
+  - Note (6 Nov 2026): equal boxes from 640 px up; on a phone Month is 1.5× the others, because "September" does not fit an equal box at 360 px. A7's real option ids are `uzbek`, `russian`, `other`, so A7_langs keeps them and adds `en`; `homeLanguage` gives uz / ru / en / other. No code read A7, so nothing changes for English yet: `homeLanguage` is ready for the first screen that needs it. kg had no rounding, so lb converts to one decimal (11 lb = 5.0 kg passes the 5 kg check)
 - [ ] **Bekzod** — `B73` Section intro screen (3)
   - Done when: entering each section forward shows the big title, which moves into the banner; back navigation and reduced motion show no intro; it works at phone width and in dark mode
   - Needs: B72
