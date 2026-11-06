@@ -9,7 +9,7 @@ name of the developer who does it.
 - **What we are building** is described in the founders' spec: `docs/product-spec-2026-10-06.pdf`. Where this file
   and the spec disagree, the spec wins — except for the three points listed in section 3.
 - `PRD.md` is the older product document. The spec replaced the parts where they disagree.
-- **Last updated:** 2026-11-01.
+- **Last updated:** 2026-11-06.
 
 **Contents:** 1. How we work · 2. Rules of the product · 3. Decisions already made · 4. Who does what ·
 5. Tasks (M0–M7) · 6. Ask and collect · 7. Accounts
@@ -106,6 +106,11 @@ Every task must keep these. They come from the spec.
 | Research library | Open research about cerebral palsy, free to use. The assistant answers from it and names the source (A9.8) |
 | Health consent is required (Bekzod, founders' feedback, 1 Nov 2026) | The "Not now" button on the health consent screen is removed: a parent must agree to continue past step A. This replaces the 5 Oct brief's "health data is optional". The lawyer's check before the pilot (G7) now includes whether a required health consent is allowed |
 | Step-by-step skill questions: tick everything (Bekzod, founders' feedback, 1 Nov 2026) | The step-by-step skill questions (C2, C3, C4, C5, C6, C14, C17, C19) are answered by ticking everything the child can do; the app keeps the hardest one ticked as the answer. This replaces "choose the hardest one" from B62 |
+| Questionnaire in 10 minutes (Bekzod, 5 Nov 2026) | The questionnaire must take a parent 10 minutes or less when the child has only mild problems. This replaces the open-ended length of the current questionnaire. It follows the 5 Oct founders' brief ("a question that changes nothing is not asked") |
+| Quick check (Bekzod, 5 Nov 2026) | A "Quick check" step decides which sections a parent sees. An area marked "No difficulty" is skipped, and its questions are filled with typical answers worked out on read; the parent's saved answers are never overwritten |
+| Baby-level questions (Bekzod, 5 Nov 2026) | Baby-level skill questions are hidden by ability, not by age. A child who stands or walks by themselves is not asked about lying, rolling, crawling, kneeling or head control. The "how many months old when your child first…" questions are asked only for children under 6 years |
+| Height and weight units (Bekzod, 5 Nov 2026) | Height and weight accept metric and US units; the server always stores cm and kg |
+| Optional questions folded (Bekzod, 6 Nov 2026) | Quick check controls only sections C to H, so A, B, I and J alone would keep persona M above the review's limit of 40 questions. In A, B, I and J the optional questions sit behind one "Add more details (optional)" link per section; nothing is deleted and B7 stays open because it feeds safety rules. Persona M's limit is the real number with these folded, not 40 |
 
 **Families**
 
@@ -945,11 +950,11 @@ decision; the source is "FlexiKeys — parent questionnaire fixes" (30 Oct 2026)
 *The founders' and two beta testers' feedback (Uzbek, Russian and English UI, phone and laptop). Every point has a
 decision; the source is "FlexiKeys — founders' and beta testers' feedback fixes" (1 Nov 2026). Order: B66 to B70.*
 
-- [ ] **Bekzod** — `B66` Bugs: file upload on a phone, games on a laptop screen, "Bilmayman" twice (2.1, 2.2, 2.3)
+- [x] **Bekzod** — `B66` Bugs: file upload on a phone, games on a laptop screen, "Bilmayman" twice (2.1, 2.2, 2.3)
   - Done when: from a phone at the test address, a photo and a PDF upload in B10, B13, CP21, DD3_files and I4_files, and a voice note records and saves; at 1280×720 and 1366×768 every game's play area and buttons are visible without scrolling, and phone portrait still works; CP1, DS1, E1 show one "don't know" answer; B5 shows two different texts in uz; the new duplicate-text test passes
   - Needs: —
   - Done in code (1 Nov 2026): the upload links were signed for `http://localhost:9100`, which a phone cannot reach; `compose.yaml` now takes `S3_PUBLIC_ENDPOINT` from `.env` and `apps/web/README.md` "Testing on a phone" has the steps (MinIO's CORS already accepts PUT from any origin). All 58 games fit 1280×720 and 1366×768 without scrolling. CP1, DS1, E1, B5 and the test are done
-  - Still open: the upload check from a real phone at a tunnel address (B10, B13, CP21, DD3_files, I4_files, voice note). Claude had no phone; Bekzod checks it with the README steps, then ticks this task
+  - The upload check from a real phone (B10, B13, CP21, DD3_files, I4_files, voice note) passed: Bekzod confirmed it on 6 Nov 2026
 - [x] **Bekzod** — `B67` Health consent required + section banners (3.1, 3.2)
   - Done when: no "Not now" on the consent step and earlier decliners are asked again; every step opens with the banner (section number, large title, one-line intro) in en, ru, uz at phone width and in dark mode
   - Needs: B66
@@ -967,6 +972,27 @@ decision; the source is "FlexiKeys — founders' and beta testers' feedback fixe
 - [ ] **Bekzod** — `B71` Child mode's top bar is wider than a 390 px phone: Back, the name, My Voice, full screen and Pause do not fit, so Pause is cut off at the right edge (found during B66, 1 Nov 2026)
   - Done when: at 360 and 390 px wide every top-bar button is fully visible and still at least the profile's target size
   - Needs: —
+
+### Questionnaire review 2 (5 Nov 2026)
+
+*Bekzod filled in the whole questionnaire again as a parent (English UI) on the build with the 1 Nov fixes. Every point
+has a decision; the source is "FlexiKeys — parent questionnaire review 2" (5 Nov 2026). Order: B72 to B76.*
+
+- [ ] **Bekzod** — `B72` Step A: date fields, height and weight units and ranges, no arrows, Caregiver, home languages (2.1–2.6)
+  - Done when: Day / Month / Year are equal and start empty; height 30–250 cm and weight 5–200 kg on the website and the server; ft-in and lb work and save cm / kg; no number field shows arrows or changes on mouse wheel; A5 shows "Caregiver"; A7_langs takes several languages including English and old A7 answers still work
+  - Needs: —
+- [ ] **Bekzod** — `B73` Section intro screen (3)
+  - Done when: entering each section forward shows the big title, which moves into the banner; back navigation and reduced motion show no intro; it works at phone width and in dark mode
+  - Needs: B72
+- [ ] **Bekzod** — `B74` Wording and options (5.1–5.11)
+  - Done when: every text in section 5 is in place in en and ru with a uz draft; paired options untick each other and old double answers load as "by themselves"; new `always` / `never` / `not_sure` options work with the rules; the cases files cover the new ids
+  - Needs: B73
+- [ ] **Bekzod** — `B75` Help nearby and goals (6.1, 6.2)
+  - Done when: the old center question is retired and its answers map to `_place` / `_lang`; places use the new answers where data allows; J9 shows the four new goals in two groups and they feed the plan (or the TASKS line is written)
+  - Needs: B74
+- [ ] **Bekzod** — `B76` Quick check and hiding baby questions (4.1, 4.2)
+  - Done when: a test in `questionnaire.test.ts` counts the questions shown for personas M, W and S and passes (M's limit: see "Optional questions folded" in section 3); skipped sections are not counted or shown; typical answers are worked out on read and labelled in the therapist view; old children without QC answers see everything as before
+  - Needs: B75
 
 ### Hosting (31 Oct 2026)
 
