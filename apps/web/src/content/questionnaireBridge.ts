@@ -1,4 +1,4 @@
-import { cpType, type QAnswer, type QAnswers } from "./questionnaire";
+import { cpType, effectiveAnswers, type QAnswer, type QAnswers } from "./questionnaire";
 
 // IQ3/IQ4: answers to the CEO's questionnaire read as the P1–P41 answers the plan engine uses, with the red flags
 // (`_hold`, `_restrictions`). The same rules as the server (apps/api/app/modules/intake/bridge.py);
@@ -38,7 +38,8 @@ function movement(a: QAnswers): string | undefined {
 
 export type PAnswers = Record<string, string | string[] | number | null>;
 
-export function pView(a: QAnswers, today: string): PAnswers {
+export function pView(saved: QAnswers, today: string): PAnswers {
+  const a = effectiveAnswers(saved, today); // B76: a hidden question counts as its typical answer
   const dx = new Set(list(a.B1));
   const p: Record<string, string | string[] | number | null | undefined> = { P1: a.A1 as string, P2: a.A2 as string, P3: a.A3 as string };
   const p9 = sorted([...dx].map((d) => DX[d]));

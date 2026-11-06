@@ -996,9 +996,18 @@ has a decision; the source is "FlexiKeys — parent questionnaire review 2" (5 N
   - home_visits stored; places data has no field for it yet.
   - online stored; places data has no field for it yet (only a clinic's slots have one).
   - Note (6 Nov 2026): no code read I8, so `rankPlaces` is new: places that fit the language and kind wishes go first, and "Free or low cost" puts the cheapest first; no place is hidden. Find help now reads goals through `rulesView` (it read raw P33, which the new questionnaire never saves). The plan keeps at most 3 goals after mapping (`.slice(0, 3)`, unchanged), and "Learn letters and numbers" and "Use hands to eat" are two goals each, so a third pick can drop out
-- [ ] **Bekzod** — `B76` Quick check and hiding baby questions (4.1, 4.2)
+- [x] **Bekzod** — `B76` Quick check and hiding baby questions (4.1, 4.2)
   - Done when: a test in `questionnaire.test.ts` counts the questions shown for personas M, W and S and passes (M's limit: see "Optional questions folded" in section 3); skipped sections are not counted or shown; typical answers are worked out on read and labelled in the therapist view; old children without QC answers see everything as before
   - Needs: B75
+  - Note (6 Nov 2026): counts, own-words boxes and section K left out: M 135 → 50, W 135 → 49, S 132 → 120. M's real limit is 50 (A 8, B 8, QC 6, DD 4, C 1, E 7, G 5, H 2, I 2, J 7). A stopwatch for persona M still needs a person; the word count gives an estimate of 8–10 minutes. E7 and E13 are `always`: QC_body does not cover bones or implants, and a typical "no" would lift a cautious restriction (rule 2). The therapist's "not asked" list is one card with a heading, not a label on each row, because that page had no view of the parent's answers before. New output: `notAsked` on `/therapist/children/{id}/form`
+- [ ] **Bekzod** — `B77` An open old round with CP1 can finish
+  - Done when: the server's `upgrade` also maps `CP1` to `CP1_types`, as the website does, and a test finishes an open old round that only has `CP1`
+  - Needs: —
+  - Note (6 Nov 2026): found during B76, left alone under "only that task"
+- [ ] **Bekzod** — `B78` The roadmap safety test has its own time limit
+  - Done when: "never selects a conflicting video — every safety combination" in `roadmap.test.ts` passes on a busy machine
+  - Needs: —
+  - Note (6 Nov 2026): 2.3 s on an idle machine, over the 5 s default when the computer is busy (failed 4 of 4 runs under load, and once beside the server tests). It is a time limit, never a wrong answer. Not caused by B75: the test uses none of the new goals
 
 ### Hosting (31 Oct 2026)
 

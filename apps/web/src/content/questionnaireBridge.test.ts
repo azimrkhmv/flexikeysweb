@@ -49,6 +49,11 @@ const CASES: { name: string; answers: QAnswers }[] = [
   { name: "goals: memory, attention, speech", answers: { B1: ["developmental_delay"], J9: ["memory", "attention", "speech"] } },
   { name: "goals: speech and communicate are one goal", answers: { B1: ["cp"], J9: ["speech", "communicate", "walk"] } },
   { name: "goals: letters and numbers", answers: { B1: ["cp"], J9: ["letters_numbers", "sit"] } },
+  // B76: the rules read the typical answers of what was not asked; E7 and E13 are always asked.
+  { name: "qc: no difficulty anywhere", answers: { QC_move: "none", QC_hands: "none", QC_body: "none", QC_senses: "none", QC_talk: "none", QC_daily: "none", A2: "2016-05-01", B1: ["dcd"], E7: "no", E13: "no", B6: "no", B8: "no" } },
+  { name: "qc: E7 and E13 not answered stay cautious", answers: { QC_move: "none", QC_hands: "none", QC_body: "none", QC_senses: "none", QC_talk: "none", QC_daily: "none", A2: "2016-05-01", B1: ["dcd"] } },
+  { name: "qc: walks alone, a lot", answers: { QC_move: "a_lot", QC_hands: "a_lot", QC_body: "a_lot", QC_senses: "a_lot", QC_talk: "a_lot", QC_daily: "a_lot", A2: "2016-05-01", B1: ["dcd"], C6: "alone_7m" } },
+  { name: "qc: old round fills nothing", answers: { A2: "2016-05-01", B1: ["dcd"], C5: "alone_over_1min" } },
 ];
 
 const BACKEND = new URL("./backend/", import.meta.url);

@@ -65,6 +65,8 @@ export interface DB {
   therapistProfiles: TherapistProfile[];
   /** T2–T11 per child and therapist (B23). */
   therapistAnswers: { childId: string; therapistId: string; answers: TherapistAnswers; at: string }[];
+  /** Live mode: the server's "not asked" questions per child (a therapist has no raw answers); the demo works them out. */
+  notAsked?: Record<string, string[]>;
   /** A therapist's replies to the parent's movement clips (T9, B25). `clipId` is the P40 media id. */
   clipReplies: { id: string; childId: string; clipId: string; therapistId: string; text: string; at: string; name?: string }[];
   /** Live mode: the clips on the server (P40 movement clips), with a short-lived link to watch each. */

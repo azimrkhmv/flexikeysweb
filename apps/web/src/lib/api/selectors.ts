@@ -7,6 +7,7 @@ import { computeMetrics, startingProfile, withFloors } from "../adaptive";
 import { levelAfter } from "../roadmap";
 import { AREAS, startingTheta, type Area } from "../skill";
 import type { Answers } from "@/content/intake";
+import { typicalFilled } from "@/content/questionnaire";
 import { rulesView } from "@/content/questionnaireBridge";
 import { FREE, TRIAL_DAYS, TRIAL_REMIND_DAYS } from "@/content/plans";
 import { PRICE_FRESH_DAYS } from "@/content/places";
@@ -207,6 +208,13 @@ export const sel = {
   therapistProfile: (db: DB, userId: string) => (db.therapistProfiles ?? []).find((p) => p.userId === userId) ?? null,
   therapistAnswers: (db: DB, childId: string, therapistId: string) =>
     (db.therapistAnswers ?? []).find((r) => r.childId === childId && r.therapistId === therapistId)?.answers ?? {},
+  /** Questions the plan reads as their typical answer: the parent said "No difficulty" in the Quick check (B76). */
+  notAsked(db: DB, childId: string): string[] {
+    if (db.notAsked?.[childId]) return db.notAsked[childId];
+    const round = sel.intakeRound(db, childId);
+    if (!round || !round.questionnaire || round.questionnaire === "p41") return [];
+    return typicalFilled(sel.intakeAnswers(db, childId, round.round), localDate());
+  },
   /** The parent's answers the therapists replaced, and by whom (newest wins), plus their messages (T11), newest first. */
   therapistUpdates(db: DB, childId: string) {
     const live = db.answersInUse?.[childId];

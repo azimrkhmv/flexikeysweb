@@ -244,23 +244,37 @@ async def therapist_input(db: AsyncSession, child_id: uuid.UUID, health: bool) -
     )
 
 
-async def _round_answers(db: AsyncSession, round_id: uuid.UUID | None) -> dict[str, Any]:
-    """A round's answers as the rules read them (the CEO's questionnaire through intake/bridge.py, IQ3)."""
+async def _saved_answers(db: AsyncSession, round_id: uuid.UUID | None) -> dict[str, Any]:
     rows = await db.execute(
         select(IntakeAnswer.question_id, IntakeAnswer.value, IntakeAnswer.secret).where(
             IntakeAnswer.round_id == round_id
         )
     )
-    answers = {q: decrypt_json(secret) if secret else value for q, value, secret in rows}
-    questionnaire = await db.scalar(select(IntakeRound.questionnaire).where(IntakeRound.id == round_id))
-    return rules_view(questionnaire or "p41", answers, datetime.now(TASHKENT).date())
+    return {q: decrypt_json(secret) if secret else value for q, value, secret in rows}
+
+
+async def _round_answers(db: AsyncSession, round_id: uuid.UUID | None) -> dict[str, Any]:
+    """A round's answers as the rules read them (the CEO's questionnaire through intake/bridge.py, IQ3)."""
+    questionnaire_id = await db.scalar(select(IntakeRound.questionnaire).where(IntakeRound.id == round_id))
+    return rules_view(questionnaire_id or "p41", await _saved_answers(db, round_id), datetime.now(TASHKENT).date())
+
+
+async def _latest_round(db: AsyncSession, child_id: uuid.UUID) -> uuid.UUID | None:
+    return await db.scalar(
+        select(IntakeRound.id).where(IntakeRound.child_id == child_id).order_by(IntakeRound.number.desc()).limit(1)
+    )
 
 
 async def latest_parent_answers(db: AsyncSession, child_id: uuid.UUID) -> dict[str, Any]:
-    last = await db.scalar(
-        select(IntakeRound.id).where(IntakeRound.child_id == child_id).order_by(IntakeRound.number.desc()).limit(1)
-    )
-    return await _round_answers(db, last)
+    return await _round_answers(db, await _latest_round(db, child_id))
+
+
+async def _not_asked(db: AsyncSession, child_id: uuid.UUID) -> list[str]:
+    """B76: the questions the plan reads as their typical answer, because the parent said "No difficulty"."""
+    last = await _latest_round(db, child_id)
+    if await db.scalar(select(IntakeRound.questionnaire).where(IntakeRound.id == last)) in (None, "p41"):
+        return []
+    return questionnaire.typical_filled(await _saved_answers(db, last), datetime.now(TASHKENT).date())
 
 
 async def child_limits(db: AsyncSession, child: Child) -> tuple[frozenset[str], dict[str, dict[str, str]]]:
@@ -371,6 +385,7 @@ class FormOut(ApiModel):
     answers: dict[str, Any]  # this therapist's own answers
     missing: list[str]  # required answers still to give
     parent_answers: dict[str, Any]  # what the parent said to the questions the form confirms or corrects
+    not_asked: list[str] = Field(default=[])  # read as their typical answer: the parent said "No difficulty" (B76)
     plan_rebuilt: bool = False  # this save changed the child's plan (A8.5)
 
 
@@ -384,6 +399,7 @@ async def _form(db: AsyncSession, user: User, child_id: uuid.UUID, profession: P
         answers=mine,
         missing=[q for q in required(profession) if q not in mine],
         parent_answers={q: parent[q] for q in ("P10", "P11", "P12", "P14", "P33") if q in parent},
+        not_asked=await _not_asked(db, child_id),
     )
 
 

@@ -349,6 +349,7 @@ export function useLiveDb(): DB {
         db.consents.push({ id: `therapist-${c.id}`, childId: c.id, scope: "therapist_sharing", version: "", grantedBy: "", grantedAt: "" });
         const form = views[k * VIEWS]?.data as FormOut | undefined;
         if (form) db.therapistAnswers.push({ childId: c.id, therapistId: user.id, answers: form.answers, at: "" });
+        if (form) (db.notAsked ??= {})[c.id] = form.notAsked ?? [];
         const clips = clipsFrom(c.id, (views[k * VIEWS + 1]?.data as ClipOut[] | undefined) ?? []);
         db.clips!.push(...clips.clips);
         db.clipReplies.push(...clips.replies);

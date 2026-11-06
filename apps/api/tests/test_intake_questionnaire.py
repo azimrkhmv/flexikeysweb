@@ -20,6 +20,7 @@ from tests.test_children import API, add_child, parent
 from tests.test_intake_rounds import finish, next_round, three_months_pass
 from tests.test_intake_save import health_consent, raw, save, saved
 from tests.test_storage import bucket  # noqa: F401 (makes the test bucket)
+from tests.test_therapist_form import PHYSIO, share
 from tests.test_videos_register import title
 
 NEW = questionnaire.SET
@@ -108,6 +109,42 @@ def test_an_old_home_language_answer_finishes_its_round_and_moves_to_the_next_on
     three_months_pass(client, child)
     r = next_round(client, owner, child).json()
     assert r["answers"]["A7_langs"] == ["russian"] and "A7" not in r["answers"]
+
+
+def test_a_quick_check_round_finishes_and_the_therapist_sees_what_was_not_asked(client: TestClient) -> None:
+    """B76: "No difficulty" hides its section; nothing typical is saved, and the therapist sees what was not asked."""
+    owner = parent(client)
+    child = add_child(client, owner)
+    health_consent(client, owner, child)
+    quick = {q["id"]: "none" for q in questionnaire.QUICK_CHECK}
+    answers = complete({"A2": "2016-05-01", "B1": ["dcd"], "B3_parts": ["none"]} | quick)
+    assert {"C12", "E7", "H5_calm", "H5_active"} <= set(answers)  # always asked
+    assert "E13" in questionnaire.visible(answers, date.today())  # always asked, and optional
+    assert not {"C3", "C5", "C6", "D4", "E3", "F1", "G1", "H1"} & set(answers)
+    assert save(client, owner, child, answers).status_code == 200
+    assert finish(client, owner, child).status_code == 200
+    assert not {"C6", "F1", "G1"} & set(saved(client, owner, child))  # worked out on read, never saved
+
+    therapist = share(client, owner, child)
+    client.put(f"{API}/therapist/profile", headers=therapist, json=PHYSIO)
+    got = client.get(f"{API}/therapist/children/{child}/form", headers=therapist).json()
+    assert {"C6", "F1", "G1"} <= set(got["notAsked"]) and "C12" not in got["notAsked"]
+    assert got["parentAnswers"]["P12"] == "walks"  # the plan reads the typical answer
+
+
+def test_an_old_round_without_a_quick_check_is_finished_as_before(client: TestClient) -> None:
+    """B76: an old child is not asked the Quick check, nothing is filled, and the therapist has nothing to read."""
+    owner = parent(client)
+    child = add_child(client, owner)
+    health_consent(client, owner, child)
+    answers = complete({"A2": "2016-05-01", "B1": ["dcd"], "C6": "alone_7m"})
+    assert not {q["id"] for q in questionnaire.QUICK_CHECK} & set(answers)
+    assert {"F1", "G1", "H1"} <= set(answers)  # nothing was hidden
+    assert save(client, owner, child, answers).status_code == 200
+    assert finish(client, owner, child).status_code == 200
+    therapist = share(client, owner, child)
+    client.put(f"{API}/therapist/profile", headers=therapist, json=PHYSIO)
+    assert client.get(f"{API}/therapist/children/{child}/form", headers=therapist).json()["notAsked"] == []
 
 
 def test_a_round_is_finished_only_with_the_health_consent(client: TestClient) -> None:

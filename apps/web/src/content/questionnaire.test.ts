@@ -2,12 +2,19 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import mine from "./backend/questionnaire.json";
 import { intake } from "@/messages/intake";
-import { bodyPattern, cmFromFtIn, cpType, ftInFromCm, homeLanguage, inLang, kgFromLb, ladderTicks, ladderToggle, ladderValue, lbFromKg, offersNotSure, Q_BY_ID, QUESTIONNAIRE, shownOptions, toggleOption, typedProblem, upgrade, visible, type QAnswer, type QAnswers } from "./questionnaire";
+import { bodyPattern, cmFromFtIn, cpType, effectiveAnswers, ftInFromCm, homeLanguage, inLang, kgFromLb, ladderTicks, ladderToggle, ladderValue, lbFromKg, offersNotSure, Q_BY_ID, QUESTIONNAIRE, quickCheckDefaults, quickCheckOn, shownOptions, toggleOption, typedProblem, typicalFilled, upgrade, visible, type QAnswer, type QAnswers } from "./questionnaire";
 
 // IQ1: the questionnaire file is the server's, and the cases below fix which questions each sample child is shown.
 // questionnaire_cases.json (here and a copy in apps/api/tests) makes the server prove the same. Regenerate with
 // UPDATE_BACKEND=1 npm test, then copy it to apps/api/tests/.
 const TODAY = "2026-10-22";
+const QC_IDS = ["QC_move", "QC_hands", "QC_body", "QC_senses", "QC_talk", "QC_daily"];
+const QC_ALL = (v: string): QAnswers => Object.fromEntries(QC_IDS.map((id) => [id, v]));
+// The personas of the 5 Nov review: only what is needed to place each child; the rest of the answers do not change what shows.
+const M: QAnswers = { ...QC_ALL("none"), QC_body: "some", QC_talk: "some", A2: "2016-05-01", A3: "girl", B1: ["developmental_delay"], B3_parts: ["face_mouth"], B7: ["intellectual"], B6: "no", B8: "no", DD3: "no", E1: "normal", E3: "never", E6_now: "no", E7: "no", E13: "no", I1: ["none"], J9: ["memory", "speech"], G1: ["single_words"] };
+const W: QAnswers = { ...QC_ALL("none"), QC_talk: "a_lot", A2: "2011-05-01", A3: "boy", B1: ["developmental_delay"], B3_parts: ["none"], B6: "no", B8: "no", DD3: "no", E7: "no", E13: "no", I1: ["none"], G1: ["sentences"] };
+const S: QAnswers = { ...QC_ALL("a_lot"), A2: "2023-05-01", B1: ["cp"], B3_parts: ["left_arm", "right_arm", "left_leg", "right_leg", "trunk"], CP1_types: ["spastic", "dyskinetic"], C10: "v", C3: "cant_sit", C5: "cant", C6: "doesnt_step", G1: ["face_crying"], B6: "no", B8: "no", CP3: "no", E1: "stiff", E3: "sometimes", E7: "no", E13: "no", I1: ["physio"] };
+
 const CASES: { name: string; answers: QAnswers }[] = [
   { name: "no answers yet", answers: {} },
   {
@@ -65,10 +72,25 @@ const CASES: { name: string; answers: QAnswers }[] = [
   { name: "old round: I8", answers: { I8: ["state", "private", "uzbek_doctor", "russian_doctor"] } },
   { name: "old round: I8, place only", answers: { I8: ["private"] } },
   { name: "I8 replaced", answers: { I8: ["state"], I8_lang: ["en"] } },
+  // B76: the Quick check, typical answers, the baby-level and age hiding, and old rounds.
+  { name: "qc: persona M", answers: M },
+  { name: "qc: persona W", answers: W },
+  { name: "qc: persona S", answers: S },
+  { name: "qc: walks alone, short version", answers: { ...QC_ALL("some"), A2: "2011-03-01", B1: ["dcd"], C6: "alone_7m" } },
+  { name: "qc: stands alone, a lot", answers: { ...QC_ALL("a_lot"), A2: "2016-03-01", B1: ["developmental_delay"], C5: "alone_10_60s" } },
+  { name: "qc: walks with a walker, a lot", answers: { ...QC_ALL("a_lot"), A2: "2016-03-01", B1: ["developmental_delay"], C6: "walker_two_hands" } },
+  { name: "qc: CP, no difficulty moving", answers: { ...QC_ALL("none"), A2: "2016-03-01", B1: ["cp"], CP1_types: ["spastic"] } },
+  { name: "qc: a parent's answer beats typical", answers: { ...QC_ALL("none"), A2: "2016-03-01", B1: ["dcd"], C6: "one_hand", F6: "hard", E3: null } },
+  { name: "qc: 2-year-old, no difficulty", answers: { ...QC_ALL("none"), A2: "2024-06-01", B1: ["other"] } },
+  { name: "qc: 5-year-old with delay", answers: { ...QC_ALL("a_lot"), A2: "2021-06-01", B1: ["developmental_delay"] } },
+  { name: "qc: just turned 6, delay", answers: { ...QC_ALL("a_lot"), A2: "2020-10-22", B1: ["developmental_delay"] } },
+  { name: "qc: started, not answered", answers: { A2: "2016-03-01", B1: ["dcd"], B3_parts: ["none"] } },
+  { name: "qc: old round, older than 6, walks alone", answers: { A2: "2016-03-01", B1: ["developmental_delay"], B3_parts: ["none"], C6: "alone_7m" } },
 ];
 
 const BACKEND = new URL("./backend/", import.meta.url);
 const API_COPY = new URL("../../../api/tests/questionnaire_cases.json", import.meta.url);
+const byOrder = (x: string, y: string) => QUESTIONNAIRE.questions.findIndex((q) => q.id === x) - QUESTIONNAIRE.questions.findIndex((q) => q.id === y);
 
 describe("questionnaire (IQ1)", () => {
   it("is the server's file", () => {
@@ -187,6 +209,8 @@ describe("questionnaire (IQ1)", () => {
       visible: visible(answers, TODAY),
       home: Object.fromEntries(["uz", "ru", "en"].map((ui) => [ui, homeLanguage(answers, ui)])),
       upgraded: Object.fromEntries(["A7_langs", "C22", "C24", "I8_place", "I8_lang"].flatMap((id) => { const v = upgrade(answers)[id]; return v === undefined ? [] : [[id, v]]; })),
+      effective: effectiveAnswers(answers, TODAY),
+      filled: typicalFilled(answers, TODAY),
       options: Object.fromEntries(
         QUESTIONNAIRE.questions.filter((q) => q.option_show).map((q) => [q.id, shownOptions(q.id, answers, TODAY)]),
       ),
@@ -290,6 +314,123 @@ describe("questionnaire (IQ1)", () => {
       for (const g of q.option_groups!) if (g.text) for (const l of ["en", "uz", "ru"]) expect(g.text[l], `${q.id} ${l}`).toBeTruthy();
     }
     expect(Q_BY_ID.B11.options![0]).toBe("none");
+  });
+
+  describe("Quick check (B76)", () => {
+    /** What a parent sees: the cards on screen, so no "own words" box and nothing behind "Add more details". */
+    const card = (id: string) => Q_BY_ID[id].step !== "K" && !(id.endsWith("_note") && Q_BY_ID[id.slice(0, -5)]?.ladder); // section K is not in the wizard yet
+    const count = (a: QAnswers) => visible(a, TODAY).filter((id) => card(id) && !Q_BY_ID[id].fold).length;
+    /** The same child before the Quick check: every answer given, none of them to the Quick check. */
+    const before = (a: QAnswers) => {
+      const old = { ...effectiveAnswers(a, TODAY) };
+      for (const id of QC_IDS) delete old[id];
+      return visible({ ...old, J1: "10" }, TODAY).filter(card).length;
+    };
+    const sections = (a: QAnswers) => [...new Set(visible(a, TODAY).map((id) => Q_BY_ID[id].step))];
+    const BABY = ["C1", "C2", "C3", "C4", "C14", "C15", "C17"];
+    const MONTHS = ["DD2", "DD2_sit", "DD2_walk", "DD2_word"];
+
+    it("persona counts (written in the report)", () => {
+      expect(count(M)).toBeLessThanOrEqual(50); // the real number: "Optional questions folded" in TASKS.md section 3
+      const w = visible(W, TODAY);
+      for (const id of [...BABY, ...MONTHS]) expect(w, id).not.toContain(id);
+      expect([before(M), count(M), before(W), count(W), before(S), count(S)]).toEqual([135, 50, 135, 49, 132, 120]);
+    });
+
+    it("a section's answer decides what it asks", () => {
+      const inC = (a: QAnswers) => visible(a, TODAY).filter((id) => Q_BY_ID[id].step === "C" && !id.endsWith("_note"));
+      const base = { A2: "2016-05-01", B1: ["dcd"] };
+      expect(inC({ ...QC_ALL("none"), ...base })).toEqual(["C12"]); // what must always be asked stays
+      expect(inC({ ...QC_ALL("some"), ...base })).toEqual(["C5", "C6", "C3", "C1", "C11", "C12"].filter((id) => visible({ ...base }, TODAY).includes(id)).sort(byOrder));
+      expect(inC({ ...QC_ALL("a_lot"), ...base }).length).toBeGreaterThan(inC({ ...QC_ALL("some"), ...base }).length);
+      expect(sections({ ...QC_ALL("none"), ...base })).not.toContain("D"); // nothing left: no banner, not counted
+      expect(sections({ ...QC_ALL("none"), ...base })).toContain("C");
+      for (const s of ["C", "D", "E", "F", "G", "H"]) expect(QUESTIONNAIRE.questions.filter((q) => q.step === s && q.core).length, s).toBeLessThanOrEqual(6);
+    });
+
+    it("every question a none can hide has a typical answer, in today's options", () => {
+      for (const q of QUESTIONNAIRE.questions.filter((x) => "CDEFGH".includes(x.step) && x.step.length === 1 && x.audience === "parent" && !x.always)) {
+        if (q.id.endsWith("_note") && Q_BY_ID[q.id.slice(0, -5)]?.ladder) continue;
+        expect("typical" in q, q.id).toBe(true);
+        for (const o of [q.typical ?? []].flat()) expect(q.options, q.id).toContain(o);
+      }
+    });
+
+    it("typical answers fill only what is missing, and never a saved answer", () => {
+      const a = { ...QC_ALL("none"), A2: "2016-03-01", B1: ["dcd"], C6: "one_hand", F6: "hard", E3: null };
+      const e = effectiveAnswers(a, TODAY);
+      expect([e.C6, e.F6, e.E3]).toEqual(["one_hand", "hard", null]); // the parent's, "Not sure" included
+      expect([e.C5, e.F1, e.H1]).toEqual(["alone_over_1min", "yes", "self"]);
+      expect(a).toEqual({ ...QC_ALL("none"), A2: "2016-03-01", B1: ["dcd"], C6: "one_hand", F6: "hard", E3: null }); // nothing saved over
+      expect(typicalFilled(a, TODAY)).not.toContain("C6");
+      expect(effectiveAnswers({ ...QC_ALL("some"), A2: "2016-03-01" }, TODAY).C5).toBeUndefined(); // "A little" fills nothing
+    });
+
+    it("a skill gained later stays empty below its age", () => {
+      const at = (born: string) => effectiveAnswers({ ...QC_ALL("none"), A2: born, B1: ["other"] }, TODAY);
+      const small = at("2024-06-01"); // 28 months
+      for (const id of ["C8", "C9", "C20", "D13_buttons", "D13_zip", "H2", "H3", "G10"]) expect(small[id], id).toBeUndefined();
+      expect(small.C6).toBe("alone_7m");
+      const big = at("2012-06-01");
+      for (const id of ["C8", "C9", "C20", "D13_buttons", "D13_zip", "H2", "H3", "G10"]) expect(big[id], id).toBeDefined();
+    });
+
+    it("cerebral palsy: no difficulty moving or with the hands still gets the short version", () => {
+      const cp = { ...QC_ALL("none"), A2: "2016-03-01", B1: ["cp"], CP1_types: ["spastic"] };
+      const v = visible(cp, TODAY);
+      for (const id of ["C10", "C5", "C6", "D1", "D4"]) expect(v, id).toContain(id);
+      expect(v).not.toContain("C18"); // not core
+      expect(effectiveAnswers(cp, TODAY).C6).toBeUndefined(); // "A little" fills nothing
+      expect(effectiveAnswers(cp, TODAY).F1).toBe("yes"); // the other sections stay "No difficulty"
+    });
+
+    it("the rules read the walking and sitting steps as before", () => {
+      const walks = { ...QC_ALL("a_lot"), A2: "2016-03-01", B1: ["developmental_delay"] };
+      for (const id of BABY) expect(visible({ ...walks, C6: "alone_few_m" }, TODAY), id).not.toContain(id);
+      for (const id of BABY) expect(visible({ ...walks, C5: "alone_under_10s" }, TODAY), id).not.toContain(id);
+      expect(visible({ ...walks, C6: "one_hand" }, TODAY)).toContain("C3");
+      expect(effectiveAnswers({ ...walks, C6: "alone_7m" }, TODAY).C3).toBe("free_30min");
+      const filled = effectiveAnswers({ ...walks, C6: "alone_few_m" }, TODAY);
+      expect(filled.C4).toBe("walks");
+      const f = visible({ ...walks, C6: "alone_few_m" }, TODAY); // not R6: walking questions stay
+      for (const id of ["C7", "C8", "C21", "C22"]) expect(f, id).toContain(id);
+      expect(visible({ ...walks, C3: "cant_sit" }, TODAY)).not.toContain("C7"); // R6
+    });
+
+    it("the date questions stop at 6 years", () => {
+      const at = (born: string) => visible({ ...QC_ALL("a_lot"), A2: born, B1: ["developmental_delay"] }, TODAY);
+      for (const id of MONTHS) expect(at("2020-11-01"), id).toContain(id); // 71 months
+      for (const id of MONTHS) expect(at("2020-10-22"), id).not.toContain(id); // 72 months
+    });
+
+    it("an old child without Quick check answers sees everything, and nothing is filled", () => {
+      const old = { A2: "2016-03-01", B1: ["developmental_delay"], B3_parts: ["none"], C6: "alone_7m" };
+      expect(quickCheckOn(old)).toBe(false);
+      expect(effectiveAnswers(old, TODAY)).toEqual(old);
+      expect(typicalFilled(old, TODAY)).toEqual([]);
+      const v = visible(old, TODAY);
+      for (const id of [...MONTHS, "C3", "D4"]) expect(v, id).toContain(id);
+      for (const id of QC_IDS) expect(v, id).not.toContain(id);
+      expect(quickCheckDefaults(old)).toEqual(old);
+    });
+
+    it("moving starts on no difficulty when no body part is affected, or only the face and mouth", () => {
+      expect(quickCheckDefaults({ B3_parts: ["none"] }).QC_move).toBe("none");
+      expect(quickCheckDefaults({ B3_parts: ["face_mouth"] }).QC_move).toBe("none");
+      expect(quickCheckDefaults({ B3_parts: ["face_mouth", "trunk"] }).QC_move).toBeUndefined();
+      expect(quickCheckDefaults({}).QC_move).toBeUndefined();
+      expect(quickCheckDefaults({ B3_parts: ["none"], QC_move: "a_lot" }).QC_move).toBe("a_lot"); // the parent's answer stays
+    });
+
+    it("the Quick check has no Not sure and comes right after section B", () => {
+      const steps = QUESTIONNAIRE.steps;
+      expect(steps[steps.indexOf("B") + 1]).toBe("QC");
+      for (const id of QC_IDS) expect(offersNotSure(Q_BY_ID[id]), id).toBe(false);
+      const ids = QUESTIONNAIRE.questions.map((q) => q.id);
+      expect(ids.slice(ids.indexOf("B13") + 1, ids.indexOf("B13") + 7)).toEqual(QC_IDS);
+      const inC = QUESTIONNAIRE.questions.filter((q) => q.step === "C").map((q) => q.id);
+      expect(inC.slice(0, 5)).toEqual(["C5", "C5_note", "C5_minutes", "C6", "C6_note"]);
+    });
   });
 
   it("refuses an age in months larger than the child's age (B61)", () => {

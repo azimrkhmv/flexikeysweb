@@ -54,6 +54,24 @@ export interface QQuestion {
   not_sure_text?: Record<string, string>;
   /** Shown right under the question before it, indented, as part of it (B74). */
   follow_up?: boolean;
+  /** A Quick check question: the section it decides (B76). */
+  controls?: string;
+  /** While this holds, "No difficulty" on this Quick check question counts as "A little" (B76). */
+  at_least_some?: Cond;
+  /** Kept in the section's short version, for "A little" in the Quick check (B76). */
+  core?: boolean;
+  /** Asked whatever the Quick check says (B76). */
+  always?: boolean;
+  /** Hidden, and filled with `typical`, while this holds (B76). */
+  hide_when?: Cond;
+  /** Asked only below this age in months (B76). */
+  under_months?: number;
+  /** The answer of a child with no difficulty, worked out on read and never saved; null: no such answer (B76). */
+  typical?: string | string[] | null;
+  /** Below this age in months `typical` stays empty: a skill a child only gains later (B76). */
+  typical_from_age?: number;
+  /** Behind the section's "Add more details" link until opened or answered (decision of 6 Nov 2026). */
+  fold?: boolean;
 }
 
 export const QUESTIONNAIRE = data as unknown as {
@@ -185,14 +203,72 @@ export function holds(cond: Cond | null | undefined, a: QAnswers, f: Record<Fact
   return inRange(v, cond);
 }
 
-export const shown = (id: string, a: QAnswers, today: string) => holds(Q_BY_ID[id].show, a, facts(a, today));
+// The Quick check (B76): six questions decide how much of sections C to H a parent is asked. "No difficulty" hides a
+// section, and its questions count as their `typical` answer; "A little" keeps its `core` questions; "A lot" keeps them
+// all. Children who stand or walk alone skip the baby-level questions the same way (`hide_when`), and the dates of
+// `under_months` stop at 6 years. All of this is worked out on read: a saved answer is never changed.
+type Facts = ReturnType<typeof facts>;
+const QUICK_CHECK = QUESTIONNAIRE.questions.filter((q) => q.controls);
+const LATER = QUESTIONNAIRE.questions
+  .filter((q) => q.audience === "parent" && QUESTIONNAIRE.steps.indexOf(q.step) > QUESTIONNAIRE.steps.indexOf("QC"))
+  .map((q) => q.id);
+
+/** False for an old round: answers after the Quick check and none to it. Such a round shows everything, as before. */
+export const quickCheckOn = (a: QAnswers) => QUICK_CHECK.some((q) => a[q.id] !== undefined) || !LATER.some((id) => a[id] !== undefined);
+
+function sectionAnswer(step: string, a: QAnswers, f: Facts): QAnswer {
+  const qc = QUICK_CHECK.find((q) => q.controls === step);
+  if (!qc) return undefined;
+  return a[qc.id] === "none" && qc.at_least_some && holds(qc.at_least_some, a, f) ? "some" : a[qc.id];
+}
+
+function skipped(question: QQuestion, a: QAnswers, f: Facts, months: number | null): boolean {
+  const owner = question.id.endsWith("_note") ? Q_BY_ID[question.id.slice(0, -"_note".length)] : undefined;
+  const q = owner?.ladder ? owner : question; // the "own words" box goes with its question
+  if (q.under_months !== undefined && months !== null && months >= q.under_months) return true;
+  if (q.hide_when && holds(q.hide_when, a, f)) return true;
+  if (q.always) return false;
+  const answer = sectionAnswer(q.step, a, f);
+  return answer === "none" || (answer === "some" && !q.core);
+}
+
+/** The answers the rules read: a missing answer to a question the Quick check or the child's ability hides counts as
+ * its `typical`. Same as the server's effective_answers. */
+export function effectiveAnswers(a: QAnswers, today: string): QAnswers {
+  if (!quickCheckOn(a)) return a;
+  const f = facts(a, today);
+  const months = ageInMonths(a.A2, today);
+  const out = { ...a };
+  for (const q of QUESTIONNAIRE.questions) {
+    if (q.typical === undefined || q.typical === null || a[q.id] !== undefined) continue;
+    if (q.typical_from_age !== undefined && (months === null || months < q.typical_from_age)) continue;
+    if (sectionAnswer(q.step, a, f) === "none" || (q.hide_when && holds(q.hide_when, a, f))) out[q.id] = q.typical;
+  }
+  return out;
+}
+
+/** The questions answered by effectiveAnswers, for the therapist's "Not asked" label. */
+export const typicalFilled = (a: QAnswers, today: string) => Object.entries(effectiveAnswers(a, today)).filter(([id, v]) => v !== undefined && a[id] === undefined).map(([id]) => id);
+
+/** Before the parent answers: "No difficulty" for moving when no body part is affected, or only the face and mouth. */
+export function quickCheckDefaults(a: QAnswers): QAnswers {
+  const parts = a.B3_parts;
+  const clear = Array.isArray(parts) && parts.length > 0 && parts.every((p) => p === "none" || p === "face_mouth");
+  return clear && a.QC_move === undefined && quickCheckOn(a) ? { ...a, QC_move: "none" } : a;
+}
+
+export function shown(id: string, a: QAnswers, today: string) {
+  const e = effectiveAnswers(a, today);
+  return holds(Q_BY_ID[id].show, e, facts(e, today));
+}
 
 /** The options this parent sees (R8, R11, R15 hide some); null for a question without options. */
 export function shownOptions(id: string, a: QAnswers, today: string): string[] | null {
   const q = Q_BY_ID[id];
   if (!q.options) return null;
-  const f = facts(a, today);
-  return q.options.filter((o) => holds(q.option_show?.[o], a, f));
+  const e = effectiveAnswers(a, today);
+  const f = facts(e, today);
+  return q.options.filter((o) => holds(q.option_show?.[o], e, f));
 }
 
 /** Questions with their own "Don't know" answer: no automatic "Not sure" next to it (B66; in Uzbek both read
@@ -200,7 +276,7 @@ export function shownOptions(id: string, a: QAnswers, today: string): string[] |
 export const OWN_DONT_KNOW = new Set(["CP1", "CP1_types", "DS1", "E1"]);
 /** Questions without the automatic "Not sure": name, birthday and the family facts (B60, TASKS.md section 3
  * replaces spec §5 for these), and OWN_DONT_KNOW. Same list as the server's. */
-export const NO_NOT_SURE = new Set(["A1", "A2", "A3", "A4", "A4_kg", "A5", "A7_langs", "A9", "B1", "B3_parts", ...OWN_DONT_KNOW]);
+export const NO_NOT_SURE = new Set(["A1", "A2", "A3", "A4", "A4_kg", "A5", "A7_langs", "A9", "B1", "B3_parts", "QC_move", "QC_hands", "QC_body", "QC_senses", "QC_talk", "QC_daily", ...OWN_DONT_KNOW]);
 
 /** Does this question get the automatic "Not sure" (stored as null)? Required ones do, optional ones only with
  * `not_sure` (B63), and never one that has a "not_sure" option of its own. */
@@ -308,6 +384,12 @@ export function typedProblem(q: QQuestion, v: QAnswer, a: QAnswers, today: strin
 
 /** Every question this child's parent is asked now, in questionnaire order (sign-up questions left out). */
 export function visible(a: QAnswers, today: string, audience: "parent" | "therapist" = "parent"): string[] {
-  const f = facts(a, today);
-  return QUESTIONNAIRE.questions.filter((q) => q.audience === audience && !q.signup && holds(q.show, a, f)).map((q) => q.id);
+  const e = effectiveAnswers(a, today);
+  const f = facts(e, today);
+  const on = quickCheckOn(a);
+  const saved = facts(a, today);
+  const months = ageInMonths(a.A2, today);
+  return QUESTIONNAIRE.questions
+    .filter((q) => q.audience === audience && !q.signup && holds(q.show, e, f) && (on ? !skipped(q, a, saved, months) : !q.controls))
+    .map((q) => q.id);
 }

@@ -18,9 +18,9 @@ export const chip =
 
 /** A chip with a radio or checkbox inside. `onClear`: a radio already chosen is cleared by choosing it again (a click,
  * or Space on the keyboard; B63). A checkbox chip shows a small box with a tick, so "tick several" is clear (B68). */
-export function Choice({ name, type, checked, onChange, label, onClear }: { name: string; type: "radio" | "checkbox"; checked: boolean; onChange: () => void; label: string; onClear?: () => void }) {
+export function Choice({ name, type, checked, onChange, label, onClear, className = "" }: { name: string; type: "radio" | "checkbox"; checked: boolean; onChange: () => void; label: string; onClear?: () => void; className?: string }) {
   return (
-    <label className={chip}>
+    <label className={`${chip} ${className}`}>
       <input type={type} name={name} checked={checked} onChange={onChange} onClick={checked ? onClear : undefined} className="sr-only" />
       {type === "checkbox" && (
         <span aria-hidden className={`mr-2 grid size-5 shrink-0 place-items-center rounded-md border-2 ${checked ? "border-teal bg-teal text-white" : "border-line bg-surface"}`}>

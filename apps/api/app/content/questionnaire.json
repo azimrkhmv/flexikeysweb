@@ -1,9 +1,10 @@
 {
- "_note": "The CEO's parent intake questionnaire (16 Oct 2026, @Abdulloh Ochilov; therapist-reviewed), as data. Source of truth for the server (app/modules/intake/questionnaire.py) and the website (a copy in apps/web/src/content/backend/questionnaire.json, checked by questionnaire.test.ts). Question numbers never change and are never reused. `show` holds display rules R1-R19 and the follow-ups as one condition; `option_show` hides single options. Conditions: {q, in} (any of these answers), {q, answered}, {q, min/max} (numbers), {fact, in/min/max} with facts age (years), gmfcs, macs, cfcs (1-5, from C10/L2, D1, G2), {all}, {any}, {not}, and {ref} to a named rule in `defs`. `note` marks the team's drafts and open points for the physio. Retired 30 Oct 2026, do not reuse: B3 (replaced by B3_parts; old B3 answers still count, see body_pattern), C2_side (B3_parts covers it). `retired_options` lists options no longer shown: old answers with them stay valid and map to the named option (null: kept as they are). The fact `pattern` is the body pattern from B3_parts. Retired 30 Oct 2026, do not reuse: D12 (replaced by D12_spoon and D12_cup; old D12 answers still feed P24). `not_sure: true` on an optional question: it still offers \"Not sure\" (stored as null). CP1, DS1 and E1 have their own `dont_know` and no automatic \"Not sure\" (B66); an older round's null on them stays valid. `step_intro`: one line under each section's title saying what it asks about (B67; uz text drafted 1 Nov 2026 — native-speaker check (B44)). `ladder: true` (B68): a step-by-step skill question shown as tick boxes; the saved value stays one option, the hardest one ticked (the last in `options` order). `<id>_note`: the parent's own words about that question. Retired 1 Nov 2026, do not reuse: CP1 (replaced by CP1_types; old CP1 answers still count, see the fact cp_type). The fact `cp_type` is the CP type from CP1_types: one type ticked is that type; `mixed`, or two or more of spastic, dyskinetic and ataxic, is `mixed`; `dont_know` is `dont_know`; without a CP1_types answer, an old round's CP1 answer. Retired 1 Nov 2026, do not reuse: D13 (replaced by D13_buttons and D13_zip). Retired 1 Nov 2026, do not reuse: E6 (replaced by E6_now and E6_often; an old E6 'yes' still opens E6_where). Retired 1 Nov 2026, do not reuse: H5 (replaced by H5_calm and H5_active; P35 reads H5_active, else an old H5 answer). Retired 5 Nov 2026, do not reuse: A7 (replaced by A7_langs, which keeps A7's option ids uzbek, russian and other; old A7 answers still count, see home_language). Height and weight (A4, A4_kg) are always saved in cm and kg; ft, in and lb are converted on the website only (B72). `option_groups`: the options shown under small headings (`text` null: no heading). `pair` (B74): one skill, two choices, shown as one row: the \"by themselves\" option maps to its \"only with help\" option, `pair_text` holds the row's text under the first; an old answer with both ticked counts as \"by themselves\". `follow_up: true`: shown right under the question before it, indented. `not_sure_text`: this question's own words for the automatic \"Not sure\". Retired 5 Nov 2026, do not reuse: I8 (replaced by I8_place and I8_lang; old I8 answers map to them, see upgrade).",
+ "_note": "The CEO's parent intake questionnaire (16 Oct 2026, @Abdulloh Ochilov; therapist-reviewed), as data. Source of truth for the server (app/modules/intake/questionnaire.py) and the website (a copy in apps/web/src/content/backend/questionnaire.json, checked by questionnaire.test.ts). Question numbers never change and are never reused. `show` holds display rules R1-R19 and the follow-ups as one condition; `option_show` hides single options. Conditions: {q, in} (any of these answers), {q, answered}, {q, min/max} (numbers), {fact, in/min/max} with facts age (years), gmfcs, macs, cfcs (1-5, from C10/L2, D1, G2), {all}, {any}, {not}, and {ref} to a named rule in `defs`. `note` marks the team's drafts and open points for the physio. Retired 30 Oct 2026, do not reuse: B3 (replaced by B3_parts; old B3 answers still count, see body_pattern), C2_side (B3_parts covers it). `retired_options` lists options no longer shown: old answers with them stay valid and map to the named option (null: kept as they are). The fact `pattern` is the body pattern from B3_parts. Retired 30 Oct 2026, do not reuse: D12 (replaced by D12_spoon and D12_cup; old D12 answers still feed P24). `not_sure: true` on an optional question: it still offers \"Not sure\" (stored as null). CP1, DS1 and E1 have their own `dont_know` and no automatic \"Not sure\" (B66); an older round's null on them stays valid. `step_intro`: one line under each section's title saying what it asks about (B67; uz text drafted 1 Nov 2026 — native-speaker check (B44)). `ladder: true` (B68): a step-by-step skill question shown as tick boxes; the saved value stays one option, the hardest one ticked (the last in `options` order). `<id>_note`: the parent's own words about that question. Retired 1 Nov 2026, do not reuse: CP1 (replaced by CP1_types; old CP1 answers still count, see the fact cp_type). The fact `cp_type` is the CP type from CP1_types: one type ticked is that type; `mixed`, or two or more of spastic, dyskinetic and ataxic, is `mixed`; `dont_know` is `dont_know`; without a CP1_types answer, an old round's CP1 answer. Retired 1 Nov 2026, do not reuse: D13 (replaced by D13_buttons and D13_zip). Retired 1 Nov 2026, do not reuse: E6 (replaced by E6_now and E6_often; an old E6 'yes' still opens E6_where). Retired 1 Nov 2026, do not reuse: H5 (replaced by H5_calm and H5_active; P35 reads H5_active, else an old H5 answer). Retired 5 Nov 2026, do not reuse: A7 (replaced by A7_langs, which keeps A7's option ids uzbek, russian and other; old A7 answers still count, see home_language). Height and weight (A4, A4_kg) are always saved in cm and kg; ft, in and lb are converted on the website only (B72). `option_groups`: the options shown under small headings (`text` null: no heading). `pair` (B74): one skill, two choices, shown as one row: the \"by themselves\" option maps to its \"only with help\" option, `pair_text` holds the row's text under the first; an old answer with both ticked counts as \"by themselves\". `follow_up: true`: shown right under the question before it, indented. `not_sure_text`: this question's own words for the automatic \"Not sure\". Retired 5 Nov 2026, do not reuse: I8 (replaced by I8_place and I8_lang; old I8 answers map to them, see upgrade). `controls` (B76): a Quick check question and the section it decides: none hides the section, some keeps its `core` questions, a_lot keeps them all; `at_least_some`: when this holds, none counts as some. `always`: asked whatever the Quick check says. `hide_when`: hidden, and filled with `typical`, when this holds. `under_months`: asked only under this age. `typical`: the answer of a child with no difficulty, filled on read for a hidden question and never saved (effective_answers); null: no such answer. `typical_from_age`: below this age in months it stays empty. A round with later answers and no Quick check answer is an old round: nothing is hidden or filled. `fold: true`: behind the section's \"Add more details\" link, until opened or answered.",
  "version": "2026-11-05",
  "steps": [
   "A",
   "B",
+  "QC",
   "CP",
   "DCD",
   "DD",
@@ -38,7 +39,8 @@
    "I": "Therapy so far",
    "J": "Goals and time",
    "K": "Baseline videos",
-   "L": "Therapist assessment"
+   "L": "Therapist assessment",
+   "QC": "Quick check"
   },
   "uz": {
    "A": "Farzandingiz va oilangiz haqida",
@@ -57,7 +59,8 @@
    "I": "Shu paytgacha olingan terapiya",
    "J": "Maqsadlar va vaqt",
    "K": "Boshlangʻich videolar",
-   "L": "Terapevt baholashi"
+   "L": "Terapevt baholashi",
+   "QC": "Tezkor tekshiruv"
   },
   "ru": {
    "A": "О ребёнке и семье",
@@ -76,7 +79,8 @@
    "I": "Занятия до сих пор",
    "J": "Цели и время",
    "K": "Видео для начальной оценки",
-   "L": "Оценка терапевта"
+   "L": "Оценка терапевта",
+   "QC": "Быстрая проверка"
   }
  },
  "step_intro": {
@@ -97,7 +101,8 @@
    "I": "Therapy and exercises your child has had so far.",
    "J": "Your goals for the next 3 months and how much time you have.",
    "K": "Short videos of your child moving, for the therapist.",
-   "L": "For the therapist: assessment and goals."
+   "L": "For the therapist: assessment and goals.",
+   "QC": "Tell us what is hard for your child. We'll skip the parts that don't apply."
   },
   "uz": {
    "A": "Farzandingizning ismi, tugʻilgan sanasi, boʻyi va vazni hamda uyda kimlar yashashi.",
@@ -116,7 +121,8 @@
    "I": "Farzandingiz shu paytgacha olgan terapiya va mashqlar.",
    "J": "Keyingi 3 oy uchun maqsadlaringiz va qancha vaqtingiz borligi.",
    "K": "Terapevt uchun farzandingiz harakatlarining qisqa videolari.",
-   "L": "Terapevt uchun: baholash va maqsadlar."
+   "L": "Terapevt uchun: baholash va maqsadlar.",
+   "QC": "Farzandingizga nima qiyinligini belgilang. Qolganini oʻtkazib yuboramiz."
   },
   "ru": {
    "A": "Имя, дата рождения, рост и вес ребёнка и кто живёт с ним дома.",
@@ -135,7 +141,8 @@
    "I": "Какие занятия и упражнения у ребёнка уже были.",
    "J": "Ваши цели на ближайшие 3 месяца и сколько у вас есть времени.",
    "K": "Короткие видео движений ребёнка для терапевта.",
-   "L": "Для терапевта: оценка и цели."
+   "L": "Для терапевта: оценка и цели.",
+   "QC": "Отметьте, что ребёнку трудно. Остальное мы пропустим."
   }
  },
  "defs": {
@@ -412,6 +419,25 @@
         "never"
        ]
       }
+     ]
+    }
+   ]
+  },
+  "WALKS_ALONE": {
+   "any": [
+    {
+     "q": "C6",
+     "in": [
+      "alone_few_m",
+      "alone_7m"
+     ]
+    },
+    {
+     "q": "C5",
+     "in": [
+      "alone_under_10s",
+      "alone_10_60s",
+      "alone_over_1min"
      ]
     }
    ]
@@ -847,7 +873,8 @@
     "uz": "Uyda aka-uka yoki opa-singillari bormi? Nechta?",
     "ru": "Есть ли дома братья или сёстры? Сколько?"
    },
-   "option_text": null
+   "option_text": null,
+   "fold": true
   },
   {
    "id": "A10_ages",
@@ -877,7 +904,8 @@
     "uz": "Ularning yoshi",
     "ru": "Их возраст"
    },
-   "option_text": null
+   "option_text": null,
+   "fold": true
   },
   {
    "id": "B1",
@@ -1039,7 +1067,8 @@
     "ru": "Возраст, когда поставили диагноз"
    },
    "option_text": null,
-   "note": "30 Oct 2026: an age in months larger than the child's age is refused, with a message (B61); physio check needed"
+   "note": "30 Oct 2026: an age in months larger than the child's age is refused, with a message (B61); physio check needed",
+   "fold": true
   },
   {
    "id": "B5",
@@ -1527,7 +1556,8 @@
     "uz": "Yoki retseptning surati",
     "ru": "Или фото рецепта"
    },
-   "option_text": null
+   "option_text": null,
+   "fold": true
   },
   {
    "id": "B11",
@@ -1771,7 +1801,290 @@
     "uz": "Shifokor hujjatlarini yuklang (xulosa, kasallik tarixidan koʻchirma)",
     "ru": "Загрузите документы от врача (заключение, выписка)"
    },
-   "option_text": null
+   "option_text": null,
+   "fold": true
+  },
+  {
+   "id": "QC_move",
+   "step": "QC",
+   "kind": "single",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "none",
+    "some",
+    "a_lot"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [],
+   "text": {
+    "en": "Moving: sitting, standing, walking",
+    "uz": "Harakat: oʻtirish, turish, yurish",
+    "ru": "Движение: сидеть, стоять, ходить"
+   },
+   "option_text": {
+    "en": {
+     "none": "No difficulty",
+     "some": "A little",
+     "a_lot": "A lot"
+    },
+    "uz": {
+     "none": "Qiyinchilik yoʻq",
+     "some": "Biroz",
+     "a_lot": "Juda qiyin"
+    },
+    "ru": {
+     "none": "Нет трудностей",
+     "some": "Немного",
+     "a_lot": "Сильно"
+    }
+   },
+   "controls": "C",
+   "note": "5 Nov 2026: new, decides what section C asks (B76); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)",
+   "at_least_some": {
+    "ref": "module_cp"
+   }
+  },
+  {
+   "id": "QC_hands",
+   "step": "QC",
+   "kind": "single",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "none",
+    "some",
+    "a_lot"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [],
+   "text": {
+    "en": "Using the hands: holding, picking up, drawing",
+    "uz": "Qoʻllar: ushlash, olish, chizish",
+    "ru": "Руки: держать, брать, рисовать"
+   },
+   "option_text": {
+    "en": {
+     "none": "No difficulty",
+     "some": "A little",
+     "a_lot": "A lot"
+    },
+    "uz": {
+     "none": "Qiyinchilik yoʻq",
+     "some": "Biroz",
+     "a_lot": "Juda qiyin"
+    },
+    "ru": {
+     "none": "Нет трудностей",
+     "some": "Немного",
+     "a_lot": "Сильно"
+    }
+   },
+   "controls": "D",
+   "note": "5 Nov 2026: new, decides what section D asks (B76); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)",
+   "at_least_some": {
+    "ref": "module_cp"
+   }
+  },
+  {
+   "id": "QC_body",
+   "step": "QC",
+   "kind": "single",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "none",
+    "some",
+    "a_lot"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [],
+   "text": {
+    "en": "Body: pain, stiff muscles, breathing, chewing and swallowing",
+    "uz": "Tana: ogʻriq, qattiq mushaklar, nafas olish, chaynash va yutish",
+    "ru": "Тело: боль, напряжённые мышцы, дыхание, жевание и глотание"
+   },
+   "option_text": {
+    "en": {
+     "none": "No difficulty",
+     "some": "A little",
+     "a_lot": "A lot"
+    },
+    "uz": {
+     "none": "Qiyinchilik yoʻq",
+     "some": "Biroz",
+     "a_lot": "Juda qiyin"
+    },
+    "ru": {
+     "none": "Нет трудностей",
+     "some": "Немного",
+     "a_lot": "Сильно"
+    }
+   },
+   "controls": "E",
+   "note": "5 Nov 2026: new, decides what section E asks (B76); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)"
+  },
+  {
+   "id": "QC_senses",
+   "step": "QC",
+   "kind": "single",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "none",
+    "some",
+    "a_lot"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [],
+   "text": {
+    "en": "Seeing, hearing, paying attention",
+    "uz": "Koʻrish, eshitish, diqqat",
+    "ru": "Зрение, слух, внимание"
+   },
+   "option_text": {
+    "en": {
+     "none": "No difficulty",
+     "some": "A little",
+     "a_lot": "A lot"
+    },
+    "uz": {
+     "none": "Qiyinchilik yoʻq",
+     "some": "Biroz",
+     "a_lot": "Juda qiyin"
+    },
+    "ru": {
+     "none": "Нет трудностей",
+     "some": "Немного",
+     "a_lot": "Сильно"
+    }
+   },
+   "controls": "F",
+   "note": "5 Nov 2026: new, decides what section F asks (B76); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)"
+  },
+  {
+   "id": "QC_talk",
+   "step": "QC",
+   "kind": "single",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "none",
+    "some",
+    "a_lot"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [],
+   "text": {
+    "en": "Talking and understanding",
+    "uz": "Nutq va tushunish",
+    "ru": "Речь и понимание"
+   },
+   "option_text": {
+    "en": {
+     "none": "No difficulty",
+     "some": "A little",
+     "a_lot": "A lot"
+    },
+    "uz": {
+     "none": "Qiyinchilik yoʻq",
+     "some": "Biroz",
+     "a_lot": "Juda qiyin"
+    },
+    "ru": {
+     "none": "Нет трудностей",
+     "some": "Немного",
+     "a_lot": "Сильно"
+    }
+   },
+   "controls": "G",
+   "note": "5 Nov 2026: new, decides what section G asks (B76); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)"
+  },
+  {
+   "id": "QC_daily",
+   "step": "QC",
+   "kind": "single",
+   "required": true,
+   "health": true,
+   "audience": "parent",
+   "options": [
+    "none",
+    "some",
+    "a_lot"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [],
+   "text": {
+    "en": "Everyday care: eating, dressing, toilet",
+    "uz": "Oʻzini parvarish qilish: ovqatlanish, kiyinish, hojatxona",
+    "ru": "Уход за собой: еда, одевание, туалет"
+   },
+   "option_text": {
+    "en": {
+     "none": "No difficulty",
+     "some": "A little",
+     "a_lot": "A lot"
+    },
+    "uz": {
+     "none": "Qiyinchilik yoʻq",
+     "some": "Biroz",
+     "a_lot": "Juda qiyin"
+    },
+    "ru": {
+     "none": "Нет трудностей",
+     "some": "Немного",
+     "a_lot": "Сильно"
+    }
+   },
+   "controls": "H",
+   "note": "5 Nov 2026: new, decides what section H asks (B76); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)"
   },
   {
    "id": "CP1_types",
@@ -4137,12 +4450,13 @@
     "ru": "Во сколько месяцев ребёнок начал сам держать голову?"
    },
    "option_text": null,
-   "note": "30 Oct 2026: an age in months larger than the child's age is refused, with a message (B61); physio check needed | 30 Oct 2026: question says 'in months', example hint (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)",
+   "note": "30 Oct 2026: an age in months larger than the child's age is refused, with a message (B61); physio check needed | 30 Oct 2026: question says 'in months', example hint (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) 5 Nov 2026: asked only under 6 years (B76); physio check needed",
    "hint": {
     "en": "For example: 4",
     "uz": "Masalan: 4",
     "ru": "Например: 4"
-   }
+   },
+   "under_months": 72
   },
   {
    "id": "DD2_sit",
@@ -4172,7 +4486,8 @@
     "ru": "В каком возрасте ребёнок начал сидеть?"
    },
    "option_text": null,
-   "note": "30 Oct 2026: an age in months larger than the child's age is refused, with a message (B61); physio check needed"
+   "note": "30 Oct 2026: an age in months larger than the child's age is refused, with a message (B61); physio check needed 5 Nov 2026: asked only under 6 years (B76); physio check needed",
+   "under_months": 72
   },
   {
    "id": "DD2_walk",
@@ -4202,7 +4517,8 @@
     "ru": "Во сколько месяцев ребёнок начал сам ходить?"
    },
    "option_text": null,
-   "note": "30 Oct 2026: an age in months larger than the child's age is refused, with a message (B61); physio check needed | 30 Oct 2026: question says 'in months' (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
+   "note": "30 Oct 2026: an age in months larger than the child's age is refused, with a message (B61); physio check needed | 30 Oct 2026: question says 'in months' (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) 5 Nov 2026: asked only under 6 years (B76); physio check needed",
+   "under_months": 72
   },
   {
    "id": "DD2_word",
@@ -4232,7 +4548,8 @@
     "ru": "В каком возрасте ребёнок сказал первое слово?"
    },
    "option_text": null,
-   "note": "30 Oct 2026: an age in months larger than the child's age is refused, with a message (B61); physio check needed"
+   "note": "30 Oct 2026: an age in months larger than the child's age is refused, with a message (B61); physio check needed 5 Nov 2026: asked only under 6 years (B76); physio check needed",
+   "under_months": 72
   },
   {
    "id": "DD3",
@@ -5348,6 +5665,318 @@
    }
   },
   {
+   "id": "C5",
+   "step": "C",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "cant",
+    "stander",
+    "trunk_support",
+    "bar_two_hands",
+    "one_hand",
+    "alone_under_10s",
+    "alone_10_60s",
+    "alone_over_1min"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "any": [
+     {
+      "not": {
+       "q": "B1",
+       "answered": true
+      }
+     },
+     {
+      "q": "B1",
+      "in": [
+       "cp",
+       "developmental_delay",
+       "no_diagnosis",
+       "not_sure",
+       "other",
+       "down_syndrome",
+       "autism"
+      ]
+     }
+    ]
+   },
+   "option_show": {
+    "stander": {
+     "not": {
+      "ref": "R8"
+     }
+    }
+   },
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "V"
+   ],
+   "text": {
+    "en": "Standing",
+    "uz": "Tik turish",
+    "ru": "Стояние"
+   },
+   "option_text": {
+    "en": {
+     "cant": "Can't",
+     "stander": "Only in a stander",
+     "trunk_support": "Stands with an adult holding them around the chest or waist",
+     "bar_two_hands": "Holding a bar with both hands",
+     "one_hand": "Holding with one hand",
+     "alone_under_10s": "Alone, under 10 sec",
+     "alone_10_60s": "Alone, 10–60 sec",
+     "alone_over_1min": "Alone, over 1 min"
+    },
+    "uz": {
+     "cant": "Hali qila olmaydi",
+     "stander": "Faqat vertikalizatorda",
+     "trunk_support": "Kattalar beli yoki koʻkragidan ushlasa, turadi",
+     "bar_two_hands": "Tutqichni ikki qoʻli bilan ushlab",
+     "one_hand": "Bir qoʻli bilan ushlab",
+     "alone_under_10s": "Oʻzi, 10 soniyadan kam",
+     "alone_10_60s": "Oʻzi, 10–60 soniya",
+     "alone_over_1min": "Oʻzi, 1 daq dan koʻp"
+    },
+    "ru": {
+     "cant": "Пока не стоит",
+     "stander": "Только в вертикализаторе",
+     "trunk_support": "Стоит, когда взрослый держит за пояс или за грудь",
+     "bar_two_hands": "Держась за поручень двумя руками",
+     "one_hand": "Держась одной рукой",
+     "alone_under_10s": "Сам, меньше 10 сек",
+     "alone_10_60s": "Сам, 10–60 сек",
+     "alone_over_1min": "Сам, больше 1 мин"
+    }
+   },
+   "hint": {
+    "en": "Tick everything your child can do. We use the hardest one.",
+    "uz": "Farzandingiz qila oladigan hamma narsani belgilang. Biz eng qiyinini hisobga olamiz.",
+    "ru": "Отметьте всё, что ребёнок умеет. Мы учтём самое сложное."
+   },
+   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: 'trunk_support' reworded without 'trunk' (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 1 Nov 2026: answered by ticking everything the child can do; the saved value is the hardest one ticked (`ladder`, B68); new hint; physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44) 5 Nov 2026: moved to the top of the section: its answer hides the baby-level questions (B76); physio check needed 5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed",
+   "ladder": true,
+   "core": true,
+   "typical": "alone_over_1min"
+  },
+  {
+   "id": "C5_note",
+   "step": "C",
+   "kind": "text",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "any": [
+     {
+      "not": {
+       "q": "B1",
+       "answered": true
+      }
+     },
+     {
+      "q": "B1",
+      "in": [
+       "cp",
+       "developmental_delay",
+       "no_diagnosis",
+       "not_sure",
+       "other",
+       "down_syndrome",
+       "autism"
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "T"
+   ],
+   "text": {
+    "en": "In your own words",
+    "uz": "Oʻz soʻzlaringiz bilan",
+    "ru": "Своими словами"
+   },
+   "option_text": null,
+   "note": "1 Nov 2026: new: the parent's own words about C5, opened by the link 'Write in your own words'; no rule reads it (B68); physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)"
+  },
+  {
+   "id": "C5_minutes",
+   "step": "C",
+   "kind": "number",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": {
+    "all": [
+     {
+      "any": [
+       {
+        "not": {
+         "q": "B1",
+         "answered": true
+        }
+       },
+       {
+        "q": "B1",
+        "in": [
+         "cp",
+         "developmental_delay",
+         "no_diagnosis",
+         "not_sure",
+         "other",
+         "down_syndrome",
+         "autism"
+        ]
+       }
+      ]
+     },
+     {
+      "q": "C5",
+      "in": [
+       "stander"
+      ]
+     }
+    ]
+   },
+   "option_show": null,
+   "unit": "min",
+   "range": [
+    0,
+    600
+   ],
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "V"
+   ],
+   "text": {
+    "en": "Minutes a day in the stander",
+    "uz": "Kuniga vertikalizatorda necha daqiqa",
+    "ru": "Сколько минут в день в вертикализаторе"
+   },
+   "option_text": null,
+   "typical": null
+  },
+  {
+   "id": "C6",
+   "step": "C",
+   "kind": "single",
+   "required": true,
+   "health": false,
+   "audience": "parent",
+   "options": [
+    "doesnt_step",
+    "gait_trainer",
+    "adult_trunk",
+    "walker_two_hands",
+    "one_hand",
+    "alone_few_m",
+    "alone_7m"
+   ],
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "E",
+    "V"
+   ],
+   "text": {
+    "en": "How does your child walk?",
+    "uz": "Farzandingiz qanday yuradi?",
+    "ru": "Как ребёнок ходит?"
+   },
+   "option_text": {
+    "en": {
+     "doesnt_step": "Doesn't step",
+     "gait_trainer": "Steps only in a gait trainer",
+     "adult_trunk": "A few steps with an adult holding them around the chest or waist",
+     "walker_two_hands": "With a walker or both hands held",
+     "one_hand": "Holding one hand",
+     "alone_few_m": "Alone, a few meters",
+     "alone_7m": "Alone, 7 m or more"
+    },
+    "uz": {
+     "doesnt_step": "Qadam tashlamaydi",
+     "gait_trainer": "Faqat yurish trenajorida qadam tashlaydi",
+     "adult_trunk": "Kattalar beli yoki koʻkragidan ushlasa, bir necha qadam",
+     "walker_two_hands": "Yurgich bilan yoki ikki qoʻlidan ushlab",
+     "one_hand": "Bir qoʻlidan ushlab",
+     "alone_few_m": "Oʻzi, bir necha metr",
+     "alone_7m": "Oʻzi, 7 m yoki undan koʻp"
+    },
+    "ru": {
+     "doesnt_step": "Пока не шагает",
+     "gait_trainer": "Шагает только в тренажёре для ходьбы",
+     "adult_trunk": "Несколько шагов, когда взрослый держит за пояс или за грудь",
+     "walker_two_hands": "С ходунками или за две руки",
+     "one_hand": "За одну руку",
+     "alone_few_m": "Сам, несколько метров",
+     "alone_7m": "Сам, 7 м и больше"
+    }
+   },
+   "hint": {
+    "en": "Tick everything your child can do. We use the hardest one.",
+    "uz": "Farzandingiz qila oladigan hamma narsani belgilang. Biz eng qiyinini hisobga olamiz.",
+    "ru": "Отметьте всё, что ребёнок умеет. Мы учтём самое сложное."
+   },
+   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: 'adult_trunk' reworded without 'trunk'; now asked before C4 (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 1 Nov 2026: answered by ticking everything the child can do; the saved value is the hardest one ticked (`ladder`, B68); new hint; physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44) 5 Nov 2026: moved to the top of the section: its answer hides the baby-level questions (B76); physio check needed 5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed",
+   "ladder": true,
+   "core": true,
+   "typical": "alone_7m"
+  },
+  {
+   "id": "C6_note",
+   "step": "C",
+   "kind": "text",
+   "required": false,
+   "health": false,
+   "audience": "parent",
+   "options": null,
+   "max": null,
+   "exclusive": null,
+   "show": null,
+   "option_show": null,
+   "unit": null,
+   "range": null,
+   "picture": null,
+   "signup": false,
+   "feeds": [
+    "T"
+   ],
+   "text": {
+    "en": "In your own words",
+    "uz": "Oʻz soʻzlaringiz bilan",
+    "ru": "Своими словами"
+   },
+   "option_text": null,
+   "note": "1 Nov 2026: new: the parent's own words about C6, opened by the link 'Write in your own words'; no rule reads it (B68); physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)"
+  },
+  {
    "id": "C14",
    "step": "C",
    "kind": "single",
@@ -5439,9 +6068,13 @@
     "uz": "Farzandingiz qila oladigan hamma narsani belgilang. Biz eng qiyinini hisobga olamiz.",
     "ru": "Отметьте всё, что ребёнок умеет. Мы учтём самое сложное."
    },
-   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: question and answers reworded (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: offers 'Not sure' although optional, stored as null like a required question's (B63); physio check needed | 1 Nov 2026: answered by ticking everything the child can do; the saved value is the hardest one ticked (`ladder`, B68); new hint; physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)",
+   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: question and answers reworded (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: offers 'Not sure' although optional, stored as null like a required question's (B63); physio check needed | 1 Nov 2026: answered by ticking everything the child can do; the saved value is the hardest one ticked (`ladder`, B68); new hint; physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44) 5 Nov 2026: hidden for a child who stands or walks alone, filled with `typical` (B76); physio check needed 5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed",
    "not_sure": true,
-   "ladder": true
+   "ladder": true,
+   "hide_when": {
+    "ref": "WALKS_ALONE"
+   },
+   "typical": "reaches_one_arm"
   },
   {
    "id": "C14_note",
@@ -5589,8 +6222,12 @@
     "uz": "Farzandingiz qila oladigan hamma narsani belgilang. Biz eng qiyinini hisobga olamiz.",
     "ru": "Отметьте всё, что ребёнок умеет. Мы учтём самое сложное."
    },
-   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 1 Nov 2026: answered by ticking everything the child can do; the saved value is the hardest one ticked (`ladder`, B68); new hint; physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44) | 1 Nov 2026: uz: 'chalqancha' replaced by plain words (B70)",
-   "ladder": true
+   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 1 Nov 2026: answered by ticking everything the child can do; the saved value is the hardest one ticked (`ladder`, B68); new hint; physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44) | 1 Nov 2026: uz: 'chalqancha' replaced by plain words (B70) 5 Nov 2026: hidden for a child who stands or walks alone, filled with `typical` (B76); physio check needed 5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed",
+   "ladder": true,
+   "hide_when": {
+    "ref": "WALKS_ALONE"
+   },
+   "typical": "both_ways"
   },
   {
    "id": "C2_note",
@@ -5741,7 +6378,9 @@
      "hips": "За таз",
      "no_support": "Поддержка не нужна"
     }
-   }
+   },
+   "typical": "no_support",
+   "note": "5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed"
   },
   {
    "id": "C3",
@@ -5823,8 +6462,13 @@
     "uz": "Farzandingiz qila oladigan hamma narsani belgilang. Biz eng qiyinini hisobga olamiz.",
     "ru": "Отметьте всё, что ребёнок умеет. Мы учтём самое сложное."
    },
-   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 1 Nov 2026: answered by ticking everything the child can do; the saved value is the hardest one ticked (`ladder`, B68); new hint; physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)",
-   "ladder": true
+   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 1 Nov 2026: answered by ticking everything the child can do; the saved value is the hardest one ticked (`ladder`, B68); new hint; physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44) 5 Nov 2026: hidden for a child who stands or walks alone, filled with `typical` (B76); physio check needed 5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed",
+   "ladder": true,
+   "hide_when": {
+    "ref": "WALKS_ALONE"
+   },
+   "core": true,
+   "typical": "free_30min"
   },
   {
    "id": "C3_note",
@@ -5963,7 +6607,18 @@
      "none_yet": "Пока ничего из этого"
     }
    },
-   "note": "30 Oct 2026: same wording for left and right; 'None of these yet' (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
+   "note": "30 Oct 2026: same wording for left and right; 'None of these yet' (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) 5 Nov 2026: hidden for a child who stands or walks alone, filled with `typical` (B76); physio check needed 5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed",
+   "hide_when": {
+    "ref": "WALKS_ALONE"
+   },
+   "typical": [
+    "lean_forward",
+    "reach_left",
+    "reach_right",
+    "reach_above",
+    "bend_floor",
+    "turn"
+   ]
   },
   {
    "id": "C16",
@@ -6046,104 +6701,9 @@
      "push_up": "Сам, отталкиваясь руками",
      "easily": "Легко, без помощи рук"
     }
-   }
-  },
-  {
-   "id": "C6",
-   "step": "C",
-   "kind": "single",
-   "required": true,
-   "health": false,
-   "audience": "parent",
-   "options": [
-    "doesnt_step",
-    "gait_trainer",
-    "adult_trunk",
-    "walker_two_hands",
-    "one_hand",
-    "alone_few_m",
-    "alone_7m"
-   ],
-   "max": null,
-   "exclusive": null,
-   "show": null,
-   "option_show": null,
-   "unit": null,
-   "range": null,
-   "picture": null,
-   "signup": false,
-   "feeds": [
-    "E",
-    "V"
-   ],
-   "text": {
-    "en": "How does your child walk?",
-    "uz": "Farzandingiz qanday yuradi?",
-    "ru": "Как ребёнок ходит?"
    },
-   "option_text": {
-    "en": {
-     "doesnt_step": "Doesn't step",
-     "gait_trainer": "Steps only in a gait trainer",
-     "adult_trunk": "A few steps with an adult holding them around the chest or waist",
-     "walker_two_hands": "With a walker or both hands held",
-     "one_hand": "Holding one hand",
-     "alone_few_m": "Alone, a few meters",
-     "alone_7m": "Alone, 7 m or more"
-    },
-    "uz": {
-     "doesnt_step": "Qadam tashlamaydi",
-     "gait_trainer": "Faqat yurish trenajorida qadam tashlaydi",
-     "adult_trunk": "Kattalar beli yoki koʻkragidan ushlasa, bir necha qadam",
-     "walker_two_hands": "Yurgich bilan yoki ikki qoʻlidan ushlab",
-     "one_hand": "Bir qoʻlidan ushlab",
-     "alone_few_m": "Oʻzi, bir necha metr",
-     "alone_7m": "Oʻzi, 7 m yoki undan koʻp"
-    },
-    "ru": {
-     "doesnt_step": "Пока не шагает",
-     "gait_trainer": "Шагает только в тренажёре для ходьбы",
-     "adult_trunk": "Несколько шагов, когда взрослый держит за пояс или за грудь",
-     "walker_two_hands": "С ходунками или за две руки",
-     "one_hand": "За одну руку",
-     "alone_few_m": "Сам, несколько метров",
-     "alone_7m": "Сам, 7 м и больше"
-    }
-   },
-   "hint": {
-    "en": "Tick everything your child can do. We use the hardest one.",
-    "uz": "Farzandingiz qila oladigan hamma narsani belgilang. Biz eng qiyinini hisobga olamiz.",
-    "ru": "Отметьте всё, что ребёнок умеет. Мы учтём самое сложное."
-   },
-   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: 'adult_trunk' reworded without 'trunk'; now asked before C4 (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 1 Nov 2026: answered by ticking everything the child can do; the saved value is the hardest one ticked (`ladder`, B68); new hint; physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)",
-   "ladder": true
-  },
-  {
-   "id": "C6_note",
-   "step": "C",
-   "kind": "text",
-   "required": false,
-   "health": false,
-   "audience": "parent",
-   "options": null,
-   "max": null,
-   "exclusive": null,
-   "show": null,
-   "option_show": null,
-   "unit": null,
-   "range": null,
-   "picture": null,
-   "signup": false,
-   "feeds": [
-    "T"
-   ],
-   "text": {
-    "en": "In your own words",
-    "uz": "Oʻz soʻzlaringiz bilan",
-    "ru": "Своими словами"
-   },
-   "option_text": null,
-   "note": "1 Nov 2026: new: the parent's own words about C6, opened by the link 'Write in your own words'; no rule reads it (B68); physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)"
+   "typical": "easily",
+   "note": "5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed"
   },
   {
    "id": "C4",
@@ -6245,8 +6805,12 @@
     "uz": "Farzandingiz qila oladigan hamma narsani belgilang. Biz eng qiyinini hisobga olamiz.",
     "ru": "Отметьте всё, что ребёнок умеет. Мы учтём самое сложное."
    },
-   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: answers reworded, 'Walks, so rarely crawls' added; not asked when the child walks alone (C6, now asked before C4) (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 1 Nov 2026: answered by ticking everything the child can do; the saved value is the hardest one ticked (`ladder`, B68); new hint; physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)",
-   "ladder": true
+   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: answers reworded, 'Walks, so rarely crawls' added; not asked when the child walks alone (C6, now asked before C4) (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 1 Nov 2026: answered by ticking everything the child can do; the saved value is the hardest one ticked (`ladder`, B68); new hint; physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44) 5 Nov 2026: hidden for a child who stands or walks alone, filled with `typical` (B76); physio check needed 5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed",
+   "ladder": true,
+   "hide_when": {
+    "ref": "WALKS_ALONE"
+   },
+   "typical": "walks"
   },
   {
    "id": "C4_note",
@@ -6395,9 +6959,13 @@
     "uz": "Farzandingiz qila oladigan hamma narsani belgilang. Biz eng qiyinini hisobga olamiz.",
     "ru": "Отметьте всё, что ребёнок умеет. Мы учтём самое сложное."
    },
-   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: question and answers reworded (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: offers 'Not sure' although optional, stored as null like a required question's (B63); physio check needed | 1 Nov 2026: answered by ticking everything the child can do; the saved value is the hardest one ticked (`ladder`, B68); new hint; physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)",
+   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: question and answers reworded (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: offers 'Not sure' although optional, stored as null like a required question's (B63); physio check needed | 1 Nov 2026: answered by ticking everything the child can do; the saved value is the hardest one ticked (`ladder`, B68); new hint; physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44) 5 Nov 2026: hidden for a child who stands or walks alone, filled with `typical` (B76); physio check needed 5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed",
    "not_sure": true,
-   "ladder": true
+   "ladder": true,
+   "hide_when": {
+    "ref": "WALKS_ALONE"
+   },
+   "typical": "half_kneel_stand"
   },
   {
    "id": "C17_note",
@@ -6534,7 +7102,9 @@
      "alone_hands": "Сам, опираясь руками на колени или стул",
      "alone_free": "Сам, без помощи рук"
     }
-   }
+   },
+   "typical": "alone_free",
+   "note": "5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed"
   },
   {
    "id": "C19",
@@ -6596,9 +7166,10 @@
     "uz": "Farzandingiz qila oladigan hamma narsani belgilang. Biz eng qiyinini hisobga olamiz.",
     "ru": "Отметьте всё, что ребёнок умеет. Мы учтём самое сложное."
    },
-   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: question and answers reworded (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: offers 'Not sure' although optional, stored as null like a required question's (B63); physio check needed | 1 Nov 2026: answered by ticking everything the child can do; the saved value is the hardest one ticked (`ladder`, B68); new hint; physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)",
+   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: question and answers reworded (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: offers 'Not sure' although optional, stored as null like a required question's (B63); physio check needed | 1 Nov 2026: answered by ticking everything the child can do; the saved value is the hardest one ticked (`ladder`, B68); new hint; physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44) 5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed",
    "not_sure": true,
-   "ladder": true
+   "ladder": true,
+   "typical": "picks_toy"
   },
   {
    "id": "C19_note",
@@ -6628,216 +7199,6 @@
    },
    "option_text": null,
    "note": "1 Nov 2026: new: the parent's own words about C19, opened by the link 'Write in your own words'; no rule reads it (B68); physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)"
-  },
-  {
-   "id": "C5",
-   "step": "C",
-   "kind": "single",
-   "required": true,
-   "health": false,
-   "audience": "parent",
-   "options": [
-    "cant",
-    "stander",
-    "trunk_support",
-    "bar_two_hands",
-    "one_hand",
-    "alone_under_10s",
-    "alone_10_60s",
-    "alone_over_1min"
-   ],
-   "max": null,
-   "exclusive": null,
-   "show": {
-    "any": [
-     {
-      "not": {
-       "q": "B1",
-       "answered": true
-      }
-     },
-     {
-      "q": "B1",
-      "in": [
-       "cp",
-       "developmental_delay",
-       "no_diagnosis",
-       "not_sure",
-       "other",
-       "down_syndrome",
-       "autism"
-      ]
-     }
-    ]
-   },
-   "option_show": {
-    "stander": {
-     "not": {
-      "ref": "R8"
-     }
-    }
-   },
-   "unit": null,
-   "range": null,
-   "picture": null,
-   "signup": false,
-   "feeds": [
-    "E",
-    "V"
-   ],
-   "text": {
-    "en": "Standing",
-    "uz": "Tik turish",
-    "ru": "Стояние"
-   },
-   "option_text": {
-    "en": {
-     "cant": "Can't",
-     "stander": "Only in a stander",
-     "trunk_support": "Stands with an adult holding them around the chest or waist",
-     "bar_two_hands": "Holding a bar with both hands",
-     "one_hand": "Holding with one hand",
-     "alone_under_10s": "Alone, under 10 sec",
-     "alone_10_60s": "Alone, 10–60 sec",
-     "alone_over_1min": "Alone, over 1 min"
-    },
-    "uz": {
-     "cant": "Hali qila olmaydi",
-     "stander": "Faqat vertikalizatorda",
-     "trunk_support": "Kattalar beli yoki koʻkragidan ushlasa, turadi",
-     "bar_two_hands": "Tutqichni ikki qoʻli bilan ushlab",
-     "one_hand": "Bir qoʻli bilan ushlab",
-     "alone_under_10s": "Oʻzi, 10 soniyadan kam",
-     "alone_10_60s": "Oʻzi, 10–60 soniya",
-     "alone_over_1min": "Oʻzi, 1 daq dan koʻp"
-    },
-    "ru": {
-     "cant": "Пока не стоит",
-     "stander": "Только в вертикализаторе",
-     "trunk_support": "Стоит, когда взрослый держит за пояс или за грудь",
-     "bar_two_hands": "Держась за поручень двумя руками",
-     "one_hand": "Держась одной рукой",
-     "alone_under_10s": "Сам, меньше 10 сек",
-     "alone_10_60s": "Сам, 10–60 сек",
-     "alone_over_1min": "Сам, больше 1 мин"
-    }
-   },
-   "hint": {
-    "en": "Tick everything your child can do. We use the hardest one.",
-    "uz": "Farzandingiz qila oladigan hamma narsani belgilang. Biz eng qiyinini hisobga olamiz.",
-    "ru": "Отметьте всё, что ребёнок умеет. Мы учтём самое сложное."
-   },
-   "note": "30 Oct 2026: hint: the answers go from easiest to hardest (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 30 Oct 2026: 'trunk_support' reworded without 'trunk' (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) | 1 Nov 2026: answered by ticking everything the child can do; the saved value is the hardest one ticked (`ladder`, B68); new hint; physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)",
-   "ladder": true
-  },
-  {
-   "id": "C5_note",
-   "step": "C",
-   "kind": "text",
-   "required": false,
-   "health": false,
-   "audience": "parent",
-   "options": null,
-   "max": null,
-   "exclusive": null,
-   "show": {
-    "any": [
-     {
-      "not": {
-       "q": "B1",
-       "answered": true
-      }
-     },
-     {
-      "q": "B1",
-      "in": [
-       "cp",
-       "developmental_delay",
-       "no_diagnosis",
-       "not_sure",
-       "other",
-       "down_syndrome",
-       "autism"
-      ]
-     }
-    ]
-   },
-   "option_show": null,
-   "unit": null,
-   "range": null,
-   "picture": null,
-   "signup": false,
-   "feeds": [
-    "T"
-   ],
-   "text": {
-    "en": "In your own words",
-    "uz": "Oʻz soʻzlaringiz bilan",
-    "ru": "Своими словами"
-   },
-   "option_text": null,
-   "note": "1 Nov 2026: new: the parent's own words about C5, opened by the link 'Write in your own words'; no rule reads it (B68); physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)"
-  },
-  {
-   "id": "C5_minutes",
-   "step": "C",
-   "kind": "number",
-   "required": false,
-   "health": false,
-   "audience": "parent",
-   "options": null,
-   "max": null,
-   "exclusive": null,
-   "show": {
-    "all": [
-     {
-      "any": [
-       {
-        "not": {
-         "q": "B1",
-         "answered": true
-        }
-       },
-       {
-        "q": "B1",
-        "in": [
-         "cp",
-         "developmental_delay",
-         "no_diagnosis",
-         "not_sure",
-         "other",
-         "down_syndrome",
-         "autism"
-        ]
-       }
-      ]
-     },
-     {
-      "q": "C5",
-      "in": [
-       "stander"
-      ]
-     }
-    ]
-   },
-   "option_show": null,
-   "unit": "min",
-   "range": [
-    0,
-    600
-   ],
-   "picture": null,
-   "signup": false,
-   "feeds": [
-    "E",
-    "V"
-   ],
-   "text": {
-    "en": "Minutes a day in the stander",
-    "uz": "Kuniga vertikalizatorda necha daqiqa",
-    "ru": "Сколько минут в день в вертикализаторе"
-   },
-   "option_text": null
   },
   {
    "id": "C20",
@@ -6902,7 +7263,16 @@
      "none_yet": "Пока ничего из этого"
     }
    },
-   "note": "30 Oct 2026: reworded; 'None of these yet' (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
+   "note": "30 Oct 2026: reworded; 'None of these yet' (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) 5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed",
+   "typical": [
+    "shift_weight",
+    "turn_upper",
+    "reach_above",
+    "bend_floor",
+    "one_leg",
+    "kick"
+   ],
+   "typical_from_age": 36
   },
   {
    "id": "C20_leg",
@@ -6962,7 +7332,8 @@
     }
    },
    "follow_up": true,
-   "note": "5 Nov 2026: says which skill it asks about; shown right under C20 (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)"
+   "note": "5 Nov 2026: says which skill it asks about; shown right under C20 (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)",
+   "typical": null
   },
   {
    "id": "C20_foot",
@@ -7022,7 +7393,8 @@
     }
    },
    "follow_up": true,
-   "note": "5 Nov 2026: says which skill it asks about; shown right under C20 (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)"
+   "note": "5 Nov 2026: says which skill it asks about; shown right under C20 (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)",
+   "typical": null
   },
   {
    "id": "C7",
@@ -7091,7 +7463,8 @@
     "100_300m": "yard",
     "over_300m": "outside"
    },
-   "note": "30 Oct 2026: new distances from the Functional Mobility Scale (5 / 50 / 500 m); old answers map under_7m->room, 7_100m->home, 100_300m->yard, over_300m->outside (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
+   "note": "30 Oct 2026: new distances from the Functional Mobility Scale (5 / 50 / 500 m); old answers map under_7m->room, 7_100m->home, 100_300m->yard, over_300m->outside (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) 5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed",
+   "typical": "outside"
   },
   {
    "id": "C7_help",
@@ -7157,7 +7530,9 @@
      "walker": "С ходунками",
      "stroller": "На улице в коляске или инвалидной коляске"
     }
-   }
+   },
+   "typical": "alone",
+   "note": "5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed"
   },
   {
    "id": "C21",
@@ -7214,7 +7589,9 @@
      "starts_alone": "Сам начинает идти из положения стоя",
      "stops_alone": "Сам останавливается и продолжает стоять"
     }
-   }
+   },
+   "typical": "stops_alone",
+   "note": "5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed"
   },
   {
    "id": "C22",
@@ -7280,7 +7657,7 @@
      "none_yet": "Пока ничего из этого"
     }
    },
-   "note": "30 Oct 2026: reworded; 'None of these yet' (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) 5 Nov 2026: the two backward options are one row with two choices (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)",
+   "note": "30 Oct 2026: reworded; 'None of these yet' (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) 5 Nov 2026: the two backward options are one row with two choices (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44) 5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed",
    "pair": {
     "backward_alone": "backward_help"
    },
@@ -7294,7 +7671,13 @@
     "ru": {
      "backward_alone": "Идти назад"
     }
-   }
+   },
+   "typical": [
+    "turns",
+    "circle",
+    "backward_alone"
+   ],
+   "typical_from_age": 36
   },
   {
    "id": "C8",
@@ -7359,7 +7742,10 @@
      "alone_one_foot": "Сам, приставным шагом",
      "alternating": "Сам, ставя ноги поочерёдно"
     }
-   }
+   },
+   "typical": "alternating",
+   "typical_from_age": 36,
+   "note": "5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed"
   },
   {
    "id": "C23",
@@ -7424,7 +7810,10 @@
      "alone_one_foot": "Сам, приставным шагом",
      "alternating": "Сам, ставя ноги поочерёдно"
     }
-   }
+   },
+   "typical": "alternating",
+   "typical_from_age": 48,
+   "note": "5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed"
   },
   {
    "id": "C24",
@@ -7508,7 +7897,14 @@
      "step_over_alone": "Перешагнуть предмет 10–15 см (например, коробку от обуви)"
     }
    },
-   "note": "5 Nov 2026: renamed; the two step-over options are one row with two choices; new 'None of these yet' (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)"
+   "note": "5 Nov 2026: renamed; the two step-over options are one row with two choices; new 'None of these yet' (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44) 5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed",
+   "typical": [
+    "grass",
+    "step_over_alone",
+    "slope_up",
+    "slope_down"
+   ],
+   "typical_from_age": 36
   },
   {
    "id": "C9",
@@ -7586,7 +7982,16 @@
      "hops": "Прыгает на одной ноге",
      "none": "Пока ничего из этого"
     }
-   }
+   },
+   "typical": [
+    "runs",
+    "jumps_both",
+    "jumps_forward",
+    "jumps_down",
+    "hops"
+   ],
+   "typical_from_age": 60,
+   "note": "5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed"
   },
   {
    "id": "C9_foot",
@@ -7658,7 +8063,8 @@
      "right": "На правой",
      "both": "На обеих"
     }
-   }
+   },
+   "typical": null
   },
   {
    "id": "C10",
@@ -7736,7 +8142,9 @@
      "iv": "Уровень IV",
      "v": "Уровень V"
     }
-   }
+   },
+   "core": true,
+   "typical": null
   },
   {
    "id": "C1",
@@ -7816,7 +8224,12 @@
      "steady": "Да, уверенно"
     }
    },
-   "note": "30 Oct 2026: reworded; asked only when it matters (R6: GMFCS IV-V or can't sit), so it moved after C3 and C10; what 'Not yet' or 'Only for a short time' changes is task B64 (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
+   "note": "30 Oct 2026: reworded; asked only when it matters (R6: GMFCS IV-V or can't sit), so it moved after C3 and C10; what 'Not yet' or 'Only for a short time' changes is task B64 (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) 5 Nov 2026: hidden for a child who stands or walks alone, filled with `typical` (B76); physio check needed 5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed",
+   "hide_when": {
+    "ref": "WALKS_ALONE"
+   },
+   "core": true,
+   "typical": "steady"
   },
   {
    "id": "C11",
@@ -7869,7 +8282,10 @@
      "every_day": "Каждый день",
      "many_day": "Много раз в день"
     }
-   }
+   },
+   "core": true,
+   "typical": "rarely",
+   "note": "5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed"
   },
   {
    "id": "C12",
@@ -7912,7 +8328,8 @@
      "no": "Нет"
     }
    },
-   "note": "Red flag: asked of every child, whatever the diagnosis (not hidden by R5)."
+   "note": "Red flag: asked of every child, whatever the diagnosis (not hidden by R5).",
+   "always": true
   },
   {
    "id": "C12_text",
@@ -7943,7 +8360,8 @@
     "uz": "Nima va qachon?",
     "ru": "Что и когда?"
    },
-   "option_text": null
+   "option_text": null,
+   "always": true
   },
   {
    "id": "C25",
@@ -7992,7 +8410,8 @@
      "worse": "Сейчас хуже, чем обычно (болеет, устал, после операции)"
     }
    },
-   "note": "1 Nov 2026: question and answers reworded (B70); physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)"
+   "note": "1 Nov 2026: question and answers reworded (B70); physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)",
+   "typical": null
   },
   {
    "id": "D1",
@@ -8070,7 +8489,9 @@
      "v": "Уровень V"
     }
    },
-   "note": "Mini-MACS pictures under age 4 (R15)."
+   "note": "Mini-MACS pictures under age 4 (R15).",
+   "core": true,
+   "typical": null
   },
   {
    "id": "D2",
@@ -8123,7 +8544,8 @@
      "same": "Обеими одинаково",
      "neither": "Пока ни одной"
     }
-   }
+   },
+   "typical": null
   },
   {
    "id": "D3",
@@ -8175,7 +8597,9 @@
      "rarely": "Редко",
      "never": "Никогда"
     }
-   }
+   },
+   "typical": "always",
+   "note": "5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed"
   },
   {
    "id": "D4",
@@ -8225,7 +8649,9 @@
      "cannot": "Пока не может взять"
     }
    },
-   "note": "30 Oct 2026: no 'raisin': a pea or a small piece of bread (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
+   "note": "30 Oct 2026: no 'raisin': a pea or a small piece of bread (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) 5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed",
+   "core": true,
+   "typical": "thumb_finger"
   },
   {
    "id": "D5",
@@ -8274,7 +8700,9 @@
      "effort": "С усилием",
      "no": "Нет"
     }
-   }
+   },
+   "typical": "easily",
+   "note": "5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed"
   },
   {
    "id": "D6",
@@ -8319,7 +8747,9 @@
      "yes": "Да",
      "no": "Нет"
     }
-   }
+   },
+   "typical": "yes",
+   "note": "5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed"
   },
   {
    "id": "D7",
@@ -8381,7 +8811,10 @@
      "with_help": "С моей помощью",
      "not_yet": "Пока нет"
     }
-   }
+   },
+   "core": true,
+   "typical": "accurately",
+   "note": "5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed"
   },
   {
    "id": "D8",
@@ -8441,7 +8874,9 @@
      "sometimes": "Иногда",
      "no": "Нет"
     }
-   }
+   },
+   "typical": "yes",
+   "note": "5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed"
   },
   {
    "id": "D9",
@@ -8490,7 +8925,9 @@
      "a_little": "Немного",
      "a_lot": "Сильно"
     }
-   }
+   },
+   "typical": "no",
+   "note": "5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed"
   },
   {
    "id": "D10",
@@ -8546,7 +8983,8 @@
     "uz": "Bosh barmogʻi barmoqlar ichida yashiringan boʻlishi mumkin.",
     "ru": "Большой палец может быть спрятан внутри."
    },
-   "note": "30 Oct 2026: one clear sign (a fist when calm), with a hint (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44)"
+   "note": "30 Oct 2026: one clear sign (a fist when calm), with a hint (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) 5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed",
+   "typical": "never"
   },
   {
    "id": "D10_hand",
@@ -8607,7 +9045,8 @@
      "right": "Правая",
      "both": "Обе"
     }
-   }
+   },
+   "typical": null
   },
   {
    "id": "D11",
@@ -8678,7 +9117,11 @@
      "fist": "Всем кулаком",
      "cant": "Пока не держит"
     }
-   }
+   },
+   "core": true,
+   "typical": "fingers",
+   "typical_from_age": 48,
+   "note": "5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed"
   },
   {
    "id": "D12_spoon",
@@ -8749,7 +9192,10 @@
      "no": "Пока нет"
     }
    },
-   "note": "30 Oct 2026: new, replaces D12 (spoon and cup are different skills); the plan's P24 reads the spoon, else the cup (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) 5 Nov 2026: 'by themselves' moved from the question to the answer (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)"
+   "note": "30 Oct 2026: new, replaces D12 (spoon and cup are different skills); the plan's P24 reads the spoon, else the cup (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) 5 Nov 2026: 'by themselves' moved from the question to the answer (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44) 5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed",
+   "core": true,
+   "typical": "yes",
+   "typical_from_age": 24
   },
   {
    "id": "D12_cup",
@@ -8820,7 +9266,10 @@
      "no": "Пока нет"
     }
    },
-   "note": "30 Oct 2026: new, replaces D12 (spoon and cup are different skills); the plan's P24 reads the spoon, else the cup (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) 5 Nov 2026: 'by themselves' moved from the question to the answer (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)"
+   "note": "30 Oct 2026: new, replaces D12 (spoon and cup are different skills); the plan's P24 reads the spoon, else the cup (B62); physio check needed. uz text drafted 30 Oct 2026 — native-speaker check (B44) 5 Nov 2026: 'by themselves' moved from the question to the answer (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44) 5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed",
+   "core": true,
+   "typical": "yes",
+   "typical_from_age": 24
   },
   {
    "id": "D13_buttons",
@@ -8891,7 +9340,9 @@
      "no": "Пока нет"
     }
    },
-   "note": "1 Nov 2026: replaces D13 with buttons and the zipper apart (B70); physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44) 5 Nov 2026: 'by themselves' moved from the question to the answer (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)"
+   "note": "1 Nov 2026: replaces D13 with buttons and the zipper apart (B70); physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44) 5 Nov 2026: 'by themselves' moved from the question to the answer (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44) 5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed",
+   "typical": "yes",
+   "typical_from_age": 60
   },
   {
    "id": "D13_zip",
@@ -8962,7 +9413,9 @@
      "no": "Пока нет"
     }
    },
-   "note": "1 Nov 2026: replaces D13 with buttons and the zipper apart (B70); physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44) 5 Nov 2026: 'by themselves' moved from the question to the answer (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)"
+   "note": "1 Nov 2026: replaces D13 with buttons and the zipper apart (B70); physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44) 5 Nov 2026: 'by themselves' moved from the question to the answer (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44) 5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed",
+   "typical": "yes",
+   "typical_from_age": 60
   },
   {
    "id": "E1",
@@ -9017,7 +9470,10 @@
      "normal": "Обычное",
      "dont_know": "Не знаю"
     }
-   }
+   },
+   "core": true,
+   "typical": "normal",
+   "note": "5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed"
   },
   {
    "id": "E2",
@@ -9106,7 +9562,8 @@
      "left_foot": "Левая стопа",
      "right_foot": "Правая стопа"
     }
-   }
+   },
+   "typical": null
   },
   {
    "id": "E3",
@@ -9159,7 +9616,9 @@
     "uz": "Uydagi mashqlar hech qachon ogʻriq bermasligi uchun soʻraymiz. Bu test emas.",
     "ru": "Мы спрашиваем, чтобы упражнения дома не причиняли боль. Это не тест."
    },
-   "note": "1 Nov 2026: question reworded, hint added (B70); physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)"
+   "note": "1 Nov 2026: question reworded, hint added (B70); physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44) 5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed",
+   "core": true,
+   "typical": "never"
   },
   {
    "id": "E4",
@@ -9248,7 +9707,9 @@
      "left_foot": "Левая стопа",
      "right_foot": "Правая стопа"
     }
-   }
+   },
+   "core": true,
+   "typical": null
   },
   {
    "id": "E5",
@@ -9307,7 +9768,11 @@
      "ankle": "Голеностоп",
      "none": "Нет"
     }
-   }
+   },
+   "typical": [
+    "none"
+   ],
+   "note": "5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed"
   },
   {
    "id": "E6_now",
@@ -9351,7 +9816,9 @@
      "no": "Нет"
     }
    },
-   "note": "1 Nov 2026: replaces E6: skin now and skin in general apart (B70); physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)"
+   "note": "1 Nov 2026: replaces E6: skin now and skin in general apart (B70); physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44) 5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed",
+   "core": true,
+   "typical": "no"
   },
   {
    "id": "E6_often",
@@ -9395,7 +9862,8 @@
      "no": "Нет"
     }
    },
-   "note": "1 Nov 2026: replaces E6: skin now and skin in general apart (B70); physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)"
+   "note": "1 Nov 2026: replaces E6: skin now and skin in general apart (B70); physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44) 5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed",
+   "typical": "no"
   },
   {
    "id": "E6_where",
@@ -9500,7 +9968,8 @@
      "right_foot": "Правая стопа"
     }
    },
-   "note": "1 Nov 2026: shown when E6_now or E6_often is yes, or an old round's E6 (B70); physio check needed"
+   "note": "1 Nov 2026: shown when E6_now or E6_often is yes, or an old round's E6 (B70); physio check needed",
+   "always": true
   },
   {
    "id": "E7",
@@ -9543,7 +10012,8 @@
      "yes": "Да",
      "no": "Нет"
     }
-   }
+   },
+   "always": true
   },
   {
    "id": "E7_when",
@@ -9575,7 +10045,8 @@
     "uz": "Qachon?",
     "ru": "Когда?"
    },
-   "option_text": null
+   "option_text": null,
+   "always": true
   },
   {
    "id": "E7_where",
@@ -9663,7 +10134,8 @@
      "left_foot": "Левая стопа",
      "right_foot": "Правая стопа"
     }
-   }
+   },
+   "always": true
   },
   {
    "id": "E8",
@@ -9713,7 +10185,8 @@
      "resists": "Плачет или сопротивляется",
      "very_sensitive": "Очень чувствительно реагирует на прикосновения"
     }
-   }
+   },
+   "typical": null
   },
   {
    "id": "E9",
@@ -9760,7 +10233,10 @@
      "sometimes": "Иногда",
      "yes": "Да"
     }
-   }
+   },
+   "core": true,
+   "typical": "no",
+   "note": "5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed"
   },
   {
    "id": "E10",
@@ -9811,7 +10287,9 @@
      "tube_fed": "Питается через зонд"
     }
    },
-   "note": "1 Nov 2026: uz reworded (B70)"
+   "note": "1 Nov 2026: uz reworded (B70) 5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed",
+   "core": true,
+   "typical": "never"
   },
   {
    "id": "E11",
@@ -9857,7 +10335,9 @@
      "wakes_1_2": "Просыпается 1–2 раза",
      "wakes_many": "Просыпается много раз"
     }
-   }
+   },
+   "typical": "through",
+   "note": "5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed"
   },
   {
    "id": "E12",
@@ -9909,7 +10389,8 @@
      "changes": "По-разному"
     }
    },
-   "note": "1 Nov 2026: uz: 'chalqancha' replaced by 'orqasida' (B70)"
+   "note": "1 Nov 2026: uz: 'chalqancha' replaced by 'orqasida' (B70)",
+   "typical": null
   },
   {
    "id": "E13",
@@ -9952,7 +10433,8 @@
      "yes": "Да",
      "no": "Нет"
     }
-   }
+   },
+   "always": true
   },
   {
    "id": "E13_where",
@@ -9984,7 +10466,8 @@
     "uz": "Qayerda?",
     "ru": "Где?"
    },
-   "option_text": null
+   "option_text": null,
+   "always": true
   },
   {
    "id": "F1",
@@ -10031,7 +10514,10 @@
      "gesture": "Только если показать жестом",
      "no": "Нет"
     }
-   }
+   },
+   "core": true,
+   "typical": "yes",
+   "note": "5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed"
   },
   {
    "id": "F2",
@@ -10078,7 +10564,10 @@
      "sometimes": "Иногда",
      "no": "Нет"
     }
-   }
+   },
+   "core": true,
+   "typical": "yes",
+   "note": "5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed"
   },
   {
    "id": "F3",
@@ -10147,7 +10636,16 @@
      "letters": "Буквы",
      "none": "Пока ничего из этого"
     }
-   }
+   },
+   "typical": [
+    "colors",
+    "shapes",
+    "animals",
+    "numbers",
+    "letters"
+   ],
+   "typical_from_age": 60,
+   "note": "5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed"
   },
   {
    "id": "F4",
@@ -10199,7 +10697,9 @@
      "over_15": "Больше 15 мин"
     }
    },
-   "note": "1 Nov 2026: question reworded (B70); physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)"
+   "note": "1 Nov 2026: question reworded (B70); physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44) 5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed",
+   "core": true,
+   "typical": "5_15"
   },
   {
    "id": "F5",
@@ -10253,7 +10753,12 @@
      "small_things": "Трудно видит мелкие предметы",
      "impairment": "Врач сказал, что зрение снижено"
     }
-   }
+   },
+   "core": true,
+   "typical": [
+    "normal"
+   ],
+   "note": "5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed"
   },
   {
    "id": "F5_help",
@@ -10306,7 +10811,8 @@
      "not_sure": "Не уверен(а)"
     }
    },
-   "note": "R18 asks for size, contrast and color follow-ups; this wording is the team's draft for the physio."
+   "note": "R18 asks for size, contrast and color follow-ups; this wording is the team's draft for the physio.",
+   "typical": null
   },
   {
    "id": "F6",
@@ -10357,7 +10863,10 @@
      "hard": "Слух снижен",
      "deaf": "Не слышит"
     }
-   }
+   },
+   "core": true,
+   "typical": "normal",
+   "note": "5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed"
   },
   {
    "id": "F7",
@@ -10404,7 +10913,10 @@
      "a_little": "Немного",
      "a_lot": "Сильно"
     }
-   }
+   },
+   "core": true,
+   "typical": "no",
+   "note": "5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed"
   },
   {
    "id": "F8",
@@ -10455,7 +10967,8 @@
      "1_2h": "1–2 ч",
      "over_2h": "Больше 2 ч"
     }
-   }
+   },
+   "typical": null
   },
   {
    "id": "F9",
@@ -10518,7 +11031,8 @@
      "water": "Воду",
      "other": "Другое"
     }
-   }
+   },
+   "typical": null
   },
   {
    "id": "F9_character",
@@ -10545,7 +11059,8 @@
     "uz": "Sevimli qahramoni",
     "ru": "Любимый персонаж"
    },
-   "option_text": null
+   "option_text": null,
+   "typical": null
   },
   {
    "id": "F10",
@@ -10596,7 +11111,8 @@
      "cries": "Плачет или злится"
     }
    },
-   "note": "Questionnaire wording: \"when your child fails at something\"; softened for parents."
+   "note": "Questionnaire wording: \"when your child fails at something\"; softened for parents. 5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed",
+   "typical": "tries_again"
   },
   {
    "id": "F11",
@@ -10638,7 +11154,9 @@
      "yes": "Да",
      "no": "Нет"
     }
-   }
+   },
+   "typical": "yes",
+   "note": "5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed"
   },
   {
    "id": "G1",
@@ -10697,7 +11215,13 @@
      "looking": "Взглядом на предметы",
      "picture_cards": "Карточками с картинками или с помощью устройства"
     }
-   }
+   },
+   "core": true,
+   "typical": [
+    "sentences"
+   ],
+   "typical_from_age": 36,
+   "note": "5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed"
   },
   {
    "id": "CP14",
@@ -10764,7 +11288,8 @@
      "no": "Нет"
     }
    },
-   "note": "1 Nov 2026: moved to step G after G1, asked only when the child uses words or sentences (B69); physio check needed"
+   "note": "1 Nov 2026: moved to step G after G1, asked only when the child uses words or sentences (B69); physio check needed 5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed",
+   "typical": "no"
   },
   {
    "id": "G2",
@@ -10820,7 +11345,11 @@
      "iv": "Уровень IV",
      "v": "Уровень V"
     }
-   }
+   },
+   "core": true,
+   "typical": "i",
+   "typical_from_age": 36,
+   "note": "5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed"
   },
   {
    "id": "G3",
@@ -10875,7 +11404,10 @@
      "never": "Никогда"
     }
    },
-   "note": "5 Nov 2026: reworded; new 'Always', which counts like 'mostly' (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)"
+   "note": "5 Nov 2026: reworded; new 'Always', which counts like 'mostly' (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44) 5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed",
+   "core": true,
+   "typical": "always",
+   "typical_from_age": 36
   },
   {
    "id": "G4",
@@ -10937,7 +11469,13 @@
      "sounds": "Звуками",
      "no_clear_way": "Пока нет понятного способа"
     }
-   }
+   },
+   "core": true,
+   "typical": [
+    "words"
+   ],
+   "typical_from_age": 36,
+   "note": "5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed"
   },
   {
    "id": "G5",
@@ -10983,7 +11521,9 @@
      "yes": "Да",
      "no": "Нет"
     }
-   }
+   },
+   "typical": "no",
+   "note": "5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed"
   },
   {
    "id": "G6",
@@ -11038,7 +11578,10 @@
      "looks": "Смотрит на неё",
      "points_held": "Показывает, пока я держу телефон"
     }
-   }
+   },
+   "core": true,
+   "typical": "finger",
+   "note": "5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed"
   },
   {
    "id": "G7",
@@ -11126,7 +11669,9 @@
     "uz": "Bu farzandingiz uchun birinchi soʻz va rasmlarni tanlashga yordam beradi.",
     "ru": "Это поможет выбрать первые слова и картинки для ребёнка."
    },
-   "note": "5 Nov 2026: reworded, new hint; the talking board does not read this question yet, so the hint is the 'first words and pictures' one (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)"
+   "note": "5 Nov 2026: reworded, new hint; the talking board does not read this question yet, so the hint is the 'first words and pictures' one (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)",
+   "core": true,
+   "typical": null
   },
   {
    "id": "G8",
@@ -11157,7 +11702,8 @@
     "uz": "Farzandingiz ishlatadigan soʻzlar yoki tovushlar va ularning maʼnosi",
     "ru": "Слова или звуки, которые использует ребёнок, и что они значат"
    },
-   "option_text": null
+   "option_text": null,
+   "typical": null
   },
   {
    "id": "G9",
@@ -11187,7 +11733,8 @@
     "uz": "Kartochkalar uchun oila aʼzolari va uy hayvonlarining ismlari",
     "ru": "Имена членов семьи и домашних животных для карточек"
    },
-   "option_text": null
+   "option_text": null,
+   "typical": null
   },
   {
    "id": "G10",
@@ -11237,7 +11784,10 @@
      "some_words": "Некоторые слова",
      "no": "Нет"
     }
-   }
+   },
+   "typical": "yes",
+   "typical_from_age": 84,
+   "note": "5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed"
   },
   {
    "id": "H1",
@@ -11289,7 +11839,10 @@
      "tube": "Через зонд"
     }
    },
-   "note": "5 Nov 2026: 'self' and 'tube' reworded (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)"
+   "note": "5 Nov 2026: 'self' and 'tube' reworded (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44) 5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed",
+   "core": true,
+   "typical": "self",
+   "typical_from_age": 36
   },
   {
    "id": "H2",
@@ -11336,7 +11889,10 @@
      "no": "Я одеваю его полностью"
     }
    },
-   "note": "5 Nov 2026: question and answers reworded (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)"
+   "note": "5 Nov 2026: question and answers reworded (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44) 5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed",
+   "core": true,
+   "typical": "alone",
+   "typical_from_age": 60
   },
   {
    "id": "H3",
@@ -11384,7 +11940,9 @@
      "diapers": "Пока нет, в подгузниках"
     }
    },
-   "note": "5 Nov 2026: question and answers reworded (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)"
+   "note": "5 Nov 2026: question and answers reworded (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44) 5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed",
+   "typical": "trained",
+   "typical_from_age": 48
   },
   {
    "id": "H4",
@@ -11434,7 +11992,10 @@
      "floor": "Сидя на полу",
      "moving": "В движении"
     }
-   }
+   },
+   "core": true,
+   "typical": "moving",
+   "note": "5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed"
   },
   {
    "id": "H5_calm",
@@ -11486,7 +12047,8 @@
      "evening": "Вечером"
     }
    },
-   "note": "1 Nov 2026: replaces H5: calm and active apart, several times can be ticked (B70); physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)"
+   "note": "1 Nov 2026: replaces H5: calm and active apart, several times can be ticked (B70); physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)",
+   "always": true
   },
   {
    "id": "H5_active",
@@ -11538,7 +12100,8 @@
      "evening": "Вечером"
     }
    },
-   "note": "1 Nov 2026: replaces H5: calm and active apart, several times can be ticked (B70); physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)"
+   "note": "1 Nov 2026: replaces H5: calm and active apart, several times can be ticked (B70); physio check needed. uz text drafted 1 Nov 2026 — native-speaker check (B44)",
+   "always": true
   },
   {
    "id": "H6",
@@ -11564,7 +12127,8 @@
     "uz": "Odatda uygʻonish vaqti",
     "ru": "Обычное время подъёма"
    },
-   "option_text": null
+   "option_text": null,
+   "typical": null
   },
   {
    "id": "H6_nap",
@@ -11590,7 +12154,8 @@
     "uz": "Odatda kunduzgi uyqu vaqti",
     "ru": "Обычное время дневного сна"
    },
-   "option_text": null
+   "option_text": null,
+   "typical": null
   },
   {
    "id": "H6_bed",
@@ -11616,7 +12181,8 @@
     "uz": "Odatda uxlash vaqti",
     "ru": "Обычное время отхода ко сну"
    },
-   "option_text": null
+   "option_text": null,
+   "typical": null
   },
   {
    "id": "H7",
@@ -11671,7 +12237,8 @@
      "special": "Специальный (коррекционный)",
      "home_only": "Только дома"
     }
-   }
+   },
+   "typical": null
   },
   {
    "id": "H7_hours",
@@ -11712,7 +12279,8 @@
     "uz": "Kuniga necha soat",
     "ru": "Сколько часов в день"
    },
-   "option_text": null
+   "option_text": null,
+   "typical": null
   },
   {
    "id": "H8",
@@ -11774,7 +12342,9 @@
     "uz": "Bilmayman",
     "ru": "Не знаю"
    },
-   "note": "5 Nov 2026: new 'Always' (counts like 'often'), 'Never' (like 'rarely') and 'Not sure', stored as null (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)"
+   "note": "5 Nov 2026: new 'Always' (counts like 'often'), 'Never' (like 'rarely') and 'Not sure', stored as null (B74); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44) 5 Nov 2026: `typical` answer for a child with no difficulty (B76); physio check needed",
+   "typical": "often",
+   "typical_from_age": 36
   },
   {
    "id": "I1",
@@ -11989,7 +12559,8 @@
     "uz": "Mutaxassisingiz uyda qilish uchun bergan mashqlar",
     "ru": "Упражнения, которые специалист дал вам для дома"
    },
-   "option_text": null
+   "option_text": null,
+   "fold": true
   },
   {
    "id": "I4_files",
@@ -12016,7 +12587,8 @@
     "ru": "Или видео, где ребёнок делает эти упражнения"
    },
    "option_text": null,
-   "note": "1 Nov 2026: label reworded; also takes a video, up to 100 MB (B70). uz text drafted 1 Nov 2026 — native-speaker check (B44)"
+   "note": "1 Nov 2026: label reworded; also takes a video, up to 100 MB (B70). uz text drafted 1 Nov 2026 — native-speaker check (B44)",
+   "fold": true
   },
   {
    "id": "I5",
@@ -12043,7 +12615,8 @@
     "uz": "Hozirgacha eng koʻp nima yordam berdi? Nima yordam bermadi?",
     "ru": "Что помогло больше всего? А что не помогло?"
    },
-   "option_text": null
+   "option_text": null,
+   "fold": true
   },
   {
    "id": "I6",
@@ -12098,7 +12671,8 @@
      "prefer_not": "Не хочу указывать"
     }
    },
-   "note": "The questionnaire says \"ranges in UZS\"; these ranges are the team's draft."
+   "note": "The questionnaire says \"ranges in UZS\"; these ranges are the team's draft.",
+   "fold": true
   },
   {
    "id": "I7",
@@ -12148,7 +12722,8 @@
      "other_cities": "В другие города",
      "abroad": "За границу"
     }
-   }
+   },
+   "fold": true
   },
   {
    "id": "I8_place",
@@ -12207,7 +12782,8 @@
      "any": "Без разницы"
     }
    },
-   "note": "5 Nov 2026: new, replaces I8 with I8_lang (B75); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)"
+   "note": "5 Nov 2026: new, replaces I8 with I8_lang (B75); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)",
+   "fold": true
   },
   {
    "id": "I8_lang",
@@ -12258,7 +12834,8 @@
      "any": "Любой"
     }
    },
-   "note": "5 Nov 2026: new, replaces I8 with I8_place (B75); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)"
+   "note": "5 Nov 2026: new, replaces I8 with I8_place (B75); physio check needed. uz text drafted 5 Nov 2026 — native-speaker check (B44)",
+   "fold": true
   },
   {
    "id": "I9",
@@ -12317,7 +12894,8 @@
      "special_chair": "Специальный стул",
      "none": "Ничего"
     }
-   }
+   },
+   "fold": true
   },
   {
    "id": "J1",
@@ -12459,7 +13037,8 @@
      "small": "Немного",
      "very_little": "Совсем мало"
     }
-   }
+   },
+   "fold": true
   },
   {
    "id": "J4",
@@ -12607,7 +13186,8 @@
     "uz": "1 = umuman bilmayman, 5 = aniq bilaman",
     "ru": "1 = совсем не знаю как, 5 = точно знаю как"
    },
-   "note": "1 Nov 2026: question reworded; what 1 and 5 mean in the hint (B70). uz text drafted 1 Nov 2026 — native-speaker check (B44)"
+   "note": "1 Nov 2026: question reworded; what 1 and 5 mean in the hint (B70). uz text drafted 1 Nov 2026 — native-speaker check (B44)",
+   "fold": true
   },
   {
    "id": "J7",
@@ -12658,7 +13238,8 @@
      "text": "Текст",
      "voice": "Голосовые сообщения"
     }
-   }
+   },
+   "fold": true
   },
   {
    "id": "J8",
@@ -12913,7 +13494,8 @@
     "ru": "Опишите ваши цели своими словами"
    },
    "option_text": null,
-   "note": "1 Nov 2026: always shown, a longer text box; '(optional)' comes from the website's own label (B70). uz text drafted 1 Nov 2026 — native-speaker check (B44)"
+   "note": "1 Nov 2026: always shown, a longer text box; '(optional)' comes from the website's own label (B70). uz text drafted 1 Nov 2026 — native-speaker check (B44)",
+   "fold": true
   },
   {
    "id": "J10",
@@ -12939,7 +13521,8 @@
     "uz": "Kundalik hayotda siz uchun eng qiyini nima?",
     "ru": "Что для вас труднее всего в повседневной жизни?"
    },
-   "option_text": null
+   "option_text": null,
+   "fold": true
   },
   {
    "id": "J11",
@@ -12986,7 +13569,8 @@
      "sometimes": "Иногда",
      "no": "Нет"
     }
-   }
+   },
+   "fold": true
   },
   {
    "id": "K1",

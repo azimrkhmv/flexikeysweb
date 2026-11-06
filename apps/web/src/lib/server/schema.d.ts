@@ -2747,6 +2747,11 @@ export interface components {
                 [key: string]: unknown;
             };
             /**
+             * Notasked
+             * @default []
+             */
+            notAsked: string[];
+            /**
              * Planrebuilt
              * @default false
              */

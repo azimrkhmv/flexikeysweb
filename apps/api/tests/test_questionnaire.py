@@ -12,9 +12,11 @@ from app.modules.intake.questionnaire import (
     DATA,
     QUESTIONS,
     cp_type,
+    effective_answers,
     home_language,
     missing_answers,
     shown_options,
+    typical_filled,
     upgrade,
     visible,
 )
@@ -32,6 +34,8 @@ def test_the_server_shows_what_the_website_shows(case: dict[str, Any]) -> None:
         assert home_language(case["answers"], ui) == language, ui
     for qid, value in case["upgraded"].items():
         assert upgrade(case["answers"])[qid] == value, qid
+    assert effective_answers(case["answers"], today) == case["effective"]
+    assert typical_filled(case["answers"], today) == case["filled"]
 
 
 def test_every_numbered_question_of_the_questionnaire_is_there() -> None:

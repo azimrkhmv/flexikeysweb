@@ -7257,6 +7257,14 @@
       "type": "object",
       "title": "Parentanswers"
      },
+     "notAsked": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Notasked",
+      "default": []
+     },
      "planRebuilt": {
       "type": "boolean",
       "title": "Planrebuilt",

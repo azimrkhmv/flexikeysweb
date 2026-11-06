@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { FileUp, ShieldCheck, Trash2 } from "lucide-react";
 import { Button, Card, Field, Input, Textarea, useAction } from "@/components/ui";
-import { ageInMonths, cmFromFtIn, ftInFromCm, inLang, kgFromLb, ladderTicks, ladderToggle, ladderValue, lbFromKg, offersNotSure, Q_BY_ID, QUESTIONNAIRE, shownOptions, toggleOption, typedProblem, upgrade, visible, type QAnswer, type QAnswers, type QQuestion } from "@/content/questionnaire";
+import { ageInMonths, cmFromFtIn, ftInFromCm, inLang, kgFromLb, ladderTicks, ladderToggle, ladderValue, lbFromKg, offersNotSure, Q_BY_ID, QUESTIONNAIRE, quickCheckDefaults, shownOptions, toggleOption, typedProblem, upgrade, visible, type QAnswer, type QAnswers, type QQuestion } from "@/content/questionnaire";
 import { pView } from "@/content/questionnaireBridge";
 import { FormError } from "@/features/auth/parts";
 import { api, sel, useDb } from "@/lib/api";
@@ -37,7 +37,9 @@ export function QuestionnaireWizard({ childId: initialChild, version }: { childI
   const [childId, setChildId] = useState<string | null>(initialChild ?? null);
   const child = childId ? sel.child(db, childId) : null;
   const round = childId ? sel.intakeRound(db, childId)?.round ?? 1 : 1;
-  const [answers, setAnswers] = useState<QAnswers>(() => (childId ? upgrade(sel.intakeAnswers(db, childId, round)) : {}));
+  const [typed, setAnswers] = useState<QAnswers>(() => (childId ? upgrade(sel.intakeAnswers(db, childId, round)) : {}));
+  const answers = quickCheckDefaults(typed); // B76: the Quick check starts filled in where the body parts already say
+  const [unfolded, setUnfolded] = useState<string[]>([]); // sections whose "Add more details" link was opened
   const health = childId ? sel.hasConsent(db, childId, "health") : false;
   const [plan, setPlan] = useState<Roadmap | null>(null);
   const [markedStep, setMarkedStep] = useState<string | null>(null);
@@ -80,6 +82,9 @@ export function QuestionnaireWizard({ childId: initialChild, version }: { childI
   // Open: a required question without an answer, or an answer the server would refuse (its message shows under it).
   const open = new Set(questions.filter((q) => (q.required && unanswered(answers[q.id])) || typedProblem(q, answers[q.id], answers, today())).map((q) => q.id));
   const set = (id: string, v: QAnswer) => setAnswers((a) => ({ ...a, [id]: v }));
+  // Optional questions wait behind one link per section, unless they are answered or the parent asked for them.
+  const out = (q: QQuestion) => !q.fold || unfolded.includes(step) || !unanswered(answers[q.id]) || (q.id === "J9_other" && Array.isArray(answers.J9) && answers.J9.includes("other"));
+  const cards = questions.filter(out);
 
   const showFirstOpen = () => {
     setMarkedStep(step);
@@ -170,7 +175,8 @@ export function QuestionnaireWizard({ childId: initialChild, version }: { childI
             else next();
           }}
         >
-          {questions.map((q) => {
+          {step === "QC" && <QuickCheck questions={questions} answers={answers} set={set} marked={markedStep === step ? open : new Set()} />}
+          {step !== "QC" && cards.map((q) => {
             if (isOwnWords(q)) return null; // shown inside its question's card
             const mark = markedStep === step && open.has(q.id);
             const note = q.ladder ? questions.find((n) => n.id === `${q.id}_note`) : undefined;
@@ -185,6 +191,11 @@ export function QuestionnaireWizard({ childId: initialChild, version }: { childI
               </div>
             );
           })}
+          {cards.length < questions.length && (
+            <button type="button" onClick={() => setUnfolded((u) => [...u, step])} className="text-sm font-bold text-primary underline underline-offset-4">
+              {t("intake.more")}
+            </button>
+          )}
           <FormError>{act.error}</FormError>
           <div className="flex flex-wrap items-center gap-3">
             {i > 0 && <Button variant="ghost" onClick={() => setI(i - 1)}>{t("intake.back")}</Button>}
@@ -219,6 +230,30 @@ function SectionBanner({ number, title, intro, phase }: { number?: string; title
 }
 
 type SetAnswer = (id: string, v: QAnswer) => void;
+
+/** The Quick check (B76): one compact table, a row per area and three answers per row. */
+function QuickCheck({ questions, answers, set, marked }: { questions: QQuestion[]; answers: QAnswers; set: SetAnswer; marked: Set<string> }) {
+  const t = useT();
+  const [uiLang] = useLang();
+  return (
+    <Card className="p-5">
+      <p className="mb-4 font-bold text-ink">{t("intake.qc.lead")}</p>
+      <div className="divide-y divide-line">
+        {questions.map((q) => (
+          <div key={q.id} id={`q-${q.id}`} role="group" aria-labelledby={`${q.id}-label`} className={`scroll-mt-24 py-3 first:pt-0 last:pb-0 ${marked.has(q.id) ? "rounded-xl ring-4 ring-sun" : ""}`}>
+            <p id={`${q.id}-label`} className="mb-2 text-sm font-bold text-ink">{inLang(q.text, uiLang)}</p>
+            <div className="grid grid-cols-3 gap-2">
+              {q.options!.map((o) => (
+                <Choice key={o} name={q.id} type="radio" checked={answers[q.id] === o} onChange={() => set(q.id, o)} label={inLang(q.option_text!, uiLang, o)} className="justify-center !px-1 text-center" />
+              ))}
+            </div>
+            {marked.has(q.id) && <p className="mt-2 text-sm font-bold text-ink">{t("intake.answerThis")}</p>}
+          </div>
+        ))}
+      </div>
+    </Card>
+  );
+}
 
 /** One question of any kind. "Not sure" is stored as null (spec §5); an optional question has none unless it says
  * `not_sure` (B63). A chosen answer to an optional question is cleared by choosing it again (B63). */

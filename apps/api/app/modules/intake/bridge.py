@@ -15,7 +15,7 @@ restriction applies. ponytail: these mappings are the team's reading, listed und
 from datetime import date, timedelta
 from typing import Any
 
-from app.modules.intake.questionnaire import cp_type
+from app.modules.intake.questionnaire import cp_type, effective_answers
 
 RECENT = timedelta(days=183)  # "surgery, cast or Botox in the last 6 months" (P15), the questionnaire's "recent"
 GMFCS_P12 = {"i": "walks", "ii": "walks_help", "iii": "walker", "iv": "wheelchair", "v": "needs_help_sit"}
@@ -62,8 +62,9 @@ def _movement(a: dict[str, Any]) -> str | None:
     return None  # not answered: the cautious level (plans/safety.py)
 
 
-def p_view(a: dict[str, Any], today: date) -> dict[str, Any]:
+def p_view(saved: dict[str, Any], today: date) -> dict[str, Any]:
     """The P answers the rules read, with `_hold` and `_restrictions` (see the module docstring)."""
+    a = effective_answers(saved, today)  # B76: a hidden question counts as its typical answer
     dx = set(_list(a.get("B1")))
     p: dict[str, Any] = {"P1": a.get("A1"), "P2": a.get("A2"), "P3": a.get("A3")}
     p["P9"] = sorted(

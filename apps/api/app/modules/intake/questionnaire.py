@@ -26,7 +26,10 @@ SET = "2026-10-16"  # the id a round stores (settings.intake_questionnaire): the
 OWN_DONT_KNOW = {"CP1", "CP1_types", "DS1", "E1"}
 # No "Not sure": name, birthday and the family facts (B60; TASKS.md section 3 replaces spec §5 for these), and
 # OWN_DONT_KNOW. The website's NO_NOT_SURE (content/questionnaire.ts) is the same list.
-NO_NOT_SURE = {"A1", "A2", "A3", "A4", "A4_kg", "A5", "A7_langs", "A9", "B1", "B3_parts"} | OWN_DONT_KNOW
+NO_NOT_SURE = {
+    "A1", "A2", "A3", "A4", "A4_kg", "A5", "A7_langs", "A9", "B1", "B3_parts",
+    "QC_move", "QC_hands", "QC_body", "QC_senses", "QC_talk", "QC_daily",
+} | OWN_DONT_KNOW  # fmt: skip
 AGE_MIN, AGE_MAX = 2, 18  # FlexiKeys is for children aged 2 to 18 (founders, 30 Oct 2026)
 TEXT_MAX, LONGTEXT_MAX, FILES_MAX, CLIPS_MAX = 200, 1000, 5, 11  # 11 baseline video tasks (section K)
 FILE_KEY = re.compile(r"children/[0-9a-f-]{36}/intake/[0-9a-f-]{36}")
@@ -182,8 +185,69 @@ def holds(cond: dict[str, Any] | None, answers: Answers, f: dict[str, int | str 
     return _in_range(v, cond)
 
 
+# The Quick check (B76): six questions decide how much of sections C to H a parent is asked. "No difficulty" hides a
+# section, and its questions count as their `typical` answer; "A little" keeps its `core` questions; "A lot" keeps them
+# all. Children who stand or walk alone skip the baby-level questions the same way (`hide_when`), and the dates of
+# `under_months` stop at 6 years. All of this is worked out on read: a saved answer is never changed.
+QUICK_CHECK = [q for q in DATA["questions"] if q.get("controls")]
+LATER = [
+    q["id"]
+    for q in DATA["questions"]
+    if q["audience"] == "parent" and DATA["steps"].index(q["step"]) > DATA["steps"].index("QC")
+]
+
+
+def quick_check_on(answers: Answers) -> bool:
+    """False for an old round: answers after the Quick check and none to it. It shows everything, as before."""
+    return any(q["id"] in answers for q in QUICK_CHECK) or not any(i in answers for i in LATER)
+
+
+def _section_answer(step: str, answers: Answers, f: dict[str, int | str | None]) -> Any:
+    qc = next((q for q in QUICK_CHECK if q["controls"] == step), None)
+    if qc is None:
+        return None
+    value = answers.get(qc["id"])
+    return "some" if value == "none" and "at_least_some" in qc and holds(qc["at_least_some"], answers, f) else value
+
+
+def _skipped(question: dict[str, Any], answers: Answers, f: dict[str, int | str | None], months: int | None) -> bool:
+    owner = QUESTIONS.get(question["id"].removesuffix("_note")) if question["id"].endswith("_note") else None
+    q = owner if owner and owner.get("ladder") else question  # the "own words" box goes with its question
+    if "under_months" in q and months is not None and months >= q["under_months"]:
+        return True
+    if "hide_when" in q and holds(q["hide_when"], answers, f):
+        return True
+    if q.get("always"):
+        return False
+    answer = _section_answer(q["step"], answers, f)
+    return answer == "none" or (answer == "some" and not q.get("core"))
+
+
+def effective_answers(answers: Answers, today: date) -> Answers:
+    """The answers the rules read: a missing answer to a question the Quick check or the child's ability hides counts
+    as its `typical`. Same as the website's effectiveAnswers."""
+    if not quick_check_on(answers):
+        return answers
+    f, months, out = facts(answers, today), age_in_months(answers.get("A2"), today), dict(answers)
+    for q in DATA["questions"]:
+        if q.get("typical") is None or q["id"] in answers:
+            continue
+        if "typical_from_age" in q and (months is None or months < q["typical_from_age"]):
+            continue
+        hidden = "hide_when" in q and holds(q["hide_when"], answers, f)
+        if hidden or _section_answer(q["step"], answers, f) == "none":
+            out[q["id"]] = q["typical"]
+    return out
+
+
+def typical_filled(answers: Answers, today: date) -> list[str]:
+    """The questions answered by effective_answers, for the therapist's "Not asked" label."""
+    return [i for i in effective_answers(answers, today) if i not in answers]
+
+
 def shown(question_id: str, answers: Answers, today: date) -> bool:
-    return holds(QUESTIONS[question_id]["show"], answers, facts(answers, today))
+    e = effective_answers(answers, today)
+    return holds(QUESTIONS[question_id]["show"], e, facts(e, today))
 
 
 def shown_options(question_id: str, answers: Answers, today: date) -> list[str] | None:
@@ -191,17 +255,23 @@ def shown_options(question_id: str, answers: Answers, today: date) -> list[str] 
     q = QUESTIONS[question_id]
     if q["options"] is None:
         return None
-    f, rules = facts(answers, today), q["option_show"] or {}
-    return [o for o in q["options"] if holds(rules.get(o), answers, f)]
+    e = effective_answers(answers, today)
+    f, rules = facts(e, today), q["option_show"] or {}
+    return [o for o in q["options"] if holds(rules.get(o), e, f)]
 
 
 def visible(answers: Answers, today: date, audience: str = "parent") -> list[str]:
     """Every question this child's parent is asked now, in questionnaire order (sign-up questions left out)."""
-    f = facts(answers, today)
+    e = effective_answers(answers, today)
+    f, saved = facts(e, today), facts(answers, today)
+    on, months = quick_check_on(answers), age_in_months(answers.get("A2"), today)
     return [
         q["id"]
         for q in DATA["questions"]
-        if q["audience"] == audience and not q["signup"] and holds(q["show"], answers, f)
+        if q["audience"] == audience
+        and not q["signup"]
+        and holds(q["show"], e, f)
+        and (not _skipped(q, answers, saved, months) if on else "controls" not in q)
     ]
 
 

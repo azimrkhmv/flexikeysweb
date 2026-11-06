@@ -4,7 +4,7 @@ import { useState, type ReactNode } from "react";
 import { Button, Card, Checkbox, Chip, Field, Input, Select, Textarea, useAction } from "@/components/ui";
 import { SectionTitle, useMe } from "@/features/pro/shared";
 import { CP_PARTS, CP_TYPES, FORM_IDS, GOALS, LEVELS, MAX_GOALS, MUST_NOT, PROFESSIONS, UPDATES, missing, requiredFor, type FormId, type Level, type Profession, type TherapistAnswers } from "@/content/therapist";
-import { Q_BY_ID, visible, type QAnswer } from "@/content/questionnaire";
+import { inLang, Q_BY_ID, visible, type QAnswer } from "@/content/questionnaire";
 import { Question } from "@/features/intake/Questionnaire";
 import { api, sel } from "@/lib/api";
 import { useLang, useT } from "@/lib/i18n";
@@ -74,6 +74,34 @@ export function ProfileCard() {
         </Button>
         {save.error && <p className="text-sm font-semibold text-[#8f3a2c]">{save.error}</p>}
       </form>
+    </Card>
+  );
+}
+
+/** What the plan reads as typical because the parent said "No difficulty" in the Quick check (B76): the therapist can
+ * see it was not asked, and correct it in the form. */
+export function NotAsked({ childId }: { childId: string }) {
+  const t = useT();
+  const { db } = useMe();
+  const [lang] = useLang();
+  const ids = sel.notAsked(db, childId).filter((id) => Q_BY_ID[id]);
+  if (!ids.length) return null;
+  const answer = (id: string) => {
+    const q = Q_BY_ID[id];
+    const v = q.typical;
+    return (Array.isArray(v) ? v : [v ?? ""]).map((o) => (q.option_text ? inLang(q.option_text, lang, o) : o)).join(", ");
+  };
+  return (
+    <Card>
+      <SectionTitle>{t("tform.notAsked")}</SectionTitle>
+      <ul className="space-y-2 text-sm">
+        {ids.map((id) => (
+          <li key={id}>
+            <span className="font-bold text-ink">{inLang(Q_BY_ID[id].text, lang)}</span>
+            <span className="text-ink-2"> {answer(id)}</span>
+          </li>
+        ))}
+      </ul>
     </Card>
   );
 }
