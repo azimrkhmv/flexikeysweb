@@ -1008,6 +1008,10 @@ has a decision; the source is "FlexiKeys — parent questionnaire review 2" (5 N
   - Done when: "never selects a conflicting video — every safety combination" in `roadmap.test.ts` passes on a busy machine
   - Needs: —
   - Note (6 Nov 2026): 2.3 s on an idle machine, over the 5 s default when the computer is busy (failed 4 of 4 runs under load, and once beside the server tests). It is a time limit, never a wrong answer. Not caused by B75: the test uses none of the new goals
+- [x] **Bekzod** — `B79` The section intro also plays on open
+  - Done when: Section 1 of a new questionnaire opens with its intro; a parent who pressed "Save and finish later" sees the intro of the section they stopped at when they come back; going back still shows none; the health consent and reduced motion still show none
+  - Needs: B73
+  - Note (7 Nov 2026): Bekzod's request after trying the demo. One rule covers both: the section the page opens at gets the intro, once
 
 ### Hosting (31 Oct 2026)
 

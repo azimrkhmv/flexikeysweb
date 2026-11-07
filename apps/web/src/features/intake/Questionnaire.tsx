@@ -60,8 +60,8 @@ export function QuestionnaireWizard({ childId: initialChild, version }: { childI
   });
   const step = steps[Math.min(i, steps.length - 1)];
   const questions = inStep(step);
-  // B73: the intro screen plays when a parent goes forward into a section for the first time in this visit: not on
-  // the section the page opened at, not going back. "hold": the big title; "move": it moves into the banner.
+  // B73: the intro screen plays when a parent goes forward into a section for the first time in this visit, never
+  // going back. "hold": the big title; "move": it moves into the banner.
   const seen = useRef(new Set<string>());
   const [intro, setIntro] = useState<"hold" | "move" | null>(null);
   const startMove = useCallback(() => setIntro("move"), []);
@@ -69,6 +69,10 @@ export function QuestionnaireWizard({ childId: initialChild, version }: { childI
   const enter = (to: string | undefined) => {
     if (to && to !== "health_consent" && !seen.current.has(to) && wantsIntro()) setIntro("hold");
   };
+  // B79: also on the section the page opens at: Section 1 of a new questionnaire, or the section a parent who
+  // pressed "Save and finish later" comes back to. Once, on open (an effect: the server render has no window).
+  const first = useRef(step);
+  useEffect(() => enter(first.current), []);
   // A new step opens at its banner (B67), not where the last one's Next button was; the title takes the focus so a
   // screen reader reads the new section, once the intro screen is over.
   const opened = useRef(false);

@@ -22,7 +22,7 @@ async function notSureToTheRest(page: Page) {
   await expect(h1).not.toHaveText(before);
 }
 
-test("a section opens with its big title going forward, never going back (B73)", async ({ page }, info) => {
+test("a section opens with its big title on open and going forward, never going back (B73, B79)", async ({ page }, info) => {
   test.skip(info.project.name !== "desktop", "one journey is enough");
   await setup(page);
   await page.goto("/signup");
@@ -38,8 +38,9 @@ test("a section opens with its big title going forward, never going back (B73)",
   await page.goto("/parent/children/new?q=2026-10-16");
 
   const intro = page.locator("[data-to=section-title]");
-  await expect(page.getByRole("heading", { level: 1, name: "About your child and family" })).toBeVisible();
-  await expect(intro).toHaveCount(0); // the section the page opened at has none
+  await expect(intro).toHaveText("About your child and family"); // B79: Section 1 has one too
+  await expect(intro).toHaveCount(0);
+  await expect(page.getByRole("heading", { level: 1, name: "About your child and family" })).toBeFocused();
   await page.getByLabel(/What is your child's name/).fill("Malika");
   await birthDate(page, "2019-05-01");
   await pick(page, "Boy or girl?", "Girl");
@@ -60,6 +61,15 @@ test("a section opens with its big title going forward, never going back (B73)",
   await page.getByRole("button", { name: "Next" }).click();
   await expect(page.getByRole("heading", { level: 1, name: "Diagnosis and medical history" })).toBeVisible();
   await expect(intro).toHaveCount(0); // already seen in this visit
+
+  // B79: "Save and finish later", then back another day: the intro of the section the parent stopped at plays again.
+  const again = page.url();
+  await page.getByRole("button", { name: "Save and finish later" }).click();
+  await expect(page).toHaveURL(/\/parent$/);
+  await page.goto(again);
+  await expect(intro).toHaveText("Diagnosis and medical history");
+  await expect(intro).toHaveCount(0);
+  await expect(page.getByRole("heading", { level: 1, name: "Diagnosis and medical history" })).toBeFocused();
 });
 
 test("No difficulty skips a section; the Quick check starts filled in; details wait behind a link (B76)", async ({ page }, info) => {
