@@ -7,6 +7,7 @@ import { marketing } from "./marketing";
 import { parent } from "./parent";
 import { play } from "./play";
 import { pro } from "./pro";
+import { skills } from "./skills";
 
 // All catalogs by area — for tests. Routes register catalogs through ./public, ./child and ./adult (lib/translate.ts).
-export const areaMessages = { common, marketing, auth, play, activities, aac, parent, pro, intake };
+export const areaMessages = { common, marketing, auth, play, activities, aac, parent, pro, intake, skills };

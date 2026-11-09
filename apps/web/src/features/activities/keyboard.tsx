@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import type { Lang } from "@/lib/i18n";
+import { LAYOUTS, tokenize } from "@/lib/keys";
 import { markAccept, usePlay } from "@/features/play/context";
 import { Target, type SelectInfo } from "@/features/play/Target";
 import { ActionButton, answer, Frame, pick, shuffle, useActT, useClock, useHint, useLater } from "./kit";
@@ -9,18 +10,7 @@ import type { EngineProps } from "./registry";
 
 // Adaptive keyboard (PRD §9.4) + the `type` activity (letter find, ghost-word build, listen & type).
 
-export const LAYOUTS: Record<Lang, string[][]> = {
-  en: ["qwertyuiop", "asdfghjkl", "zxcvbnm"].map((r) => [...r]),
-  uz: [[..."qwertyuiop"], [..."asdfghjkl"], [..."zxcvbnm", "oʻ", "gʻ"]],
-  ru: ["йцукенгшщзхъ", "фывапролджэ", "ячсмитьбюё"].map((r) => [...r]),
-};
-
-/** Splits a word into keyboard tokens. Uzbek "oʻ"/"gʻ" are single keys; apostrophe variants are normalized. */
-export function tokenize(word: string, lang: Lang): string[] {
-  const w = word.toLowerCase().normalize("NFC");
-  if (lang !== "uz") return [...w];
-  return w.replace(/([og])['‘’ʼ`]/g, "$1ʻ").match(/[og]ʻ|./gu) ?? [];
-}
+export { LAYOUTS, tokenize };
 
 /** Needed keys plus a few stable distractors, in layout order (reduced keyboard). */
 export function reducedKeys(lang: Lang, needed: string[], total = 8): string[] {
@@ -179,7 +169,11 @@ export function TypeActivity({ activity, onDone }: EngineProps<"type">) {
   );
 }
 
-function TypeRound({ word, mode, needed, index, total, last, next }: { word: string; mode: "letter" | "word" | "listen"; needed: string[]; index: number; total: number; last: boolean; next: () => void }) {
+/**
+ * One word (or letter) to type. Skill games add "sentence": a short sentence heard; its spaces fill in by themselves,
+ * so only letters are ever typed.
+ */
+export function TypeRound({ word, mode, needed, index, total, last, next }: { word: string; mode: "letter" | "word" | "listen" | "sentence"; needed: string[]; index: number; total: number; last: boolean; next: () => void }) {
   const ctx = usePlay();
   const t = useActT();
   const clock = useClock();
@@ -189,21 +183,25 @@ function TypeRound({ word, mode, needed, index, total, last, next }: { word: str
   const hint = useHint(() => ctx.say(expected ?? word, ctx.learnLang));
   const later = useLater();
   const solved = pos >= tokens.length;
-  const prompt = t(mode === "letter" ? "act.type.letter" : mode === "word" ? "act.type.word" : "act.type.listen");
+  const prompt = t(mode === "letter" ? "act.type.letter" : mode === "word" ? "act.type.word" : mode === "sentence" ? "act.skill.type.sentence" : "act.type.listen");
 
   const onKey = (k: string, info: SelectInfo) => {
     if (solved) return;
     const correct = k === expected;
-    const finished = correct && pos + 1 === tokens.length;
+    let to = pos + 1;
+    while (tokens[to] === " ") to++;
+    const finished = correct && to >= tokens.length;
     answer(ctx, { type: "key", target: expected, actual: k, correct, latencyMs: clock.ms(), info, quiet: !finished });
     if (!correct) return hint.miss();
     clock.reset();
     hint.reset();
-    setPos(pos + 1);
+    setPos(to);
     if (finished && mode !== "letter") later(() => ctx.say(word, ctx.learnLang), 600);
   };
 
-  const ghost = mode === "word" || (mode === "listen" && hint.show);
+  const ghost = mode === "word" || (mode !== "letter" && hint.show);
+  // Long words and sentences get smaller letter boxes, so they and the keyboard fit the screen.
+  const small = tokens.length > 7;
   return (
     <Frame
       prompt={prompt}
@@ -216,17 +214,21 @@ function TypeRound({ word, mode, needed, index, total, last, next }: { word: str
       {mode === "letter" ? (
         <span className={`grid size-40 place-items-center rounded-fk-lg text-8xl font-extrabold text-ink shadow-soft short:size-28 short:text-7xl ${solved ? "bg-teal-soft" : "bg-sun-soft"}`}>{word}</span>
       ) : (
-        <div className="flex flex-wrap justify-center gap-2" aria-label={word}>
-          {tokens.map((ch, k) => (
-            <span
-              key={k}
-              className={`grid h-24 min-w-20 place-items-center rounded-2xl border-b-4 px-3 text-6xl font-extrabold short:h-20 short:min-w-16 short:text-5xl ${
-                k < pos ? "fk-pop border-teal bg-teal-soft text-ink" : k === pos ? "border-sky bg-surface text-ink/25" : "border-line bg-surface-2 text-ink/20"
-              }`}
-            >
-              {k < pos || ghost ? ch : " "}
-            </span>
-          ))}
+        <div className={`flex flex-wrap justify-center ${small ? "gap-1" : "gap-2"}`} aria-label={word}>
+          {tokens.map((ch, k) =>
+            ch === " " ? (
+              <span key={k} className={small ? "w-4" : "w-8"} aria-hidden />
+            ) : (
+              <span
+                key={k}
+                className={`grid place-items-center rounded-2xl border-b-4 font-extrabold ${
+                  small ? "h-14 min-w-11 px-1 text-4xl short:h-12 short:min-w-9 short:text-3xl" : "h-24 min-w-20 px-3 text-6xl short:h-20 short:min-w-16 short:text-5xl"
+                } ${k < pos ? "fk-pop border-teal bg-teal-soft text-ink" : k === pos ? "border-sky bg-surface text-ink/25" : "border-line bg-surface-2 text-ink/20"}`}
+              >
+                {k < pos || ghost ? ch : " "}
+              </span>
+            ),
+          )}
         </div>
       )}
       <AdaptiveKeyboard lang={ctx.learnLang} needed={needed} expected={expected} hint={!solved && (hint.show || ctx.profile.hintLevel >= 3) ? expected : null} only={!solved && hint.fade ? expected : null} onKey={onKey} disabled={solved} />

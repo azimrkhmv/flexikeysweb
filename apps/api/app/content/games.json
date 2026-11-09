@@ -462,5 +462,1157 @@
   "area": "attention",
   "tier": 2,
   "step": 3
+ },
+ {
+  "activity_id": "find_same-skill",
+  "kind": "find_same",
+  "level": 0,
+  "area": "attention",
+  "tier": 1,
+  "step": 1
+ },
+ {
+  "activity_id": "find_same-skill",
+  "kind": "find_same",
+  "level": 0,
+  "area": "attention",
+  "tier": 1,
+  "step": 2
+ },
+ {
+  "activity_id": "find_same-skill",
+  "kind": "find_same",
+  "level": 0,
+  "area": "attention",
+  "tier": 1,
+  "step": 3
+ },
+ {
+  "activity_id": "find_same-skill",
+  "kind": "find_same",
+  "level": 0,
+  "area": "attention",
+  "tier": 2,
+  "step": 1
+ },
+ {
+  "activity_id": "find_same-skill",
+  "kind": "find_same",
+  "level": 0,
+  "area": "attention",
+  "tier": 2,
+  "step": 2
+ },
+ {
+  "activity_id": "find_same-skill",
+  "kind": "find_same",
+  "level": 0,
+  "area": "attention",
+  "tier": 2,
+  "step": 3
+ },
+ {
+  "activity_id": "find_same-skill",
+  "kind": "find_same",
+  "level": 0,
+  "area": "attention",
+  "tier": 3,
+  "step": 1
+ },
+ {
+  "activity_id": "find_same-skill",
+  "kind": "find_same",
+  "level": 0,
+  "area": "attention",
+  "tier": 3,
+  "step": 2
+ },
+ {
+  "activity_id": "find_same-skill",
+  "kind": "find_same",
+  "level": 0,
+  "area": "attention",
+  "tier": 3,
+  "step": 3
+ },
+ {
+  "activity_id": "find_same-skill",
+  "kind": "find_same",
+  "level": 0,
+  "area": "attention",
+  "tier": 4,
+  "step": 1
+ },
+ {
+  "activity_id": "find_same-skill",
+  "kind": "find_same",
+  "level": 0,
+  "area": "attention",
+  "tier": 4,
+  "step": 2
+ },
+ {
+  "activity_id": "find_same-skill",
+  "kind": "find_same",
+  "level": 0,
+  "area": "attention",
+  "tier": 4,
+  "step": 3
+ },
+ {
+  "activity_id": "scene-skill",
+  "kind": "scene",
+  "level": 0,
+  "area": "attention",
+  "tier": 1,
+  "step": 1
+ },
+ {
+  "activity_id": "scene-skill",
+  "kind": "scene",
+  "level": 0,
+  "area": "attention",
+  "tier": 1,
+  "step": 2
+ },
+ {
+  "activity_id": "scene-skill",
+  "kind": "scene",
+  "level": 0,
+  "area": "attention",
+  "tier": 1,
+  "step": 3
+ },
+ {
+  "activity_id": "scene-skill",
+  "kind": "scene",
+  "level": 0,
+  "area": "attention",
+  "tier": 2,
+  "step": 1
+ },
+ {
+  "activity_id": "scene-skill",
+  "kind": "scene",
+  "level": 0,
+  "area": "attention",
+  "tier": 2,
+  "step": 2
+ },
+ {
+  "activity_id": "scene-skill",
+  "kind": "scene",
+  "level": 0,
+  "area": "attention",
+  "tier": 2,
+  "step": 3
+ },
+ {
+  "activity_id": "scene-skill",
+  "kind": "scene",
+  "level": 0,
+  "area": "attention",
+  "tier": 3,
+  "step": 1
+ },
+ {
+  "activity_id": "scene-skill",
+  "kind": "scene",
+  "level": 0,
+  "area": "attention",
+  "tier": 3,
+  "step": 2
+ },
+ {
+  "activity_id": "scene-skill",
+  "kind": "scene",
+  "level": 0,
+  "area": "attention",
+  "tier": 3,
+  "step": 3
+ },
+ {
+  "activity_id": "scene-skill",
+  "kind": "scene",
+  "level": 0,
+  "area": "attention",
+  "tier": 4,
+  "step": 1
+ },
+ {
+  "activity_id": "scene-skill",
+  "kind": "scene",
+  "level": 0,
+  "area": "attention",
+  "tier": 4,
+  "step": 2
+ },
+ {
+  "activity_id": "scene-skill",
+  "kind": "scene",
+  "level": 0,
+  "area": "attention",
+  "tier": 4,
+  "step": 3
+ },
+ {
+  "activity_id": "story-skill",
+  "kind": "story",
+  "level": 0,
+  "area": "attention",
+  "tier": 1,
+  "step": 1
+ },
+ {
+  "activity_id": "story-skill",
+  "kind": "story",
+  "level": 0,
+  "area": "attention",
+  "tier": 1,
+  "step": 2
+ },
+ {
+  "activity_id": "story-skill",
+  "kind": "story",
+  "level": 0,
+  "area": "attention",
+  "tier": 1,
+  "step": 3
+ },
+ {
+  "activity_id": "story-skill",
+  "kind": "story",
+  "level": 0,
+  "area": "attention",
+  "tier": 2,
+  "step": 1
+ },
+ {
+  "activity_id": "story-skill",
+  "kind": "story",
+  "level": 0,
+  "area": "attention",
+  "tier": 2,
+  "step": 2
+ },
+ {
+  "activity_id": "story-skill",
+  "kind": "story",
+  "level": 0,
+  "area": "attention",
+  "tier": 2,
+  "step": 3
+ },
+ {
+  "activity_id": "story-skill",
+  "kind": "story",
+  "level": 0,
+  "area": "attention",
+  "tier": 3,
+  "step": 1
+ },
+ {
+  "activity_id": "story-skill",
+  "kind": "story",
+  "level": 0,
+  "area": "attention",
+  "tier": 3,
+  "step": 2
+ },
+ {
+  "activity_id": "story-skill",
+  "kind": "story",
+  "level": 0,
+  "area": "attention",
+  "tier": 3,
+  "step": 3
+ },
+ {
+  "activity_id": "story-skill",
+  "kind": "story",
+  "level": 0,
+  "area": "attention",
+  "tier": 4,
+  "step": 1
+ },
+ {
+  "activity_id": "story-skill",
+  "kind": "story",
+  "level": 0,
+  "area": "attention",
+  "tier": 4,
+  "step": 2
+ },
+ {
+  "activity_id": "story-skill",
+  "kind": "story",
+  "level": 0,
+  "area": "attention",
+  "tier": 4,
+  "step": 3
+ },
+ {
+  "activity_id": "sequence-skill",
+  "kind": "sequence",
+  "level": 0,
+  "area": "memory",
+  "tier": 1,
+  "step": 1
+ },
+ {
+  "activity_id": "sequence-skill",
+  "kind": "sequence",
+  "level": 0,
+  "area": "memory",
+  "tier": 1,
+  "step": 2
+ },
+ {
+  "activity_id": "sequence-skill",
+  "kind": "sequence",
+  "level": 0,
+  "area": "memory",
+  "tier": 1,
+  "step": 3
+ },
+ {
+  "activity_id": "sequence-skill",
+  "kind": "sequence",
+  "level": 0,
+  "area": "memory",
+  "tier": 2,
+  "step": 1
+ },
+ {
+  "activity_id": "sequence-skill",
+  "kind": "sequence",
+  "level": 0,
+  "area": "memory",
+  "tier": 2,
+  "step": 2
+ },
+ {
+  "activity_id": "sequence-skill",
+  "kind": "sequence",
+  "level": 0,
+  "area": "memory",
+  "tier": 2,
+  "step": 3
+ },
+ {
+  "activity_id": "sequence-skill",
+  "kind": "sequence",
+  "level": 0,
+  "area": "memory",
+  "tier": 3,
+  "step": 1
+ },
+ {
+  "activity_id": "sequence-skill",
+  "kind": "sequence",
+  "level": 0,
+  "area": "memory",
+  "tier": 3,
+  "step": 2
+ },
+ {
+  "activity_id": "sequence-skill",
+  "kind": "sequence",
+  "level": 0,
+  "area": "memory",
+  "tier": 3,
+  "step": 3
+ },
+ {
+  "activity_id": "sequence-skill",
+  "kind": "sequence",
+  "level": 0,
+  "area": "memory",
+  "tier": 4,
+  "step": 1
+ },
+ {
+  "activity_id": "sequence-skill",
+  "kind": "sequence",
+  "level": 0,
+  "area": "memory",
+  "tier": 4,
+  "step": 2
+ },
+ {
+  "activity_id": "sequence-skill",
+  "kind": "sequence",
+  "level": 0,
+  "area": "memory",
+  "tier": 4,
+  "step": 3
+ },
+ {
+  "activity_id": "missing-skill",
+  "kind": "missing",
+  "level": 0,
+  "area": "memory",
+  "tier": 1,
+  "step": 1
+ },
+ {
+  "activity_id": "missing-skill",
+  "kind": "missing",
+  "level": 0,
+  "area": "memory",
+  "tier": 1,
+  "step": 2
+ },
+ {
+  "activity_id": "missing-skill",
+  "kind": "missing",
+  "level": 0,
+  "area": "memory",
+  "tier": 1,
+  "step": 3
+ },
+ {
+  "activity_id": "missing-skill",
+  "kind": "missing",
+  "level": 0,
+  "area": "memory",
+  "tier": 2,
+  "step": 1
+ },
+ {
+  "activity_id": "missing-skill",
+  "kind": "missing",
+  "level": 0,
+  "area": "memory",
+  "tier": 2,
+  "step": 2
+ },
+ {
+  "activity_id": "missing-skill",
+  "kind": "missing",
+  "level": 0,
+  "area": "memory",
+  "tier": 2,
+  "step": 3
+ },
+ {
+  "activity_id": "missing-skill",
+  "kind": "missing",
+  "level": 0,
+  "area": "memory",
+  "tier": 3,
+  "step": 1
+ },
+ {
+  "activity_id": "missing-skill",
+  "kind": "missing",
+  "level": 0,
+  "area": "memory",
+  "tier": 3,
+  "step": 2
+ },
+ {
+  "activity_id": "missing-skill",
+  "kind": "missing",
+  "level": 0,
+  "area": "memory",
+  "tier": 3,
+  "step": 3
+ },
+ {
+  "activity_id": "missing-skill",
+  "kind": "missing",
+  "level": 0,
+  "area": "memory",
+  "tier": 4,
+  "step": 1
+ },
+ {
+  "activity_id": "missing-skill",
+  "kind": "missing",
+  "level": 0,
+  "area": "memory",
+  "tier": 4,
+  "step": 2
+ },
+ {
+  "activity_id": "missing-skill",
+  "kind": "missing",
+  "level": 0,
+  "area": "memory",
+  "tier": 4,
+  "step": 3
+ },
+ {
+  "activity_id": "light_path-skill",
+  "kind": "light_path",
+  "level": 0,
+  "area": "memory",
+  "tier": 1,
+  "step": 1
+ },
+ {
+  "activity_id": "light_path-skill",
+  "kind": "light_path",
+  "level": 0,
+  "area": "memory",
+  "tier": 1,
+  "step": 2
+ },
+ {
+  "activity_id": "light_path-skill",
+  "kind": "light_path",
+  "level": 0,
+  "area": "memory",
+  "tier": 1,
+  "step": 3
+ },
+ {
+  "activity_id": "light_path-skill",
+  "kind": "light_path",
+  "level": 0,
+  "area": "memory",
+  "tier": 2,
+  "step": 1
+ },
+ {
+  "activity_id": "light_path-skill",
+  "kind": "light_path",
+  "level": 0,
+  "area": "memory",
+  "tier": 2,
+  "step": 2
+ },
+ {
+  "activity_id": "light_path-skill",
+  "kind": "light_path",
+  "level": 0,
+  "area": "memory",
+  "tier": 2,
+  "step": 3
+ },
+ {
+  "activity_id": "light_path-skill",
+  "kind": "light_path",
+  "level": 0,
+  "area": "memory",
+  "tier": 3,
+  "step": 1
+ },
+ {
+  "activity_id": "light_path-skill",
+  "kind": "light_path",
+  "level": 0,
+  "area": "memory",
+  "tier": 3,
+  "step": 2
+ },
+ {
+  "activity_id": "light_path-skill",
+  "kind": "light_path",
+  "level": 0,
+  "area": "memory",
+  "tier": 3,
+  "step": 3
+ },
+ {
+  "activity_id": "light_path-skill",
+  "kind": "light_path",
+  "level": 0,
+  "area": "memory",
+  "tier": 4,
+  "step": 1
+ },
+ {
+  "activity_id": "light_path-skill",
+  "kind": "light_path",
+  "level": 0,
+  "area": "memory",
+  "tier": 4,
+  "step": 2
+ },
+ {
+  "activity_id": "light_path-skill",
+  "kind": "light_path",
+  "level": 0,
+  "area": "memory",
+  "tier": 4,
+  "step": 3
+ },
+ {
+  "activity_id": "sort-skill",
+  "kind": "sort",
+  "level": 0,
+  "area": "flexibility",
+  "tier": 1,
+  "step": 1
+ },
+ {
+  "activity_id": "sort-skill",
+  "kind": "sort",
+  "level": 0,
+  "area": "flexibility",
+  "tier": 1,
+  "step": 2
+ },
+ {
+  "activity_id": "sort-skill",
+  "kind": "sort",
+  "level": 0,
+  "area": "flexibility",
+  "tier": 1,
+  "step": 3
+ },
+ {
+  "activity_id": "sort-skill",
+  "kind": "sort",
+  "level": 0,
+  "area": "flexibility",
+  "tier": 2,
+  "step": 1
+ },
+ {
+  "activity_id": "sort-skill",
+  "kind": "sort",
+  "level": 0,
+  "area": "flexibility",
+  "tier": 2,
+  "step": 2
+ },
+ {
+  "activity_id": "sort-skill",
+  "kind": "sort",
+  "level": 0,
+  "area": "flexibility",
+  "tier": 2,
+  "step": 3
+ },
+ {
+  "activity_id": "sort-skill",
+  "kind": "sort",
+  "level": 0,
+  "area": "flexibility",
+  "tier": 3,
+  "step": 1
+ },
+ {
+  "activity_id": "sort-skill",
+  "kind": "sort",
+  "level": 0,
+  "area": "flexibility",
+  "tier": 3,
+  "step": 2
+ },
+ {
+  "activity_id": "sort-skill",
+  "kind": "sort",
+  "level": 0,
+  "area": "flexibility",
+  "tier": 3,
+  "step": 3
+ },
+ {
+  "activity_id": "sort-skill",
+  "kind": "sort",
+  "level": 0,
+  "area": "flexibility",
+  "tier": 4,
+  "step": 1
+ },
+ {
+  "activity_id": "sort-skill",
+  "kind": "sort",
+  "level": 0,
+  "area": "flexibility",
+  "tier": 4,
+  "step": 2
+ },
+ {
+  "activity_id": "sort-skill",
+  "kind": "sort",
+  "level": 0,
+  "area": "flexibility",
+  "tier": 4,
+  "step": 3
+ },
+ {
+  "activity_id": "maze-skill",
+  "kind": "maze",
+  "level": 0,
+  "area": "flexibility",
+  "tier": 1,
+  "step": 1
+ },
+ {
+  "activity_id": "maze-skill",
+  "kind": "maze",
+  "level": 0,
+  "area": "flexibility",
+  "tier": 1,
+  "step": 2
+ },
+ {
+  "activity_id": "maze-skill",
+  "kind": "maze",
+  "level": 0,
+  "area": "flexibility",
+  "tier": 1,
+  "step": 3
+ },
+ {
+  "activity_id": "maze-skill",
+  "kind": "maze",
+  "level": 0,
+  "area": "flexibility",
+  "tier": 2,
+  "step": 1
+ },
+ {
+  "activity_id": "maze-skill",
+  "kind": "maze",
+  "level": 0,
+  "area": "flexibility",
+  "tier": 2,
+  "step": 2
+ },
+ {
+  "activity_id": "maze-skill",
+  "kind": "maze",
+  "level": 0,
+  "area": "flexibility",
+  "tier": 2,
+  "step": 3
+ },
+ {
+  "activity_id": "maze-skill",
+  "kind": "maze",
+  "level": 0,
+  "area": "flexibility",
+  "tier": 3,
+  "step": 1
+ },
+ {
+  "activity_id": "maze-skill",
+  "kind": "maze",
+  "level": 0,
+  "area": "flexibility",
+  "tier": 3,
+  "step": 2
+ },
+ {
+  "activity_id": "maze-skill",
+  "kind": "maze",
+  "level": 0,
+  "area": "flexibility",
+  "tier": 3,
+  "step": 3
+ },
+ {
+  "activity_id": "maze-skill",
+  "kind": "maze",
+  "level": 0,
+  "area": "flexibility",
+  "tier": 4,
+  "step": 1
+ },
+ {
+  "activity_id": "maze-skill",
+  "kind": "maze",
+  "level": 0,
+  "area": "flexibility",
+  "tier": 4,
+  "step": 2
+ },
+ {
+  "activity_id": "maze-skill",
+  "kind": "maze",
+  "level": 0,
+  "area": "flexibility",
+  "tier": 4,
+  "step": 3
+ },
+ {
+  "activity_id": "puzzle-skill",
+  "kind": "puzzle",
+  "level": 0,
+  "area": "reasoning",
+  "tier": 1,
+  "step": 1
+ },
+ {
+  "activity_id": "puzzle-skill",
+  "kind": "puzzle",
+  "level": 0,
+  "area": "reasoning",
+  "tier": 1,
+  "step": 2
+ },
+ {
+  "activity_id": "puzzle-skill",
+  "kind": "puzzle",
+  "level": 0,
+  "area": "reasoning",
+  "tier": 1,
+  "step": 3
+ },
+ {
+  "activity_id": "puzzle-skill",
+  "kind": "puzzle",
+  "level": 0,
+  "area": "reasoning",
+  "tier": 2,
+  "step": 1
+ },
+ {
+  "activity_id": "puzzle-skill",
+  "kind": "puzzle",
+  "level": 0,
+  "area": "reasoning",
+  "tier": 2,
+  "step": 2
+ },
+ {
+  "activity_id": "puzzle-skill",
+  "kind": "puzzle",
+  "level": 0,
+  "area": "reasoning",
+  "tier": 2,
+  "step": 3
+ },
+ {
+  "activity_id": "puzzle-skill",
+  "kind": "puzzle",
+  "level": 0,
+  "area": "reasoning",
+  "tier": 3,
+  "step": 1
+ },
+ {
+  "activity_id": "puzzle-skill",
+  "kind": "puzzle",
+  "level": 0,
+  "area": "reasoning",
+  "tier": 3,
+  "step": 2
+ },
+ {
+  "activity_id": "puzzle-skill",
+  "kind": "puzzle",
+  "level": 0,
+  "area": "reasoning",
+  "tier": 3,
+  "step": 3
+ },
+ {
+  "activity_id": "puzzle-skill",
+  "kind": "puzzle",
+  "level": 0,
+  "area": "reasoning",
+  "tier": 4,
+  "step": 1
+ },
+ {
+  "activity_id": "puzzle-skill",
+  "kind": "puzzle",
+  "level": 0,
+  "area": "reasoning",
+  "tier": 4,
+  "step": 2
+ },
+ {
+  "activity_id": "puzzle-skill",
+  "kind": "puzzle",
+  "level": 0,
+  "area": "reasoning",
+  "tier": 4,
+  "step": 3
+ },
+ {
+  "activity_id": "listen_pick-skill",
+  "kind": "listen_pick",
+  "level": 0,
+  "area": "literacy",
+  "tier": 1,
+  "step": 1
+ },
+ {
+  "activity_id": "listen_pick-skill",
+  "kind": "listen_pick",
+  "level": 0,
+  "area": "literacy",
+  "tier": 1,
+  "step": 2
+ },
+ {
+  "activity_id": "listen_pick-skill",
+  "kind": "listen_pick",
+  "level": 0,
+  "area": "literacy",
+  "tier": 1,
+  "step": 3
+ },
+ {
+  "activity_id": "listen_pick-skill",
+  "kind": "listen_pick",
+  "level": 0,
+  "area": "literacy",
+  "tier": 2,
+  "step": 1
+ },
+ {
+  "activity_id": "listen_pick-skill",
+  "kind": "listen_pick",
+  "level": 0,
+  "area": "literacy",
+  "tier": 2,
+  "step": 2
+ },
+ {
+  "activity_id": "listen_pick-skill",
+  "kind": "listen_pick",
+  "level": 0,
+  "area": "literacy",
+  "tier": 2,
+  "step": 3
+ },
+ {
+  "activity_id": "listen_pick-skill",
+  "kind": "listen_pick",
+  "level": 0,
+  "area": "literacy",
+  "tier": 3,
+  "step": 1
+ },
+ {
+  "activity_id": "listen_pick-skill",
+  "kind": "listen_pick",
+  "level": 0,
+  "area": "literacy",
+  "tier": 3,
+  "step": 2
+ },
+ {
+  "activity_id": "listen_pick-skill",
+  "kind": "listen_pick",
+  "level": 0,
+  "area": "literacy",
+  "tier": 3,
+  "step": 3
+ },
+ {
+  "activity_id": "listen_pick-skill",
+  "kind": "listen_pick",
+  "level": 0,
+  "area": "literacy",
+  "tier": 4,
+  "step": 1
+ },
+ {
+  "activity_id": "listen_pick-skill",
+  "kind": "listen_pick",
+  "level": 0,
+  "area": "literacy",
+  "tier": 4,
+  "step": 2
+ },
+ {
+  "activity_id": "listen_pick-skill",
+  "kind": "listen_pick",
+  "level": 0,
+  "area": "literacy",
+  "tier": 4,
+  "step": 3
+ },
+ {
+  "activity_id": "type-skill",
+  "kind": "type",
+  "level": 0,
+  "area": "literacy",
+  "tier": 1,
+  "step": 1
+ },
+ {
+  "activity_id": "type-skill",
+  "kind": "type",
+  "level": 0,
+  "area": "literacy",
+  "tier": 1,
+  "step": 2
+ },
+ {
+  "activity_id": "type-skill",
+  "kind": "type",
+  "level": 0,
+  "area": "literacy",
+  "tier": 1,
+  "step": 3
+ },
+ {
+  "activity_id": "type-skill",
+  "kind": "type",
+  "level": 0,
+  "area": "literacy",
+  "tier": 2,
+  "step": 1
+ },
+ {
+  "activity_id": "type-skill",
+  "kind": "type",
+  "level": 0,
+  "area": "literacy",
+  "tier": 2,
+  "step": 2
+ },
+ {
+  "activity_id": "type-skill",
+  "kind": "type",
+  "level": 0,
+  "area": "literacy",
+  "tier": 2,
+  "step": 3
+ },
+ {
+  "activity_id": "type-skill",
+  "kind": "type",
+  "level": 0,
+  "area": "literacy",
+  "tier": 3,
+  "step": 1
+ },
+ {
+  "activity_id": "type-skill",
+  "kind": "type",
+  "level": 0,
+  "area": "literacy",
+  "tier": 3,
+  "step": 2
+ },
+ {
+  "activity_id": "type-skill",
+  "kind": "type",
+  "level": 0,
+  "area": "literacy",
+  "tier": 3,
+  "step": 3
+ },
+ {
+  "activity_id": "type-skill",
+  "kind": "type",
+  "level": 0,
+  "area": "literacy",
+  "tier": 4,
+  "step": 1
+ },
+ {
+  "activity_id": "type-skill",
+  "kind": "type",
+  "level": 0,
+  "area": "literacy",
+  "tier": 4,
+  "step": 2
+ },
+ {
+  "activity_id": "type-skill",
+  "kind": "type",
+  "level": 0,
+  "area": "literacy",
+  "tier": 4,
+  "step": 3
+ },
+ {
+  "activity_id": "count-skill",
+  "kind": "count",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 1,
+  "step": 1
+ },
+ {
+  "activity_id": "count-skill",
+  "kind": "count",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 1,
+  "step": 2
+ },
+ {
+  "activity_id": "count-skill",
+  "kind": "count",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 1,
+  "step": 3
+ },
+ {
+  "activity_id": "count-skill",
+  "kind": "count",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 2,
+  "step": 1
+ },
+ {
+  "activity_id": "count-skill",
+  "kind": "count",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 2,
+  "step": 2
+ },
+ {
+  "activity_id": "count-skill",
+  "kind": "count",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 2,
+  "step": 3
+ },
+ {
+  "activity_id": "count-skill",
+  "kind": "count",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 3,
+  "step": 1
+ },
+ {
+  "activity_id": "count-skill",
+  "kind": "count",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 3,
+  "step": 2
+ },
+ {
+  "activity_id": "count-skill",
+  "kind": "count",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 3,
+  "step": 3
+ },
+ {
+  "activity_id": "count-skill",
+  "kind": "count",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 4,
+  "step": 1
+ },
+ {
+  "activity_id": "count-skill",
+  "kind": "count",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 4,
+  "step": 2
+ },
+ {
+  "activity_id": "count-skill",
+  "kind": "count",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 4,
+  "step": 3
  }
 ]

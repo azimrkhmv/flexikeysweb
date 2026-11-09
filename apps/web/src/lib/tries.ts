@@ -1,4 +1,5 @@
 import { LEVELS } from "@/content/levels";
+import { SKILL_GAMES } from "@/content/skillGames";
 import type { AccessMode, InteractionEvent } from "./types";
 
 // The record of every try, as the spec writes it (§7, "How one try is recorded"). Built from the child shell's events,
@@ -27,14 +28,12 @@ export interface TryRecord {
   responseMs: number | null;
 }
 
-const ACTIVITY = new Map<string, { game: string; level: number; tier: number; step: number }>(
-  LEVELS.flatMap((l) => l.activities.map((a) => [a.id, { game: a.kind, level: l.n, tier: a.steps[0].tier, step: a.steps[0].step }] as const)),
-);
-
-/** Skill games (B82) add their activities here: one id per game, the step comes with each event. */
-export function registerActivities(rows: { id: string; game: string; tier: number; step: number }[]) {
-  for (const r of rows) ACTIVITY.set(r.id, { game: r.game, level: 0, tier: r.tier, step: r.step });
-}
+// Theme-world activities have one step each; a skill game (level 0) has twelve, and the step played comes with each
+// of its events (features/activities/skill.tsx).
+const ACTIVITY = new Map<string, { game: string; level: number; tier: number; step: number }>([
+  ...LEVELS.flatMap((l) => l.activities.map((a) => [a.id, { game: a.kind, level: l.n, tier: a.steps[0].tier, step: a.steps[0].step }] as const)),
+  ...SKILL_GAMES.map((g) => [g.id, { game: g.kind, level: 0, tier: g.steps[0].tier, step: g.steps[0].step }] as const),
+]);
 
 type Event = Omit<InteractionEvent, "sessionId"> & { tier?: number; step?: number };
 const newId = () => (typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2));

@@ -93,8 +93,11 @@ def corrected(theta: float, bucket: str) -> float:
 
 # ---------------------------------------------------------------- choosing games
 
-# One row per playable step: {activity_id, kind, level, area, tier, step}; skill games have level 0.
-GAMES: list[dict[str, Any]] = json.loads((Path(__file__).parents[2] / "content" / "games.json").read_text("utf-8"))
+# One row per playable step: {activity_id, kind, level, area, tier, step}. Theme-world games have their world's level;
+# skill games (games spec §2.3) have level 0 and twelve steps each.
+_ROWS: list[dict[str, Any]] = json.loads((Path(__file__).parents[2] / "content" / "games.json").read_text("utf-8"))
+GAMES = [g for g in _ROWS if g["level"] > 0]
+SKILL_STEPS = [g for g in _ROWS if g["level"] == 0]
 GAME_LIMIT_S = 20 * 60  # the daily game limit (spec §13)
 
 

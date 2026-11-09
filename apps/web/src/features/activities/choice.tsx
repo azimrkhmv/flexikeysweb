@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { ItemArt } from "@/components/ItemArt";
+import { ItemArt, itemLabel, times, type Size } from "@/components/ItemArt";
 import { VOCAB } from "@/content/vocab";
 import { usePlay } from "@/features/play/context";
 import type { SceneRound } from "@/lib/types";
-import { ActionButton, answer, Frame, OptionCard, optionsFor, pick, shuffle, sizeFor, useActT, useClock, useHint } from "./kit";
+import { ActionButton, answer, DENSE_GAP, Frame, OptionCard, optionsFor, pick, shuffle, sizeFor, useActT, useClock, useHint } from "./kit";
 import type { EngineProps } from "./registry";
 
 // Archetype A (Prompt & Options) and D (Scene & Trigger): one answer among options.
@@ -18,6 +18,11 @@ export interface ChoiceSpec {
   stage?: ReactNode;
   /** Show the word (learning language) under each option. */
   labels?: boolean;
+  /** Option card size (dense skill-game boards: a CSS length that shrinks on a phone), and a picture other than
+   *  ItemArt (a story page). */
+  size?: Size;
+  art?: (id: string, size: Size) => ReactNode;
+  label?: (id: string) => string;
 }
 
 export function ChoiceEngine({ rounds, onDone, offset = 0, total }: { rounds: ChoiceSpec[]; onDone: () => void; offset?: number; total?: number }) {
@@ -41,7 +46,8 @@ function ChoiceRound({ spec, index, total, last, onNext }: { spec: ChoiceSpec; i
   const [solved, setSolved] = useState(false);
   const [tried, setTried] = useState<string[]>([]);
   const hint = useHint(() => ctx.say(spec.prompt, ctx.uiLang));
-  const size = sizeFor(ctx, spec.stage ? 120 : 140);
+  const size = spec.size ?? sizeFor(ctx, spec.stage ? 120 : 140);
+  const label = spec.label ?? ((id: string) => itemLabel(id, ctx.learnLang, t));
 
   const choose = (id: string, info: Parameters<typeof answer>[1]["info"]) => {
     if (solved) return;
@@ -64,20 +70,20 @@ function ChoiceRound({ spec, index, total, last, onNext }: { spec: ChoiceSpec; i
       action={solved && <ActionButton label={t(last ? "act.done" : "act.next")} onSelect={onNext} pulse />}
     >
       {spec.stage}
-      <div className="flex flex-wrap justify-center" style={{ gap: 12 + ctx.profile.spacing }}>
+      <div className="flex flex-wrap justify-center" style={{ gap: spec.size ? DENSE_GAP : 12 + ctx.profile.spacing }}>
         {spec.options.map((id) => (
           <div key={id} className="flex flex-col items-center gap-2">
             <OptionCard
-              label={VOCAB[id]?.word[ctx.learnLang] ?? id}
+              label={label(id)}
               size={size}
               onSelect={(info) => choose(id, info)}
               pulse={!solved && hint.show && id === spec.answer}
               faded={!solved && hint.fade && id !== spec.answer}
               state={solved && id === spec.answer ? "solved" : tried.includes(id) ? "tried" : undefined}
             >
-              <ItemArt id={id} size={Math.round(size * 0.62)} />
+              {spec.art ? spec.art(id, size) : <ItemArt id={id} size={times(size, 0.62)} />}
             </OptionCard>
-            {spec.labels && <span className="text-lg font-bold text-ink-2">{VOCAB[id]?.word[ctx.learnLang]}</span>}
+            {spec.labels && <span className="text-lg font-bold text-ink-2 short:text-base">{label(id)}</span>}
           </div>
         ))}
       </div>
@@ -85,12 +91,12 @@ function ChoiceRound({ spec, index, total, last, onNext }: { spec: ChoiceSpec; i
   );
 }
 
-export function PromptCard({ id }: { id: string }) {
+export function PromptCard({ id, size }: { id: string; size?: Size }) {
   const ctx = usePlay();
-  const s = sizeFor(ctx, 150);
+  const s = size ?? sizeFor(ctx, 150);
   return (
     <div className="grid place-items-center rounded-fk-lg bg-surface-2 shadow-inner" style={{ width: s, height: s }}>
-      <ItemArt id={id} size={Math.round(s * 0.66)} />
+      <ItemArt id={id} size={times(s, 0.66)} />
     </div>
   );
 }

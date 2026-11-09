@@ -84,10 +84,8 @@ def test_a_try_counts_by_its_tier_and_step_and_old_tries_by_their_level(client: 
     theta, n = skills["reasoning"]  # puzzle trains reasoning now
     assert n == 1 and theta == pytest.approx(skill.elo(start, 0, skill.difficulty(4, 3), True))
     send(client, owner, child, [a_try(game="puzzle", level=6)])  # an old try: no tier, no step
-    assert stored(client, child)[1]["reasoning"] == (
-        pytest.approx(skill.elo(theta, 1, skill.level_difficulty(6), True)),
-        2,
-    )
+    theta2, n2 = stored(client, child)[1]["reasoning"]
+    assert n2 == 2 and theta2 == pytest.approx(skill.elo(theta, 1, skill.level_difficulty(6), True))
     assert title(send(client, owner, child, [a_try(tier=5, step=1)])) == (422, "validation_error")
 
 

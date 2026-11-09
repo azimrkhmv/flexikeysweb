@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
-import { ItemArt } from "@/components/ItemArt";
+import { ItemArt, times, type Size } from "@/components/ItemArt";
 import { VOCAB } from "@/content/vocab";
 import { sfx } from "@/lib/audio";
 import { usePlay } from "@/features/play/context";
 import { Target, type SelectInfo } from "@/features/play/Target";
 import { ChoiceEngine, type ChoiceSpec } from "./choice";
-import { ActionButton, answer, Frame, OptionCard, pick, shuffle, sizeFor, useActT, useClock, useHint, WatchAgain } from "./kit";
+import { ActionButton, answer, DENSE_GAP, fitSize, Frame, OptionCard, pick, shuffle, sizeFor, useActT, useClock, useHint, WatchAgain } from "./kit";
 import type { EngineProps } from "./registry";
 
 // Archetype B (Stage & Replay): watch something, then repeat or recall it.
@@ -15,8 +15,11 @@ import type { EngineProps } from "./registry";
 const STEP_MS = 1000;
 const STEP_MS_CVI = 2000; // children with CVI often need seconds before they look
 
-/** Watch → repeat state machine shared by `sequence` and `light_path`. No time limit to answer. */
-function useSequence(seq: string[], onSolved: () => void) {
+/**
+ * Watch → repeat state machine shared by `sequence` and `light_path`. No time limit to answer. `expect` is the order to
+ * tap, when it is not the order shown (backward, or forward then backward).
+ */
+export function useSequence(seq: string[], onSolved: () => void, expect: string[] = seq) {
   const ctx = usePlay();
   const clock = useClock();
   const [phase, setPhase] = useState<"watch" | "repeat" | "solved">("watch");
@@ -56,9 +59,9 @@ function useSequence(seq: string[], onSolved: () => void) {
     },
     tap(id: string, info: SelectInfo) {
       if (phase !== "repeat") return;
-      const expected = seq[pos];
+      const expected = expect[pos];
       const correct = id === expected;
-      const finished = correct && pos + 1 === seq.length;
+      const finished = correct && pos + 1 === expect.length;
       answer(ctx, { target: expected, actual: id, correct, latencyMs: clock.ms(), info, quiet: !finished });
       if (!correct) return hint.miss();
       clock.reset();
@@ -69,9 +72,9 @@ function useSequence(seq: string[], onSolved: () => void) {
         onSolved();
       }
     },
-    hintId: hint.show && phase === "repeat" ? seq[pos] : null,
+    hintId: hint.show && phase === "repeat" ? expect[pos] : null,
     /** After 4 mistakes on one item only the next right one is left to choose. */
-    fadeExcept: hint.fade && phase === "repeat" ? seq[pos] : null,
+    fadeExcept: hint.fade && phase === "repeat" ? expect[pos] : null,
   };
 }
 
@@ -94,42 +97,69 @@ export function Sequence({ activity, onDone }: EngineProps<"sequence">) {
   );
 }
 
-function SequenceRound({ seq, options, index, next, last }: { seq: string[]; options: string[]; index: number; next: () => void; last: boolean }) {
+/**
+ * One sequence round. `order` (skill games): "backward" taps the pictures from the last to the first, "both" first in
+ * order and then backward; the slots fill from the right when going backward.
+ */
+export function SequenceRound({
+  seq,
+  options,
+  index,
+  next,
+  last,
+  total = 3,
+  order = "forward",
+  size: given,
+}: {
+  seq: string[];
+  options: string[];
+  index: number;
+  next: () => void;
+  last: boolean;
+  total?: number;
+  order?: "forward" | "backward" | "both";
+  /** Skill games: the options' size (a CSS length that shrinks on a phone); the slots then shrink to fit a row. */
+  size?: Size;
+}) {
   const ctx = usePlay();
   const t = useActT();
   const [solved, setSolved] = useState(false);
-  const s = useSequence(seq, () => setSolved(true));
-  const size = sizeFor(ctx, 104);
-  const slot = Math.max(64, Math.round(size * 0.72));
+  const [expect] = useState(() => (order === "forward" ? seq : order === "backward" ? [...seq].reverse() : [...seq, ...[...seq].reverse()]));
+  const s = useSequence(seq, () => setSolved(true), expect);
+  const size = given ?? sizeFor(ctx, 104);
+  const slot: Size = given ? fitSize(64, seq.length, 12, 104) : Math.max(64, Math.round(sizeFor(ctx, 104) * 0.72));
   const watching = s.phase === "watch";
+  // Going backward: in "both" once the first pass is done.
+  const back = order === "backward" || (order === "both" && s.pos >= seq.length);
+  const done = back ? s.pos - (order === "both" ? seq.length : 0) : s.pos;
 
   return (
     <Frame
-      prompt={t(watching ? "act.sequence.watch" : "act.sequence.repeat")}
-      speakKey={`r${index}`}
+      prompt={t(watching ? "act.sequence.watch" : back ? "act.skill.seq.back" : "act.sequence.repeat")}
+      speakKey={`r${index}${back ? "b" : ""}`}
       done={index + (solved ? 1 : 0)}
-      total={3}
+      total={total}
       action={solved && <ActionButton label={t(last ? "act.done" : "act.next")} onSelect={next} pulse />}
     >
-      <div className="flex gap-3 rounded-fk-lg bg-surface-2 p-4 shadow-inner" aria-live="polite">
+      <div className="flex flex-wrap justify-center gap-3 rounded-fk-lg bg-surface-2 p-4 shadow-inner short:p-2" aria-live="polite">
         {seq.map((id, k) => {
-          const show = watching ? s.lit === k : k < s.pos;
+          const show = watching ? s.lit === k : solved || (back ? k >= seq.length - done : k < done);
           return (
             <span
               key={k}
               className={`grid place-items-center rounded-2xl transition-all duration-300 ${show ? "scale-110 bg-surface shadow-lift" : "bg-line/40"}`}
               style={{ width: slot, height: slot }}
             >
-              {show && <ItemArt id={id} size={Math.round(slot * 0.7)} />}
+              {show && <ItemArt id={id} size={times(slot, 0.7)} />}
             </span>
           );
         })}
       </div>
       <WatchAgain onSelect={s.replay} disabled={watching || solved} />
-      <div className="flex flex-wrap justify-center rounded-fk-lg bg-surface-2 p-4" style={{ gap: 12 + ctx.profile.spacing }}>
+      <div className="flex flex-wrap justify-center rounded-fk-lg bg-surface-2 p-4 short:p-2" style={{ gap: given ? DENSE_GAP : 12 + ctx.profile.spacing }}>
         {options.map((id) => (
           <OptionCard key={id} label={VOCAB[id]?.word[ctx.learnLang] ?? id} size={size} disabled={watching || solved} onSelect={(info) => s.tap(id, info)} pulse={s.hintId === id} faded={!!s.fadeExcept && s.fadeExcept !== id}>
-            <ItemArt id={id} size={Math.round(size * 0.62)} />
+            <ItemArt id={id} size={times(size, 0.62)} />
           </OptionCard>
         ))}
       </div>

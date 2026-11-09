@@ -159,6 +159,9 @@ export interface InteractionEvent {
   /** Distance from target center divided by target size (touch/pen only). */
   offsetRatio?: number;
   pointerType?: "touch" | "pen" | "mouse" | "keyboard" | "switch";
+  /** The step played (skill games, games spec §3.1): its difficulty counts for the try. */
+  tier?: number;
+  step?: number;
 }
 
 export interface SkillMastery {

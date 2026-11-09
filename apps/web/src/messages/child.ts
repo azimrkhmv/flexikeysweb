@@ -4,5 +4,6 @@ import { registerMessages } from "@/lib/translate";
 import { aac } from "./aac";
 import { activities } from "./activities";
 import { play } from "./play";
+import { skills } from "./skills";
 
-registerMessages(play, activities, aac);
+registerMessages(play, activities, aac, skills);

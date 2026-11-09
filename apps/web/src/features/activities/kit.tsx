@@ -30,6 +30,20 @@ export function optionsFor(answer: string, pool: readonly string[], optionCount:
 /** Base target size (px) scaled by the adaptive profile; never under 76. */
 export const sizeFor = (ctx: PlayCtx, base = 132) => Math.max(76, Math.round(base * ctx.profile.targetScale));
 
+/** The gap between the cards of a dense board (skill games). */
+export const DENSE_GAP = 8;
+/**
+ * A card size of `px` that shrinks on a narrow screen so `perRow` cards fit across it (the page and card padding is
+ * `reserve`). Skill games' boards use it to fit a phone without scrolling.
+ */
+export const fitSize = (px: number, perRow: number, gap = DENSE_GAP, reserve = 72) => `min(${px}px, calc((100vw - ${reserve + (perRow - 1) * gap}px) / ${perRow}))`;
+/**
+ * Option size on the skill games' dense boards: smaller cards as there are more of them, so 16 options still fit a
+ * laptop screen without scrolling (never under 64 px there), and four across on a phone.
+ */
+export const denseSize = (ctx: PlayCtx, n: number, base = 140) =>
+  fitSize(Math.max(n > 9 ? 64 : 76, Math.round((n <= 4 ? base : n <= 6 ? base * 0.82 : n <= 9 ? base * 0.66 : n <= 12 ? base * 0.56 : base * 0.5) * ctx.profile.targetScale)), Math.min(n, 4));
+
 export function useActT() {
   return useT(usePlay().uiLang);
 }
@@ -131,11 +145,12 @@ export function answer(ctx: PlayCtx, e: { target: string; actual: string; correc
 export function Dots({ total, done }: { total: number; done: number }) {
   const t = useActT();
   return (
-    <div className="flex items-center gap-2" role="progressbar" aria-valuemin={0} aria-valuemax={total} aria-valuenow={done} aria-label={t("act.progress", { n: done, total })}>
+    // Many dots (a 5×5 puzzle has 25) get smaller and may wrap, so the title row keeps its width on a phone.
+    <div className={`flex min-w-0 flex-wrap items-center justify-center ${total > 10 ? "gap-1" : "gap-2"}`} role="progressbar" aria-valuemin={0} aria-valuemax={total} aria-valuenow={done} aria-label={t("act.progress", { n: done, total })}>
       {Array.from({ length: total }, (_, i) => (
         <span
           key={i}
-          className={`rounded-full transition-all ${i < done ? "size-3 bg-teal" : i === done ? "size-4 bg-sky ring-4 ring-sky-soft" : "size-3 bg-line"}`}
+          className={`rounded-full transition-all ${total > 10 ? (i === done ? "size-3 bg-sky ring-2 ring-sky-soft" : `size-2 ${i < done ? "bg-teal" : "bg-line"}`) : i < done ? "size-3 bg-teal" : i === done ? "size-4 bg-sky ring-4 ring-sky-soft" : "size-3 bg-line"}`}
         />
       ))}
     </div>
@@ -209,7 +224,7 @@ export function Frame({
     <section className="relative flex h-full min-h-[480px] w-full flex-col rounded-fk-lg border border-line bg-surface p-4 shadow-soft sm:p-6 short:min-h-0 short:p-3">
       <div className="grid grid-cols-[auto_1fr_auto] items-center gap-x-4">
         <span className="w-[76px] short:row-span-2" />
-        <div className="flex justify-center"><Dots total={total} done={done} /></div>
+        <div className="flex min-w-0 justify-center"><Dots total={total} done={done} /></div>
         <Target label={t("act.replay")} onSelect={sayAll} className="grid place-items-center rounded-full bg-sky-soft text-ink transition hover:bg-[#d6e6f8] short:row-span-2">
           <Volume2 className="size-8" aria-hidden />
         </Target>
@@ -241,7 +256,7 @@ export function OptionCard({
   height,
 }: {
   label: string;
-  size: number;
+  size: number | string;
   onSelect: (info: SelectInfo) => void;
   pulse?: boolean;
   state?: "solved" | "tried";
@@ -249,7 +264,7 @@ export function OptionCard({
   disabled?: boolean;
   faded?: boolean;
   /** A wide card (a word, a number line mark): its height; `size` is then the width. */
-  height?: number;
+  height?: number | string;
 }) {
   return (
     <Target

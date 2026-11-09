@@ -409,6 +409,7 @@ async def choose(child_id: uuid.UUID, user: CurrentUser, db: Annotated[AsyncSess
         return GamesOut(seconds_left_today=0, slots=[])
     played = {p.game: p for p in await db.scalars(select(GamePlayed).where(GamePlayed.child_id == child_id))}
     reach = max((p.top_level for p in played.values()), default=0) + 1
+    # Theme-world games only (skill.GAMES); skill games (skill.SKILL_STEPS) join today's choice with their tiers (B83).
     unlocked = [g for g in skill.GAMES if g["level"] <= reach or g["kind"] in played]
     today = datetime.now(TASHKENT).date().isoformat()
     games = skill.weekly_new(unlocked, {k: p.first_played.isoformat() for k, p in played.items()}, today)

@@ -18,7 +18,7 @@ describe("i18n catalogs", () => {
 
   it("child-facing copy never uses failure words", () => {
     const banned = /\b(wrong|fail|failed|incorrect|bad|perfect!!)\b|неправильно|ошибка|xato|notoʻgʻri/i;
-    for (const area of ["play", "activities", "aac"] as const)
+    for (const area of ["play", "activities", "aac", "skills"] as const)
       for (const lang of ["en", "uz", "ru"] as const)
         for (const [k, v] of Object.entries(areaMessages[area][lang] as Record<string, string>)) expect(banned.test(v), `${area}.${lang}.${k}: ${v}`).toBe(false);
   });

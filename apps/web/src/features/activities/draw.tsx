@@ -5,6 +5,7 @@ import { itemName, loadColoring, loadTrace, PALETTE, pathD, traceItems, type Col
 import { vocab } from "@/content/vocab";
 import { markAccept, usePlay } from "@/features/play/context";
 import { pressDecision } from "@/lib/adaptive";
+import { route } from "@/lib/games/maze";
 import { Target, type SelectInfo } from "@/features/play/Target";
 import { ActionButton, answer, Frame, sizeFor, useActT, useClock } from "./kit";
 import type { EngineProps } from "./registry";
@@ -438,26 +439,56 @@ export function Maze({ activity, onDone }: EngineProps<"maze">) {
   return <MazeRound key={i} n={activity.size} seed={seedOf(`${activity.id}:${i}:${salt}`)} index={i} total={activity.rounds} last={last} next={() => (last ? onDone() : setI(i + 1))} />;
 }
 
-function MazeRound({ n, seed, index, total, last, next }: { n: number; seed: number; index: number; total: number; last: boolean; next: () => void }) {
+/**
+ * One maze. Skill games pass their own maze (`walls`: the open edges), maybe with a key and a locked door on the way;
+ * from 6×6 the cells get too small to tap, so a direction pad beside the maze moves the cloud instead.
+ */
+export function MazeRound({
+  n,
+  seed = 0,
+  index,
+  total,
+  last,
+  next,
+  walls,
+  keyCell,
+  door,
+}: {
+  n: number;
+  seed?: number;
+  index: number;
+  total: number;
+  last: boolean;
+  next: () => void;
+  walls?: string[];
+  keyCell?: number;
+  door?: string;
+}) {
   const ctx = usePlay();
   const t = useActT();
   const clock = useClock();
-  const open = useMemo(() => makeMaze(n, seed), [n, seed]);
+  const open = useMemo(() => (walls ? new Set(walls) : makeMaze(n, seed)), [n, seed, walls]);
   const [at, setAt] = useState<Cell>(0);
+  const [hasKey, setHasKey] = useState(keyCell === undefined);
   const goal = n * n - 1;
   const solved = at === goal;
-  const way = solve(n, open, at);
+  const pass = (a: Cell, b: Cell) => open.has(edge(a, b)) && (hasKey || edge(a, b) !== door);
+  // The hint shows the way to the key first, then to the star.
+  const way = hasKey ? solve(n, open, at) : (route(n, open, at, keyCell!, door) ?? []);
+  const pad = n >= 6;
 
   const move = useCallback(
     (to: Cell, info: SelectInfo) => {
-      if (solved || !open.has(edge(at, to))) return;
+      if (solved || !pass(at, to)) return;
       // Exploring is never wrong: steps carry no `correct`, so wrong turns don't count as errors for accuracy/BKT.
       ctx.emit({ type: "select", levelId: ctx.levelId, activityId: ctx.activityId, target: `cell${way[0]}`, actual: `cell${to}`, latencyMs: clock.ms(), pointerType: info.pointerType });
       clock.reset();
       setAt(to);
+      if (to === keyCell) setHasKey(true);
       if (to === goal) answer(ctx, { target: "goal", actual: "goal", correct: true, latencyMs: 0, info });
     },
-    [at, ctx, clock, goal, open, solved, way],
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- `pass` reads open, door and hasKey, listed here
+    [at, ctx, clock, goal, open, solved, way, hasKey, door, keyCell],
   );
 
   // Arrow keys move too (keyboard users).
@@ -483,31 +514,53 @@ function MazeRound({ n, seed, index, total, last, next }: { n: number; seed: num
   const cell = 100 / n;
   const pos = (c: Cell) => ({ left: `${(c % n) * cell}%`, top: `${Math.floor(c / n) * cell}%`, width: `${cell}%`, height: `${cell}%` });
   const dirLabel = (to: Cell) => t(to === at - n ? "act.go_up" : to === at + n ? "act.go_down" : to === at - 1 ? "act.go_left" : "act.go_right");
-  const walls: string[] = [];
+  const arrow = (to: Cell) => (to === at - n ? "⬆️" : to === at + n ? "⬇️" : to === at - 1 ? "⬅️" : "➡️");
+  const lines: string[] = [];
   for (let c = 0; c < n * n; c++) {
     const r = Math.floor(c / n);
     const k = c % n;
-    if (k < n - 1 && !open.has(edge(c, c + 1))) walls.push(`M${(k + 1) * 100} ${r * 100}V${(r + 1) * 100}`);
-    if (r < n - 1 && !open.has(edge(c, c + n))) walls.push(`M${k * 100} ${(r + 1) * 100}H${(k + 1) * 100}`);
+    if (k < n - 1 && !open.has(edge(c, c + 1))) lines.push(`M${(k + 1) * 100} ${r * 100}V${(r + 1) * 100}`);
+    if (r < n - 1 && !open.has(edge(c, c + n))) lines.push(`M${k * 100} ${(r + 1) * 100}H${(k + 1) * 100}`);
   }
+  // The locked door: a thick orange bar across the open edge until the key is taken.
+  const doorLine = (() => {
+    if (!door || hasKey) return null;
+    const [a, b] = door.split("-").map(Number);
+    const r = Math.floor(a / n);
+    const k = a % n;
+    return b === a + 1 ? `M${(k + 1) * 100} ${r * 100 + 12}V${(r + 1) * 100 - 12}` : `M${k * 100 + 12} ${(r + 1) * 100}H${(k + 1) * 100 - 12}`;
+  })();
+  const moves = neighbors(n, at).filter((to) => pass(at, to));
+  // The pad: up / left / right / down, each a full-size target; a way with a wall is left out (and out of scanning).
+  // On a phone the four sit in one row (← ↑ ↓ →); from `sm` they make a cross beside the maze.
+  const dirs: [string, Cell, boolean, string][] = [
+    ["left", at - 1, at % n > 0, "sm:col-start-1 sm:row-start-2"],
+    ["up", at - n, Math.floor(at / n) > 0, "sm:col-start-2 sm:row-start-1"],
+    ["down", at + n, Math.floor(at / n) < n - 1, "sm:col-start-2 sm:row-start-3"],
+    ["right", at + 1, at % n < n - 1, "sm:col-start-3 sm:row-start-2"],
+  ];
   return (
     <Frame
-      prompt={t("act.maze")}
+      prompt={t(keyCell !== undefined ? "act.skill.maze.key" : "act.maze")}
       speakKey={`maze${index}`}
       done={index + (solved ? 1 : 0)}
       total={total}
       action={solved && <ActionButton label={t(last ? "act.done" : "act.next")} onSelect={next} pulse />}
     >
-      <div className="relative aspect-square rounded-fk-lg bg-[#eef7ea] shadow-inner" style={{ width: "min(92vw, 30rem, 55dvh)" }}>
+      <div className="flex flex-wrap items-center justify-center gap-6 short:gap-4">
+      <div className="relative aspect-square rounded-fk-lg bg-[#eef7ea] shadow-inner" style={{ width: pad ? "min(86vw, 30rem, 44dvh)" : "min(92vw, 30rem, 55dvh)" }}>
         <svg viewBox={`-6 -6 ${n * 100 + 12} ${n * 100 + 12}`} className="absolute inset-0 size-full" aria-hidden>
           <rect x="0" y="0" width={n * 100} height={n * 100} fill="none" stroke="#6f8f72" strokeWidth="10" rx="8" />
-          <path d={walls.join("")} stroke="#6f8f72" strokeWidth="10" strokeLinecap="round" />
+          <path d={lines.join("")} stroke="#6f8f72" strokeWidth="10" strokeLinecap="round" />
+          {doorLine && <path d={doorLine} stroke="#e0a24a" strokeWidth="22" strokeLinecap="round" />}
         </svg>
-        <span className="absolute grid place-items-center text-4xl" style={pos(goal)} aria-hidden>⭐</span>
+        <span className="absolute grid place-items-center" style={{ ...pos(goal), fontSize: `min(2.25rem, ${(30 / n) * 0.6}rem)` }} aria-hidden>⭐</span>
+        {keyCell !== undefined && !hasKey && (
+          <span className="absolute grid place-items-center" style={{ ...pos(keyCell), fontSize: `min(2.25rem, ${(30 / n) * 0.6}rem)` }} aria-hidden>🔑</span>
+        )}
         {!solved &&
-          neighbors(n, at)
-            .filter((to) => open.has(edge(at, to)))
-            .map((to) => (
+          !pad &&
+          moves.map((to) => (
               <Target
                 key={to}
                 label={dirLabel(to)}
@@ -517,13 +570,37 @@ function MazeRound({ n, seed, index, total, last, next }: { n: number; seed: num
                 style={pos(to)}
               >
                 <span className="text-2xl text-ink" aria-hidden>
-                  {to === at - n ? "⬆️" : to === at + n ? "⬇️" : to === at - 1 ? "⬅️" : "➡️"}
+                  {arrow(to)}
                 </span>
               </Target>
             ))}
-        <span className="pointer-events-none absolute grid place-items-center text-5xl transition-all duration-300" style={pos(at)} aria-hidden>
+        <span className="pointer-events-none absolute grid place-items-center transition-all duration-300" style={{ ...pos(at), fontSize: `min(3rem, ${(30 / n) * 0.7}rem)` }} aria-hidden>
           ☁️
         </span>
+        {pad && way[0] !== undefined && ctx.profile.hintLevel >= 1 && (
+          <span className="pointer-events-none absolute rounded-fk border-4 border-dashed border-sky" style={pos(way[0])} aria-hidden />
+        )}
+      </div>
+      {pad && (
+        <div className="grid grid-cols-4 gap-2 sm:grid-cols-3" role="group" aria-label={t("act.maze")}>
+          {dirs.map(([d, to, inside, place]) => {
+            const ok = !solved && inside && pass(at, to);
+            return (
+              <Target
+                key={d}
+                label={t(`act.go_${d}`)}
+                disabled={!ok}
+                scanSkip={!ok}
+                onSelect={(info) => move(to, info)}
+                pulse={ok && ctx.profile.hintLevel >= 1 && way[0] === to}
+                className={`grid size-[76px] place-items-center rounded-fk-lg bg-sky-soft text-3xl shadow-soft disabled:opacity-30 ${place}`}
+              >
+                <span aria-hidden>{d === "up" ? "⬆️" : d === "down" ? "⬇️" : d === "left" ? "⬅️" : "➡️"}</span>
+              </Target>
+            );
+          })}
+        </div>
+      )}
       </div>
     </Frame>
   );
