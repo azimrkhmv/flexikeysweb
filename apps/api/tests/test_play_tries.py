@@ -10,6 +10,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import func, select
 
 from app.main import app
+from app.modules.play import skill
 from app.modules.play.models import SkillLevel, Try
 from tests.test_children import API, add_child, parent
 from tests.test_videos_register import run, title
@@ -71,6 +72,30 @@ def test_a_right_answer_raises_a_wrong_one_lowers(client: TestClient) -> None:
     assert up > 0
     send(client, owner, child, [a_try(game="missing", outcome="wrong")])
     assert stored(client, child)[1]["memory"][0] < up
+
+
+def test_a_try_counts_by_its_tier_and_step_and_old_tries_by_their_level(client: TestClient) -> None:
+    """B80: a hard step won lifts θ more than an easy one; a try with only a level still counts (old devices)."""
+    owner = parent(client)
+    child = add_child(client, owner)
+    start = stored(client, child)[1].get("reasoning", (0.0, 0))[0]
+    send(client, owner, child, [a_try(game="puzzle", level=0, tier=4, step=3)])
+    _, skills = stored(client, child)
+    theta, n = skills["reasoning"]  # puzzle trains reasoning now
+    assert n == 1 and theta == pytest.approx(skill.elo(start, 0, skill.difficulty(4, 3), True))
+    send(client, owner, child, [a_try(game="puzzle", level=6)])  # an old try: no tier, no step
+    assert stored(client, child)[1]["reasoning"] == (
+        pytest.approx(skill.elo(theta, 1, skill.level_difficulty(6), True)),
+        2,
+    )
+    assert title(send(client, owner, child, [a_try(tier=5, step=1)])) == (422, "validation_error")
+
+
+def test_reasoning_and_speed_start_from_flexibility_and_attention(client: TestClient) -> None:
+    owner = parent(client)
+    child = add_child(client, owner)
+    got = {s["area"]: s["theta"] for s in client.get(f"{API}/children/{child}/skills", headers=owner).json()}
+    assert got["reasoning"] == got["flexibility"] and got["speed"] == got["attention"]
 
 
 def test_old_tries_are_not_kept_and_strangers_cannot_send(client: TestClient) -> None:

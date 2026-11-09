@@ -1,4 +1,5 @@
 import type { Lang } from "./i18n";
+import type { Area, StepN, Tier } from "./skill";
 
 export type L10n<T = string> = Record<Lang, T>;
 
@@ -353,13 +354,35 @@ export type Activity = (
 
 export type ActivityKind = Activity["kind"];
 
+/** The input modes a game supports (games spec §2.2): every non-Speed game takes all four. */
+export type InputModeId = "touch" | "dwell" | "switch" | "keyboard";
+
+/** One step of an activity: its tier and step, the engine's settings for it and, for skill games, what it shows. */
+export interface ActivityStep<S = Record<string, unknown>> {
+  tier: Tier;
+  step: StepN;
+  settings: S;
+  /** For the parent panel: what a child who manages this step can do ("Remembers 4 pictures in order"). */
+  can_do?: L10n;
+}
+
+/** The fields every activity has (games spec §2.2): its area, theme world, input modes and steps. */
+export interface ActivityMeta {
+  area: Area;
+  /** The theme world id, or "mixed" for skill games that mix themes. */
+  theme: string;
+  input_modes: InputModeId[];
+  steps: ActivityStep[];
+}
+export type WorldActivity = Activity & ActivityMeta;
+
 export interface Level {
   id: string;
   n: number;
   emoji: string;
   title: L10n;
   color: "sky" | "leaf" | "sun" | "lavender" | "teal" | "peach";
-  activities: Activity[];
+  activities: WorldActivity[];
 }
 
 export type MascotMood = "calm" | "happy" | "curious" | "sleepy" | "wave" | "thinking" | "celebrate";

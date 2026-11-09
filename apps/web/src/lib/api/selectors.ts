@@ -5,7 +5,7 @@
 import { FREE_LEVELS, LEVEL_BY_ID, LEVELS, levelComplete } from "@/content/levels";
 import { computeMetrics, startingProfile, withFloors } from "../adaptive";
 import { levelAfter } from "../roadmap";
-import { AREAS, startingTheta, type Area } from "../skill";
+import { AREAS, START_FROM, startingTheta, type Area } from "../skill";
 import type { Answers } from "@/content/intake";
 import { typicalFilled } from "@/content/questionnaire";
 import { rulesView } from "@/content/questionnaireBridge";
@@ -71,12 +71,14 @@ export const sel = {
   skills: (db: DB, childId: string): Record<Area, { theta: number; n: number }> => {
     const round = db.intakeRounds.filter((r) => r.childId === childId && r.completedAt).sort((a, b) => b.round - a.round)[0];
     const answers = round ? rulesView(round.questionnaire, sel.intakeAnswers(db, childId, round.round), localDate()) : {};
-    return Object.fromEntries(
-      AREAS.map((area) => {
-        const row = (db.skills ?? []).find((s) => s.childId === childId && s.area === area);
-        return [area, row ? { theta: row.theta, n: row.n } : { theta: startingTheta(area, answers), n: 0 }];
-      }),
-    ) as Record<Area, { theta: number; n: number }>;
+    const out = {} as Record<Area, { theta: number; n: number }>;
+    // Areas with a question first: reasoning and speed start at the current θ of flexibility and attention.
+    for (const area of [...AREAS].sort((a, b) => Number(a in START_FROM) - Number(b in START_FROM))) {
+      const row = (db.skills ?? []).find((s) => s.childId === childId && s.area === area);
+      const from = START_FROM[area];
+      out[area] = row ? { theta: row.theta, n: row.n } : { theta: from ? out[from].theta : startingTheta(area, answers), n: 0 };
+    }
+    return Object.fromEntries(AREAS.map((a) => [a, out[a]])) as Record<Area, { theta: number; n: number }>;
   },
   /** Seconds of game time today (this device's date). */
   playedToday: (db: DB, childId: string) => (db.playTime ?? []).find((p) => p.childId === childId && p.date === localDate())?.seconds ?? 0,

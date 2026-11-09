@@ -55,7 +55,8 @@ Solo phase: Azim does every open task alone, until he hands the project to Bekzo
 
 ## Rules of the product (never break these)
 
-1. No diagnosis and no scores for parents. No percentages, no comparing children.
+1. **No diagnosis. Parents and therapists see a skill level from 1 to 100 for each area; never a percentage, never a
+   comparison with other children or an age group. The child never sees a number.**
 2. Safety beats convenience. Anything a doctor or therapist forbids never appears in a plan, a daily task or an
    assistant answer.
 3. A physiotherapist approves every video before any family sees it.

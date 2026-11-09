@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { AREA_OF, AREAS, chooseGames, corrected, difficulty, elo, pCorrect, startingTheta, STEP, weeklyNew, type Area, type Game } from "./skill";
+import { AREA_OF, AREAS, chooseGames, corrected, difficulty, elo, levelDifficulty, pCorrect, startingTheta, STEP, tryDifficulty, weeklyNew, type Area, type Game } from "./skill";
 
 describe("skill levels (spec §13)", () => {
   it("P(correct) = 1 / (1 + e^−(θ − d))", () => {
@@ -31,10 +31,10 @@ describe("skill levels (spec §13)", () => {
 
   it("three slots: easy win from the strongest area, growth from the weakest that has a game, the child's choice", () => {
     const games: Game[] = [
-      { activityId: "a1", kind: "find_same", level: 1 },
-      { activityId: "a9", kind: "find_same", level: 9 },
-      { activityId: "m3", kind: "missing", level: 3 },
-      { activityId: "l5", kind: "listen_pick", level: 5 },
+      { activityId: "a1", kind: "find_same", level: 1, area: "attention", tier: 1, step: 1 },
+      { activityId: "a9", kind: "find_same", level: 0, area: "attention", tier: 3, step: 1 },
+      { activityId: "m3", kind: "missing", level: 3, area: "memory", tier: 1, step: 1 },
+      { activityId: "l5", kind: "listen_pick", level: 5, area: "literacy", tier: 1, step: 2 },
     ];
     const theta = Object.fromEntries(AREAS.map((a) => [a, 0])) as Record<Area, number>;
     theta.attention = 1;
@@ -45,7 +45,15 @@ describe("skill levels (spec §13)", () => {
     // easy win: the level closest to θ − ln(0.85 / 0.15) ≈ −0.73: level 1 (d = −1.5) beats level 9 (d = 0.9)
     expect(easy.games[0].activityId).toBe("a1");
     expect(choice.games).toHaveLength(4);
-    expect(pCorrect(theta.attention, difficulty(1))).toBeGreaterThan(0.85);
+    expect(pCorrect(theta.attention, difficulty(1, 1))).toBeGreaterThan(0.85);
+  });
+
+  it("difficulty: 12 even steps from Seed 1 (−1.5) to Summit 3 (2.9); old tries keep the world-level formula", () => {
+    expect(difficulty(1, 1)).toBeCloseTo(-1.5, 12);
+    expect(difficulty(4, 3)).toBeCloseTo(2.9, 12);
+    expect(difficulty(2, 1) - difficulty(1, 3)).toBeCloseTo(0.4, 12);
+    expect(tryDifficulty({ level: 6 })).toBe(levelDifficulty(6));
+    expect(tryDifficulty({ level: 0, tier: 3, step: 2 })).toBe(difficulty(3, 2));
   });
 
   it("every game kind trains one area", () => {
@@ -54,7 +62,7 @@ describe("skill levels (spec §13)", () => {
 });
 
 describe("at most one new game a week (spec §13)", () => {
-  const g = (activityId: string, kind: Game["kind"]): Game => ({ activityId, kind, level: 1 });
+  const g = (activityId: string, kind: keyof typeof AREA_OF): Game => ({ activityId, kind, level: 1, area: AREA_OF[kind], tier: 1, step: 1 });
   const unlocked = [g("f", "find_same"), g("m", "missing"), g("s", "sort"), g("s2", "sort")];
   it("offers one new kind when none was new this week, and keeps every kind already played", () => {
     const played = new Map<Game["kind"], string>([["find_same", "2026-09-01"]]);

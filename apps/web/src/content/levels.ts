@@ -1,9 +1,12 @@
-import type { Level } from "@/lib/types";
+import { AREA_OF, type StepN, type Tier } from "@/lib/skill";
+import type { Activity, Level } from "@/lib/types";
 
 // Content bundle (PRD §9.6). In production this JSON comes from /curriculum + /content/manifest;
 // components must never hardcode child-facing words (FR-CUR-2) — they read them from here.
 
-export const LEVELS: Level[] = [
+type World = Omit<Level, "activities"> & { activities: Activity[] };
+
+const WORLDS: World[] = [
   {
     id: "letters", n: 1, emoji: "🔤", color: "sky",
     title: { en: "Letters", uz: "Harflar", ru: "Буквы" },
@@ -222,6 +225,24 @@ export const LEVELS: Level[] = [
     ],
   },
 ];
+
+/**
+ * A theme world's place on the tier scale (games spec §2.2): worlds 1–8 are tier 1 and 9–16 tier 2; inside each half
+ * the first three worlds are step 1, the next three step 2 and the last two step 3.
+ */
+export function worldStep(n: number): { tier: Tier; step: StepN } {
+  const p = (n - 1) % 8;
+  return { tier: n <= 8 ? 1 : 2, step: p < 3 ? 1 : p < 6 ? 2 : 3 };
+}
+
+/** Every theme-world activity gets its area, theme, input modes and one step with its current settings. */
+export const LEVELS: Level[] = WORLDS.map((w) => ({
+  ...w,
+  activities: w.activities.map((a) => {
+    const settings = Object.fromEntries(Object.entries(a).filter(([k]) => !["id", "kind", "optional"].includes(k)));
+    return { ...a, area: AREA_OF[a.kind], theme: w.id, input_modes: ["touch", "dwell", "switch", "keyboard"], steps: [{ ...worldStep(w.n), settings }] };
+  }),
+}));
 
 export const LEVEL_BY_ID: Record<string, Level> = Object.fromEntries(LEVELS.map((l) => [l.id, l]));
 

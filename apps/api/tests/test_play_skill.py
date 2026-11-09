@@ -27,6 +27,18 @@ def test_the_cases_are_the_websites() -> None:
 def test_same_areas_and_questions() -> None:
     assert skill.AREA_OF == CASES["area_of"]
     assert {a: list(q) for a, q in skill.AREA_QUESTIONS.items()} == CASES["area_questions"]
+    assert skill.START_FROM == CASES["start_from"]
+
+
+def test_difficulty_from_tier_and_step() -> None:
+    for c in CASES["difficulty"]:
+        assert skill.difficulty(c["tier"], c["step"]) == pytest.approx(c["d"], abs=1e-12)
+    for c in CASES["elo_step"]:
+        d = skill.try_difficulty(0, c["tier"], c["step"])
+        assert skill.elo(c["theta"], c["n"], d, c["correct"]) == pytest.approx(c["out"], abs=1e-12)
+    attention = [g for g in skill.GAMES if g["area"] == "attention"]
+    for c in CASES["level_for"]:
+        assert skill._level_for(c["theta"], c["p"], attention)["activity_id"] == c["out"]
 
 
 def test_starting_guess() -> None:
@@ -41,7 +53,7 @@ def test_play_check_correction() -> None:
 
 def test_elo() -> None:
     for c in CASES["elo"]:
-        assert skill.difficulty(c["level"]) == pytest.approx(c["d"], abs=1e-12)
+        assert skill.try_difficulty(c["level"], None, None) == pytest.approx(c["d"], abs=1e-12)  # old tries
         assert skill.p_correct(c["theta"], c["d"]) == pytest.approx(c["p"], abs=1e-12)
         assert skill.elo(c["theta"], c["n"], c["d"], c["correct"]) == pytest.approx(c["out"], abs=1e-12)
 

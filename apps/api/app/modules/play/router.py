@@ -166,6 +166,9 @@ class TryIn(ApiModel):
     session_id: str | None = None
     game: str = Field(max_length=32)
     level: int = Field(ge=0, le=100)
+    # The step played (games spec §3.1). Old devices send neither; their tries count by `level`.
+    tier: int | None = Field(default=None, ge=1, le=4)
+    step: int | None = Field(default=None, ge=1, le=3)
     item_id: str = Field(max_length=64)
     input_mode: InputMode
     outcome: Outcome
@@ -233,8 +236,9 @@ async def save_tries(
 
 
 async def skill_rows(db: AsyncSession, child_id: uuid.UUID) -> dict[SkillArea, SkillLevel]:
-    """All six areas. A missing one starts from the first guess: the ability answers of the latest finished intake
-    round (spec §13, step 1). ponytail: a therapist's answers join here with A8.2 (they count twice)."""
+    """All areas. A missing one starts from the first guess: the ability answers of the latest finished intake
+    round (spec §13, step 1). Reasoning and speed have no question: they start at the current θ of flexibility and
+    attention (games spec §2.1). ponytail: a therapist's answers join here with A8.2 (they count twice)."""
     rows = {s.area: s for s in await db.scalars(select(SkillLevel).where(SkillLevel.child_id == child_id))}
     if len(rows) < len(skill.AREAS):
         last = await db.scalar(
@@ -252,9 +256,11 @@ async def skill_rows(db: AsyncSession, child_id: uuid.UUID) -> dict[SkillArea, S
             )
         }  # the ability answers are never health answers, so the plain column has them
         answers = rules_view(last.questionnaire if last else "p41", plain, datetime.now(TASHKENT).date())
-        for area in skill.AREAS:
+        for area in sorted(skill.AREAS, key=lambda a: a in skill.START_FROM):  # areas with a question first
             if SkillArea(area) not in rows:
-                row = SkillLevel(child_id=child_id, area=SkillArea(area), theta=skill.starting_theta(area, answers))
+                start = skill.START_FROM.get(area)
+                theta = rows[SkillArea(start)].theta if start else skill.starting_theta(area, answers)
+                row = SkillLevel(child_id=child_id, area=SkillArea(area), theta=theta)
                 row.n_trials = 0
                 rows[SkillArea(area)] = row
                 db.add(row)
@@ -268,7 +274,8 @@ async def _move_skills(db: AsyncSession, child_id: uuid.UUID, clean: list[TryIn]
         if area is None:
             continue
         row = levels[SkillArea(area)]
-        row.theta = skill.elo(row.theta, row.n_trials, skill.difficulty(t.level), t.outcome == Outcome.correct)
+        d = skill.try_difficulty(t.level, t.tier, t.step)
+        row.theta = skill.elo(row.theta, row.n_trials, d, t.outcome == Outcome.correct)
         row.n_trials += 1
 
 
@@ -291,7 +298,7 @@ class Placement(ApiModel):
 async def get_skills(
     child_id: uuid.UUID, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]
 ) -> list[SkillOut]:
-    """θ of the six areas, for choosing games. Never shown to parents as a score (product rule 1)."""
+    """θ of every area, for choosing games. Parents see levels 1-100 from /progress, never θ itself (rule 1)."""
     await get_visible_child(db, user, child_id)
     rows = await skill_rows(db, child_id)
     await db.commit()

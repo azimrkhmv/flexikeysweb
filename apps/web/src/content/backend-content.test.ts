@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { readFileSync, writeFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { buildRoadmap, type PlanInput } from "@/lib/roadmap";
-import { AREA_OF, AREA_QUESTIONS, AREAS, chooseGames, corrected, difficulty, elo, pCorrect, startingTheta, weeklyNew, type Area, type Bucket, type Game } from "@/lib/skill";
+import { AREA_OF, AREA_QUESTIONS, AREAS, chooseGames, corrected, difficulty, elo, levelDifficulty, levelFor, pCorrect, START_FROM, startingTheta, weeklyNew, type Area, type Bucket, type Game } from "@/lib/skill";
 import { LEVELS } from "./levels";
 import type { TherapistInput } from "@/lib/types";
 import { intake as intakeText } from "@/messages/intake";
@@ -25,8 +25,8 @@ function check(path: string, value: unknown) {
 }
 
 const LIB = exerciseLibrary("seed", "2026-10-01T00:00:00Z");
-/** Every game: its activity id, kind and world level. */
-const GAMES: Game[] = LEVELS.flatMap((l) => l.activities.map((a) => ({ activityId: a.id, kind: a.kind, level: l.n })));
+/** Every playable step: its activity id, kind, world level (0 for skill games), area, tier and step. */
+const GAMES: Game[] = LEVELS.flatMap((l) => l.activities.flatMap((a) => a.steps.map((s) => ({ activityId: a.id, kind: a.kind, level: l.n, area: a.area, tier: s.tier, step: s.step }))));
 
 /** The roadmap in the backend's field names; key order is part of the contract (the hash covers it). */
 const canon = (r: ReturnType<typeof buildRoadmap>) =>
@@ -120,11 +120,16 @@ describe("backend content", () => {
     check("skill_cases.json", {
       area_of: AREA_OF,
       area_questions: AREA_QUESTIONS,
+      start_from: START_FROM,
+      // Games spec §3.1: difficulty from tier and step; old tries keep the world-level formula (`elo` below).
+      difficulty: [1, 2, 3, 4].flatMap((tier) => [1, 2, 3].map((step) => ({ tier, step, d: difficulty(tier, step) }))),
+      level_for: [-2.5, -1, 0, 0.4, 1.3, 2.2, 4].flatMap((theta) => [0.85, 0.75].map((p) => ({ theta, p, out: levelFor(theta, p, GAMES.filter((g) => g.area === "attention")).activityId }))),
+      elo_step: [-1, 0.8].flatMap((theta) => [[1, 1], [2, 3], [4, 3]].flatMap(([tier, step]) => [true, false].map((correct) => ({ theta, n: 3, tier, step, correct, out: elo(theta, 3, difficulty(tier, step), correct) })))),
       starting: answers.flatMap((parent) => therapist.flatMap((th) => AREAS.map((area) => ({ area, parent, therapist: th, theta: startingTheta(area, parent, th) })))),
       corrected: [-2, -1.5, -0.4, 0, 0.7, 1.5, 3].flatMap((theta) => buckets.map((bucket) => ({ theta, bucket, out: corrected(theta, bucket) }))),
       choose: [
-        { theta: { access: 1, attention: -0.5, memory: 0.2, flexibility: -1, literacy: 0, numeracy: -3 }, upTo: 6 },
-        { theta: { access: -1, attention: 2, memory: 0, flexibility: 0, literacy: 1.2, numeracy: 0 }, upTo: 20 },
+        { theta: { access: 1, attention: -0.5, memory: 0.2, flexibility: -1, reasoning: -1, literacy: 0, numeracy: -3, speed: -0.5 }, upTo: 6 },
+        { theta: { access: -1, attention: 2, memory: 0, flexibility: 0, reasoning: 0.5, literacy: 1.2, numeracy: 0, speed: 2 }, upTo: 20 },
       ].map(({ theta, upTo }) => {
         const unlocked = GAMES.filter((g) => g.level <= upTo);
         return { theta, unlocked: unlocked.map((g) => g.activityId), out: chooseGames(theta as Record<Area, number>, unlocked).map((s) => ({ slot: s.slot, area: s.area ?? null, games: s.games.map((g) => g.activityId) })) };
@@ -137,12 +142,13 @@ describe("backend content", () => {
         played, today,
         out: weeklyNew(GAMES.filter((g) => g.level <= 4), new Map(Object.entries(played)) as Map<Game["kind"], string>, today).map((g) => g.activityId),
       })),
-      elo: [-1, 0, 0.8].flatMap((theta) => [0, 7, 40].flatMap((n) => [1, 6, 15].flatMap((level) => [true, false].map((correct) => ({ theta, n, level, correct, d: difficulty(level), p: pCorrect(theta, difficulty(level)), out: elo(theta, n, difficulty(level), correct) }))))),
+      elo: [-1, 0, 0.8].flatMap((theta) => [0, 7, 40].flatMap((n) => [1, 6, 15].flatMap((level) => [true, false].map((correct) => ({ theta, n, level, correct, d: levelDifficulty(level), p: pCorrect(theta, levelDifficulty(level)), out: elo(theta, n, levelDifficulty(level), correct) }))))),
     });
   });
 
   it("games", () => {
-    check("games.json", GAMES.map((g) => ({ activity_id: g.activityId, kind: g.kind, level: g.level })));
+    // One row per step (games spec §2.3).
+    check("games.json", GAMES.map((g) => ({ activity_id: g.activityId, kind: g.kind, level: g.level, area: g.area, tier: g.tier, step: g.step })));
   });
 
   it("regions and districts", () => {

@@ -1899,7 +1899,7 @@ export interface paths {
         };
         /**
          * Get Skills
-         * @description θ of the six areas, for choosing games. Never shown to parents as a score (product rule 1).
+         * @description θ of every area, for choosing games. Parents see levels 1-100 from /progress, never θ itself (rule 1).
          */
         get: operations["get_skills_api_v1_children__child_id__skills_get"];
         put?: never;
@@ -3778,7 +3778,7 @@ export interface components {
          * SkillArea
          * @enum {string}
          */
-        SkillArea: "access" | "attention" | "memory" | "flexibility" | "literacy" | "numeracy";
+        SkillArea: "access" | "attention" | "memory" | "flexibility" | "reasoning" | "literacy" | "numeracy" | "speed";
         /** SkillOut */
         SkillOut: {
             area: components["schemas"]["SkillArea"];
@@ -3884,6 +3884,10 @@ export interface components {
             game: string;
             /** Level */
             level: number;
+            /** Tier */
+            tier?: number | null;
+            /** Step */
+            step?: number | null;
             /** Itemid */
             itemId: string;
             inputMode: components["schemas"]["InputMode"];

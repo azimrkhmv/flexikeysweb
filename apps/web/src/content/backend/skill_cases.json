@@ -7,8 +7,8 @@
   "missing": "memory",
   "light_path": "memory",
   "sort": "flexibility",
-  "puzzle": "flexibility",
   "maze": "flexibility",
+  "puzzle": "reasoning",
   "listen_pick": "literacy",
   "type": "literacy",
   "sentence": "literacy",
@@ -34,13 +34,251 @@
   "flexibility": [
    "P32"
   ],
+  "reasoning": [],
   "literacy": [
    "P18",
    "P20",
    "P21"
   ],
-  "numeracy": []
+  "numeracy": [],
+  "speed": []
  },
+ "start_from": {
+  "reasoning": "flexibility",
+  "speed": "attention"
+ },
+ "difficulty": [
+  {
+   "tier": 1,
+   "step": 1,
+   "d": -1.5
+  },
+  {
+   "tier": 1,
+   "step": 2,
+   "d": -1.1
+  },
+  {
+   "tier": 1,
+   "step": 3,
+   "d": -0.7
+  },
+  {
+   "tier": 2,
+   "step": 1,
+   "d": -0.2999999999999998
+  },
+  {
+   "tier": 2,
+   "step": 2,
+   "d": 0.10000000000000009
+  },
+  {
+   "tier": 2,
+   "step": 3,
+   "d": 0.5
+  },
+  {
+   "tier": 3,
+   "step": 1,
+   "d": 0.9000000000000004
+  },
+  {
+   "tier": 3,
+   "step": 2,
+   "d": 1.3000000000000003
+  },
+  {
+   "tier": 3,
+   "step": 3,
+   "d": 1.7000000000000002
+  },
+  {
+   "tier": 4,
+   "step": 1,
+   "d": 2.1
+  },
+  {
+   "tier": 4,
+   "step": 2,
+   "d": 2.5
+  },
+  {
+   "tier": 4,
+   "step": 3,
+   "d": 2.9000000000000004
+  }
+ ],
+ "level_for": [
+  {
+   "theta": -2.5,
+   "p": 0.85,
+   "out": "shapes-same"
+  },
+  {
+   "theta": -2.5,
+   "p": 0.75,
+   "out": "shapes-same"
+  },
+  {
+   "theta": -1,
+   "p": 0.85,
+   "out": "shapes-same"
+  },
+  {
+   "theta": -1,
+   "p": 0.75,
+   "out": "shapes-same"
+  },
+  {
+   "theta": 0,
+   "p": 0.85,
+   "out": "shapes-same"
+  },
+  {
+   "theta": 0,
+   "p": 0.75,
+   "out": "colors-same"
+  },
+  {
+   "theta": 0.4,
+   "p": 0.85,
+   "out": "shapes-same"
+  },
+  {
+   "theta": 0.4,
+   "p": 0.75,
+   "out": "fruits-same"
+  },
+  {
+   "theta": 1.3,
+   "p": 0.85,
+   "out": "toys-same"
+  },
+  {
+   "theta": 1.3,
+   "p": 0.75,
+   "out": "clothes-scene"
+  },
+  {
+   "theta": 2.2,
+   "p": 0.85,
+   "out": "stories-cloud"
+  },
+  {
+   "theta": 2.2,
+   "p": 0.75,
+   "out": "stories-cloud"
+  },
+  {
+   "theta": 4,
+   "p": 0.85,
+   "out": "stories-cloud"
+  },
+  {
+   "theta": 4,
+   "p": 0.75,
+   "out": "stories-cloud"
+  }
+ ],
+ "elo_step": [
+  {
+   "theta": -1,
+   "n": 3,
+   "tier": 1,
+   "step": 1,
+   "correct": true,
+   "out": -0.6717037662624823
+  },
+  {
+   "theta": -1,
+   "n": 3,
+   "tier": 1,
+   "step": 1,
+   "correct": false,
+   "out": -1.5412689836537865
+  },
+  {
+   "theta": -1,
+   "n": 3,
+   "tier": 2,
+   "step": 3,
+   "correct": true,
+   "out": -0.28906567287509244
+  },
+  {
+   "theta": -1,
+   "n": 3,
+   "tier": 2,
+   "step": 3,
+   "correct": false,
+   "out": -1.1586308902663969
+  },
+  {
+   "theta": -1,
+   "n": 3,
+   "tier": 4,
+   "step": 3,
+   "correct": true,
+   "out": -0.14768722237745857
+  },
+  {
+   "theta": -1,
+   "n": 3,
+   "tier": 4,
+   "step": 3,
+   "correct": false,
+   "out": -1.017252439768763
+  },
+  {
+   "theta": 0.8,
+   "n": 3,
+   "tier": 1,
+   "step": 1,
+   "correct": true,
+   "out": 0.8792373574042228
+  },
+  {
+   "theta": 0.8,
+   "n": 3,
+   "tier": 1,
+   "step": 1,
+   "correct": false,
+   "out": 0.009672140012918384
+  },
+  {
+   "theta": 0.8,
+   "n": 3,
+   "tier": 2,
+   "step": 3,
+   "correct": true,
+   "out": 1.1700499853811661
+  },
+  {
+   "theta": 0.8,
+   "n": 3,
+   "tier": 2,
+   "step": 3,
+   "correct": false,
+   "out": 0.3004847679898617
+  },
+  {
+   "theta": 0.8,
+   "n": 3,
+   "tier": 4,
+   "step": 3,
+   "correct": true,
+   "out": 1.574698416351641
+  },
+  {
+   "theta": 0.8,
+   "n": 3,
+   "tier": 4,
+   "step": 3,
+   "correct": false,
+   "out": 0.7051331989603367
+  }
+ ],
  "starting": [
   {
    "area": "access",
@@ -67,6 +305,12 @@
    "theta": 0
   },
   {
+   "area": "reasoning",
+   "parent": {},
+   "therapist": {},
+   "theta": 0
+  },
+  {
    "area": "literacy",
    "parent": {},
    "therapist": {},
@@ -74,6 +318,12 @@
   },
   {
    "area": "numeracy",
+   "parent": {},
+   "therapist": {},
+   "theta": 0
+  },
+  {
+   "area": "speed",
    "parent": {},
    "therapist": {},
    "theta": 0
@@ -115,6 +365,15 @@
    "theta": 0
   },
   {
+   "area": "reasoning",
+   "parent": {},
+   "therapist": {
+    "P19": 0,
+    "P23": 2
+   },
+   "theta": 0
+  },
+  {
    "area": "literacy",
    "parent": {},
    "therapist": {
@@ -125,6 +384,15 @@
   },
   {
    "area": "numeracy",
+   "parent": {},
+   "therapist": {
+    "P19": 0,
+    "P23": 2
+   },
+   "theta": 0
+  },
+  {
+   "area": "speed",
    "parent": {},
    "therapist": {
     "P19": 0,
@@ -197,6 +465,22 @@
    "theta": 0
   },
   {
+   "area": "reasoning",
+   "parent": {
+    "P23": 2,
+    "P24": 1,
+    "P26": 0,
+    "P19": 2,
+    "P30": 0,
+    "P32": 1,
+    "P18": 2,
+    "P20": 1,
+    "P21": 0
+   },
+   "therapist": {},
+   "theta": 0
+  },
+  {
    "area": "literacy",
    "parent": {
     "P23": 2,
@@ -214,6 +498,22 @@
   },
   {
    "area": "numeracy",
+   "parent": {
+    "P23": 2,
+    "P24": 1,
+    "P26": 0,
+    "P19": 2,
+    "P30": 0,
+    "P32": 1,
+    "P18": 2,
+    "P20": 1,
+    "P21": 0
+   },
+   "therapist": {},
+   "theta": 0
+  },
+  {
+   "area": "speed",
    "parent": {
     "P23": 2,
     "P24": 1,
@@ -305,6 +605,25 @@
    "theta": 0
   },
   {
+   "area": "reasoning",
+   "parent": {
+    "P23": 2,
+    "P24": 1,
+    "P26": 0,
+    "P19": 2,
+    "P30": 0,
+    "P32": 1,
+    "P18": 2,
+    "P20": 1,
+    "P21": 0
+   },
+   "therapist": {
+    "P19": 0,
+    "P23": 2
+   },
+   "theta": 0
+  },
+  {
    "area": "literacy",
    "parent": {
     "P23": 2,
@@ -325,6 +644,25 @@
   },
   {
    "area": "numeracy",
+   "parent": {
+    "P23": 2,
+    "P24": 1,
+    "P26": 0,
+    "P19": 2,
+    "P30": 0,
+    "P32": 1,
+    "P18": 2,
+    "P20": 1,
+    "P21": 0
+   },
+   "therapist": {
+    "P19": 0,
+    "P23": 2
+   },
+   "theta": 0
+  },
+  {
+   "area": "speed",
    "parent": {
     "P23": 2,
     "P24": 1,
@@ -383,6 +721,16 @@
    "theta": 0
   },
   {
+   "area": "reasoning",
+   "parent": {
+    "P23": 0,
+    "P19": 1,
+    "P20": 2
+   },
+   "therapist": {},
+   "theta": 0
+  },
+  {
    "area": "literacy",
    "parent": {
     "P23": 0,
@@ -394,6 +742,16 @@
   },
   {
    "area": "numeracy",
+   "parent": {
+    "P23": 0,
+    "P19": 1,
+    "P20": 2
+   },
+   "therapist": {},
+   "theta": 0
+  },
+  {
+   "area": "speed",
    "parent": {
     "P23": 0,
     "P19": 1,
@@ -455,6 +813,19 @@
    "theta": 0
   },
   {
+   "area": "reasoning",
+   "parent": {
+    "P23": 0,
+    "P19": 1,
+    "P20": 2
+   },
+   "therapist": {
+    "P19": 0,
+    "P23": 2
+   },
+   "theta": 0
+  },
+  {
    "area": "literacy",
    "parent": {
     "P23": 0,
@@ -469,6 +840,19 @@
   },
   {
    "area": "numeracy",
+   "parent": {
+    "P23": 0,
+    "P19": 1,
+    "P20": 2
+   },
+   "therapist": {
+    "P19": 0,
+    "P23": 2
+   },
+   "theta": 0
+  },
+  {
+   "area": "speed",
    "parent": {
     "P23": 0,
     "P19": 1,
@@ -595,8 +979,10 @@
     "attention": -0.5,
     "memory": 0.2,
     "flexibility": -1,
+    "reasoning": -1,
     "literacy": 0,
-    "numeracy": -3
+    "numeracy": -3,
+    "speed": -0.5
    },
    "unlocked": [
     "letters-type",
@@ -677,8 +1063,10 @@
     "attention": 2,
     "memory": 0,
     "flexibility": 0,
+    "reasoning": 0.5,
     "literacy": 1.2,
-    "numeracy": 0
+    "numeracy": 0,
+    "speed": 2
    },
    "unlocked": [
     "letters-type",
@@ -745,7 +1133,7 @@
      "slot": "easy_win",
      "area": "attention",
      "games": [
-      "fruits-same"
+      "clothes-scene"
      ]
     },
     {

@@ -79,13 +79,15 @@ class SkillArea(StrEnum):
     attention = "attention"
     memory = "memory"
     flexibility = "flexibility"
+    reasoning = "reasoning"  # games spec 8 Nov 2026
     literacy = "literacy"
     numeracy = "numeracy"
+    speed = "speed"  # games spec 8 Nov 2026: only for children with typical hand use
 
 
 class SkillLevel(TimeMixin, Base):
     """θ (theta) of one skill area: a first guess from the questions, corrected by the play check, then moved by
-    every clean try (spec §13). Never shown to parents as a score (rule 1)."""
+    every clean try (spec §13). Parents and therapists see it as a level 1-100 (rule 1, 8 Nov 2026)."""
 
     __tablename__ = "skill_levels"
     __table_args__ = (PrimaryKeyConstraint("child_id", "area"),)
@@ -140,6 +142,9 @@ class Try(Base):
     session_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("game_sessions.id", ondelete="SET NULL"))
     game: Mapped[str] = mapped_column(String(32))
     level: Mapped[int] = mapped_column(SmallInteger)
+    # The step played (games spec §3.1); null on old tries, which count by their world level.
+    tier: Mapped[int | None] = mapped_column(SmallInteger)
+    step: Mapped[int | None] = mapped_column(SmallInteger)
     item_id: Mapped[str] = mapped_column(String(64))
     input_mode: Mapped[InputMode] = mapped_column(enum_column(InputMode))
     outcome: Mapped[Outcome] = mapped_column(enum_column(Outcome))

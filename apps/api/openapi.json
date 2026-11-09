@@ -4953,7 +4953,7 @@
      "play"
     ],
     "summary": "Get Skills",
-    "description": "θ of the six areas, for choosing games. Never shown to parents as a score (product rule 1).",
+    "description": "θ of every area, for choosing games. Parents see levels 1-100 from /progress, never θ itself (rule 1).",
     "operationId": "get_skills_api_v1_children__child_id__skills_get",
     "parameters": [
      {
@@ -10356,8 +10356,10 @@
      "attention",
      "memory",
      "flexibility",
+     "reasoning",
      "literacy",
-     "numeracy"
+     "numeracy",
+     "speed"
     ],
     "title": "SkillArea"
    },
@@ -10600,6 +10602,32 @@
       "maximum": 100.0,
       "minimum": 0.0,
       "title": "Level"
+     },
+     "tier": {
+      "anyOf": [
+       {
+        "type": "integer",
+        "maximum": 4.0,
+        "minimum": 1.0
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Tier"
+     },
+     "step": {
+      "anyOf": [
+       {
+        "type": "integer",
+        "maximum": 3.0,
+        "minimum": 1.0
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Step"
      },
      "itemId": {
       "type": "string",

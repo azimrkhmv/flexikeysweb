@@ -9,7 +9,7 @@ name of the developer who does it.
 - **What we are building** is described in the founders' spec: `docs/product-spec-2026-10-06.pdf`. Where this file
   and the spec disagree, the spec wins — except for the three points listed in section 3.
 - `PRD.md` is the older product document. The spec replaced the parts where they disagree.
-- **Last updated:** 2026-11-06.
+- **Last updated:** 2026-11-09.
 
 **Contents:** 1. How we work · 2. Rules of the product · 3. Decisions already made · 4. Who does what ·
 5. Tasks (M0–M7) · 6. Ask and collect · 7. Accounts
@@ -63,7 +63,8 @@ only those are left. Point Claude at this file instead of explaining the project
 
 Every task must keep these. They come from the spec.
 
-1. **No diagnosis and no scores for parents.** No percentages, no comparing children.
+1. **No diagnosis. Parents and therapists see a skill level from 1 to 100 for each area; never a percentage, never a
+   comparison with other children or an age group. The child never sees a number.**
 2. **Safety beats convenience.** Anything a doctor or therapist forbids never appears in a plan, a daily task or
    an assistant answer.
 3. **A physiotherapist approves every video** before any family sees it.
@@ -111,6 +112,12 @@ Every task must keep these. They come from the spec.
 | Baby-level questions (Bekzod, 5 Nov 2026) | Baby-level skill questions are hidden by ability, not by age. A child who stands or walks by themselves is not asked about lying, rolling, crawling, kneeling or head control. The "how many months old when your child first…" questions are asked only for children under 6 years |
 | Height and weight units (Bekzod, 5 Nov 2026) | Height and weight accept metric and US units; the server always stores cm and kg |
 | Optional questions folded (Bekzod, 6 Nov 2026) | Quick check controls only sections C to H, so A, B, I and J alone would keep persona M above the review's limit of 40 questions. In A, B, I and J the optional questions sit behind one "Add more details (optional)" link per section; nothing is deleted and B7 stays open because it feeds safety rules. Persona M's limit is the real number with these folded, not 40 |
+| Levels for parents (founders agreed; Bekzod, 8 Nov 2026) | Parents and therapists see a level 1–100 per skill area. This replaces "no scores shown to parents" in the 5 Oct brief and the spec. Comparing children stays forbidden |
+| Seven skill areas (Bekzod, 8 Nov 2026) | Attention, Memory, Flexibility, Reasoning (new), Language, Math, Speed (new). The stored area names `literacy` and `numeracy` do not change; only the names people see do. Access stays an area in the skill model but is a setting, never shown as a skill |
+| Speed only for children with typical hand use (Bekzod, 8 Nov 2026) | Speed games are the only games where response time counts (games spec 8 Nov, section 7), and they still show no timer, no red, no X and no failure sound (rule 7) |
+| Four tiers per area (Bekzod, 8 Nov 2026) | Seed, Sprout, Tree, Summit, each with 3 steps. Summit is hard for adults too. A tier opens by success in that area, never by age |
+| Animation package (Bekzod, 8 Nov 2026) | `motion` (the current name of framer-motion) may be added to `apps/web`. The only new package of the 8 Nov games spec |
+| Free and Pro for skill games (Bekzod's default, 8 Nov 2026; founders may change it) | The Seed tier of every area is free; Sprout, Tree and Summit are Pro. The 16 theme worlds keep their `FREE_LEVELS` rule |
 
 **Families**
 
@@ -1013,6 +1020,45 @@ has a decision; the source is "FlexiKeys — parent questionnaire review 2" (5 N
   - Needs: B73
   - Note (7 Nov 2026): Bekzod's request after trying the demo. One rule covers both: the section the page opens at gets the intro, once
 
+### Skill games (8 Nov 2026)
+
+*Bekzod's "FlexiKeys — skill areas, harder levels, 25 new games and the progress panel" (8 Nov 2026), from the
+"FlexiKeys Game Catalogue" (8 Nov 2026). Every point has a decision; all 25 new games are built for now and Bekzod
+drops the ones he does not like after trying them. Order: B80 to B89. Each task needs the one before (they share
+`skill.ts` / `skill.py`, `games.json` and `skillGames.ts`).*
+
+- [x] **Bekzod** — `B80` Skill areas, activity fields and difficulty from tier and step (sections 0, 2, 3.1)
+  - Done when: rule 1 is changed in `CLAUDE.md` and `TASKS.md`; `reasoning` and `speed` exist on the server and the website; `puzzle` feeds reasoning; every activity has `area`, `theme`, `input_modes`, `steps`; `games.json` has one row per step; tries take `tier` and `step` and old tries still work; `skill_cases.json` covers the new difficulty and picks
+  - Needs: —
+  - Note (9 Nov 2026): migration 0041. The theme-world fields are worked out in `levels.ts` from each world's number (`worldStep`), so the 16 worlds' content is unchanged. Live mode does not send tries yet (`saveTries` is not in `lib/live/api.ts`, as before this task); the website's mock does, and the server takes the new fields
+- [ ] **Bekzod** — `B81` Animation (section 4)
+  - Done when: `motion` is added; `anim.tsx` has the five pieces; all 18 existing engines use them; reduced motion turns movement off; the 4× slowdown result is in the note
+  - Needs: B80
+- [ ] **Bekzod** — `B82` Skill games for the 12 existing kinds + demo page (sections 2.3, 5, 9 demo part)
+  - Done when: `skillGames.ts` has 12 skill games with 12 steps each, rounds are generated with a seed and pass the one-right-answer test; `/demo/games` plays every step in mock mode
+  - Needs: B81
+- [ ] **Bekzod** — `B83` Tiers, unlocking, Skill games tab, Free / Pro (sections 3.2, 3.3, 9 tab part)
+  - Done when: `open_tiers` works on the server and the website with cases; the `area_tier` table exists; today's games include open skill-game steps; the tab shows areas with soft locks; Seed is free and other tiers are Pro
+  - Needs: B82
+- [ ] **Bekzod** — `B84` New games 1–7: Attention and Memory (6.1, 6.2)
+  - Done when: the 7 games play all 12 steps in `/demo/games` with touch, hold-to-choose and switch; generators pass their tests; texts in en, ru, uz
+  - Needs: B83
+- [ ] **Bekzod** — `B85` New games 8–15: Flexibility and Reasoning (6.3, 6.4)
+  - Done when: as B84 for these 8 games; `pipes` and `logic_houses` generators prove a solution (exactly one for `logic_houses`)
+  - Needs: B84
+- [ ] **Bekzod** — `B86` New games 16–22: Math and Language (6.5, 6.6)
+  - Done when: as B84 for these 7 games; each language has its own word lists and texts in the amounts in 6.6
+  - Needs: B85
+- [ ] **Bekzod** — `B87` Speed (section 7)
+  - Done when: `speed_open` works with cases; the 3 Speed games score by time window and show no timer or failure; a child with dwell or switch input never sees Speed
+  - Needs: B86
+- [ ] **Bekzod** — `B88` New games in the plan (plan engine)
+  - Done when: in `apps/api/app/modules/plans/engine.py` and `apps/web/src/lib/roadmap.ts`, each new non-Speed kind is added at the **end** of the `GOAL_GAMES` lists of its area (`memory`, `attention`, `literacy`, `numeracy`; reasoning kinds go to `understand`, math kinds also to `school`); Speed kinds are in no goal; `ENGINE_VERSION` is bumped; `roadmap_cases.json` is rebuilt and every changed case is checked by hand for safety (rule 2)
+  - Needs: B87
+- [ ] **Bekzod** — `B89` Progress panel (section 8)
+  - Done when: levels 1–100 and the 8-week history show for parents and therapists; the child sees trees that never shrink and no numbers; areas with under 10 tries say "Not enough games yet"; no comparison anywhere; works in mock and live mode
+  - Needs: B88
+
 ### Hosting (31 Oct 2026)
 
 - [x] **Bekzod** — Website demo on Vercel (mock mode, no server)
@@ -1089,6 +1135,11 @@ These are not programming. The named developer asks the right person and writes 
   - Answer (2026-10-19): Eskiz.uz. Not connected yet: the demo (code on screen) is enough for now
   - Needed for: A13.2
   - For now: sign-in stays simulated (the code shows on screen) until launch
+
+**Bekzod**
+
+- [ ] **Bekzod** — `Q15` Ask the founders: the spec allows one new kind of game a week. With 43 kinds a child needs about 10 months to see them all. Should it be one new kind a week **per area**?
+  - Needed for: nothing (the current rule stays until they answer)
 
 ---
 

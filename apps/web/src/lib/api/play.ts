@@ -2,7 +2,7 @@
 
 // Child-token endpoints: child mode entry, sessions & events, rewards, AAC.
 
-import { AREA_OF, AREAS, difficulty, elo } from "../skill";
+import { AREA_OF, AREAS, elo, START_FROM, tryDifficulty } from "../skill";
 import type { TryRecord } from "../tries";
 import { LEVEL_BY_ID, levelComplete } from "@/content/levels";
 import { SHOP_BY_ID } from "@/content/shop";
@@ -81,10 +81,11 @@ export const playApi = {
         const area = AREA_OF[t.game as ActivityKind];
         if (t.accessEvent || t.outcome === "skipped" || !area) continue;
         const s = skills[area];
-        s.theta = elo(s.theta, s.n, difficulty(t.level), t.outcome === "correct");
+        s.theta = elo(s.theta, s.n, tryDifficulty(t), t.outcome === "correct");
         s.n += 1;
       }
-      db.skills = [...db.skills.filter((s) => s.childId !== childId), ...AREAS.filter((a) => skills[a].n > 0).map((area) => ({ childId, area, ...skills[area] }))];
+      // Reasoning and speed keep the start they got the first time they were needed (as on the server).
+      db.skills = [...db.skills.filter((s) => s.childId !== childId), ...AREAS.filter((a) => skills[a].n > 0 || a in START_FROM).map((area) => ({ childId, area, ...skills[area] }))];
       if (db.tries.length > 4000) db.tries = db.tries.slice(-4000); // ponytail: localStorage cap; the server keeps 90 days
     });
     return net(true, 0);

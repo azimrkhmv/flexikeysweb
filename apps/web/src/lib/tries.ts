@@ -12,6 +12,9 @@ export interface TryRecord {
   sessionId: string;
   game: string;
   level: number;
+  /** The step played (games spec §3.1): its difficulty counts. Null on old tries, which count by `level`. */
+  tier: number | null;
+  step: number | null;
   itemId: string;
   inputMode: "touch" | "dwell" | "switch" | "keyboard";
   outcome: "correct" | "wrong" | "skipped";
@@ -24,9 +27,16 @@ export interface TryRecord {
   responseMs: number | null;
 }
 
-const ACTIVITY = new Map(LEVELS.flatMap((l) => l.activities.map((a) => [a.id, { game: a.kind, level: l.n }] as const)));
+const ACTIVITY = new Map<string, { game: string; level: number; tier: number; step: number }>(
+  LEVELS.flatMap((l) => l.activities.map((a) => [a.id, { game: a.kind, level: l.n, tier: a.steps[0].tier, step: a.steps[0].step }] as const)),
+);
 
-type Event = Omit<InteractionEvent, "sessionId">;
+/** Skill games (B82) add their activities here: one id per game, the step comes with each event. */
+export function registerActivities(rows: { id: string; game: string; tier: number; step: number }[]) {
+  for (const r of rows) ACTIVITY.set(r.id, { game: r.game, level: 0, tier: r.tier, step: r.step });
+}
+
+type Event = Omit<InteractionEvent, "sessionId"> & { tier?: number; step?: number };
 const newId = () => (typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2));
 
 /** One log per session: turns its events into try records, keeping the count of attempts and the last hint. */
@@ -49,6 +59,8 @@ export function createTryLog(s: { childId: string; sessionId: string; startedAt:
       sessionId: s.sessionId,
       game: where?.game ?? "unknown",
       level: where?.level ?? 0,
+      tier: e.tier ?? where?.tier ?? null,
+      step: e.step ?? where?.step ?? null,
       itemId: e.target ?? e.activityId ?? "",
       inputMode: e.pointerType === "switch" ? "switch" : e.pointerType === "keyboard" ? "keyboard" : s.access === "dwell" ? "dwell" : "touch",
       outcome,
