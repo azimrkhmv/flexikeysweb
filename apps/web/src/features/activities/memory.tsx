@@ -62,6 +62,7 @@ function useSequence(seq: string[], onSolved: () => void) {
       answer(ctx, { target: expected, actual: id, correct, latencyMs: clock.ms(), info, quiet: !finished });
       if (!correct) return hint.miss();
       clock.reset();
+      hint.reset();
       setPos(pos + 1);
       if (finished) {
         setPhase("solved");
@@ -69,6 +70,8 @@ function useSequence(seq: string[], onSolved: () => void) {
       }
     },
     hintId: hint.show && phase === "repeat" ? seq[pos] : null,
+    /** After 4 mistakes on one item only the next right one is left to choose. */
+    fadeExcept: hint.fade && phase === "repeat" ? seq[pos] : null,
   };
 }
 
@@ -125,7 +128,7 @@ function SequenceRound({ seq, options, index, next, last }: { seq: string[]; opt
       <WatchAgain onSelect={s.replay} disabled={watching || solved} />
       <div className="flex flex-wrap justify-center rounded-fk-lg bg-surface-2 p-4" style={{ gap: 12 + ctx.profile.spacing }}>
         {options.map((id) => (
-          <OptionCard key={id} label={VOCAB[id]?.word[ctx.learnLang] ?? id} size={size} disabled={watching || solved} onSelect={(info) => s.tap(id, info)} pulse={s.hintId === id}>
+          <OptionCard key={id} label={VOCAB[id]?.word[ctx.learnLang] ?? id} size={size} disabled={watching || solved} onSelect={(info) => s.tap(id, info)} pulse={s.hintId === id} faded={!!s.fadeExcept && s.fadeExcept !== id}>
             <ItemArt id={id} size={Math.round(size * 0.62)} />
           </OptionCard>
         ))}
@@ -185,10 +188,11 @@ function LightRound({ seq, index, next, last }: { seq: string[]; index: number; 
               <Target
                 key={id}
                 label={t("act.star", { n: k + 1 })}
-                disabled={watching || solved}
+                disabled={watching || solved || (!!s.fadeExcept && s.fadeExcept !== id)}
+                scanSkip={!!s.fadeExcept && s.fadeExcept !== id}
                 onSelect={(info) => s.tap(id, info)}
                 pulse={s.hintId === id}
-                className="absolute grid -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full disabled:opacity-100"
+                className={`absolute grid -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full ${s.fadeExcept && s.fadeExcept !== id && !on ? "opacity-25" : "disabled:opacity-100"}`}
                 style={{ left: `${x}%`, top: `${y}%`, width: size, height: size }}
               >
                 <span

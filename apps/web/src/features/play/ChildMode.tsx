@@ -16,6 +16,7 @@ import { createTryLog, type TryRecord } from "@/lib/tries";
 import { GAME_LIMIT_MIN } from "@/lib/roadmap";
 import type { AdaptiveProfile, Child, InputProfile, InteractionEvent, MascotMood } from "@/lib/types";
 import { WarmUp } from "@/features/activities/warmup";
+import { PlayMotion } from "@/features/activities/anim";
 import { Aac } from "./Aac";
 import { ParentGate } from "./ParentGate";
 import { Shop } from "./Shop";
@@ -471,6 +472,7 @@ export function ChildMode({ child }: { child: Child }) {
 
   return (
     <PlayContext.Provider value={ctx}>
+      <PlayMotion calm={calm}>
       <div
         ref={shellRef}
         className="flex h-dvh flex-col overflow-hidden pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] pt-[env(safe-area-inset-top)] text-ink"
@@ -633,6 +635,7 @@ export function ChildMode({ child }: { child: Child }) {
           </div>
         </div>
       )}
+      </PlayMotion>
     </PlayContext.Provider>
   );
 }

@@ -1031,9 +1031,10 @@ drops the ones he does not like after trying them. Order: B80 to B89. Each task 
   - Done when: rule 1 is changed in `CLAUDE.md` and `TASKS.md`; `reasoning` and `speed` exist on the server and the website; `puzzle` feeds reasoning; every activity has `area`, `theme`, `input_modes`, `steps`; `games.json` has one row per step; tries take `tier` and `step` and old tries still work; `skill_cases.json` covers the new difficulty and picks
   - Needs: —
   - Note (9 Nov 2026): migration 0041. The theme-world fields are worked out in `levels.ts` from each world's number (`worldStep`), so the 16 worlds' content is unchanged. Live mode does not send tries yet (`saveTries` is not in `lib/live/api.ts`, as before this task); the website's mock does, and the server takes the new fields
-- [ ] **Bekzod** — `B81` Animation (section 4)
+- [x] **Bekzod** — `B81` Animation (section 4)
   - Done when: `motion` is added; `anim.tsx` has the five pieces; all 18 existing engines use them; reduced motion turns movement off; the 4× slowdown result is in the note
   - Needs: B80
+  - Note (9 Nov 2026): `motion` 14.6.0 (exact; works with React 19.2). The pieces sit in the shared parts every engine uses: Enter in `Target` + `Frame`, the hint pulse in `Target`, round done in `Frame`, correct in `OptionCard` (the 9 choice-style engines; the board engines keep their pop on a placed piece). Flip is first used by Card Pairs and Odd One Out (B84). The hint now follows the 5 Oct brief in every engine: the pulse after 2 mistakes (1 for hint level 3), and after 4 the other answers fade and rest (left out of scanning), so every round ends in success. Enter fades through a CSS variable, so the tried and faded looks are kept. `PlayMotion` wraps child mode, the play check and both demo pages: reduced motion or a child's calm screen stops movement. Edge, 1366×768, 4× CPU slowdown, a demo round entering plus 3 wrong answers (pulse, fade): 55 frames a second on average, 95% of frames within 17 ms, one 100 ms frame when the round is built. `SectionIntro.tsx` is unchanged
 - [ ] **Bekzod** — `B82` Skill games for the 12 existing kinds + demo page (sections 2.3, 5, 9 demo part)
   - Done when: `skillGames.ts` has 12 skill games with 12 steps each, rounds are generated with a seed and pass the one-right-answer test; `/demo/games` plays every step in mock mode
   - Needs: B81

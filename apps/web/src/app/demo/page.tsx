@@ -8,6 +8,7 @@ import { Chip, LinkButton } from "@/components/ui";
 import { LEVEL_BY_ID, LEVELS } from "@/content/levels";
 import { ENGINES, type EngineProps } from "@/features/activities/registry";
 import { DEMO_PLAY, PlayContext, type PlayCtx } from "@/features/play/context";
+import { PlayMotion } from "@/features/activities/anim";
 import { SCAN_DEFAULT, useScanning } from "@/features/play/Target";
 import { sfx, unlockAudio } from "@/lib/audio";
 import { useLang, useT } from "@/lib/i18n";
@@ -138,6 +139,7 @@ export default function DemoPage() {
 
         <div className="relative" ref={engineRoot}>
           <PlayContext.Provider value={ctx}>
+            <PlayMotion>
             {finished ? (
               <section className="flex min-h-[480px] flex-col items-center justify-center gap-4 rounded-fk-lg border border-line bg-surface p-8 text-center shadow-soft">
                 <Mascot mood="celebrate" size={200} />
@@ -163,6 +165,7 @@ export default function DemoPage() {
                 }}
               />
             )}
+            </PlayMotion>
           </PlayContext.Provider>
           {!finished && (
             <div className="pointer-events-none absolute -bottom-4 -left-2 hidden md:block">

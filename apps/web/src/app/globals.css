@@ -105,6 +105,11 @@ body {
   -webkit-tap-highlight-color: transparent;
   user-select: none;
 }
+/* Enter (anim.tsx, B81) fades a target in through --fk-enter, not an inline opacity, so the calm "tried" and "faded"
+   looks (opacity utilities, which sit in a later layer) always win. */
+@layer components {
+  .fk-target { opacity: var(--fk-enter, 1); }
+}
 
 /* Scanning mode highlight (switch access) */
 [data-scan-active="true"] {
@@ -134,10 +139,6 @@ body {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-6px); }
 }
-@keyframes fk-pulse {
-  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgb(38 120 112 / 0.35); }
-  50% { transform: scale(1.04); box-shadow: 0 0 0 12px rgb(38 120 112 / 0); }
-}
 @keyframes fk-pop {
   0% { transform: scale(0.6); opacity: 0; }
   60% { transform: scale(1.08); opacity: 1; }
@@ -152,8 +153,8 @@ body {
   95% { transform: scaleY(0.1); }
 }
 .fk-float { animation: fk-float 4s ease-in-out infinite; }
-/* The dashed ring is the hint itself; the pulse only adds motion, so reduced motion keeps the hint visible. */
-.fk-pulse { animation: fk-pulse 1.8s ease-in-out infinite; }
+/* The dashed ring is the hint itself; the breathing ring (anim.tsx HintPulse, B81) only adds motion, so reduced
+   motion and the calm screen keep the hint visible. */
 .fk-pulse:not([data-scan-active="true"]) { outline: 4px dashed var(--fk-primary); outline-offset: 4px; }
 .fk-pop { animation: fk-pop 420ms ease-out both; }
 .fk-glow { animation: fk-glow 1.2s ease-in-out infinite; }

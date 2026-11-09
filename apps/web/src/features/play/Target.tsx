@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, type CSSProperties, type PointerEvent as RPointerEvent, type ReactNode } from "react";
+import { motion } from "motion/react";
+import { enterItem, HintPulse } from "@/features/activities/anim";
 import { pressDecision } from "@/lib/adaptive";
 import { sfx, speak } from "@/lib/audio";
 import type { Lang } from "@/lib/i18n";
@@ -140,7 +142,9 @@ export function Target({
   };
 
   return (
-    <button
+    // Every target slides in with its group (anim.tsx `Enter`); outside a group it simply shows.
+    <motion.button
+      variants={enterItem}
       ref={ref}
       type="button"
       aria-label={label}
@@ -167,7 +171,8 @@ export function Target({
       }}
     >
       {children}
-    </button>
+      {pulse && <HintPulse />}
+    </motion.button>
   );
 }
 

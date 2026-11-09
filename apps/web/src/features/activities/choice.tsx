@@ -72,6 +72,7 @@ function ChoiceRound({ spec, index, total, last, onNext }: { spec: ChoiceSpec; i
               size={size}
               onSelect={(info) => choose(id, info)}
               pulse={!solved && hint.show && id === spec.answer}
+              faded={!solved && hint.fade && id !== spec.answer}
               state={solved && id === spec.answer ? "solved" : tried.includes(id) ? "tried" : undefined}
             >
               <ItemArt id={id} size={Math.round(size * 0.62)} />

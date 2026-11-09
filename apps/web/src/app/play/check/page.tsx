@@ -3,6 +3,7 @@
 import "@/messages/child";
 import { useSyncExternalStore } from "react";
 import { Spinner } from "@/components/ui";
+import { PlayMotion } from "@/features/activities/anim";
 import { PlayCheck } from "@/features/play/PlayCheck";
 import { sel, useDb } from "@/lib/api";
 import { useMounted } from "@/lib/store";
@@ -18,5 +19,9 @@ export default function PlayCheckPage() {
   const me = sel.me(db);
   const child = me && childId ? sel.childrenOf(db, me.id).find((c) => c.id === childId) : undefined;
   if (!child) return <Spinner />;
-  return <PlayCheck key={child.id} child={child} />;
+  return (
+    <PlayMotion calm={!!child.support?.calm || !!child.support?.cvi}>
+      <PlayCheck key={child.id} child={child} />
+    </PlayMotion>
+  );
 }

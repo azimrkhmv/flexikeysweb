@@ -67,7 +67,10 @@ export function AdaptiveKeyboard({
   onKey,
   reduced: forceReduced,
   disabled,
+  only,
 }: {
+  /** After 4 mistakes: every other key fades and rests, so this one is left (5 Oct brief). */
+  only?: string | null;
   lang: Lang;
   /** Keys the current item uses — kept in the reduced set. */
   needed: string[];
@@ -127,17 +130,19 @@ export function AdaptiveKeyboard({
         <div key={r} className="flex flex-wrap justify-center" style={{ gap: p.spacing, paddingLeft: reduced ? 0 : `calc(${key} * ${r * 0.25})` }}>
           {row.map((k) => {
             const isHint = hint === k;
+            const rest = !!only && only !== k;
             return (
               <Target
                 key={k}
                 label={k}
                 targetId={k}
-                disabled={disabled}
+                disabled={disabled || rest}
+                scanSkip={rest}
                 onSelect={(info) => onKey(k, info)}
-                pulse={isHint && p.hintLevel >= 2}
+                pulse={isHint}
                 className={`grid place-items-center rounded-2xl border-b-4 text-3xl font-extrabold transition-[width,height] duration-300 ease-out ${
                   isHint ? "border-[#e8b930] bg-sun text-ink" : "border-line bg-surface text-ink hover:bg-sky-soft"
-                }`}
+                } ${rest ? "opacity-25" : ""}`}
                 style={{ width: key, height: key }}
               >
                 {k}
@@ -193,6 +198,7 @@ function TypeRound({ word, mode, needed, index, total, last, next }: { word: str
     answer(ctx, { type: "key", target: expected, actual: k, correct, latencyMs: clock.ms(), info, quiet: !finished });
     if (!correct) return hint.miss();
     clock.reset();
+    hint.reset();
     setPos(pos + 1);
     if (finished && mode !== "letter") later(() => ctx.say(word, ctx.learnLang), 600);
   };
@@ -223,7 +229,7 @@ function TypeRound({ word, mode, needed, index, total, last, next }: { word: str
           ))}
         </div>
       )}
-      <AdaptiveKeyboard lang={ctx.learnLang} needed={needed} expected={expected} hint={!solved && (hint.show || ctx.profile.hintLevel >= 3) ? expected : null} onKey={onKey} disabled={solved} />
+      <AdaptiveKeyboard lang={ctx.learnLang} needed={needed} expected={expected} hint={!solved && (hint.show || ctx.profile.hintLevel >= 3) ? expected : null} only={!solved && hint.fade ? expected : null} onKey={onKey} disabled={solved} />
     </Frame>
   );
 }

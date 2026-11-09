@@ -5,6 +5,7 @@ import { Volume2 } from "lucide-react";
 import { useT } from "@/lib/i18n";
 import { usePlay, type PlayCtx } from "@/features/play/context";
 import { Target, type SelectInfo } from "@/features/play/Target";
+import { Correct, Enter, RoundDone } from "./anim";
 
 // Shared building blocks for every activity engine: frame, hints, telemetry helpers.
 
@@ -61,33 +62,49 @@ export function useClock() {
   };
 }
 
+/** Mistakes before the right answer pulses, and before the other answers fade (5 Oct brief, games spec §1). */
+export const PULSE_AFTER = 2;
+export const FADE_AFTER = 4;
+
 /**
- * Hint state per round (PRD §9.4 hint levels): after a miss (level ≥1), after an idle wait (level ≥2);
- * level 3 also re-speaks the prompt after a miss. Remount (key) per round to reset.
+ * Hint state per round (5 Oct brief): after 2 mistakes the right answer gently pulses, after 4 the others fade, so
+ * every round ends in success. A child who needs more help (hint level 3) gets the pulse after the first mistake,
+ * and from level 2 also after an idle wait; level 3 also re-speaks the prompt after a miss. Remount (key) per round
+ * to reset, or call `reset()` when one board moves on to its next item.
  */
 export function useHint(onRespeak?: () => void) {
   const ctx = usePlay();
-  const [missed, setMissed] = useState(false);
+  const [misses, setMisses] = useState(0);
   const [idle, setIdle] = useState(false);
+  const [run, setRun] = useState(0);
   useEffect(() => {
     if (ctx.profile.hintLevel < 2) return;
     // ponytail: fixed waits; children with CP often need 3–10 s to start a movement, and scanning needs a full
     // cycle. Upgrade path: scale with the child's own median latency once the profile carries it.
     const id = setTimeout(() => setIdle(true), ctx.access === "touch" ? 4000 : 8000);
     return () => clearTimeout(id);
-  }, [ctx.profile.hintLevel, ctx.access]);
-  const show = (missed && ctx.profile.hintLevel >= 1) || idle;
-  const told = useRef(false);
+  }, [ctx.profile.hintLevel, ctx.access, run]);
+  const show = misses >= (ctx.profile.hintLevel >= 3 ? 1 : PULSE_AFTER) || idle;
+  const fade = misses >= FADE_AFTER;
+  // The try records the strongest hint shown: "shimmer" (the pulse), then "fade".
+  const told = useRef(0);
+  const level = fade ? 2 : show ? 1 : 0;
   useEffect(() => {
-    if (!show || told.current) return;
-    told.current = true;
-    ctx.emit({ type: "hint_shown", levelId: ctx.levelId, activityId: ctx.activityId }); // the try records it
-  }, [show, ctx]);
+    for (; told.current < level; told.current++) ctx.emit({ type: "hint_shown", levelId: ctx.levelId, activityId: ctx.activityId });
+  }, [level, ctx]);
   return {
     show,
+    fade,
+    misses,
     miss() {
-      setMissed(true);
+      setMisses((m) => m + 1);
       if (ctx.profile.hintLevel >= 3) onRespeak?.();
+    },
+    reset() {
+      setMisses(0);
+      setIdle(false);
+      told.current = 0;
+      setRun((r) => r + 1);
     },
   };
 }
@@ -182,6 +199,9 @@ export function Frame({
     said.current = key;
     sayAll();
   });
+  // Round done (B81): stars float up whenever the progress dots move on.
+  const [stars, setStars] = useState({ done, at: 0 });
+  if (done !== stars.done) setStars({ done, at: done > stars.done ? stars.at + 1 : stars.at });
 
   return (
     // On a short, wide screen (`short`, B66) the prompt sits beside the speaker button and the action button floats
@@ -195,13 +215,20 @@ export function Frame({
         </Target>
         <h2 className="col-span-3 mt-3 text-center text-2xl font-extrabold text-ink sm:text-3xl short:col-span-1 short:col-start-2 short:mt-1 short:text-2xl">{prompt}</h2>
       </div>
-      <div className="flex flex-1 flex-col items-center justify-center gap-6 py-4 short:gap-3 short:py-2">{children}</div>
+      {/* Enter (B81): the round's cards and options slide in one after another. */}
+      <Enter className="flex flex-1 flex-col items-center justify-center gap-6 py-4 short:gap-3 short:py-2">
+        {children}
+      </Enter>
       <div className="flex min-h-[84px] items-center justify-end short:pointer-events-none short:absolute short:bottom-3 short:right-3 short:min-h-0 short:[&>*]:pointer-events-auto">{action}</div>
+      {stars.at > 0 && <RoundDone key={stars.at} />}
     </section>
   );
 }
 
-/** Soft card that holds an option picture. `state` drives the calm selected/solved looks — never red. */
+/**
+ * Soft card that holds an option picture. `state` drives the calm selected/solved looks — never red. `faded`: after
+ * 4 mistakes the other answers fade and rest, so the right one is all that is left to choose (and to scan).
+ */
 export function OptionCard({
   label,
   size,
@@ -210,6 +237,8 @@ export function OptionCard({
   state,
   children,
   disabled,
+  faded,
+  height,
 }: {
   label: string;
   size: number;
@@ -218,20 +247,24 @@ export function OptionCard({
   state?: "solved" | "tried";
   children: ReactNode;
   disabled?: boolean;
+  faded?: boolean;
+  /** A wide card (a word, a number line mark): its height; `size` is then the width. */
+  height?: number;
 }) {
   return (
     <Target
       label={label}
       onSelect={onSelect}
       pulse={pulse}
-      disabled={disabled}
+      disabled={disabled || faded}
+      scanSkip={faded}
       selected={state === "solved"}
       className={`grid place-items-center rounded-fk-lg border-4 bg-surface-2 shadow-soft transition ${
-        state === "solved" ? "border-teal bg-teal-soft" : state === "tried" ? "border-transparent opacity-70" : "border-transparent hover:bg-sky-soft"
+        state === "solved" ? "border-teal bg-teal-soft" : faded ? "border-transparent opacity-25" : state === "tried" ? "border-transparent opacity-70" : "border-transparent hover:bg-sky-soft"
       }`}
-      style={{ width: size, height: size }}
+      style={{ width: size, height: height ?? size }}
     >
-      {children}
+      <Correct on={state === "solved"}>{children}</Correct>
     </Target>
   );
 }

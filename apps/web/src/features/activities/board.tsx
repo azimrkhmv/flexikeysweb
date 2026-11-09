@@ -19,7 +19,7 @@ export function Sort({ activity, onDone }: EngineProps<"sort">) {
   const [items] = useState(() => shuffle(activity.groups.flatMap((g, gi) => g.items.map((id) => ({ id, gi })))));
   const [placed, setPlaced] = useState<Record<string, number>>({});
   const [picked, setPicked] = useState<string | null>(null);
-  const [missedOn, setMissedOn] = useState<string | null>(null);
+  const hint = useHint();
   const left = items.filter((x) => !(x.id in placed));
   const current = left.find((x) => x.id === picked) ?? left[0];
   const size = sizeFor(ctx, 104);
@@ -28,8 +28,9 @@ export function Sort({ activity, onDone }: EngineProps<"sort">) {
     if (!current) return;
     const correct = current.gi === gi;
     answer(ctx, { target: `group${current.gi}`, actual: `group${gi}`, correct, latencyMs: clock.ms(), info, quiet: left.length > 1 });
-    if (!correct) return setMissedOn(current.id);
+    if (!correct) return hint.miss();
     clock.reset();
+    hint.reset();
     setPlaced((p) => ({ ...p, [current.id]: gi }));
     setPicked(null);
   };
@@ -62,8 +63,10 @@ export function Sort({ activity, onDone }: EngineProps<"sort">) {
             key={gi}
             label={g.label[ctx.uiLang]}
             onSelect={(info) => drop(gi, info)}
-            pulse={!!current && missedOn === current.id && ctx.profile.hintLevel >= 1 && current.gi === gi}
-            className="flex min-h-[160px] w-full flex-col items-center justify-start gap-2 rounded-fk-lg border-4 border-dashed border-sky bg-sky-soft/60 p-4 transition hover:bg-sky-soft"
+            pulse={!!current && hint.show && current.gi === gi}
+            disabled={!!current && hint.fade && current.gi !== gi}
+            scanSkip={!!current && hint.fade && current.gi !== gi}
+            className={`flex min-h-[160px] w-full flex-col items-center justify-start gap-2 rounded-fk-lg border-4 border-dashed border-sky bg-sky-soft/60 p-4 transition hover:bg-sky-soft ${current && hint.fade && current.gi !== gi ? "opacity-25" : ""}`}
           >
             <span className="text-4xl" aria-hidden>
               {g.icon}
@@ -97,7 +100,7 @@ export function Puzzle({ activity, onDone }: EngineProps<"puzzle">) {
   });
   const [placed, setPlaced] = useState<number[]>([]);
   const [picked, setPicked] = useState<number | null>(null);
-  const [missAt, setMissAt] = useState(0);
+  const hint = useHint();
   const left = tray.filter((p) => !placed.includes(p));
   const current = picked !== null && left.includes(picked) ? picked : left[0];
   const board = Math.round((g === 2 ? 320 : 360) * ctx.profile.targetScale);
@@ -108,9 +111,9 @@ export function Puzzle({ activity, onDone }: EngineProps<"puzzle">) {
     if (current === undefined || placed.includes(slot)) return;
     const correct = current === slot;
     answer(ctx, { target: `slot${current}`, actual: `slot${slot}`, correct, latencyMs: clock.ms(), info, quiet: left.length > 1 });
-    if (!correct) return setMissAt((m) => m + 1);
+    if (!correct) return hint.miss();
     clock.reset();
-    setMissAt(0);
+    hint.reset();
     setPlaced((p) => [...p, slot]);
     setPicked(null);
   };
@@ -133,8 +136,10 @@ export function Puzzle({ activity, onDone }: EngineProps<"puzzle">) {
                 key={slot}
                 label={t("act.slot", { n: slot + 1 })}
                 onSelect={(info) => drop(slot, info)}
-                pulse={missAt > 0 && ctx.profile.hintLevel >= 1 && slot === current}
-                className="rounded-xl border-4 border-dashed border-sky bg-surface/70"
+                pulse={hint.show && slot === current}
+                disabled={hint.fade && slot !== current}
+                scanSkip={hint.fade && slot !== current}
+                className={`rounded-xl border-4 border-dashed border-sky bg-surface/70 ${hint.fade && slot !== current ? "opacity-25" : ""}`}
                 style={{ width: "var(--piece)", height: "var(--piece)" }}
               >
                 <span className="sr-only">{slot + 1}</span>
@@ -216,6 +221,7 @@ function SentenceRound({ text, index, total, last, next }: { text: string; index
     answer(ctx, { target: words[pos], actual: words[k], correct, latencyMs: clock.ms(), info, quiet: pos + 1 < words.length });
     if (!correct) return hint.miss();
     clock.reset();
+    hint.reset();
     setUsed([...used, k]);
     if (pos + 1 === words.length) later(() => ctx.say(text, ctx.learnLang), 700);
   };
@@ -246,7 +252,9 @@ function SentenceRound({ text, index, total, last, next }: { text: string; index
               label={w}
               onSelect={(info) => tap(k, info)}
               pulse={!solved && hint.show && w === words[pos]}
-              className="rounded-2xl bg-sun-soft px-6 text-2xl font-extrabold text-ink shadow-soft hover:bg-[#fbe9b4]"
+              disabled={hint.fade && w !== words[pos]}
+              scanSkip={hint.fade && w !== words[pos]}
+              className={`rounded-2xl bg-sun-soft px-6 text-2xl font-extrabold text-ink shadow-soft hover:bg-[#fbe9b4] ${hint.fade && w !== words[pos] ? "opacity-25" : ""}`}
               style={{ minHeight: sizeFor(ctx, 84) }}
             >
               {w}
