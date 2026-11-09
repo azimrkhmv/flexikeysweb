@@ -3,6 +3,7 @@
 import json
 from collections.abc import Iterator
 from pathlib import Path
+from typing import Any
 
 import pytest
 from fastapi.testclient import TestClient
@@ -94,3 +95,19 @@ def test_game_choice_and_one_new_game_a_week() -> None:
     four = [g for g in skill.GAMES if g["level"] <= 4]
     for c in CASES["weekly"]:
         assert [g["activity_id"] for g in skill.weekly_new(four, c["played"], c["today"])] == c["out"]
+
+
+def _key(g: dict[str, Any]) -> str:
+    return f"{g['activity_id']}@{g['tier']}.{g['step']}"
+
+
+def test_tiers_open_by_success_and_seed_is_free() -> None:
+    for c in CASES["open_tiers"]:
+        assert skill.open_tiers(c["top"], c["theta"], c["clean"]) == c["out"], c
+    for c in CASES["open_steps"]:
+        assert [_key(g) for g in skill.open_skill_steps(skill.SKILL_STEPS, c["top"], c["pro"])] == c["out"]
+    for c in CASES["choose_skill"]:
+        worlds = [g for g in skill.GAMES if g["level"] <= c["up_to"]]
+        got = skill.choose_games(c["theta"], worlds + skill.open_skill_steps(skill.SKILL_STEPS, c["top"], c["pro"]))
+        assert [{"slot": s["slot"], "area": s["area"], "games": [_key(g) for g in s["games"]]} for s in got] == c["out"]
+    assert len(skill.SKILL_STEPS) == 12 * len({g["kind"] for g in skill.SKILL_STEPS})

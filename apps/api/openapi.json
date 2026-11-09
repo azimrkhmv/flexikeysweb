@@ -5167,7 +5167,7 @@
      "play"
     ],
     "summary": "Choose",
-    "description": "Today's games: an easy win, a growth game and the child's choice (spec §13). Open games are the levels up to\none past the highest tried; at most one new kind of game a week; a game already played is never taken away.",
+    "description": "Today's games: an easy win, a growth game and the child's choice (spec §13). Open games are the theme-world\nlevels up to one past the highest tried, plus every skill-game step in an open tier (Seed free, the rest Pro; games\nspec §3.3); at most one new kind of game a week; a game already played is never taken away.",
     "operationId": "choose_api_v1_children__child_id__games_get",
     "parameters": [
      {
@@ -7357,13 +7357,23 @@
      "level": {
       "type": "integer",
       "title": "Level"
+     },
+     "tier": {
+      "type": "integer",
+      "title": "Tier"
+     },
+     "step": {
+      "type": "integer",
+      "title": "Step"
      }
     },
     "type": "object",
     "required": [
      "activityId",
      "kind",
-     "level"
+     "level",
+     "tier",
+     "step"
     ],
     "title": "GameOut"
    },
@@ -10375,13 +10385,18 @@
      "nTrials": {
       "type": "integer",
       "title": "Ntrials"
+     },
+     "topTier": {
+      "type": "integer",
+      "title": "Toptier"
      }
     },
     "type": "object",
     "required": [
      "area",
      "theta",
-     "nTrials"
+     "nTrials",
+     "topTier"
     ],
     "title": "SkillOut"
    },

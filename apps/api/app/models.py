@@ -15,6 +15,7 @@ from app.modules.places.models import Booking, Place, PlaceReport, Slot
 from app.modules.plans.models import FixedLevel, Plan, PlanItem, PlanReason
 from app.modules.play.models import (
     AccessProfile,
+    AreaTier,
     GamePlayed,
     GameSession,
     PlayCheckRun,
@@ -30,6 +31,7 @@ from app.modules.videos.models import Exercise, Video, VideoReview
 __all__ = [
     "AccessProfile",
     "AiUsage",
+    "AreaTier",
     "AuditEntry",
     "Booking",
     "CareLink",

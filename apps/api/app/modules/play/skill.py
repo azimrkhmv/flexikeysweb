@@ -111,6 +111,25 @@ def _level_for(theta: float, p: float, games: list[dict[str, Any]]) -> dict[str,
     return best
 
 
+TIER_P = 0.85  # a tier opens at this chance of success on the last step of the tier below (games spec §3.2) ...
+TIER_TRIES = 20  # ... after this many clean tries in the area since that tier opened
+FREE_TIER = 1  # Seed is free in every area; Sprout, Tree and Summit are Pro (decision 8 Nov 2026)
+
+
+def open_tiers(top: int, theta: float, clean_since: int) -> int:
+    """Tiers open by success, never by age (games spec §3.2). `top`: the highest open tier of the area (1 = only
+    Seed); `clean_since`: the area's clean tries since that tier opened. Gives the new top tier: one more when theta
+    gives at least 85% on the top tier's last step and there were 20 clean tries, else the same. It never goes down."""
+    if top < 4 and clean_since >= TIER_TRIES and p_correct(theta, difficulty(top, 3)) >= TIER_P:
+        return top + 1
+    return top
+
+
+def open_skill_steps(steps: list[dict[str, Any]], top: Mapping[str, int], pro: bool) -> list[dict[str, Any]]:
+    """The skill-game steps the child may play: in an open tier of their area, and above Seed only with Pro."""
+    return [g for g in steps if g["tier"] <= top.get(g["area"], 1) and (pro or g["tier"] <= FREE_TIER)]
+
+
 def weekly_new(unlocked: list[dict[str, Any]], first_played: Mapping[str, str], today: str) -> list[dict[str, Any]]:
     """At most one new kind of game a week; a game already played is never taken away. Dates are YYYY-MM-DD.
     A new tier of a kind already played is not a new kind."""

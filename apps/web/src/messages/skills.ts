@@ -71,6 +71,9 @@ export const skills = {
     "skill.demo.again": "Play this step again",
     "skill.demo.next": "Next step",
     "skill.demo.admins": "In the live app this page is only for admins. Please sign in as an admin.",
+    "play.nav.skills": "Skill games",
+    "play.skills.sleeping": "This one is still sleeping. Play more and it will wake up!",
+    "play.skills.again": "Play again",
   },
   uz: {
     "skill.area.attention": "Diqqat",
@@ -141,6 +144,9 @@ export const skills = {
     "skill.demo.again": "Bu qadamni yana oʻynash",
     "skill.demo.next": "Keyingi qadam",
     "skill.demo.admins": "Ishlayotgan ilovada bu sahifa faqat adminlar uchun. Admin sifatida kiring.",
+    "play.nav.skills": "Koʻnikma oʻyinlari",
+    "play.skills.sleeping": "Bu hali uxlayapti. Koʻproq oʻyna — u uygʻonadi!",
+    "play.skills.again": "Yana oʻynash",
   },
   ru: {
     "skill.area.attention": "Внимание",
@@ -211,5 +217,8 @@ export const skills = {
     "skill.demo.again": "Сыграть этот шаг ещё раз",
     "skill.demo.next": "Следующий шаг",
     "skill.demo.admins": "В рабочем приложении эта страница только для администраторов. Войдите как администратор.",
+    "play.nav.skills": "Игры по навыкам",
+    "play.skills.sleeping": "Это пока спит. Играй ещё — и оно проснётся!",
+    "play.skills.again": "Ещё раз",
   },
 };

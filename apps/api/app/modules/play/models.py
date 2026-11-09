@@ -98,6 +98,22 @@ class SkillLevel(TimeMixin, Base):
     n_trials: Mapped[int] = mapped_column(Integer, default=0)  # clean tries counted so far (K shrinks with them)
 
 
+class AreaTier(Base):
+    """The highest open tier of one skill area (games spec §3.2): Seed (1) is open without a row. A tier opens by
+    success, never by age, and never closes. `opened_at`: from then on the area's clean tries count for the next."""
+
+    __tablename__ = "area_tier"
+    __table_args__ = (
+        PrimaryKeyConstraint("child_id", "area"),
+        CheckConstraint("top_tier between 1 and 4", name="top_tier"),
+    )
+
+    child_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("children.id", ondelete="CASCADE"))
+    area: Mapped[SkillArea] = mapped_column(enum_column(SkillArea))
+    top_tier: Mapped[int] = mapped_column(SmallInteger)
+    opened_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
 class GameSession(IdTimeMixin, Base):
     """One sitting of play. Its seconds count towards the 20-minute daily limit."""
 

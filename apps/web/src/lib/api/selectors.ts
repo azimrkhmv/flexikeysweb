@@ -80,6 +80,9 @@ export const sel = {
     }
     return Object.fromEntries(AREAS.map((a) => [a, out[a]])) as Record<Area, { theta: number; n: number }>;
   },
+  /** The highest open tier of every area (games spec §3.2): Seed (1) without a row. */
+  tiers: (db: DB, childId: string): Record<Area, number> =>
+    Object.fromEntries(AREAS.map((a) => [a, (db.areaTiers ?? []).find((r) => r.childId === childId && r.area === a)?.topTier ?? 1])) as Record<Area, number>,
   /** Seconds of game time today (this device's date). */
   playedToday: (db: DB, childId: string) => (db.playTime ?? []).find((p) => p.childId === childId && p.date === localDate())?.seconds ?? 0,
   /** The child's answer to the question of this day, if given. */

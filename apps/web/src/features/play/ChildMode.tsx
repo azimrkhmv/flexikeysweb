@@ -17,6 +17,12 @@ import { GAME_LIMIT_MIN } from "@/lib/roadmap";
 import type { AdaptiveProfile, Child, InputProfile, InteractionEvent, MascotMood } from "@/lib/types";
 import { WarmUp } from "@/features/activities/warmup";
 import { PlayMotion } from "@/features/activities/anim";
+import { SkillPlay } from "@/features/activities/skill";
+import { SKILL_GAME_BY_ID, type SkillGame } from "@/content/skillGames";
+import { daySeed } from "@/lib/games/rng";
+import { levelFor } from "@/lib/skill";
+import { localDate } from "@/lib/api/schema";
+import { SkillGames } from "./SkillGames";
 import { Aac } from "./Aac";
 import { ParentGate } from "./ParentGate";
 import { Shop } from "./Shop";
@@ -33,6 +39,9 @@ type View =
   | { v: "warmup" }
   | { v: "level"; levelId: string }
   | { v: "activity"; levelId: string; activityId: string }
+  | { v: "skills" }
+  | { v: "skill"; gameId: string; tier: number; step: number; run: number }
+  | { v: "skillDone"; gameId: string; tier: number; run: number }
   | { v: "celebrate"; levelId: string; activityId: string; coins: number; stars: number; levelDone: boolean };
 
 const DEFAULT_BG = "linear-gradient(180deg,#eaf3fc 0%,#f5f9f0 60%,#e3f0dc 100%)";
@@ -180,7 +189,7 @@ export function ChildMode({ child }: { child: Child }) {
       flush();
       void outbox?.drain();
       // Game time counts towards the 20-minute daily limit; kept by the server, so reopening doesn't reset it.
-      if (viewRef.current === "activity" && document.visibilityState === "visible") void api.addPlayTime(child.id, FLUSH_MS / 1000).catch(() => {});
+      if ((viewRef.current === "activity" || viewRef.current === "skill") && document.visibilityState === "visible") void api.addPlayTime(child.id, FLUSH_MS / 1000).catch(() => {});
     }, FLUSH_MS);
     const breakCheck = setInterval(() => {
       if (session.current && Date.now() - breakStart.current >= profile.breakAfterMin * 60_000) setBreakDue(true);
@@ -285,6 +294,26 @@ export function ChildMode({ child }: { child: Child }) {
     setView({ v: "level", levelId: id });
   };
 
+  // A skill game (games spec §9): the step of that tier where the child succeeds about 75% of the time.
+  const playSkill = (game: SkillGame, tier: number, open: boolean, run = 0) => {
+    if (!open) {
+      setMoodFor("sleepy");
+      speak(t("play.skills.sleeping"), lang);
+      return;
+    }
+    const theta = sel.skills(db, child.id)[game.area].theta;
+    const steps = game.steps.filter((s) => s.tier === tier).map((s) => ({ activityId: game.id, kind: game.kind, level: 0, area: game.area, tier: s.tier, step: s.step }));
+    speak(t(`skill.game.${game.kind}`), lang);
+    setView({ v: "skill", gameId: game.id, tier, step: levelFor(theta, 0.75, steps).step, run });
+  };
+  const finishSkill = (gameId: string, tier: number, run: number) => {
+    flush();
+    sfx("chime");
+    setMood("celebrate");
+    speak(t("play.celebrate"), lang);
+    setView({ v: "skillDone", gameId, tier, run });
+  };
+
   const finishActivity = async (lvl: string, act: string) => {
     flush();
     sfx("chime");
@@ -317,6 +346,7 @@ export function ChildMode({ child }: { child: Child }) {
 
   const back = () => {
     if (view.v === "activity") setView({ v: "level", levelId: view.levelId });
+    else if (view.v === "skill" || view.v === "skillDone") setView({ v: "skills" });
     else setView({ v: "map" });
   };
 
@@ -342,9 +372,9 @@ export function ChildMode({ child }: { child: Child }) {
   }, [view.v]);
   // The day's 20 minutes are played: the games sleep until tomorrow. A game already open is never cut short, and
   // My Voice stays (a communication aid).
-  const restDay = sel.playedToday(db, child.id) >= GAME_LIMIT_MIN * 60 && !["activity", "aac", "bye"].includes(view.v) && overlay !== "aac";
+  const restDay = sel.playedToday(db, child.id) >= GAME_LIMIT_MIN * 60 && !["activity", "skill", "aac", "bye"].includes(view.v) && overlay !== "aac";
   // My Voice is a communication aid: no break or offline screen ever covers it.
-  const showBreak = !restDay && (overlay === "break" || (breakDue && !overlay && !["activity", "warmup", "start", "bye", "aac"].includes(view.v)));
+  const showBreak = !restDay && (overlay === "break" || (breakDue && !overlay && !["activity", "skill", "warmup", "start", "bye", "aac"].includes(view.v)));
   const offlineBlock = !online && view.v !== "aac" && overlay !== "aac";
   // Switch scanning covers the whole shell (nav included), or only the open overlay.
   const scan = child.support?.scan ?? SCAN_DEFAULT;
@@ -384,7 +414,7 @@ export function ChildMode({ child }: { child: Child }) {
 
   const hat = SHOP_BY_ID[child.equipped.hat ?? ""]?.emoji;
   const tint = SHOP_BY_ID[child.equipped.color ?? ""]?.value;
-  const withNav = ["map", "aac", "shop", "level"].includes(view.v);
+  const withNav = ["map", "skills", "aac", "shop", "level"].includes(view.v);
   const bigBtn = "rounded-full px-8 text-xl font-extrabold shadow-soft";
 
   let body: ReactNode;
@@ -402,7 +432,7 @@ export function ChildMode({ child }: { child: Child }) {
       );
       break;
     case "map":
-      body = <WorldMap child={child} onOpen={openLevel} />;
+      body = <WorldMap child={child} onOpen={openLevel} onTab={(v) => setView({ v })} />;
       break;
     case "level":
       body = <LevelView child={child} levelId={view.levelId} onPlay={(a) => setView({ v: "activity", levelId: view.levelId, activityId: a })} />;
@@ -435,6 +465,42 @@ export function ChildMode({ child }: { child: Child }) {
             <Target label={t("play.next")} onSelect={() => goNext(lvl, act)} className={`${bigBtn} bg-teal text-white`}>
               {t("play.next")} ▶
             </Target>
+          </div>
+        </div>
+      );
+      break;
+    }
+    case "skills":
+      body = <SkillGames child={child} onPlay={(g, tier, open) => playSkill(g, tier, open)} onTab={(v) => setView({ v })} />;
+      break;
+    case "skill": {
+      const g = SKILL_GAME_BY_ID[view.gameId];
+      const step = g?.steps.find((s) => s.tier === view.tier && s.step === view.step);
+      const { gameId, tier, run } = view;
+      const seed = daySeed(child.id, localDate(), run ? `${gameId}#${run}` : gameId);
+      body = (
+        <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col rounded-fk-lg border-4 border-white bg-surface/90 p-4 shadow-soft sm:p-6 short:border-0 short:bg-transparent short:p-0 short:shadow-none">
+          {g && step ? <SkillPlay key={`${gameId}-${tier}-${run}`} game={g} step={step} seed={seed} onDone={() => finishSkill(gameId, tier, run)} /> : null}
+        </div>
+      );
+      break;
+    }
+    case "skillDone": {
+      const g = SKILL_GAME_BY_ID[view.gameId];
+      const { tier, run } = view;
+      body = (
+        <div className="flex flex-1 flex-col items-center justify-center gap-5 text-center">
+          <Mascot mood="celebrate" size={230} hat={hat} tint={tint} />
+          <h1 className="text-3xl font-extrabold text-ink sm:text-4xl">{t("play.celebrate")}</h1>
+          <div className="flex flex-wrap justify-center gap-4">
+            <Target label={t("play.nav.skills")} onSelect={() => setView({ v: "skills" })} className={`${bigBtn} bg-surface text-ink`}>
+              🎯 {t("play.nav.skills")}
+            </Target>
+            {g && (
+              <Target label={t("play.skills.again")} onSelect={() => playSkill(g, tier, true, run + 1)} className={`${bigBtn} bg-teal text-white`}>
+                {t("play.skills.again")} ▶
+              </Target>
+            )}
           </div>
         </div>
       );
@@ -480,16 +546,17 @@ export function ChildMode({ child }: { child: Child }) {
       >
         {/* top bar */}
         <header className="flex items-center gap-2 px-3 py-2">
-          {!["start", "bye", "map", "celebrate"].includes(view.v) && (
+          {!["start", "bye", "map", "celebrate", "skillDone"].includes(view.v) && (
             <Target label={t("play.back")} onSelect={back} className="grid place-items-center rounded-full bg-surface/90 text-ink shadow-soft">
               <ArrowLeft className="size-8" aria-hidden />
             </Target>
           )}
-          <span className="ml-1 flex items-center gap-2 rounded-full bg-surface/80 px-3 py-1 text-lg font-extrabold">
+          {/* In a game the phone header has five buttons: the name gives way so Pause (the way out) stays on screen. */}
+          <span className={`ml-1 flex items-center gap-2 rounded-full bg-surface/80 px-3 py-1 text-lg font-extrabold ${["activity", "skill", "celebrate", "skillDone", "warmup"].includes(view.v) ? "max-sm:hidden" : ""}`}>
             <span aria-hidden>{child.avatar}</span> {child.name}
           </span>
           <div className="ml-auto flex items-center gap-2">
-            {["activity", "celebrate", "warmup"].includes(view.v) && (
+            {["activity", "skill", "celebrate", "skillDone", "warmup"].includes(view.v) && (
               <Target label={t("play.nav.aac")} onSelect={() => setOverlay("aac")} className="grid place-items-center rounded-full bg-surface/90 px-3 text-3xl shadow-soft">
                 <span aria-hidden>💬</span>
               </Target>
@@ -510,15 +577,15 @@ export function ChildMode({ child }: { child: Child }) {
 
         {/* stage */}
         <main className="relative flex min-h-0 flex-1 flex-col overflow-y-auto px-3 pb-4 sm:px-6">
-          <ChildBoundary key={view.v === "activity" ? view.activityId : view.v} fallback={fallback}>
+          <ChildBoundary key={view.v === "activity" ? view.activityId : view.v === "skill" ? `${view.gameId}-${view.run}` : view.v} fallback={fallback}>
             {body}
           </ChildBoundary>
         </main>
 
         {/* mascot companion */}
-        {!cvi && !["start", "bye", "celebrate", "shop"].includes(view.v) && (
+        {!cvi && !["start", "bye", "celebrate", "skillDone", "shop"].includes(view.v) && (
           <div className="pointer-events-none fixed bottom-24 left-2 z-10 hidden sm:block" aria-hidden>
-            <Mascot mood={mood} size={view.v === "activity" ? 96 : 120} hat={hat} tint={tint} />
+            <Mascot mood={mood} size={view.v === "activity" || view.v === "skill" ? 96 : 120} hat={hat} tint={tint} />
           </div>
         )}
 
@@ -536,9 +603,9 @@ export function ChildMode({ child }: { child: Child }) {
               <Target
                 key={v}
                 label={t(key)}
-                selected={view.v === v || (v === "map" && view.v === "level")}
+                selected={view.v === v || (v === "map" && (view.v === "level" || view.v === "skills"))}
                 onSelect={() => setView({ v })}
-                className={`flex min-w-24 flex-col items-center justify-center rounded-3xl px-4 font-extrabold ${view.v === v || (v === "map" && view.v === "level") ? "bg-teal-soft text-ink" : "text-ink-2"}`}
+                className={`flex min-w-24 flex-col items-center justify-center rounded-3xl px-4 font-extrabold ${view.v === v || (v === "map" && (view.v === "level" || view.v === "skills")) ? "bg-teal-soft text-ink" : "text-ink-2"}`}
               >
                 <span className="text-3xl">{icon}</span>
                 <span className="text-sm">{t(key)}</span>

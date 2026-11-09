@@ -1980,8 +1980,9 @@ export interface paths {
         };
         /**
          * Choose
-         * @description Today's games: an easy win, a growth game and the child's choice (spec §13). Open games are the levels up to
-         *     one past the highest tried; at most one new kind of game a week; a game already played is never taken away.
+         * @description Today's games: an easy win, a growth game and the child's choice (spec §13). Open games are the theme-world
+         *     levels up to one past the highest tried, plus every skill-game step in an open tier (Seed free, the rest Pro; games
+         *     spec §3.3); at most one new kind of game a week; a game already played is never taken away.
          */
         get: operations["choose_api_v1_children__child_id__games_get"];
         put?: never;
@@ -2793,6 +2794,10 @@ export interface components {
             kind: string;
             /** Level */
             level: number;
+            /** Tier */
+            tier: number;
+            /** Step */
+            step: number;
         };
         /** GamesOut */
         GamesOut: {
@@ -3786,6 +3791,8 @@ export interface components {
             theta: number;
             /** Ntrials */
             nTrials: number;
+            /** Toptier */
+            topTier: number;
         };
         /** SlotIn */
         SlotIn: {

@@ -14,12 +14,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db import get_session
 from app.errors import AppError
 from app.modules.auth.session import CurrentUser
+from app.modules.billing.router import is_pro
 from app.modules.children.router import get_visible_child
 from app.modules.intake.bridge import rules_view
 from app.modules.intake.models import IntakeAnswer, IntakeRound
 from app.modules.play import skill, tries
 from app.modules.play.models import (
     AccessProfile,
+    AreaTier,
     GamePlayed,
     GameSession,
     Hint,
@@ -230,9 +232,48 @@ async def save_tries(
             )
         )
     clean = [t for t in new if not t.access_event and t.outcome != Outcome.skipped]
-    await _move_skills(db, child_id, clean)
+    levels = await _move_skills(db, child_id, clean)
+    await _open_tiers(db, child_id, levels, {a for t in clean if (a := skill.AREA_OF.get(t.game))}, now)
     await db.commit()
     return TriesStored(stored=len(added))
+
+
+async def tier_tops(db: AsyncSession, child_id: uuid.UUID) -> dict[str, int]:
+    """The highest open tier of each area; an area without a row has Seed (1) open."""
+    rows = await db.scalars(select(AreaTier).where(AreaTier.child_id == child_id))
+    return {a: 1 for a in skill.AREAS} | {r.area.value: r.top_tier for r in rows}
+
+
+async def _open_tiers(
+    db: AsyncSession, child_id: uuid.UUID, levels: dict[SkillArea, SkillLevel], areas: set[str], now: datetime
+) -> None:
+    """After new clean tries: open the next tier of each area they moved, if θ and the tries allow (games spec §3.2).
+    The clean tries counted are the area's since its top tier opened (all kept tries while only Seed is open)."""
+    rows = {r.area: r for r in await db.scalars(select(AreaTier).where(AreaTier.child_id == child_id))}
+    for area in sorted(areas):
+        row = rows.get(SkillArea(area))
+        top = row.top_tier if row else 1
+        if top >= 4:
+            continue
+        count = (
+            select(func.count())
+            .select_from(Try)
+            .where(
+                Try.child_id == child_id,
+                Try.game.in_([k for k, a in skill.AREA_OF.items() if a == area]),
+                Try.access_event.is_(False),
+                Try.outcome != Outcome.skipped,
+            )
+        )
+        if row:
+            count = count.where(Try.ts >= row.opened_at)
+        new = skill.open_tiers(top, levels[SkillArea(area)].theta, int(await db.scalar(count) or 0))
+        if new == top:
+            continue
+        if row:
+            row.top_tier, row.opened_at = new, now
+        else:
+            db.add(AreaTier(child_id=child_id, area=SkillArea(area), top_tier=new, opened_at=now))
 
 
 async def skill_rows(db: AsyncSession, child_id: uuid.UUID) -> dict[SkillArea, SkillLevel]:
@@ -267,7 +308,7 @@ async def skill_rows(db: AsyncSession, child_id: uuid.UUID) -> dict[SkillArea, S
     return rows
 
 
-async def _move_skills(db: AsyncSession, child_id: uuid.UUID, clean: list[TryIn]) -> None:
+async def _move_skills(db: AsyncSession, child_id: uuid.UUID, clean: list[TryIn]) -> dict[SkillArea, SkillLevel]:
     levels = await skill_rows(db, child_id)
     for t in sorted(clean, key=lambda x: x.ts):
         area = skill.AREA_OF.get(t.game)
@@ -277,6 +318,7 @@ async def _move_skills(db: AsyncSession, child_id: uuid.UUID, clean: list[TryIn]
         d = skill.try_difficulty(t.level, t.tier, t.step)
         row.theta = skill.elo(row.theta, row.n_trials, d, t.outcome == Outcome.correct)
         row.n_trials += 1
+    return levels
 
 
 # ---------------------------------------------------------------- skill levels
@@ -286,6 +328,7 @@ class SkillOut(ApiModel):
     area: SkillArea
     theta: float
     n_trials: int
+    top_tier: int  # the highest open tier, 1 (Seed) to 4 (Summit); opened by success, never by age (B83)
 
 
 class Placement(ApiModel):
@@ -300,9 +343,15 @@ async def get_skills(
 ) -> list[SkillOut]:
     """θ of every area, for choosing games. Parents see levels 1-100 from /progress, never θ itself (rule 1)."""
     await get_visible_child(db, user, child_id)
-    rows = await skill_rows(db, child_id)
+    return await _skills_out(db, child_id, await skill_rows(db, child_id))
+
+
+async def _skills_out(db: AsyncSession, child_id: uuid.UUID, rows: dict[SkillArea, SkillLevel]) -> list[SkillOut]:
+    tops = await tier_tops(db, child_id)
     await db.commit()
-    return [SkillOut(area=a, theta=r.theta, n_trials=r.n_trials) for a, r in sorted(rows.items())]
+    return [
+        SkillOut(area=a, theta=r.theta, n_trials=r.n_trials, top_tier=tops[a.value]) for a, r in sorted(rows.items())
+    ]
 
 
 @router.post("/{child_id}/skills/placement")
@@ -314,8 +363,7 @@ async def place(
     rows = await skill_rows(db, child_id)
     for area, bucket in body.buckets.items():
         rows[area].theta = skill.corrected(rows[area].theta, bucket)
-    await db.commit()
-    return [SkillOut(area=a, theta=r.theta, n_trials=r.n_trials) for a, r in sorted(rows.items())]
+    return await _skills_out(db, child_id, rows)
 
 
 # ---------------------------------------------------------------- game sessions and game choice
@@ -385,7 +433,9 @@ async def update_session(
 class GameOut(ApiModel):
     activity_id: str
     kind: str
-    level: int
+    level: int  # the theme world's number; 0 for a skill game
+    tier: int  # the step to play (games spec §2.3): tier 1-4 and step 1-3
+    step: int
 
 
 class SlotOut(ApiModel):
@@ -401,16 +451,18 @@ class GamesOut(ApiModel):
 
 @router.get("/{child_id}/games")
 async def choose(child_id: uuid.UUID, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]) -> GamesOut:
-    """Today's games: an easy win, a growth game and the child's choice (spec §13). Open games are the levels up to
-    one past the highest tried; at most one new kind of game a week; a game already played is never taken away."""
+    """Today's games: an easy win, a growth game and the child's choice (spec §13). Open games are the theme-world
+    levels up to one past the highest tried, plus every skill-game step in an open tier (Seed free, the rest Pro; games
+    spec §3.3); at most one new kind of game a week; a game already played is never taken away."""
     await get_visible_child(db, user, child_id)
     left = max(0, skill.GAME_LIMIT_S - await seconds_today(db, child_id))
     if not left:
         return GamesOut(seconds_left_today=0, slots=[])
     played = {p.game: p for p in await db.scalars(select(GamePlayed).where(GamePlayed.child_id == child_id))}
     reach = max((p.top_level for p in played.values()), default=0) + 1
-    # Theme-world games only (skill.GAMES); skill games (skill.SKILL_STEPS) join today's choice with their tiers (B83).
-    unlocked = [g for g in skill.GAMES if g["level"] <= reach or g["kind"] in played]
+    worlds = [g for g in skill.GAMES if g["level"] <= reach or g["kind"] in played]
+    steps = skill.open_skill_steps(skill.SKILL_STEPS, await tier_tops(db, child_id), await is_pro(db, child_id))
+    unlocked = worlds + steps
     today = datetime.now(TASHKENT).date().isoformat()
     games = skill.weekly_new(unlocked, {k: p.first_played.isoformat() for k, p in played.items()}, today)
     theta = {a.value: r.theta for a, r in (await skill_rows(db, child_id)).items()}
@@ -419,7 +471,10 @@ async def choose(child_id: uuid.UUID, user: CurrentUser, db: Annotated[AsyncSess
         SlotOut(
             slot=s["slot"],
             area=s["area"],
-            games=[GameOut(activity_id=g["activity_id"], kind=g["kind"], level=g["level"]) for g in s["games"]],
+            games=[
+                GameOut(activity_id=g["activity_id"], kind=g["kind"], level=g["level"], tier=g["tier"], step=g["step"])
+                for g in s["games"]
+            ],
         )
         for s in skill.choose_games(theta, games)
     ]

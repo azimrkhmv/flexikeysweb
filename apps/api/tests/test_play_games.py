@@ -75,6 +75,36 @@ def test_three_slots_and_one_new_game_a_week(client: TestClient) -> None:
     assert kind in later and len(later) == 2  # one more, and the played one stays
 
 
+def steps(client: TestClient, who: dict[str, str], child: str) -> set[tuple[str, int]]:
+    """The skill-game kinds and tiers in today's choice."""
+    slots = client.get(f"{API}/children/{child}/games", headers=who).json()["slots"]
+    choice = next(s for s in slots if s["slot"] == "choice")
+    return {(g["kind"], g["tier"]) for g in choice["games"] if g["level"] == 0}
+
+
+def test_tiers_open_by_success_and_seed_is_free(client: TestClient) -> None:
+    """B83 (games spec §3.2-3.3): Seed of every area is open from the start; Sprout opens after 20 clean tries with
+    85% success on Seed's last step, and is played with Pro only. An opened tier never closes."""
+    owner = parent(client)
+    child = add_child(client, owner)
+
+    def tops() -> dict[str, int]:
+        return {s["area"]: s["topTier"] for s in client.get(f"{API}/children/{child}/skills", headers=owner).json()}
+
+    assert set(tops().values()) == {1}
+    send(client, owner, child, [a_try(game="find_same", level=0, tier=1, step=3, accessEvent=True, outcome="skipped")])
+    send(client, owner, child, [a_try(game="find_same", level=0, tier=4, step=3) for _ in range(19)])
+    assert {t for k, t in steps(client, owner, child) if k == "find_same"} == {1}  # Seed is in today's choice
+    assert tops()["attention"] == 1  # 19 clean tries (the access event does not count): not yet
+    send(client, owner, child, [a_try(game="scene", level=0, tier=4, step=3)])  # the 20th clean attention try
+    assert (tops()["attention"], tops()["memory"]) == (2, 1)
+    assert ("find_same", 2) not in steps(client, owner, child)  # Sprout is Pro
+    assert client.post(f"{API}/family/trial", headers=owner).status_code == 200
+    assert ("find_same", 2) in steps(client, owner, child) and ("find_same", 3) not in steps(client, owner, child)
+    send(client, owner, child, [a_try(game="find_same", level=0, tier=1, step=1, outcome="wrong") for _ in range(30)])
+    assert tops()["attention"] == 2  # an opened tier never closes
+
+
 def test_only_the_family(client: TestClient) -> None:
     child = add_child(client, parent(client))
     assert title(client.get(f"{API}/children/{child}/games", headers=parent(client))) == (404, "not_found")

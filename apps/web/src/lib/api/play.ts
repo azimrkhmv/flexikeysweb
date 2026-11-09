@@ -2,7 +2,7 @@
 
 // Child-token endpoints: child mode entry, sessions & events, rewards, AAC.
 
-import { AREA_OF, AREAS, elo, START_FROM, tryDifficulty } from "../skill";
+import { AREA_OF, AREAS, elo, openTiers, START_FROM, tryDifficulty } from "../skill";
 import type { TryRecord } from "../tries";
 import { LEVEL_BY_ID, levelComplete } from "@/content/levels";
 import { SHOP_BY_ID } from "@/content/shop";
@@ -86,6 +86,19 @@ export const playApi = {
       }
       // Reasoning and speed keep the start they got the first time they were needed (as on the server).
       db.skills = [...db.skills.filter((s) => s.childId !== childId), ...AREAS.filter((a) => skills[a].n > 0 || a in START_FROM).map((area) => ({ childId, area, ...skills[area] }))];
+      // A tier opens by success, never by age, and never closes (games spec §3.2), as on the server.
+      const clean = (t: TryRecord) => t.childId === childId && !t.accessEvent && t.outcome !== "skipped";
+      const moved = new Set(fresh.filter(clean).map((t) => AREA_OF[t.game as ActivityKind]).filter(Boolean));
+      const now = iso();
+      for (const area of moved) {
+        const row = (db.areaTiers ?? []).find((r) => r.childId === childId && r.area === area);
+        const top = row?.topTier ?? 1;
+        const since = db.tries.filter((t) => clean(t) && AREA_OF[t.game as ActivityKind] === area && (!row || t.ts >= row.openedAt)).length;
+        const next = openTiers(top, skills[area].theta, since);
+        if (next === top) continue;
+        if (row) Object.assign(row, { topTier: next, openedAt: now });
+        else db.areaTiers = [...(db.areaTiers ?? []), { childId, area, topTier: next, openedAt: now }];
+      }
       if (db.tries.length > 4000) db.tries = db.tries.slice(-4000); // ponytail: localStorage cap; the server keeps 90 days
     });
     return net(true, 0);

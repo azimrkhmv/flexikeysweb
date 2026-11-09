@@ -59,6 +59,8 @@ export interface DB {
   accessProfiles: (AccessSettings & { childId: string; helpedByAdult: boolean; at: string })[];
   /** θ per skill area, moved by every clean try (B17). Areas without a row start from the intake (sel.skills). */
   skills: { childId: string; area: Area; theta: number; n: number }[];
+  /** The highest open tier per child and area (games spec §3.2, B83); no row = Seed (1). Never goes down. */
+  areaTiers?: { childId: string; area: Area; topTier: number; openedAt: string }[];
   /** Seconds of game time per child and day (YYYY-MM-DD), for the 20-minute daily limit (B18). */
   playTime: { childId: string; date: string; seconds: number }[];
   /** T1 of the therapist form, once per therapist (B23); the name is the user's. */

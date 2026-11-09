@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { readFileSync, writeFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { buildRoadmap, type PlanInput } from "@/lib/roadmap";
-import { AREA_OF, AREA_QUESTIONS, AREAS, chooseGames, corrected, difficulty, elo, levelDifficulty, levelFor, pCorrect, START_FROM, startingTheta, weeklyNew, type Area, type Bucket, type Game } from "@/lib/skill";
+import { AREA_OF, AREA_QUESTIONS, AREAS, chooseGames, corrected, difficulty, elo, levelDifficulty, levelFor, openSkillSteps, openTiers, pCorrect, START_FROM, startingTheta, weeklyNew, type Area, type Bucket, type Game } from "@/lib/skill";
 import { LEVELS } from "./levels";
 import { SKILL_GAMES } from "./skillGames";
 import type { TherapistInput } from "@/lib/types";
@@ -28,8 +28,18 @@ function check(path: string, value: unknown) {
 const LIB = exerciseLibrary("seed", "2026-10-01T00:00:00Z");
 /** Every playable step of the theme worlds: its activity id, kind, world level, area, tier and step. */
 const WORLD_GAMES: Game[] = LEVELS.flatMap((l) => l.activities.flatMap((a) => a.steps.map((s) => ({ activityId: a.id, kind: a.kind, level: l.n, area: a.area, tier: s.tier, step: s.step }))));
-/** ... and of the skill games (level 0, games spec §2.3). Skill games join today's choice in B83. */
-const GAMES: Game[] = [...WORLD_GAMES, ...SKILL_GAMES.flatMap((g) => g.steps.map((s) => ({ activityId: g.id, kind: g.kind, level: 0, area: g.area, tier: s.tier, step: s.step })))];
+/** ... and of the skill games (level 0, games spec §2.3), twelve steps each. */
+const SKILL_STEPS: Game[] = SKILL_GAMES.flatMap((g) => g.steps.map((s) => ({ activityId: g.id, kind: g.kind, level: 0, area: g.area, tier: s.tier, step: s.step })));
+const GAMES: Game[] = [...WORLD_GAMES, ...SKILL_STEPS];
+/** A step's name in the cases: activity id @ tier . step (a skill game's id is the same for its 12 steps). */
+const stepKey = (g: Game) => `${g.activityId}@${g.tier}.${g.step}`;
+const TIER_CASES: { top: Partial<Record<Area, number>>; pro: boolean }[] = [
+  { top: {}, pro: false },
+  { top: {}, pro: true },
+  { top: { attention: 3, memory: 2 }, pro: false },
+  { top: { attention: 3, memory: 2 }, pro: true },
+  { top: { attention: 4, memory: 4, flexibility: 2, reasoning: 3, literacy: 2, numeracy: 4 }, pro: true },
+];
 
 /** The roadmap in the backend's field names; key order is part of the contract (the hash covers it). */
 const canon = (r: ReturnType<typeof buildRoadmap>) =>
@@ -145,6 +155,14 @@ describe("backend content", () => {
         played, today,
         out: weeklyNew(WORLD_GAMES.filter((g) => g.level <= 4), new Map(Object.entries(played)) as Map<Game["kind"], string>, today).map((g) => g.activityId),
       })),
+      // Games spec §3.2-3.3 (B83): tiers open by success, Seed is free, today's choice takes the open skill steps.
+      open_tiers: [1, 2, 3, 4].flatMap((top) => [-1, 1, 1.1, 2.3, 3.5, 6].flatMap((theta) => [19, 20].map((clean) => ({ top, theta, clean, out: openTiers(top, theta, clean) })))),
+      open_steps: TIER_CASES.map(({ top, pro }) => ({ top, pro, out: openSkillSteps(SKILL_STEPS, top, pro).map(stepKey) })),
+      choose_skill: TIER_CASES.map(({ top, pro }, k) => {
+        const theta = k % 2 ? { access: 0, attention: 2.5, memory: -1, flexibility: 0.3, reasoning: 1, literacy: 0, numeracy: 1.8, speed: 0 } : { access: 1, attention: -0.5, memory: 0.2, flexibility: -1, reasoning: -1, literacy: 0, numeracy: -3, speed: -0.5 };
+        const unlocked = [...WORLD_GAMES.filter((g) => g.level <= 6), ...openSkillSteps(SKILL_STEPS, top, pro)];
+        return { theta, top, pro, up_to: 6, out: chooseGames(theta as Record<Area, number>, unlocked).map((s) => ({ slot: s.slot, area: s.area ?? null, games: s.games.map(stepKey) })) };
+      }),
       elo: [-1, 0, 0.8].flatMap((theta) => [0, 7, 40].flatMap((n) => [1, 6, 15].flatMap((level) => [true, false].map((correct) => ({ theta, n, level, correct, d: levelDifficulty(level), p: pCorrect(theta, levelDifficulty(level)), out: elo(theta, n, levelDifficulty(level), correct) }))))),
     });
   });

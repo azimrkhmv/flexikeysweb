@@ -87,4 +87,17 @@ describe("skill levels from tries", () => {
     expect(after.n).toBe(1);
     expect(after.theta).toBeGreaterThan(before.theta);
   });
+
+  // B83 (games spec §3.2): Sprout opens after 20 clean tries with 85% success on Seed's last step; never closes.
+  it("opens the next tier by success, as the server does", async () => {
+    const add = createTryLog({ childId: "ch_ali", sessionId: "s1", startedAt: Date.now(), access: "touch" });
+    const at = { activityId: "find_same-skill", tier: 4, step: 3 };
+    expect(sel.tiers(dbStore.get(), "ch_ali").attention).toBe(1);
+    await api.saveTries("ch_ali", [add({ ...at, t: 0, type: "accidental_tap" })!, ...Array.from({ length: 19 }, (_, i) => add({ ...at, t: i + 1, type: "select", correct: true })!)]);
+    expect(sel.tiers(dbStore.get(), "ch_ali").attention).toBe(1);
+    await api.saveTries("ch_ali", [add({ ...at, t: 30, type: "select", correct: true })!]);
+    expect(sel.tiers(dbStore.get(), "ch_ali")).toMatchObject({ attention: 2, memory: 1 });
+    await api.saveTries("ch_ali", Array.from({ length: 30 }, (_, i) => add({ ...at, tier: 1, step: 1, t: 40 + i, type: "select", correct: false })!));
+    expect(sel.tiers(dbStore.get(), "ch_ali").attention).toBe(2);
+  });
 });

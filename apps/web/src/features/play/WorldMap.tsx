@@ -28,8 +28,36 @@ export const KIND_EMOJI: Record<ActivityKind, string> = {
   trace: "✏️", dots: "🔵", color: "🖍️", maze: "🌀", paint: "🎨",
 };
 
+/** The two tabs of the map (games spec §9): the world map and the skill games. */
+export function MapTabs({ child, tab, onTab }: { child: Child; tab: "map" | "skills"; onTab: (tab: "map" | "skills") => void }) {
+  const t = useT(child.uiLang);
+  return (
+    <div className="mb-4 flex justify-center gap-2" role="tablist">
+      {(
+        [
+          ["map", "🗺️", "play.map.title"],
+          ["skills", "🎯", "play.nav.skills"],
+        ] as const
+      ).map(([id, icon, key]) => (
+        <Target
+          key={id}
+          label={t(key)}
+          selected={tab === id}
+          onSelect={() => onTab(id)}
+          className={`flex items-center gap-2 rounded-full px-4 text-base font-extrabold shadow-soft sm:px-6 sm:text-lg ${tab === id ? "bg-teal-soft text-ink" : "bg-surface/80 text-ink-2"}`}
+        >
+          <span className="text-2xl" aria-hidden>
+            {icon}
+          </span>
+          {t(key)}
+        </Target>
+      ))}
+    </div>
+  );
+}
+
 /** World map: 16 levels on a winding path. Locked levels are sleeping clouds, never padlocks. */
-export function WorldMap({ child, onOpen }: { child: Child; onOpen: (levelId: string) => void }) {
+export function WorldMap({ child, onOpen, onTab }: { child: Child; onOpen: (levelId: string) => void; onTab: (tab: "map" | "skills") => void }) {
   const db = useDb();
   const t = useT(child.uiLang);
   const { profile } = usePlay();
@@ -50,7 +78,8 @@ export function WorldMap({ child, onOpen }: { child: Child; onOpen: (levelId: st
 
   return (
     <div className="mx-auto w-full max-w-3xl">
-      <h1 className="mb-4 text-center text-3xl font-extrabold text-ink">{t("play.map.title")}</h1>
+      <h1 className="sr-only">{t("play.map.title")}</h1>
+      <MapTabs child={child} tab="map" onTab={onTab} />
 
       {taskLevels.length > 0 && (
         <section className="mb-6 flex flex-wrap items-center gap-4 rounded-fk-lg border border-line bg-surface/90 p-4 shadow-soft">
