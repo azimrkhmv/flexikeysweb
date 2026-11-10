@@ -61,7 +61,7 @@ export function HintPulse() {
 }
 
 /** Flip: a card turning over (Card Pairs, Odd One Out). `up` shows the front. */
-export function Flip({ up, front, back, size }: { up: boolean; front: ReactNode; back: ReactNode; size: number }) {
+export function Flip({ up, front, back, size }: { up: boolean; front: ReactNode; back: ReactNode; size: number | string }) {
   const face = "absolute inset-0 grid place-items-center rounded-[inherit] [backface-visibility:hidden]";
   return (
     <span className="relative block rounded-fk-lg" style={{ width: size, height: size, perspective: 800 }}>

@@ -26,6 +26,9 @@ export const categoryOf = (id: string) => CATEGORY_IDS.find((c) => (CATEGORIES[c
 
 // ---- ids the skill games add to the vocab ids: `num:42` (a number), `w:<lang>:<word>` (a sound-alike word with a
 // picture), `p:<n>` (page n of a story).
+/** The same item more than once on a board (odd one out, card pairs): `apple~2` looks and reads like `apple`. */
+export const copyId = (id: string, k: number) => `${id}~${k}`;
+export const baseId = (id: string) => (id.includes("~") ? id.slice(0, id.indexOf("~")) : id);
 export const numId = (n: number) => `num:${n}`;
 export const numOf = (id: string) => Number(id.slice(4));
 export const wordId = (lang: Lang, word: string) => `w:${lang}:${word}`;
@@ -44,6 +47,7 @@ export function wordOf(id: string, lang: Lang): string | undefined {
  * two of them as different answers.
  */
 export function lookOf(id: string): string {
+  id = baseId(id);
   if (isGlyph(id)) return looks(id);
   if (id.startsWith("w:")) return WORD_EMOJI[id] ?? id;
   if (id.startsWith("num:")) return id;

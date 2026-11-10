@@ -36,7 +36,7 @@ describe("skill game rounds", () => {
     expect(rngOf(1)()).toBe(rngOf(1)());
   });
 
-  it("12 skill games, 12 steps each, every step with a can-do sentence in en, ru and uz", () => {
+  it("every skill game has 12 steps, every step with a can-do sentence in en, ru and uz", () => {
     expect(SKILL_GAMES.map((g) => g.kind).sort()).toEqual(Object.keys(GENERATORS).sort());
     for (const g of SKILL_GAMES) {
       expect(g.steps.map((s) => `${s.tier}.${s.step}`)).toEqual(["1.1", "1.2", "1.3", "2.1", "2.2", "2.3", "3.1", "3.2", "3.3", "4.1", "4.2", "4.3"]);

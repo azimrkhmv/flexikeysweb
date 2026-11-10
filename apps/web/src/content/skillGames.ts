@@ -1,5 +1,7 @@
 import type { CountSettings, FindSameSettings, LightPathSettings, ListenPickSettings, MazeSettings, MissingSettings, PuzzleSettings, SceneSettings, SequenceSettings, SortSettings, StorySettings, TypeSettings } from "@/lib/games/existing";
 import type { SkillKind } from "@/lib/games";
+import type { OddOneOutSettings, TrackFishSettings, WhichWaySettings } from "@/lib/games/attention";
+import type { CardPairsSettings, NBackSettings, PairsRecallSettings, ShoppingSettings } from "@/lib/games/memory";
 import { AREA_OF, type Area, type StepN, type Tier } from "@/lib/skill";
 import type { ActivityStep, InputModeId, L10n } from "@/lib/types";
 
@@ -243,6 +245,142 @@ const count = game<CountSettings>(
   },
 );
 
-export const SKILL_GAMES: SkillGame[] = [findSame, scene, story, sequence, missing, lightPath, sort, maze, puzzle, listenPick, type, count] as unknown as SkillGame[];
+// ---------------------------------------------------------------- §6.1 Attention (new games)
+const oddOneOut = game<OddOneOutSettings>(
+  "odd_one_out",
+  [
+    { options: 4, mode: "items" }, { options: 5, mode: "items" }, { options: 6, mode: "items" },
+    { options: 6, mode: "shapes" }, { options: 8, mode: "shapes" }, { options: 9, mode: "colors" },
+    { options: 12, mode: "similar" }, { options: 16, mode: "turn" }, { options: 20, mode: "turn" },
+    { options: 25, mode: "fine" }, { options: 30, mode: "fine" }, { options: 36, mode: "fine" },
+  ],
+  ({ options: n, mode }) =>
+    ({
+      items: { en: `Spots the one different picture among ${n}`, ru: `Находит лишнюю картинку среди ${n}`, uz: `${n} ta rasm ichidan ortiqchasini topadi` },
+      similar: { en: `Spots the one different picture among ${n} similar ones`, ru: `Находит лишнюю картинку среди ${n} похожих`, uz: `${n} ta oʻxshash rasm ichidan ortiqchasini topadi` },
+      shapes: { en: `Spots the different shape among ${n}`, ru: `Находит лишнюю фигуру среди ${n}`, uz: `${n} ta shakl ichidan boshqacha shaklni topadi` },
+      colors: { en: `Spots the shape of another colour among ${n}`, ru: `Находит фигуру другого цвета среди ${n}`, uz: `${n} ta shakl ichidan boshqa rangdagisini topadi` },
+      turn: { en: `Spots the shape turned another way among ${n}`, ru: `Находит иначе повёрнутую фигуру среди ${n}`, uz: `${n} ta shakl ichidan boshqacha burilganini topadi` },
+      fine: { en: `Spots a small turn or shade among ${n} shapes`, ru: `Замечает небольшой поворот или оттенок среди ${n} фигур`, uz: `${n} ta shakl ichidan kichik burilish yoki tusni sezadi` },
+    })[mode],
+);
+
+const SPEED_WORD = {
+  1: { en: "slowly", ru: "медленно", uz: "sekin" },
+  2: { en: "steadily", ru: "спокойно", uz: "bir maromda" },
+  3: { en: "quickly", ru: "быстро", uz: "tez" },
+  4: { en: "fast", ru: "очень быстро", uz: "juda tez" },
+} as const;
+const trackFish = game<TrackFishSettings>(
+  "track_fish",
+  (
+    [
+      [3, 1, 1, 3], [4, 1, 1, 3], [4, 2, 1, 4],
+      [5, 2, 2, 4], [6, 2, 2, 5], [6, 3, 2, 5],
+      [7, 3, 3, 5], [8, 3, 3, 6], [8, 4, 3, 6],
+      [9, 4, 4, 6], [10, 4, 4, 7], [10, 4, 4, 9],
+    ] as const
+  ).map(([fish, glow, speed, moves]) => ({ fish, glow, speed, moves })),
+  ({ fish: n, glow: k, speed, moves }) => {
+    const long = moves >= 8;
+    return {
+      en: `Follows ${k} of ${n} fish swimming ${SPEED_WORD[speed].en}${long ? ", for a long swim" : ""}`,
+      ru: `Следит за ${k} из ${n} рыбок, которые плавают ${SPEED_WORD[speed].ru}${long ? ", и долго" : ""}`,
+      uz: `${SPEED_WORD[speed].uz} suzayotgan ${n} ta baliqdan ${k} tasini ${long ? "uzoq vaqt " : ""}kuzatadi`,
+    };
+  },
+);
+
+const whichWay = game<WhichWaySettings>(
+  "which_way",
+  [
+    { dirs: 4, flank: 0 }, { dirs: 4, flank: 1, mode: "same" }, { dirs: 4, flank: 2, mode: "same" },
+    { dirs: 2, flank: 2, mode: "mixed" }, { dirs: 4, flank: 2, mode: "mixed" }, { dirs: 4, flank: 2, mode: "against" },
+    { dirs: 4, flank: 3, mode: "against" }, { dirs: 2, flank: 2, mode: "mixed", blue: 0.3 }, { dirs: 4, flank: 2, mode: "mixed", blue: 0.3 },
+    { dirs: 2, flank: 2, mode: "against", blue: 0.5 }, { dirs: 4, flank: 2, mode: "against", blue: 0.5 }, { dirs: 4, flank: 3, mode: "against", blue: 0.5 },
+  ],
+  ({ dirs, flank, mode = "same", blue }) => {
+    if (!flank) return { en: "Shows which way an arrow points", ru: "Показывает, куда смотрит стрелка", uz: "Strelka qayerga qarayotganini koʻrsatadi" };
+    const around = {
+      same: { en: "pointing the same way", ru: "смотрящих туда же", uz: "ular ham shu tomonga qaraydi" },
+      mixed: { en: "pointing any way", ru: "смотрящих куда угодно", uz: "ular istalgan tomonga qaraydi" },
+      against: { en: "pointing other ways", ru: "смотрящих в другую сторону", uz: "ular boshqa tomonga qaraydi" },
+    }[mode];
+    const b = blue ? { en: "; a blue arrow means the other way", ru: "; синяя стрелка — в другую сторону", uz: "; koʻk strelka — teskari tomon" } : { en: "", ru: "", uz: "" };
+    return {
+      en: `Shows which way the middle arrow points among ${flank * 2} others ${around.en}, choosing from ${dirs} ways${b.en}`,
+      ru: `Показывает, куда смотрит средняя стрелка среди ${flank * 2} других, ${around.ru}, выбирая из ${dirs} направлений${b.ru}`,
+      uz: `Atrofida ${flank * 2} ta strelka boʻlsa ham (${around.uz}) oʻrtadagi strelka qayerga qarayotganini ${dirs} ta yoʻnalishdan tanlab koʻrsatadi${b.uz}`,
+    };
+  },
+);
+
+// ---------------------------------------------------------------- §6.2 Memory (new games)
+const cardPairs = game<CardPairsSettings>(
+  "card_pairs",
+  [
+    { pairs: 2 }, { pairs: 3 }, { pairs: 4 },
+    { pairs: 4, similar: true }, { pairs: 5 }, { pairs: 6 },
+    { pairs: 6, similar: true }, { pairs: 7 }, { pairs: 8 },
+    { pairs: 9 }, { pairs: 10 }, { pairs: 12 },
+  ],
+  ({ pairs: p, similar }) => ({
+    en: `Finds ${p} pairs among ${p * 2} cards${similar ? " of similar food" : ""}`,
+    ru: `Находит ${p} ${pl(p, "пару", "пары", "пар")} среди ${p * 2} карточек${similar ? " с похожей едой" : ""}`,
+    uz: `${p * 2} ta karta ichidan ${p} ta juftni topadi${similar ? " (oʻxshash taomlar)" : ""}`,
+  }),
+);
+
+const shoppingList = game<ShoppingSettings>(
+  "shopping_list",
+  [
+    { items: 2, shelf: 4, show: true, replay: true }, { items: 2, shelf: 6, show: true, replay: true }, { items: 3, shelf: 6, show: true, replay: true },
+    { items: 3, shelf: 6, show: false, replay: true }, { items: 4, shelf: 8, show: true, replay: true }, { items: 4, shelf: 8, show: false, replay: true },
+    { items: 5, shelf: 9, show: false, replay: true }, { items: 5, shelf: 10, show: false, replay: false }, { items: 6, shelf: 10, show: false, replay: false, wait: 5 },
+    { items: 6, shelf: 12, show: false, replay: false, wait: 10 }, { items: 7, shelf: 12, show: false, replay: false, wait: 15 }, { items: 8, shelf: 12, show: false, replay: false, wait: 20 },
+  ],
+  ({ items: n, shelf, show, replay, wait }) => ({
+    en: `Remembers a list of ${n} things ${show ? "seen and heard" : "only heard"}${replay ? "" : ", heard once"}${wait ? `, after a ${wait} second pause` : ""}, out of ${shelf}`,
+    ru: `Запоминает список из ${n} ${pl(n, "вещи", "вещей", "вещей")}, ${show ? "увидев и услышав его" : "только услышав его"}${replay ? "" : " один раз"}${wait ? `, после паузы в ${wait} секунд` : ""}, выбирая из ${shelf}`,
+    uz: `${n} ta narsali roʻyxatni ${show ? "koʻrib va eshitib" : "faqat eshitib"}${replay ? "" : ", qayta tinglamasdan"}${wait ? `, ${wait} soniya kutib` : ""} eslab qoladi, ${shelf} ta narsa ichidan`,
+  }),
+);
+
+const nBack = game<NBackSettings>(
+  "n_back",
+  [
+    { n: 1, items: 6 }, { n: 1, items: 8 }, { n: 1, items: 10 },
+    { n: 2, items: 6 }, { n: 2, items: 8 }, { n: 2, items: 10 },
+    { n: 3, items: 8 }, { n: 3, items: 10 }, { n: 1, items: 8, place: true },
+    { n: 2, items: 8, place: true }, { n: 2, items: 10, place: true }, { n: 3, items: 10, place: true },
+  ],
+  ({ n, items, place }) => ({
+    en: `Tells if a picture is the same as ${n === 1 ? "the one before" : `${n} pictures back`}${place ? ", and in the same place" : ""}, in a row of ${items}`,
+    ru: `Понимает, та же ли картинка, что ${n === 1 ? "перед ней" : `${n} картинки назад`}${place ? ", и на том же ли месте" : ""}, в ряду из ${items}`,
+    uz: `${items} ta rasmli qatorda rasm ${n === 1 ? "oldingisi" : `${n} ta oldingisi`} bilan bir xilmi${place ? " va bir joydami" : ""}, ajratadi`,
+  }),
+);
+
+const pairsRecall = game<PairsRecallSettings>(
+  "pairs_recall",
+  (
+    [
+      [2, 2, 2], [3, 3, 2], [3, 3, 3],
+      [4, 3, 3], [4, 4, 4], [5, 4, 4],
+      [5, 5, 4], [6, 5, 4], [6, 6, 5],
+      [7, 6, 5], [8, 6, 5], [8, 8, 6],
+    ] as const
+  ).map(([pairs, options, ask]) => ({ pairs, options, ask })),
+  ({ pairs: p, options: o, ask: a }) => ({
+    en: `Remembers what ${p} children ordered and answers ${a} questions, choosing from ${o}`,
+    ru: `Запоминает, что заказали ${p} ${pl(p, "ребёнок", "ребёнка", "детей")}, и отвечает на ${a} ${pl(a, "вопрос", "вопроса", "вопросов")}, выбирая из ${o}`,
+    uz: `${p} ta bola nima buyurtma qilganini eslab qoladi va ${a} ta savolga ${o} ta javobdan tanlab javob beradi`,
+  }),
+);
+
+export const SKILL_GAMES: SkillGame[] = [
+  findSame, scene, story, sequence, missing, lightPath, sort, maze, puzzle, listenPick, type, count,
+  oddOneOut, trackFish, whichWay, cardPairs, shoppingList, nBack, pairsRecall,
+] as unknown as SkillGame[]; // prettier-ignore
 export const SKILL_GAME_BY_ID: Record<string, SkillGame> = Object.fromEntries(SKILL_GAMES.map((g) => [g.id, g]));
 export const stepOf = (g: SkillGame, tier: number, step: number) => g.steps.find((s) => s.tier === tier && s.step === step);

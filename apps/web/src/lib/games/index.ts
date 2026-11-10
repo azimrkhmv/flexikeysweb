@@ -1,5 +1,7 @@
 import type { Lang } from "@/lib/i18n";
+import * as attention from "./attention";
 import * as existing from "./existing";
+import * as memory from "./memory";
 import { rngOf, type Rng } from "./rng";
 
 // Rounds are generated, not hand-written (games spec 8 Nov 2026, §1): a step gives the settings, `makeRounds` builds
@@ -28,6 +30,15 @@ export const GENERATORS = {
   listen_pick: existing.listenPick,
   type: existing.type,
   count: existing.count,
+  // §6.1 Attention
+  odd_one_out: attention.oddOneOut,
+  track_fish: attention.trackFish,
+  which_way: attention.whichWay,
+  // §6.2 Memory
+  card_pairs: memory.cardPairs,
+  shopping_list: memory.shoppingList,
+  n_back: memory.nBack,
+  pairs_recall: memory.pairsRecall,
 };
 export type SkillKind = keyof typeof GENERATORS;
 export type SettingsOf<K extends SkillKind> = Parameters<(typeof GENERATORS)[K]["make"]>[0];

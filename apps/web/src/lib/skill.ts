@@ -5,7 +5,7 @@
 // θ and a step's difficulty d share one scale: a child with θ = d gets that step right half the time.
 
 import type { Answers } from "@/content/intake";
-import type { ActivityKind } from "./types";
+import type { GameKind } from "./types";
 
 /**
  * The skill areas (games spec 8 Nov 2026, §2.1). `literacy` and `numeracy` keep their stored names; people see
@@ -17,9 +17,11 @@ export type Area = (typeof AREAS)[number];
 export const SHOWN_AREAS = ["attention", "memory", "flexibility", "reasoning", "literacy", "numeracy", "speed"] as const satisfies readonly Area[];
 
 /** What each kind of game trains (the four placement games: attention, memory, literacy, flexibility). */
-export const AREA_OF: Record<ActivityKind, Area> = {
+export const AREA_OF: Record<GameKind, Area> = {
   find_same: "attention", scene: "attention", story: "attention",
+  odd_one_out: "attention", track_fish: "attention", which_way: "attention",
   sequence: "memory", missing: "memory", light_path: "memory",
+  card_pairs: "memory", shopping_list: "memory", n_back: "memory", pairs_recall: "memory",
   sort: "flexibility", maze: "flexibility",
   puzzle: "reasoning",
   listen_pick: "literacy", type: "literacy", sentence: "literacy",

@@ -5,7 +5,7 @@ import { Mascot } from "@/components/Mascot";
 import { LEVELS, LEVEL_BY_ID } from "@/content/levels";
 import { sel, useDb } from "@/lib/api";
 import { useT } from "@/lib/i18n";
-import type { ActivityKind, Child, Level } from "@/lib/types";
+import type { Child, GameKind, Level } from "@/lib/types";
 import { Target } from "./Target";
 import { usePlay } from "./context";
 
@@ -22,10 +22,11 @@ const TONE: Record<Level["color"], string> = {
   peach: "var(--fk-peach-soft)",
 };
 
-export const KIND_EMOJI: Record<ActivityKind, string> = {
+export const KIND_EMOJI: Record<GameKind, string> = {
   find_same: "🔍", listen_pick: "👂", count: "🔢", sort: "🧺", sequence: "🔁", missing: "❓", light_path: "✨",
   path: "〰️", scene: "🌱", puzzle: "🧩", type: "⌨️", sentence: "💬", story: "📖",
   trace: "✏️", dots: "🔵", color: "🖍️", maze: "🌀", paint: "🎨",
+  odd_one_out: "🧐", track_fish: "🐠", which_way: "🧭", card_pairs: "🃏", shopping_list: "🛒", n_back: "🔂", pairs_recall: "🍽️",
 };
 
 /** The two tabs of the map (games spec §9): the world map and the skill games. */

@@ -1,6 +1,6 @@
 import { VOCAB } from "@/content/vocab";
 import { COLOR_HEX, isGlyph, parseGlyph, type Glyph } from "@/lib/games/glyph";
-import { numOf, wordEmoji } from "@/lib/games/pools";
+import { baseId, numOf, wordEmoji } from "@/lib/games/pools";
 import type { Lang } from "@/lib/i18n";
 
 /**
@@ -13,7 +13,8 @@ const css = (s: Size) => (typeof s === "number" ? `${s}px` : s);
 /** `size` × `f`, as a CSS length. */
 export const times = (s: Size, f: number): Size => (typeof s === "number" ? Math.round(s * f) : `calc(${s} * ${f})`);
 
-export function ItemArt({ id, size = 72 }: { id: string; size?: Size }) {
+export function ItemArt({ id: given, size = 72 }: { id: string; size?: Size }) {
+  const id = baseId(given); // a copy of an item ("apple~2") looks like the item
   if (isGlyph(id)) return <GlyphArt g={parseGlyph(id)} size={size} />;
   if (id.startsWith("num:")) return <Big text={String(numOf(id))} size={size} />;
   if (id.startsWith("w:")) return <Emoji emoji={wordEmoji(id) ?? "❔"} size={size} />;
@@ -45,7 +46,8 @@ const Big = ({ text, size }: { text: string; size: Size }) => (
 );
 
 /** The words a screen reader and auditory scanning say for an item (`t` is the screen's translator). */
-export function itemLabel(id: string, lang: Lang, t: (k: string, v?: Record<string, string | number>) => string): string {
+export function itemLabel(given: string, lang: Lang, t: (k: string, v?: Record<string, string | number>) => string): string {
+  const id = baseId(given);
   if (isGlyph(id)) {
     const g = parseGlyph(id);
     return t("skill.glyph", { color: t(`skill.color.${g.color}`), shape: t(`skill.shape.${g.shape}`) });

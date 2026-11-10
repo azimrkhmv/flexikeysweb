@@ -6,7 +6,7 @@ import type { SkillGame } from "@/content/skillGames";
 import { STORIES } from "@/content/stories";
 import { PlayContext, usePlay, type PlayCtx } from "@/features/play/context";
 import { Target, type SelectInfo } from "@/features/play/Target";
-import { makeRounds, type RoundOf, type SettingsOf, type SkillKind } from "@/lib/games";
+import { makeRounds, type SettingsOf, type SkillKind } from "@/lib/games";
 import { sortFits, type MissingSkillRound, type PuzzleSkillRound, type SceneObject } from "@/lib/games/existing";
 import { glyph, glyphId, type GlyphColor, type GlyphShape } from "@/lib/games/glyph";
 import { CATEGORY_ICON, lookOf, numId, wordOf, type Category } from "@/lib/games/pools";
@@ -17,12 +17,13 @@ import { MazeRound } from "./draw";
 import { TypeRound } from "./keyboard";
 import { ActionButton, answer, denseSize, fitSize, Frame, sizeFor, useActT, useClock, useHint, WatchAgain } from "./kit";
 import { SequenceRound, useSequence } from "./memory";
+import { OddOneOutPlayer, TrackFishPlayer, WhichWayPlayer } from "./skillAttention";
+import { Series, type PlayerProps } from "./skillKit";
+import { CardPairsPlayer, NBackPlayer, PairsRecallPlayer, ShoppingListPlayer } from "./skillMemory";
 
-// Skill games (games spec 8 Nov 2026, §2.3, §5): the 12 kinds of the theme worlds, now with 12 steps each. The rounds
+// Skill games (games spec 8 Nov 2026, §2.3, §5, §6): the 12 kinds of the theme worlds and the new skill-only kinds, 12\n// steps each. The rounds
 // come from the kind's generator (lib/games) with the day's seed; the players below show them with the engines' own
 // parts (ChoiceEngine, the sequence, maze and typing rounds), so hints, input modes and telemetry stay the same.
-
-type PlayerProps<K extends SkillKind> = { rounds: RoundOf<K>[]; onDone: () => void };
 
 /** Plays one step of a skill game. Every event carries the step, so the try counts at that step's difficulty. */
 export function SkillPlay({ game, step, seed, onDone }: { game: SkillGame; step: ActivityStep; seed: string; onDone: () => void }) {
@@ -36,13 +37,6 @@ export function SkillPlay({ game, step, seed, onDone }: { game: SkillGame; step:
       <Player rounds={rounds} onDone={onDone} />
     </PlayContext.Provider>
   );
-}
-
-/** Rounds one after another; `render` gets the round, its index and what to do next. */
-function Series<R>({ rounds, onDone, render }: { rounds: R[]; onDone: () => void; render: (r: R, index: number, next: () => void, last: boolean) => ReactNode }) {
-  const [i, setI] = useState(0);
-  const last = i + 1 >= rounds.length;
-  return <>{render(rounds[i], i, () => (last ? onDone() : setI(i + 1)), last)}</>;
 }
 
 // ---------------------------------------------------------------- choice kinds
@@ -593,4 +587,11 @@ const PLAYERS: { [K in SkillKind]: ComponentType<PlayerProps<K>> } = {
   listen_pick: ListenPickPlayer,
   type: TypePlayer,
   count: CountPlayer,
+  odd_one_out: OddOneOutPlayer,
+  track_fish: TrackFishPlayer,
+  which_way: WhichWayPlayer,
+  card_pairs: CardPairsPlayer,
+  shopping_list: ShoppingListPlayer,
+  n_back: NBackPlayer,
+  pairs_recall: PairsRecallPlayer,
 };

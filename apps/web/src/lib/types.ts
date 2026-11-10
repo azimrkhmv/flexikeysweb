@@ -356,6 +356,10 @@ export type Activity = (
 ) & { optional?: boolean };
 
 export type ActivityKind = Activity["kind"];
+/** Kinds that exist only as skill games (games spec 8 Nov 2026, §6); no theme-world activity uses them. */
+export type SkillOnlyKind = "odd_one_out" | "track_fish" | "which_way" | "card_pairs" | "shopping_list" | "n_back" | "pairs_recall";
+/** Every kind of game: the theme worlds' kinds and the skill-only ones. */
+export type GameKind = ActivityKind | SkillOnlyKind;
 
 /** The input modes a game supports (games spec §2.2): every non-Speed game takes all four. */
 export type InputModeId = "touch" | "dwell" | "switch" | "keyboard";

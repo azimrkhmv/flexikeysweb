@@ -1614,5 +1614,677 @@
   "area": "numeracy",
   "tier": 4,
   "step": 3
+ },
+ {
+  "activity_id": "odd_one_out-skill",
+  "kind": "odd_one_out",
+  "level": 0,
+  "area": "attention",
+  "tier": 1,
+  "step": 1
+ },
+ {
+  "activity_id": "odd_one_out-skill",
+  "kind": "odd_one_out",
+  "level": 0,
+  "area": "attention",
+  "tier": 1,
+  "step": 2
+ },
+ {
+  "activity_id": "odd_one_out-skill",
+  "kind": "odd_one_out",
+  "level": 0,
+  "area": "attention",
+  "tier": 1,
+  "step": 3
+ },
+ {
+  "activity_id": "odd_one_out-skill",
+  "kind": "odd_one_out",
+  "level": 0,
+  "area": "attention",
+  "tier": 2,
+  "step": 1
+ },
+ {
+  "activity_id": "odd_one_out-skill",
+  "kind": "odd_one_out",
+  "level": 0,
+  "area": "attention",
+  "tier": 2,
+  "step": 2
+ },
+ {
+  "activity_id": "odd_one_out-skill",
+  "kind": "odd_one_out",
+  "level": 0,
+  "area": "attention",
+  "tier": 2,
+  "step": 3
+ },
+ {
+  "activity_id": "odd_one_out-skill",
+  "kind": "odd_one_out",
+  "level": 0,
+  "area": "attention",
+  "tier": 3,
+  "step": 1
+ },
+ {
+  "activity_id": "odd_one_out-skill",
+  "kind": "odd_one_out",
+  "level": 0,
+  "area": "attention",
+  "tier": 3,
+  "step": 2
+ },
+ {
+  "activity_id": "odd_one_out-skill",
+  "kind": "odd_one_out",
+  "level": 0,
+  "area": "attention",
+  "tier": 3,
+  "step": 3
+ },
+ {
+  "activity_id": "odd_one_out-skill",
+  "kind": "odd_one_out",
+  "level": 0,
+  "area": "attention",
+  "tier": 4,
+  "step": 1
+ },
+ {
+  "activity_id": "odd_one_out-skill",
+  "kind": "odd_one_out",
+  "level": 0,
+  "area": "attention",
+  "tier": 4,
+  "step": 2
+ },
+ {
+  "activity_id": "odd_one_out-skill",
+  "kind": "odd_one_out",
+  "level": 0,
+  "area": "attention",
+  "tier": 4,
+  "step": 3
+ },
+ {
+  "activity_id": "track_fish-skill",
+  "kind": "track_fish",
+  "level": 0,
+  "area": "attention",
+  "tier": 1,
+  "step": 1
+ },
+ {
+  "activity_id": "track_fish-skill",
+  "kind": "track_fish",
+  "level": 0,
+  "area": "attention",
+  "tier": 1,
+  "step": 2
+ },
+ {
+  "activity_id": "track_fish-skill",
+  "kind": "track_fish",
+  "level": 0,
+  "area": "attention",
+  "tier": 1,
+  "step": 3
+ },
+ {
+  "activity_id": "track_fish-skill",
+  "kind": "track_fish",
+  "level": 0,
+  "area": "attention",
+  "tier": 2,
+  "step": 1
+ },
+ {
+  "activity_id": "track_fish-skill",
+  "kind": "track_fish",
+  "level": 0,
+  "area": "attention",
+  "tier": 2,
+  "step": 2
+ },
+ {
+  "activity_id": "track_fish-skill",
+  "kind": "track_fish",
+  "level": 0,
+  "area": "attention",
+  "tier": 2,
+  "step": 3
+ },
+ {
+  "activity_id": "track_fish-skill",
+  "kind": "track_fish",
+  "level": 0,
+  "area": "attention",
+  "tier": 3,
+  "step": 1
+ },
+ {
+  "activity_id": "track_fish-skill",
+  "kind": "track_fish",
+  "level": 0,
+  "area": "attention",
+  "tier": 3,
+  "step": 2
+ },
+ {
+  "activity_id": "track_fish-skill",
+  "kind": "track_fish",
+  "level": 0,
+  "area": "attention",
+  "tier": 3,
+  "step": 3
+ },
+ {
+  "activity_id": "track_fish-skill",
+  "kind": "track_fish",
+  "level": 0,
+  "area": "attention",
+  "tier": 4,
+  "step": 1
+ },
+ {
+  "activity_id": "track_fish-skill",
+  "kind": "track_fish",
+  "level": 0,
+  "area": "attention",
+  "tier": 4,
+  "step": 2
+ },
+ {
+  "activity_id": "track_fish-skill",
+  "kind": "track_fish",
+  "level": 0,
+  "area": "attention",
+  "tier": 4,
+  "step": 3
+ },
+ {
+  "activity_id": "which_way-skill",
+  "kind": "which_way",
+  "level": 0,
+  "area": "attention",
+  "tier": 1,
+  "step": 1
+ },
+ {
+  "activity_id": "which_way-skill",
+  "kind": "which_way",
+  "level": 0,
+  "area": "attention",
+  "tier": 1,
+  "step": 2
+ },
+ {
+  "activity_id": "which_way-skill",
+  "kind": "which_way",
+  "level": 0,
+  "area": "attention",
+  "tier": 1,
+  "step": 3
+ },
+ {
+  "activity_id": "which_way-skill",
+  "kind": "which_way",
+  "level": 0,
+  "area": "attention",
+  "tier": 2,
+  "step": 1
+ },
+ {
+  "activity_id": "which_way-skill",
+  "kind": "which_way",
+  "level": 0,
+  "area": "attention",
+  "tier": 2,
+  "step": 2
+ },
+ {
+  "activity_id": "which_way-skill",
+  "kind": "which_way",
+  "level": 0,
+  "area": "attention",
+  "tier": 2,
+  "step": 3
+ },
+ {
+  "activity_id": "which_way-skill",
+  "kind": "which_way",
+  "level": 0,
+  "area": "attention",
+  "tier": 3,
+  "step": 1
+ },
+ {
+  "activity_id": "which_way-skill",
+  "kind": "which_way",
+  "level": 0,
+  "area": "attention",
+  "tier": 3,
+  "step": 2
+ },
+ {
+  "activity_id": "which_way-skill",
+  "kind": "which_way",
+  "level": 0,
+  "area": "attention",
+  "tier": 3,
+  "step": 3
+ },
+ {
+  "activity_id": "which_way-skill",
+  "kind": "which_way",
+  "level": 0,
+  "area": "attention",
+  "tier": 4,
+  "step": 1
+ },
+ {
+  "activity_id": "which_way-skill",
+  "kind": "which_way",
+  "level": 0,
+  "area": "attention",
+  "tier": 4,
+  "step": 2
+ },
+ {
+  "activity_id": "which_way-skill",
+  "kind": "which_way",
+  "level": 0,
+  "area": "attention",
+  "tier": 4,
+  "step": 3
+ },
+ {
+  "activity_id": "card_pairs-skill",
+  "kind": "card_pairs",
+  "level": 0,
+  "area": "memory",
+  "tier": 1,
+  "step": 1
+ },
+ {
+  "activity_id": "card_pairs-skill",
+  "kind": "card_pairs",
+  "level": 0,
+  "area": "memory",
+  "tier": 1,
+  "step": 2
+ },
+ {
+  "activity_id": "card_pairs-skill",
+  "kind": "card_pairs",
+  "level": 0,
+  "area": "memory",
+  "tier": 1,
+  "step": 3
+ },
+ {
+  "activity_id": "card_pairs-skill",
+  "kind": "card_pairs",
+  "level": 0,
+  "area": "memory",
+  "tier": 2,
+  "step": 1
+ },
+ {
+  "activity_id": "card_pairs-skill",
+  "kind": "card_pairs",
+  "level": 0,
+  "area": "memory",
+  "tier": 2,
+  "step": 2
+ },
+ {
+  "activity_id": "card_pairs-skill",
+  "kind": "card_pairs",
+  "level": 0,
+  "area": "memory",
+  "tier": 2,
+  "step": 3
+ },
+ {
+  "activity_id": "card_pairs-skill",
+  "kind": "card_pairs",
+  "level": 0,
+  "area": "memory",
+  "tier": 3,
+  "step": 1
+ },
+ {
+  "activity_id": "card_pairs-skill",
+  "kind": "card_pairs",
+  "level": 0,
+  "area": "memory",
+  "tier": 3,
+  "step": 2
+ },
+ {
+  "activity_id": "card_pairs-skill",
+  "kind": "card_pairs",
+  "level": 0,
+  "area": "memory",
+  "tier": 3,
+  "step": 3
+ },
+ {
+  "activity_id": "card_pairs-skill",
+  "kind": "card_pairs",
+  "level": 0,
+  "area": "memory",
+  "tier": 4,
+  "step": 1
+ },
+ {
+  "activity_id": "card_pairs-skill",
+  "kind": "card_pairs",
+  "level": 0,
+  "area": "memory",
+  "tier": 4,
+  "step": 2
+ },
+ {
+  "activity_id": "card_pairs-skill",
+  "kind": "card_pairs",
+  "level": 0,
+  "area": "memory",
+  "tier": 4,
+  "step": 3
+ },
+ {
+  "activity_id": "shopping_list-skill",
+  "kind": "shopping_list",
+  "level": 0,
+  "area": "memory",
+  "tier": 1,
+  "step": 1
+ },
+ {
+  "activity_id": "shopping_list-skill",
+  "kind": "shopping_list",
+  "level": 0,
+  "area": "memory",
+  "tier": 1,
+  "step": 2
+ },
+ {
+  "activity_id": "shopping_list-skill",
+  "kind": "shopping_list",
+  "level": 0,
+  "area": "memory",
+  "tier": 1,
+  "step": 3
+ },
+ {
+  "activity_id": "shopping_list-skill",
+  "kind": "shopping_list",
+  "level": 0,
+  "area": "memory",
+  "tier": 2,
+  "step": 1
+ },
+ {
+  "activity_id": "shopping_list-skill",
+  "kind": "shopping_list",
+  "level": 0,
+  "area": "memory",
+  "tier": 2,
+  "step": 2
+ },
+ {
+  "activity_id": "shopping_list-skill",
+  "kind": "shopping_list",
+  "level": 0,
+  "area": "memory",
+  "tier": 2,
+  "step": 3
+ },
+ {
+  "activity_id": "shopping_list-skill",
+  "kind": "shopping_list",
+  "level": 0,
+  "area": "memory",
+  "tier": 3,
+  "step": 1
+ },
+ {
+  "activity_id": "shopping_list-skill",
+  "kind": "shopping_list",
+  "level": 0,
+  "area": "memory",
+  "tier": 3,
+  "step": 2
+ },
+ {
+  "activity_id": "shopping_list-skill",
+  "kind": "shopping_list",
+  "level": 0,
+  "area": "memory",
+  "tier": 3,
+  "step": 3
+ },
+ {
+  "activity_id": "shopping_list-skill",
+  "kind": "shopping_list",
+  "level": 0,
+  "area": "memory",
+  "tier": 4,
+  "step": 1
+ },
+ {
+  "activity_id": "shopping_list-skill",
+  "kind": "shopping_list",
+  "level": 0,
+  "area": "memory",
+  "tier": 4,
+  "step": 2
+ },
+ {
+  "activity_id": "shopping_list-skill",
+  "kind": "shopping_list",
+  "level": 0,
+  "area": "memory",
+  "tier": 4,
+  "step": 3
+ },
+ {
+  "activity_id": "n_back-skill",
+  "kind": "n_back",
+  "level": 0,
+  "area": "memory",
+  "tier": 1,
+  "step": 1
+ },
+ {
+  "activity_id": "n_back-skill",
+  "kind": "n_back",
+  "level": 0,
+  "area": "memory",
+  "tier": 1,
+  "step": 2
+ },
+ {
+  "activity_id": "n_back-skill",
+  "kind": "n_back",
+  "level": 0,
+  "area": "memory",
+  "tier": 1,
+  "step": 3
+ },
+ {
+  "activity_id": "n_back-skill",
+  "kind": "n_back",
+  "level": 0,
+  "area": "memory",
+  "tier": 2,
+  "step": 1
+ },
+ {
+  "activity_id": "n_back-skill",
+  "kind": "n_back",
+  "level": 0,
+  "area": "memory",
+  "tier": 2,
+  "step": 2
+ },
+ {
+  "activity_id": "n_back-skill",
+  "kind": "n_back",
+  "level": 0,
+  "area": "memory",
+  "tier": 2,
+  "step": 3
+ },
+ {
+  "activity_id": "n_back-skill",
+  "kind": "n_back",
+  "level": 0,
+  "area": "memory",
+  "tier": 3,
+  "step": 1
+ },
+ {
+  "activity_id": "n_back-skill",
+  "kind": "n_back",
+  "level": 0,
+  "area": "memory",
+  "tier": 3,
+  "step": 2
+ },
+ {
+  "activity_id": "n_back-skill",
+  "kind": "n_back",
+  "level": 0,
+  "area": "memory",
+  "tier": 3,
+  "step": 3
+ },
+ {
+  "activity_id": "n_back-skill",
+  "kind": "n_back",
+  "level": 0,
+  "area": "memory",
+  "tier": 4,
+  "step": 1
+ },
+ {
+  "activity_id": "n_back-skill",
+  "kind": "n_back",
+  "level": 0,
+  "area": "memory",
+  "tier": 4,
+  "step": 2
+ },
+ {
+  "activity_id": "n_back-skill",
+  "kind": "n_back",
+  "level": 0,
+  "area": "memory",
+  "tier": 4,
+  "step": 3
+ },
+ {
+  "activity_id": "pairs_recall-skill",
+  "kind": "pairs_recall",
+  "level": 0,
+  "area": "memory",
+  "tier": 1,
+  "step": 1
+ },
+ {
+  "activity_id": "pairs_recall-skill",
+  "kind": "pairs_recall",
+  "level": 0,
+  "area": "memory",
+  "tier": 1,
+  "step": 2
+ },
+ {
+  "activity_id": "pairs_recall-skill",
+  "kind": "pairs_recall",
+  "level": 0,
+  "area": "memory",
+  "tier": 1,
+  "step": 3
+ },
+ {
+  "activity_id": "pairs_recall-skill",
+  "kind": "pairs_recall",
+  "level": 0,
+  "area": "memory",
+  "tier": 2,
+  "step": 1
+ },
+ {
+  "activity_id": "pairs_recall-skill",
+  "kind": "pairs_recall",
+  "level": 0,
+  "area": "memory",
+  "tier": 2,
+  "step": 2
+ },
+ {
+  "activity_id": "pairs_recall-skill",
+  "kind": "pairs_recall",
+  "level": 0,
+  "area": "memory",
+  "tier": 2,
+  "step": 3
+ },
+ {
+  "activity_id": "pairs_recall-skill",
+  "kind": "pairs_recall",
+  "level": 0,
+  "area": "memory",
+  "tier": 3,
+  "step": 1
+ },
+ {
+  "activity_id": "pairs_recall-skill",
+  "kind": "pairs_recall",
+  "level": 0,
+  "area": "memory",
+  "tier": 3,
+  "step": 2
+ },
+ {
+  "activity_id": "pairs_recall-skill",
+  "kind": "pairs_recall",
+  "level": 0,
+  "area": "memory",
+  "tier": 3,
+  "step": 3
+ },
+ {
+  "activity_id": "pairs_recall-skill",
+  "kind": "pairs_recall",
+  "level": 0,
+  "area": "memory",
+  "tier": 4,
+  "step": 1
+ },
+ {
+  "activity_id": "pairs_recall-skill",
+  "kind": "pairs_recall",
+  "level": 0,
+  "area": "memory",
+  "tier": 4,
+  "step": 2
+ },
+ {
+  "activity_id": "pairs_recall-skill",
+  "kind": "pairs_recall",
+  "level": 0,
+  "area": "memory",
+  "tier": 4,
+  "step": 3
  }
 ]
