@@ -20,7 +20,7 @@ import { PlayMotion } from "@/features/activities/anim";
 import { SkillPlay } from "@/features/activities/skill";
 import { SKILL_GAME_BY_ID, type SkillGame } from "@/content/skillGames";
 import { daySeed } from "@/lib/games/rng";
-import { levelFor } from "@/lib/skill";
+import { levelFor, needsMet } from "@/lib/skill";
 import { localDate } from "@/lib/api/schema";
 import { SkillGames } from "./SkillGames";
 import { Aac } from "./Aac";
@@ -302,7 +302,8 @@ export function ChildMode({ child }: { child: Child }) {
       return;
     }
     const theta = sel.skills(db, child.id)[game.area].theta;
-    const steps = game.steps.filter((s) => s.tier === tier).map((s) => ({ activityId: game.id, kind: game.kind, level: 0, area: game.area, tier: s.tier, step: s.step }));
+    const tops = sel.tiers(db, child.id);
+    const steps = game.steps.filter((s) => s.tier === tier && needsMet(s.needs, tops)).map((s) => ({ activityId: game.id, kind: game.kind, level: 0, area: game.area, tier: s.tier, step: s.step }));
     speak(t(`skill.game.${game.kind}`), lang);
     setView({ v: "skill", gameId: game.id, tier, step: levelFor(theta, 0.75, steps).step, run });
   };

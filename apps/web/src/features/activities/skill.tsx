@@ -18,8 +18,10 @@ import { TypeRound } from "./keyboard";
 import { ActionButton, answer, denseSize, fitSize, Frame, sizeFor, useActT, useClock, useHint, WatchAgain } from "./kit";
 import { SequenceRound, useSequence } from "./memory";
 import { OddOneOutPlayer, TrackFishPlayer, WhichWayPlayer } from "./skillAttention";
+import { OppositePlayer, SecretRulePlayer, SwitchSortPlayer } from "./skillFlex";
 import { Series, type PlayerProps } from "./skillKit";
 import { CardPairsPlayer, NBackPlayer, PairsRecallPlayer, ShoppingListPlayer } from "./skillMemory";
+import { BalancePlayer, LogicHousesPlayer, NextPatternPlayer, PipesPlayer, ShadowMatchPlayer } from "./skillReason";
 
 // Skill games (games spec 8 Nov 2026, §2.3, §5, §6): the 12 kinds of the theme worlds and the new skill-only kinds, 12\n// steps each. The rounds
 // come from the kind's generator (lib/games) with the day's seed; the players below show them with the engines' own
@@ -594,4 +596,12 @@ const PLAYERS: { [K in SkillKind]: ComponentType<PlayerProps<K>> } = {
   shopping_list: ShoppingListPlayer,
   n_back: NBackPlayer,
   pairs_recall: PairsRecallPlayer,
+  switch_sort: SwitchSortPlayer,
+  opposite: OppositePlayer,
+  secret_rule: SecretRulePlayer,
+  next_pattern: NextPatternPlayer,
+  balance: BalancePlayer,
+  pipes: PipesPlayer,
+  logic_houses: LogicHousesPlayer,
+  shadow_match: ShadowMatchPlayer,
 };

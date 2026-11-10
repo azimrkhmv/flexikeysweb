@@ -1,4 +1,5 @@
 import { VOCAB } from "@/content/vocab";
+import { isCard, parseCard, type Card } from "@/lib/games/flexibility";
 import { COLOR_HEX, isGlyph, parseGlyph, type Glyph } from "@/lib/games/glyph";
 import { baseId, numOf, wordEmoji } from "@/lib/games/pools";
 import type { Lang } from "@/lib/i18n";
@@ -16,6 +17,7 @@ export const times = (s: Size, f: number): Size => (typeof s === "number" ? Math
 export function ItemArt({ id: given, size = 72 }: { id: string; size?: Size }) {
   const id = baseId(given); // a copy of an item ("apple~2") looks like the item
   if (isGlyph(id)) return <GlyphArt g={parseGlyph(id)} size={size} />;
+  if (isCard(id)) return <CardArt c={parseCard(id)} size={size} />;
   if (id.startsWith("num:")) return <Big text={String(numOf(id))} size={size} />;
   if (id.startsWith("w:")) return <Emoji emoji={wordEmoji(id) ?? "❔"} size={size} />;
   const item = VOCAB[id];
@@ -50,7 +52,18 @@ export function itemLabel(given: string, lang: Lang, t: (k: string, v?: Record<s
   const id = baseId(given);
   if (isGlyph(id)) {
     const g = parseGlyph(id);
-    return t("skill.glyph", { color: t(`skill.color.${g.color}`), shape: t(`skill.shape.${g.shape}`) });
+    // Shapes that differ only in size, shade or the way an arrow points must not sound the same (B85).
+    const details = [
+      g.size === 0 ? t("skill.detail.small") : g.size === 2 ? t("skill.detail.big") : "",
+      g.shade === 1 ? t("skill.detail.light") : g.shade === 2 ? t("skill.detail.dark") : "",
+      g.shape === "arrow" && g.rot % 90 === 0 ? t(`skill.dir.${["up", "right", "down", "left"][g.rot / 90]}`) : "",
+    ].filter(Boolean);
+    const name = t("skill.glyph", { color: t(`skill.color.${g.color}`), shape: t(`skill.shape.${g.shape}`) });
+    return [name, ...details].join(", ");
+  }
+  if (isCard(id)) {
+    const c = parseCard(id);
+    return t("skill.cards.size", { count: c.count, size: t(`skill.size.${c.size}`), glyph: t("skill.glyph", { color: t(`skill.color.${c.color}`), shape: t(`skill.shape.${c.shape}`) }) });
   }
   if (id.startsWith("num:")) return String(numOf(id));
   if (id.startsWith("w:")) return id.split(":")[2];
@@ -70,6 +83,9 @@ const SHAPE_PATHS: Record<string, string> = {
   corner: "M18 6h22v64h44v22H18z",
   moon: "M64 8a42 42 0 1 0 0 84 33 33 0 1 1 0-84z",
   house: "M50 6 92 44H80v50H58V68H42v26H20V44H8z",
+  // Shadow Match (B85): two more shapes whose mirror image is never a turn of them.
+  zigzag: "M36 22H92V50H64V78H8V50H36z",
+  boot: "M30 8H58V54C78 54 92 62 92 78V92H30z",
 };
 
 function Shape({ shape, size }: { shape: string; size: Size }) {
@@ -104,6 +120,27 @@ function GlyphArt({ g, size }: { g: Glyph; size: Size }) {
           <path d={SHAPE_PATHS[g.shape]} fill={tint(fill, shade)} stroke={tint(stroke, shade)} strokeWidth="5" strokeLinejoin="round" />
         )}
       </g>
+    </svg>
+  );
+}
+
+/** Where 1–4 shapes sit on a Secret Rule card, and how big each size is (B85). */
+const CARD_SPOTS: [number, number][][] = [[], [[50, 50]], [[28, 50], [72, 50]], [[50, 28], [28, 72], [72, 72]], [[28, 28], [72, 28], [28, 72], [72, 72]]];
+const CARD_SCALE = [0.2, 0.28, 0.36, 0.44];
+function CardArt({ c, size }: { c: Card; size: Size }) {
+  const [fill, stroke] = COLOR_HEX[c.color];
+  const s = CARD_SCALE[c.size] * (c.count === 1 ? 1.6 : 1);
+  return (
+    <svg viewBox="0 0 100 100" width={size} height={size} aria-hidden>
+      {CARD_SPOTS[c.count].map(([x, y], k) => (
+        <g key={k} transform={`translate(${x} ${y}) scale(${s}) translate(-50 -50)`}>
+          {c.shape === "circle" ? (
+            <circle cx="50" cy="50" r="40" fill={fill} stroke={stroke} strokeWidth="8" />
+          ) : (
+            <path d={SHAPE_PATHS[c.shape]} fill={fill} stroke={stroke} strokeWidth="8" strokeLinejoin="round" />
+          )}
+        </g>
+      ))}
     </svg>
   );
 }

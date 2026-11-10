@@ -2,10 +2,12 @@ import type { CountSettings, FindSameSettings, LightPathSettings, ListenPickSett
 import type { SkillKind } from "@/lib/games";
 import type { OddOneOutSettings, TrackFishSettings, WhichWaySettings } from "@/lib/games/attention";
 import type { CardPairsSettings, NBackSettings, PairsRecallSettings, ShoppingSettings } from "@/lib/games/memory";
+import type { OppositeSettings, SecretRuleSettings, SwitchSortSettings } from "@/lib/games/flexibility";
+import type { BalanceSettings, LogicHousesSettings, NextPatternSettings, PipesSettings, ShadowSettings } from "@/lib/games/reasoning";
 import { AREA_OF, type Area, type StepN, type Tier } from "@/lib/skill";
 import type { ActivityStep, InputModeId, L10n } from "@/lib/types";
 
-// Skill games (games spec 8 Nov 2026, §2.3, §5): one game per kind, `<kind>-skill`, with 12 steps — tiers Seed,
+// Skill games (games spec 8 Nov 2026, §2.3, §5, §6): one game per kind, `<kind>-skill`, with 12 steps — tiers Seed,
 // Sprout, Tree, Summit × steps 1–3, each a little harder than the one before. A step's settings go to the kind's
 // round generator (lib/games); its `can_do` is the sentence the parent panel shows.
 // uz text drafted 8 Nov 2026 — native-speaker check (B44).
@@ -28,7 +30,7 @@ const pl = (n: number, one: string, few: string, many: string) => {
 };
 const range = (min = 1, max = 99) => (min === max ? `${min}` : max >= 99 ? `${min}+` : `${min}–${max}`);
 
-function game<S>(kind: SkillKind, table: S[], canDo: (s: S) => L10n): SkillGame<S> {
+function game<S>(kind: SkillKind, table: S[], canDo: (s: S) => L10n, needs?: (s: S) => ActivityStep["needs"]): SkillGame<S> {
   if (table.length !== 12) throw new Error(`${kind}: 12 steps, not ${table.length}`);
   return {
     id: `${kind}-skill`,
@@ -36,7 +38,7 @@ function game<S>(kind: SkillKind, table: S[], canDo: (s: S) => L10n): SkillGame<
     area: AREA_OF[kind],
     theme: "mixed",
     input_modes: ALL_MODES,
-    steps: table.map((settings, k) => ({ tier: (Math.floor(k / 3) + 1) as Tier, step: ((k % 3) + 1) as StepN, settings, can_do: canDo(settings) })),
+    steps: table.map((settings, k) => ({ tier: (Math.floor(k / 3) + 1) as Tier, step: ((k % 3) + 1) as StepN, settings, can_do: canDo(settings), ...(needs?.(settings) ? { needs: needs(settings) } : {}) })),
   };
 }
 
@@ -378,9 +380,191 @@ const pairsRecall = game<PairsRecallSettings>(
   }),
 );
 
+// ---------------------------------------------------------------- §6.3 Flexibility (new games)
+const switchSort = game<SwitchSortSettings>(
+  "switch_sort",
+  (
+    [
+      [8, 6, true, 2], [10, 5, true, 2], [12, 4, true, 2],
+      [12, 4, false, 2], [12, 3, false, 2], [12, 3, false, 3],
+      [12, 2, false, 2], [12, 2, false, 3], [14, 0, false, 2],
+      [12, 0, false, 3], [14, 0, false, 3], [16, 0, false, 3],
+    ] as const
+  ).map(([cards, every, said, boxes]) => ({ cards, every, said, boxes })),
+  ({ cards: n, every, said, boxes }) => {
+    const when = every
+      ? { en: `the rule changes every ${every} cards`, ru: `правило меняется каждые ${every} ${pl(every, "карточку", "карточки", "карточек")}`, uz: `qoida har ${every} ta kartadan keyin almashadi` }
+      : { en: "the rule can change at any card", ru: "правило может смениться на любой карточке", uz: "qoida istalgan kartada almashishi mumkin" };
+    const say = said ? { en: ", said aloud", ru: ", и это говорится вслух", uz: ", bu ovoz chiqarib aytiladi" } : { en: ", shown only by the frame", ru: ", это видно только по рамке", uz: ", buni faqat ramka koʻrsatadi" };
+    return {
+      en: `Sorts ${n} cards by colour or by shape into ${boxes} boxes; ${when.en}${say.en}`,
+      ru: `Раскладывает ${n} карточек по цвету или по форме в ${boxes} коробки; ${when.ru}${say.ru}`,
+      uz: `${n} ta kartani rangi yoki shakli boʻyicha ${boxes} ta qutiga ajratadi; ${when.uz}${say.uz}`,
+    };
+  },
+);
+
+const opposite = game<OppositeSettings>(
+  "opposite",
+  [
+    { mode: "pictures", options: 2 }, { mode: "pictures", options: 3 }, { mode: "glyphs", options: 2 },
+    { mode: "mixed", options: 3 }, { mode: "mixed", options: 4 }, { mode: "close", options: 3 },
+    { mode: "close", options: 4 }, { mode: "close", options: 5 }, { mode: "close", options: 6 },
+    { mode: "stroop", options: 3 }, { mode: "stroop", options: 4 }, { mode: "stroop", options: 6 },
+  ],
+  ({ mode, options: n }) =>
+    ({
+      pictures: { en: `Picks the opposite picture (sun and moon) out of ${n}`, ru: `Выбирает противоположную картинку (солнце и луна) из ${n}`, uz: `${n} ta rasm ichidan qarama-qarshisini tanlaydi (quyosh va oy)` },
+      glyphs: { en: `Picks the opposite shape (big and small, up and down) out of ${n}`, ru: `Выбирает противоположную фигуру (большая и маленькая, вверх и вниз) из ${n}`, uz: `${n} ta shakl ichidan qarama-qarshisini tanlaydi (katta va kichik, yuqori va past)` },
+      mixed: { en: `Picks the opposite of a picture or a shape out of ${n}`, ru: `Выбирает противоположное к картинке или фигуре из ${n}`, uz: `${n} ta javob ichidan rasm yoki shaklning qarama-qarshisini tanlaydi` },
+      close: { en: `Picks the opposite out of ${n} look-alikes`, ru: `Выбирает противоположное из ${n} похожих`, uz: `${n} ta oʻxshash narsa ichidan qarama-qarshisini tanlaydi` },
+      stroop: { en: `Reads a colour word written in another colour and picks the ink colour out of ${n}`, ru: `Читает название цвета, написанное другим цветом, и выбирает цвет букв из ${n}`, uz: `Boshqa rangda yozilgan rang nomini oʻqiydi va ${n} ta rangdan harflar rangini tanlaydi` },
+    })[mode],
+  // The colour words must be read: offered once the child's Language tier 3 is open (spec §6.3).
+  ({ mode }) => (mode === "stroop" ? { area: "literacy", tier: 3 } : undefined),
+);
+
+const RULE_NAMES = {
+  2: { en: "colour or shape", ru: "цвет или форма", uz: "rang yoki shakl" },
+  3: { en: "colour, shape or number", ru: "цвет, форма или количество", uz: "rang, shakl yoki son" },
+  4: { en: "colour, shape, number or size", ru: "цвет, форма, количество или размер", uz: "rang, shakl, son yoki oʻlcham" },
+} as const;
+const secretRule = game<SecretRuleSettings>(
+  "secret_rule",
+  (
+    [
+      [2, 10, 12], [2, 8, 12], [2, 6, 12],
+      [3, 8, 12], [3, 6, 12], [3, 5, 15],
+      [3, 4, 12], [4, 6, 12], [4, 6, 16],
+      [4, 5, 16], [4, 4, 16], [4, 4, 20],
+    ] as const
+  ).map(([rules, every, cards]) => ({ rules, every, cards })),
+  ({ rules, every, cards: n }) => ({
+    en: `Finds a hidden sorting rule (${RULE_NAMES[rules].en}) that changes after ${every} right cards, in ${n} cards`,
+    ru: `Находит тайное правило (${RULE_NAMES[rules].ru}), которое меняется после ${every} верных карточек, за ${n} карточек`,
+    uz: `${n} ta kartada yashirin qoidani (${RULE_NAMES[rules].uz}) topadi; qoida ${every} ta toʻgʻri kartadan keyin almashadi`,
+  }),
+);
+
+// ---------------------------------------------------------------- §6.4 Reasoning (new games)
+const nextPattern = game<NextPatternSettings>(
+  "next_pattern",
+  [
+    { mode: "ab", by: "color", options: 2 }, { mode: "ab", by: "shape", options: 2 }, { mode: "ab", by: "both", options: 3 },
+    { mode: "aab", by: "both", options: 3 }, { mode: "abc", by: "both", options: 3 }, { mode: "grow", options: 4 },
+    { mode: "turn", options: 4 }, { mode: "grid", size: 3, rules: 1, options: 4 }, { mode: "grid", size: 2, rules: 2, options: 4 },
+    { mode: "grid", size: 3, rules: 2, options: 4 }, { mode: "grid", size: 3, rules: 2, options: 5 }, { mode: "grid", size: 3, rules: 2, options: 6 },
+  ],
+  ({ mode, by, size, rules, options: n }) => {
+    if (mode === "grid")
+      return rules === 1
+        ? { en: `Finishes a ${size}×${size} grid where each row has one shape, out of ${n}`, ru: `Заканчивает сетку ${size}×${size}, где в каждом ряду своя фигура, из ${n}`, uz: `Har qatorida bitta shakl boʻlgan ${size}×${size} toʻrni ${n} ta javobdan tanlab tugatadi` }
+        : { en: `Finishes a ${size}×${size} grid with two rules (rows and columns), out of ${n} near misses`, ru: `Заканчивает сетку ${size}×${size} с двумя правилами (ряды и столбцы) из ${n} похожих`, uz: `Ikki qoidali (qator va ustun) ${size}×${size} toʻrni ${n} ta oʻxshash javobdan tanlab tugatadi` };
+    const what = { color: { en: "colours", ru: "цвета", uz: "ranglar" }, shape: { en: "shapes", ru: "фигуры", uz: "shakllar" }, both: { en: "shapes and colours", ru: "фигуры и цвета", uz: "shakl va ranglar" } }[by ?? "both"];
+    return (
+      {
+        ab: { en: `Finishes an ABAB row of ${what.en}, out of ${n}`, ru: `Продолжает ряд АБАБ (${what.ru}), выбирая из ${n}`, uz: `ABAB qatorini (${what.uz}) ${n} ta javobdan tanlab davom ettiradi` },
+        aab: { en: `Finishes an AAB row of shapes and colours, out of ${n}`, ru: `Продолжает ряд ААБ из фигур и цветов, выбирая из ${n}`, uz: `AAB qatorini (shakl va ranglar) ${n} ta javobdan tanlab davom ettiradi` },
+        abc: { en: `Finishes an ABC row of shapes and colours, out of ${n}`, ru: `Продолжает ряд АБВ из фигур и цветов, выбирая из ${n}`, uz: `ABC qatorini (shakl va ranglar) ${n} ta javobdan tanlab davom ettiradi` },
+        grow: { en: `Finishes a row that grows small, middle, big, out of ${n}`, ru: `Продолжает ряд «маленький, средний, большой», выбирая из ${n}`, uz: `«Kichik, oʻrta, katta» qatorini ${n} ta javobdan tanlab davom ettiradi` },
+        turn: { en: `Finishes a row of a shape turning a quarter each time, out of ${n}`, ru: `Продолжает ряд фигуры, которая каждый раз поворачивается на четверть, выбирая из ${n}`, uz: `Har safar chorak burilayotgan shakl qatorini ${n} ta javobdan tanlab davom ettiradi` },
+      } as const
+    )[mode];
+  },
+);
+
+const balance = game<BalanceSettings>(
+  "balance",
+  [
+    { mode: "most", items: 2, ask: "heavy", options: 2 }, { mode: "most", items: 2, ask: "light", options: 2 }, { mode: "most", items: 3, ask: "heavy", options: 3 },
+    { mode: "most", items: 3, ask: "light", options: 3 }, { mode: "most", items: 3, ask: "heavy", shuffle: true, options: 3 }, { mode: "count", level: 1, options: 3 },
+    { mode: "most", items: 4, ask: "heavy", options: 4 }, { mode: "most", items: 4, ask: "light", shuffle: true, options: 4 }, { mode: "count", level: 1, options: 4 },
+    { mode: "most", items: 4, ask: "heavy", shuffle: true, options: 4 }, { mode: "count", level: 2, options: 4 }, { mode: "count", level: 3, options: 5 },
+  ],
+  ({ mode, items: n = 2, ask, shuffle, level, options: o }) => {
+    if (mode === "count")
+      return (
+        {
+          1: { en: `Works out how many circles weigh as much as some squares, from one scale (${o} answers)`, ru: `По одним весам находит, сколько кружков весят как несколько квадратов (${o} ответа)`, uz: `Bitta tarozidan nechta doira bir necha kvadratga teng ogʻirlikda ekanini topadi (${o} ta javob)` },
+          2: { en: `Works out how many circles weigh as much as a square, from two scales one after the other`, ru: `По двум весам по цепочке находит, сколько кружков весят как квадрат`, uz: `Ikki tarozidan ketma-ket hisoblab, nechta doira bitta kvadratga teng ekanini topadi` },
+          3: { en: `Works out how many circles weigh as much as a square, from two scales with mixed shapes`, ru: `По двум весам с разными фигурами находит, сколько кружков весят как квадрат`, uz: `Aralash shakllar turgan ikki tarozidan nechta doira bitta kvadratga teng ekanini topadi` },
+        } as const
+      )[level ?? 1];
+    if (n === 2) return ask === "heavy" ? { en: "Shows the heavier side of a tilted scale", ru: "Показывает, какая сторона весов тяжелее", uz: "Tarozining ogʻirroq tomonini koʻrsatadi" } : { en: "Shows the lighter side of a tilted scale", ru: "Показывает, какая сторона весов легче", uz: "Tarozining yengilroq tomonini koʻrsatadi" };
+    const most = ask === "heavy" ? { en: "heaviest", ru: "самую тяжёлую", uz: "eng ogʻirini" } : { en: "lightest", ru: "самую лёгкую", uz: "eng yengilini" };
+    const mixed = shuffle ? { en: ", the scales mixed up", ru: ", весы вперемешку", uz: ", tarozilar aralash" } : { en: "", ru: "", uz: "" };
+    return {
+      en: `Finds the ${most.en} of ${n} things from ${n - 1} scales${mixed.en}`,
+      ru: `Находит ${most.ru} из ${n} вещей по ${n - 1} весам${mixed.ru}`,
+      uz: `${n - 1} ta tarozidan ${n} ta narsaning ${most.uz} topadi${mixed.uz}`,
+    };
+  },
+);
+
+const pipes = game<PipesSettings>(
+  "pipes",
+  (
+    [
+      [3, 1, 1], [4, 2, 1], [3, 3, 1],
+      [4, 3, 1], [4, 4, 1], [5, 4, 1],
+      [5, 5, 1], [6, 5, 1], [6, 6, 1],
+      [6, 6, 2], [7, 6, 2], [7, 7, 2],
+    ] as const
+  ).map(([cols, rows, flowers]) => ({ cols, rows, flowers })),
+  ({ cols, rows, flowers }) =>
+    rows === 1
+      ? { en: `Turns ${cols} pipes in a line so water reaches the flower`, ru: `Поворачивает ${cols} трубы в ряд, чтобы вода дошла до цветка`, uz: `Suv gulga yetishi uchun qatordagi ${cols} ta quvurni buradi` }
+      : {
+          en: `Turns pipes on a ${cols}×${rows} grid so water reaches ${flowers === 2 ? "two flowers" : "the flower"}`,
+          ru: `Поворачивает трубы на поле ${cols}×${rows}, чтобы вода дошла до ${flowers === 2 ? "двух цветков" : "цветка"}`,
+          uz: `Suv ${flowers === 2 ? "ikkita gulga" : "gulga"} yetishi uchun ${cols}×${rows} maydondagi quvurlarni buradi`,
+        },
+);
+
+const logicHouses = game<LogicHousesSettings>(
+  "logic_houses",
+  (
+    [
+      [2, 1, 1], [3, 2, 1], [3, 2, 0],
+      [4, 3, 1], [4, 3, 0], [4, 4, 1],
+      [4, 4, 0], [5, 4, 2], [5, 5, 1],
+      [5, 5, 0], [5, 6, 1], [5, 6, 0],
+    ] as const
+  ).map(([houses, clues, at]) => ({ houses, clues, at })),
+  ({ houses: n, clues: k, at }) => {
+    const none = at === 0 ? { en: ", none of them naming a house", ru: ", ни одна не называет дом", uz: ", hech biri uyni aytmaydi" } : { en: "", ru: "", uz: "" };
+    return {
+      en: `Puts ${n} animals in their houses from ${k} picture ${k === 1 ? "clue" : "clues"}${none.en}`,
+      ru: `Расселяет ${n} ${pl(n, "зверя", "зверей", "зверей")} по домам по ${k} ${pl(k, "подсказке", "подсказкам", "подсказкам")}-картинкам${none.ru}`,
+      uz: `${k} ta rasmli ishoradan ${n} ta hayvonni uylariga joylaydi${none.uz}`,
+    };
+  },
+);
+
+const shadowMatch = game<ShadowSettings>(
+  "shadow_match",
+  [
+    { options: 2, pool: "any", turn: "none" }, { options: 3, pool: "any", turn: "none" }, { options: 3, pool: "any", turn: "same" },
+    { options: 3, pool: "similar", turn: "same" }, { options: 4, pool: "any", turn: "other" }, { options: 4, pool: "similar", turn: "other" },
+    { options: 3, pool: "mirror", turn: "same" }, { options: 4, pool: "mirror", turn: "same" }, { options: 4, pool: "mirror", turn: "other" },
+    { options: 4, pool: "mirror", turn: "other", flip: true }, { options: 5, pool: "mirror", turn: "other", flip: true }, { options: 6, pool: "mirror", turn: "other", flip: true },
+  ],
+  ({ options: n, pool, turn, flip }) => {
+    const others = { any: { en: "other shapes", ru: "других фигур", uz: "boshqa shakllar" }, similar: { en: "look-alike shapes", ru: "похожих фигур", uz: "oʻxshash shakllar" }, mirror: { en: "mirror images", ru: "зеркальных отражений", uz: "koʻzgudagi aksi" } }[pool];
+    const t = { none: { en: "", ru: "", uz: "" }, same: { en: ", turned the same way", ru: ", повёрнутую так же", uz: ", bir xil burilgan" }, other: { en: ", turned another way", ru: ", повёрнутую по-другому", uz: ", boshqacha burilgan" } }[turn];
+    const f = flip ? { en: " and flipped", ru: " и перевёрнутую", uz: " va agʻdarilgan" } : { en: "", ru: "", uz: "" };
+    return {
+      en: `Matches a shape to its shadow${t.en}${f.en}, among ${n - 1} ${others.en}`,
+      ru: `Находит фигуру по её тени${t.ru}${f.ru}, среди ${n - 1} ${others.ru}`,
+      uz: `Shaklni soyasiga moslaydi${t.uz}${f.uz}; ${n - 1} ta ${others.uz} orasidan`,
+    };
+  },
+);
+
 export const SKILL_GAMES: SkillGame[] = [
   findSame, scene, story, sequence, missing, lightPath, sort, maze, puzzle, listenPick, type, count,
   oddOneOut, trackFish, whichWay, cardPairs, shoppingList, nBack, pairsRecall,
+  switchSort, opposite, secretRule, nextPattern, balance, pipes, logicHouses, shadowMatch,
 ] as unknown as SkillGame[]; // prettier-ignore
 export const SKILL_GAME_BY_ID: Record<string, SkillGame> = Object.fromEntries(SKILL_GAMES.map((g) => [g.id, g]));
 export const stepOf = (g: SkillGame, tier: number, step: number) => g.steps.find((s) => s.tier === tier && s.step === step);

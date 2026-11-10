@@ -23,7 +23,9 @@ export const AREA_OF: Record<GameKind, Area> = {
   sequence: "memory", missing: "memory", light_path: "memory",
   card_pairs: "memory", shopping_list: "memory", n_back: "memory", pairs_recall: "memory",
   sort: "flexibility", maze: "flexibility",
+  switch_sort: "flexibility", opposite: "flexibility", secret_rule: "flexibility",
   puzzle: "reasoning",
+  next_pattern: "reasoning", balance: "reasoning", pipes: "reasoning", logic_houses: "reasoning", shadow_match: "reasoning",
   listen_pick: "literacy", type: "literacy", sentence: "literacy",
   count: "numeracy",
   path: "access", trace: "access", dots: "access", color: "access", paint: "access",
@@ -105,6 +107,8 @@ export interface Game {
   area: Area;
   tier: Tier;
   step: StepN;
+  /** A step offered only once this tier of another area is open (games spec §6.3). */
+  needs?: { area: Area; tier: number };
 }
 export type Slot = "easy_win" | "growth" | "choice";
 
@@ -132,8 +136,11 @@ export function openTiers(top: number, theta: number, cleanSince: number): numbe
 }
 
 /** The skill-game steps the child may play: in an open tier of their area, and above Seed only with Pro. */
-export function openSkillSteps<G extends { area: Area; tier: number }>(steps: G[], top: Partial<Record<Area, number>>, pro: boolean): G[] {
-  return steps.filter((g) => g.tier <= (top[g.area] ?? 1) && (pro || g.tier <= FREE_TIER));
+/** A step that needs another area's tier (Opposite Day's colour words need Language tier 3): is that tier open? */
+export const needsMet = (needs: { area: Area; tier: number } | undefined, top: Partial<Record<Area, number>>) => !needs || (top[needs.area] ?? 1) >= needs.tier;
+
+export function openSkillSteps<G extends { area: Area; tier: number; needs?: { area: Area; tier: number } }>(steps: G[], top: Partial<Record<Area, number>>, pro: boolean): G[] {
+  return steps.filter((g) => g.tier <= (top[g.area] ?? 1) && (pro || g.tier <= FREE_TIER) && needsMet(g.needs, top));
 }
 
 /**

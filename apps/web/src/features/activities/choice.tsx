@@ -23,6 +23,10 @@ export interface ChoiceSpec {
   size?: Size;
   art?: (id: string, size: Size) => ReactNode;
   label?: (id: string) => string;
+  /** A wrong pick leaves the option as it was (Secret Rule: the card only slides back, spec §6.3). */
+  quietMiss?: boolean;
+  /** Told about every pick (the stage can react to it). */
+  onPick?: (id: string, correct: boolean) => void;
 }
 
 export function ChoiceEngine({ rounds, onDone, offset = 0, total }: { rounds: ChoiceSpec[]; onDone: () => void; offset?: number; total?: number }) {
@@ -53,9 +57,10 @@ function ChoiceRound({ spec, index, total, last, onNext }: { spec: ChoiceSpec; i
     if (solved) return;
     const correct = id === spec.answer;
     answer(ctx, { target: spec.answer, actual: id, correct, latencyMs: clock.ms(), info });
+    spec.onPick?.(id, correct);
     if (correct) setSolved(true);
     else {
-      setTried((x) => [...x, id]);
+      if (!spec.quietMiss) setTried((x) => [...x, id]);
       hint.miss();
     }
   };

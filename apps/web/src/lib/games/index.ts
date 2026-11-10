@@ -1,7 +1,9 @@
 import type { Lang } from "@/lib/i18n";
 import * as attention from "./attention";
 import * as existing from "./existing";
+import * as flexibility from "./flexibility";
 import * as memory from "./memory";
+import * as reasoning from "./reasoning";
 import { rngOf, type Rng } from "./rng";
 
 // Rounds are generated, not hand-written (games spec 8 Nov 2026, §1): a step gives the settings, `makeRounds` builds
@@ -39,6 +41,16 @@ export const GENERATORS = {
   shopping_list: memory.shoppingList,
   n_back: memory.nBack,
   pairs_recall: memory.pairsRecall,
+  // §6.3 Flexibility
+  switch_sort: flexibility.switchSort,
+  opposite: flexibility.opposite,
+  secret_rule: flexibility.secretRule,
+  // §6.4 Reasoning
+  next_pattern: reasoning.nextPattern,
+  balance: reasoning.balance,
+  pipes: reasoning.pipes,
+  logic_houses: reasoning.logicHouses,
+  shadow_match: reasoning.shadowMatch,
 };
 export type SkillKind = keyof typeof GENERATORS;
 export type SettingsOf<K extends SkillKind> = Parameters<(typeof GENERATORS)[K]["make"]>[0];

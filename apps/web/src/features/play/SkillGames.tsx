@@ -3,7 +3,7 @@
 import { SKILL_GAMES, type SkillGame } from "@/content/skillGames";
 import { sel, useDb } from "@/lib/api";
 import { useT } from "@/lib/i18n";
-import { FREE_TIER, SHOWN_AREAS, type Area } from "@/lib/skill";
+import { FREE_TIER, needsMet, SHOWN_AREAS, type Area } from "@/lib/skill";
 import type { Child } from "@/lib/types";
 import { Target } from "./Target";
 import { KIND_EMOJI, MapTabs } from "./WorldMap";
@@ -17,6 +17,9 @@ const AREA_ICON: Partial<Record<Area, string>> = { attention: "👀", memory: "�
 export function tierOpen(top: number, tier: number, pro: boolean) {
   return tier <= top && (pro || tier <= FREE_TIER);
 }
+/** ... and the game has a step there the child may play (a step can also need another area's tier, spec §6.3). */
+export const gameTierOpen = (g: SkillGame, tops: Record<Area, number>, tier: number, pro: boolean) =>
+  tierOpen(tops[g.area], tier, pro) && g.steps.some((s) => s.tier === tier && needsMet(s.needs, tops));
 
 /**
  * The "Skill games" tab (games spec §9): one card per area with its games, each game with its four tiers. A tier that
@@ -49,7 +52,7 @@ export function SkillGames({ child, onPlay, onTab }: { child: Child; onPlay: (ga
                   </p>
                   <div className="flex flex-1 flex-wrap gap-1.5 sm:gap-2">
                     {[1, 2, 3, 4].map((tier) => {
-                      const open = tierOpen(tops[area], tier, pro);
+                      const open = gameTierOpen(g, tops, tier, pro);
                       const name = t(`skill.tier.${tier}`);
                       return (
                         <Target

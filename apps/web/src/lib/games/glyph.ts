@@ -2,11 +2,16 @@
 // one item id ("g:star:red:30:0:1:1"), so every engine can show them with ItemArt and every generator can compare them.
 
 export const GLYPH_SHAPES = ["circle", "square", "triangle", "star", "heart", "rectangle", "arrow", "flag", "drop", "corner", "moon", "house"] as const;
-export type GlyphShape = (typeof GLYPH_SHAPES)[number];
+/** Two more shapes for Shadow Match (B85), kept out of GLYPH_SHAPES so the older games draw from the same list. */
+export const EXTRA_SHAPES = ["zigzag", "boot"] as const;
+export type GlyphShape = (typeof GLYPH_SHAPES)[number] | (typeof EXTRA_SHAPES)[number];
 /** Shapes whose turn is easy to see (no turn of them looks the same before 360°). */
 export const TURNABLE: GlyphShape[] = ["arrow", "flag", "drop", "corner", "moon", "house"];
-/** Shapes whose mirror image looks different from every turn of them (for shadows: mirror images are wrong options). */
-export const CHIRAL: GlyphShape[] = ["flag", "corner", "moon"];
+/**
+ * Shapes whose mirror image looks different from every turn of them (Shadow Match: mirror images are the wrong
+ * options). The moon is not one: it is the same upside down, so its mirror image is a turn of it.
+ */
+export const CHIRAL: GlyphShape[] = ["flag", "corner", "zigzag", "boot"];
 export const GLYPH_COLORS = ["red", "blue", "green", "yellow", "purple", "orange", "pink"] as const;
 export type GlyphColor = (typeof GLYPH_COLORS)[number];
 

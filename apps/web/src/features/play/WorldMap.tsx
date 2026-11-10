@@ -27,6 +27,7 @@ export const KIND_EMOJI: Record<GameKind, string> = {
   path: "〰️", scene: "🌱", puzzle: "🧩", type: "⌨️", sentence: "💬", story: "📖",
   trace: "✏️", dots: "🔵", color: "🖍️", maze: "🌀", paint: "🎨",
   odd_one_out: "🧐", track_fish: "🐠", which_way: "🧭", card_pairs: "🃏", shopping_list: "🛒", n_back: "🔂", pairs_recall: "🍽️",
+  switch_sort: "🗂️", opposite: "🙃", secret_rule: "🕵️", next_pattern: "🔮", balance: "⚖️", pipes: "🚰", logic_houses: "🏘️", shadow_match: "👤",
 };
 
 /** The two tabs of the map (games spec §9): the world map and the skill games. */

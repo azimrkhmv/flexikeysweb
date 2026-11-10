@@ -357,7 +357,8 @@ export type Activity = (
 
 export type ActivityKind = Activity["kind"];
 /** Kinds that exist only as skill games (games spec 8 Nov 2026, §6); no theme-world activity uses them. */
-export type SkillOnlyKind = "odd_one_out" | "track_fish" | "which_way" | "card_pairs" | "shopping_list" | "n_back" | "pairs_recall";
+export type SkillOnlyKind = "odd_one_out" | "track_fish" | "which_way" | "card_pairs" | "shopping_list" | "n_back" | "pairs_recall"
+  | "switch_sort" | "opposite" | "secret_rule" | "next_pattern" | "balance" | "pipes" | "logic_houses" | "shadow_match";
 /** Every kind of game: the theme worlds' kinds and the skill-only ones. */
 export type GameKind = ActivityKind | SkillOnlyKind;
 
@@ -371,6 +372,8 @@ export interface ActivityStep<S = Record<string, unknown>> {
   settings: S;
   /** For the parent panel: what a child who manages this step can do ("Remembers 4 pictures in order"). */
   can_do?: L10n;
+  /** Offered only once this tier of another area is open (Opposite Day's colour words need reading, spec §6.3). */
+  needs?: { area: Area; tier: Tier };
 }
 
 /** The fields every activity has (games spec §2.2): its area, theme world, input modes and steps. */

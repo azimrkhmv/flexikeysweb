@@ -29,7 +29,7 @@ const LIB = exerciseLibrary("seed", "2026-10-01T00:00:00Z");
 /** Every playable step of the theme worlds: its activity id, kind, world level, area, tier and step. */
 const WORLD_GAMES: Game[] = LEVELS.flatMap((l) => l.activities.flatMap((a) => a.steps.map((s) => ({ activityId: a.id, kind: a.kind, level: l.n, area: a.area, tier: s.tier, step: s.step }))));
 /** ... and of the skill games (level 0, games spec §2.3), twelve steps each. */
-const SKILL_STEPS: Game[] = SKILL_GAMES.flatMap((g) => g.steps.map((s) => ({ activityId: g.id, kind: g.kind, level: 0, area: g.area, tier: s.tier, step: s.step })));
+const SKILL_STEPS: Game[] = SKILL_GAMES.flatMap((g) => g.steps.map((s) => ({ activityId: g.id, kind: g.kind, level: 0, area: g.area, tier: s.tier, step: s.step, ...(s.needs ? { needs: s.needs } : {}) })));
 const GAMES: Game[] = [...WORLD_GAMES, ...SKILL_STEPS];
 /** A step's name in the cases: activity id @ tier . step (a skill game's id is the same for its 12 steps). */
 const stepKey = (g: Game) => `${g.activityId}@${g.tier}.${g.step}`;
@@ -39,6 +39,9 @@ const TIER_CASES: { top: Partial<Record<Area, number>>; pro: boolean }[] = [
   { top: { attention: 3, memory: 2 }, pro: false },
   { top: { attention: 3, memory: 2 }, pro: true },
   { top: { attention: 4, memory: 4, flexibility: 2, reasoning: 3, literacy: 2, numeracy: 4 }, pro: true },
+  // B85: Opposite Day's Summit (colour words) needs Language tier 3 as well.
+  { top: { flexibility: 4, literacy: 2 }, pro: true },
+  { top: { flexibility: 4, literacy: 3 }, pro: true },
 ];
 
 /** The roadmap in the backend's field names; key order is part of the contract (the hash covers it). */
@@ -169,7 +172,7 @@ describe("backend content", () => {
 
   it("games", () => {
     // One row per step (games spec §2.3).
-    check("games.json", GAMES.map((g) => ({ activity_id: g.activityId, kind: g.kind, level: g.level, area: g.area, tier: g.tier, step: g.step })));
+    check("games.json", GAMES.map((g) => ({ activity_id: g.activityId, kind: g.kind, level: g.level, area: g.area, tier: g.tier, step: g.step, ...(g.needs ? { needs_area: g.needs.area, needs_tier: g.needs.tier } : {}) })));
   });
 
   it("regions and districts", () => {

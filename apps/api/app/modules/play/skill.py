@@ -22,7 +22,9 @@ AREA_OF: dict[str, str] = {
     **dict.fromkeys(("sequence", "missing", "light_path"), "memory"),
     **dict.fromkeys(("card_pairs", "shopping_list", "n_back", "pairs_recall"), "memory"),  # §6.2
     **dict.fromkeys(("sort", "maze"), "flexibility"),
+    **dict.fromkeys(("switch_sort", "opposite", "secret_rule"), "flexibility"),  # §6.3
     "puzzle": "reasoning",
+    **dict.fromkeys(("next_pattern", "balance", "pipes", "logic_houses", "shadow_match"), "reasoning"),  # §6.4
     **dict.fromkeys(("listen_pick", "type", "sentence"), "literacy"),
     "count": "numeracy",
     **dict.fromkeys(("path", "trace", "dots", "color", "paint"), "access"),
@@ -128,8 +130,15 @@ def open_tiers(top: int, theta: float, clean_since: int) -> int:
 
 
 def open_skill_steps(steps: list[dict[str, Any]], top: Mapping[str, int], pro: bool) -> list[dict[str, Any]]:
-    """The skill-game steps the child may play: in an open tier of their area, and above Seed only with Pro."""
-    return [g for g in steps if g["tier"] <= top.get(g["area"], 1) and (pro or g["tier"] <= FREE_TIER)]
+    """The skill-game steps the child may play: in an open tier of their area, and above Seed only with Pro. A step
+    with `needs_area` also needs that tier of another area (Opposite Day's colour words: Language tier 3)."""
+    return [
+        g
+        for g in steps
+        if g["tier"] <= top.get(g["area"], 1)
+        and (pro or g["tier"] <= FREE_TIER)
+        and (not g.get("needs_area") or top.get(g["needs_area"], 1) >= g["needs_tier"])
+    ]
 
 
 def weekly_new(unlocked: list[dict[str, Any]], first_played: Mapping[str, str], today: str) -> list[dict[str, Any]]:
