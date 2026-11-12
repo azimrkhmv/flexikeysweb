@@ -5,7 +5,7 @@
 import { FREE_LEVELS, LEVEL_BY_ID, LEVELS, levelComplete } from "@/content/levels";
 import { computeMetrics, startingProfile, withFloors } from "../adaptive";
 import { levelAfter } from "../roadmap";
-import { AREAS, SPEED_TRIES, speedOpen, START_FROM, startingTheta, type Area } from "../skill";
+import { AREA_OF, AREAS, BEFORE_WEEKS, bestLevel, history, SHOWN_AREAS, shownLevel, snapshotAt, SPEED_TRIES, speedOpen, START_FROM, startingTheta, weekStart, type Area, type AreaProgress } from "../skill";
 import type { Answers } from "@/content/intake";
 import { typicalFilled } from "@/content/questionnaire";
 import { rulesView } from "@/content/questionnaireBridge";
@@ -14,7 +14,7 @@ import { PRICE_FRESH_DAYS } from "@/content/places";
 import { replaces, therapistInput, type Profession } from "@/content/therapist";
 import { LANGS, type Lang } from "../i18n";
 import { DAY, iso, localDate, type DB } from "./schema";
-import type { AdaptiveProfile, Child, ConsentScope, InputProfile, LevelProgress, Place, PlaceNeed, Roadmap, User, VideoStatus, Wallet } from "../types";
+import type { AdaptiveProfile, Child, ConsentScope, GameKind, InputProfile, LevelProgress, Place, PlaceNeed, Roadmap, User, VideoStatus, Wallet } from "../types";
 
 // ---------------------------------------------------------------- selectors (pure)
 /** Distance on the Earth's surface in km (haversine), like the server's. */
@@ -80,14 +80,43 @@ export const sel = {
     }
     return Object.fromEntries(AREAS.map((a) => [a, out[a]])) as Record<Area, { theta: number; n: number }>;
   },
-  /** The highest open tier of every area (games spec §3.2): Seed (1) without a row. */
-  tiers: (db: DB, childId: string): Record<Area, number> =>
-    Object.fromEntries(AREAS.map((a) => [a, (db.areaTiers ?? []).find((r) => r.childId === childId && r.area === a)?.topTier ?? 1])) as Record<Area, number>,
+  /** The highest open tier of every area (games spec §3.2): Seed (1) without a row. Live: from the progress answer. */
+  tiers: (db: DB, childId: string): Record<Area, number> => {
+    const live = db.skillProgress?.[childId];
+    const top = (a: Area) => (live ? live.find((p) => p.area === a)?.topTier : (db.areaTiers ?? []).find((r) => r.childId === childId && r.area === a)?.topTier);
+    return Object.fromEntries(AREAS.map((a) => [a, top(a) ?? 1])) as Record<Area, number>;
+  },
+  /**
+   * The progress panel (games spec §8, B89): one card per shown area — access never, speed only while open. Live: the
+   * server's answer; the demo works out the same from its snapshots. `therapist` adds the tries and access events of
+   * the last 4 weeks.
+   */
+  skillProgress: (db: DB, childId: string, therapist = false): AreaProgress[] => {
+    const live = db.skillProgress?.[childId];
+    if (live) return live;
+    const skills = sel.skills(db, childId);
+    const tiers = sel.tiers(db, childId);
+    const open = sel.speedOpen(db, childId);
+    const thisWeek = weekStart(iso());
+    const since = new Date(Date.now() - BEFORE_WEEKS * 7 * DAY).toISOString();
+    return SHOWN_AREAS.filter((a) => a !== "speed" || open).map((area) => {
+      const snaps = (db.skillSnapshots ?? []).filter((s) => s.childId === childId && s.area === area);
+      const level = shownLevel(skills[area].theta, skills[area].n);
+      const h = history(snaps, thisWeek);
+      const mine = therapist ? (db.tries ?? []).filter((t) => t.childId === childId && t.ts >= since && AREA_OF[t.game as GameKind] === area) : [];
+      return {
+        area, level, best: bestLevel(snaps, level), weeks: h.weeks, now: snapshotAt(snaps, thisWeek)?.top ?? null, before: h.before, topTier: tiers[area],
+        ...(therapist ? { tries: mine.length, accessEvents: mine.filter((t) => t.accessEvent).length } : {}),
+      };
+    });
+  },
   /**
    * Speed is open (games spec §7.1): touch, no repeat guard, may let go, and access events under 10% of the latest 30
-   * tries. Closed, its games and its level are hidden; its θ is kept.
+   * tries. Closed, its games and its level are hidden; its θ is kept. Live: the progress answer lists speed only then.
    */
   speedOpen: (db: DB, childId: string): boolean => {
+    const live = db.skillProgress?.[childId];
+    if (live) return live.some((p) => p.area === "speed");
     const access = (db.accessProfiles ?? []).find((a) => a.childId === childId);
     const recent = (db.tries ?? []).filter((t) => t.childId === childId).sort((a, b) => (a.ts < b.ts ? 1 : -1)).slice(0, SPEED_TRIES);
     return speedOpen(access, recent.map((t) => t.accessEvent));

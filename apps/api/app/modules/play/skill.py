@@ -7,9 +7,10 @@ therapists see θ as a level 1-100 (rule 1, 8 Nov 2026); the child never sees a 
 import json
 import math
 from collections.abc import Mapping, Sequence
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any
+from zoneinfo import ZoneInfo
 
 # The skill areas (games spec 8 Nov 2026, §2.1). `literacy` and `numeracy` keep their stored names; people see
 # "Language" and "Math". `access` stays in the model but is a setting, never shown as a skill.
@@ -171,6 +172,74 @@ def speed_window(tier: int, step: int) -> int:
 def speed_correct(correct: bool, response_ms: int | None, tier: int | None, step: int | None) -> bool:
     """A Speed try counts as correct only when the answer is right and came within its step's window (§7.2)."""
     return correct and (not tier or not step or (response_ms is not None and response_ms <= speed_window(tier, step)))
+
+
+# ---------------------------------------------------------------- Progress panel (games spec §8)
+
+LEVEL_TRIES = 10  # under this many clean tries an area says "Not enough games yet" instead of a level (§8.1)
+HISTORY_WEEKS = 8  # weeks in the history line
+BEFORE_WEEKS = 4  # how far back "4 weeks ago" is
+CAN_DO_DAYS = 14  # "can do now" (§8.2): the hardest step with at least 3 right clean tries in the last 14 days
+CAN_DO_RIGHT = 3
+TASHKENT = ZoneInfo("Asia/Tashkent")
+
+
+def skill_level(theta: float) -> int:
+    """The level parents and therapists see (rule 1): θ -3 ... 4.5 becomes 1 ... 100. floor(x + 0.5) is the
+    website's Math.round (Python's round() rounds halves to even)."""
+    return min(100, max(1, math.floor((theta + 3) / 7.5 * 99 + 0.5) + 1))
+
+
+def shown_level(theta: float, n: int) -> int | None:
+    return skill_level(theta) if n >= LEVEL_TRIES else None
+
+
+def week_start(ts: datetime) -> date:
+    """Monday of the week this moment falls in, Tashkent time."""
+    day = ts.astimezone(TASHKENT).date()
+    return day - timedelta(days=day.weekday())
+
+
+def top_step(tries: Sequence[Mapping[str, Any]]) -> dict[str, Any] | None:
+    """The hardest step with at least 3 right tries (§8.2). `tries`: the area's clean skill-game tries of the last 14
+    days ({activity_id, tier, step, correct}, Speed already judged by its window). Same tier and step: more right
+    tries first, then the activity id."""
+    right: dict[tuple[str, int, int], int] = {}
+    for t in tries:
+        if t["correct"]:
+            key = (t["activity_id"], t["tier"], t["step"])
+            right[key] = right.get(key, 0) + 1
+    ok = [(k, n) for k, n in right.items() if n >= CAN_DO_RIGHT]
+    if not ok:
+        return None
+    (activity_id, tier, step), _ = min(ok, key=lambda x: (-x[0][1], -x[0][2], -x[1], x[0][0]))
+    return {"activity_id": activity_id, "tier": tier, "step": step}
+
+
+def snapshot_at(snaps: Sequence[Mapping[str, Any]], week: date) -> Mapping[str, Any] | None:
+    """The snapshot in force in this week: its own, or the latest before it (θ moves only with tries).
+    A snapshot: {week_start: date, theta, n, top: {activity_id, tier, step} | None}."""
+    return max((s for s in snaps if s["week_start"] <= week), key=lambda s: s["week_start"], default=None)
+
+
+def history(snaps: Sequence[Mapping[str, Any]], this_week: date) -> dict[str, Any]:
+    """The history line (§8.2): the 8 weeks up to this one, oldest first, each with its level; None before the first
+    snapshot or while there were under 10 clean tries. `before`: what the child could do 4 weeks ago."""
+    weeks = []
+    for k in range(HISTORY_WEEKS):
+        week = this_week + timedelta(weeks=k - HISTORY_WEEKS + 1)
+        s = snapshot_at(snaps, week)
+        weeks.append({"week_start": week, "level": shown_level(s["theta"], s["n"]) if s else None})
+    then = snapshot_at(snaps, this_week - timedelta(weeks=BEFORE_WEEKS))
+    return {"weeks": weeks, "before": then["top"] if then else None}
+
+
+def best_level(snaps: Sequence[Mapping[str, Any]], now: int | None) -> int | None:
+    """The highest level an area ever showed (the child's tree grows from it and never shrinks, §8.5)."""
+    levels = [x for s in snaps if (x := shown_level(s["theta"], s["n"])) is not None]
+    if now is not None:
+        levels.append(now)
+    return max(levels, default=None)
 
 
 def weekly_new(unlocked: list[dict[str, Any]], first_played: Mapping[str, str], today: str) -> list[dict[str, Any]]:

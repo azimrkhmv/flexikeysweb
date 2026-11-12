@@ -23,6 +23,7 @@ import { daySeed } from "@/lib/games/rng";
 import { levelFor, needsMet } from "@/lib/skill";
 import { localDate } from "@/lib/api/schema";
 import { SkillGames } from "./SkillGames";
+import { Trees } from "./Trees";
 import { Aac } from "./Aac";
 import { ParentGate } from "./ParentGate";
 import { Shop } from "./Shop";
@@ -40,6 +41,7 @@ type View =
   | { v: "level"; levelId: string }
   | { v: "activity"; levelId: string; activityId: string }
   | { v: "skills" }
+  | { v: "trees" }
   | { v: "skill"; gameId: string; tier: number; step: number; run: number }
   | { v: "skillDone"; gameId: string; tier: number; run: number }
   | { v: "celebrate"; levelId: string; activityId: string; coins: number; stars: number; levelDone: boolean };
@@ -416,7 +418,7 @@ export function ChildMode({ child }: { child: Child }) {
 
   const hat = SHOP_BY_ID[child.equipped.hat ?? ""]?.emoji;
   const tint = SHOP_BY_ID[child.equipped.color ?? ""]?.value;
-  const withNav = ["map", "skills", "aac", "shop", "level"].includes(view.v);
+  const withNav = ["map", "skills", "trees", "aac", "shop", "level"].includes(view.v);
   const bigBtn = "rounded-full px-8 text-xl font-extrabold shadow-soft";
 
   let body: ReactNode;
@@ -472,6 +474,9 @@ export function ChildMode({ child }: { child: Child }) {
       );
       break;
     }
+    case "trees":
+      body = <Trees child={child} onTab={(v) => setView({ v })} />;
+      break;
     case "skills":
       body = <SkillGames child={child} onPlay={(g, tier, open) => playSkill(g, tier, open)} onTab={(v) => setView({ v })} />;
       break;
@@ -605,9 +610,9 @@ export function ChildMode({ child }: { child: Child }) {
               <Target
                 key={v}
                 label={t(key)}
-                selected={view.v === v || (v === "map" && (view.v === "level" || view.v === "skills"))}
+                selected={view.v === v || (v === "map" && (view.v === "level" || view.v === "skills" || view.v === "trees"))}
                 onSelect={() => setView({ v })}
-                className={`flex min-w-24 flex-col items-center justify-center rounded-3xl px-4 font-extrabold ${view.v === v || (v === "map" && (view.v === "level" || view.v === "skills")) ? "bg-teal-soft text-ink" : "text-ink-2"}`}
+                className={`flex min-w-24 flex-col items-center justify-center rounded-3xl px-4 font-extrabold ${view.v === v || (v === "map" && (view.v === "level" || view.v === "skills" || view.v === "trees")) ? "bg-teal-soft text-ink" : "text-ink-2"}`}
               >
                 <span className="text-3xl">{icon}</span>
                 <span className="text-sm">{t(key)}</span>

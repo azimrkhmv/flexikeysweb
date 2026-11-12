@@ -6,7 +6,7 @@ import { useT } from "@/lib/i18n";
 import { FREE_TIER, needsMet, SHOWN_AREAS, withSpeed, type Area } from "@/lib/skill";
 import type { Child } from "@/lib/types";
 import { Target } from "./Target";
-import { KIND_EMOJI, MapTabs } from "./WorldMap";
+import { KIND_EMOJI, MapTabs, type MapTab } from "./WorldMap";
 
 /** The four tiers as the child sees them: a picture and a name, never a number (rule 1). */
 export const TIER_ICON = ["", "🌰", "🌱", "🌳", "⛰️"] as const;
@@ -25,7 +25,7 @@ export const gameTierOpen = (g: SkillGame, tops: Record<Area, number>, tier: num
  * The "Skill games" tab (games spec §9): one card per area with its games, each game with its four tiers. A tier that
  * is not open yet, or needs Pro, is a sleeping cloud — the same soft lock as the world map; no red, no "failed".
  */
-export function SkillGames({ child, onPlay, onTab }: { child: Child; onPlay: (game: SkillGame, tier: number, open: boolean) => void; onTab: (tab: "map" | "skills") => void }) {
+export function SkillGames({ child, onPlay, onTab }: { child: Child; onPlay: (game: SkillGame, tier: number, open: boolean) => void; onTab: (tab: MapTab) => void }) {
   const db = useDb();
   const t = useT(child.uiLang);
   const tops = sel.tiers(db, child.id);

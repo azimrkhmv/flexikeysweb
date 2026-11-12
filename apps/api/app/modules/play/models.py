@@ -114,6 +114,28 @@ class AreaTier(Base):
     opened_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 
 
+class SkillSnapshot(Base):
+    """One skill area's θ in one week (games spec §8.2), for the progress panel's 8-week line. `week_start` is the
+    Monday, Tashkent time; the row of the week is written again after each batch of tries that moved the area.
+    `top_*`: the hardest skill-game step with at least 3 right clean tries in the 14 days before (none: all None)."""
+
+    __tablename__ = "skill_snapshot"
+    __table_args__ = (
+        PrimaryKeyConstraint("child_id", "area", "week_start"),
+        CheckConstraint("top_tier between 1 and 4", name="top_tier"),
+        CheckConstraint("top_step between 1 and 3", name="top_step"),
+    )
+
+    child_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("children.id", ondelete="CASCADE"))
+    area: Mapped[SkillArea] = mapped_column(enum_column(SkillArea))
+    week_start: Mapped[date] = mapped_column(Date)
+    theta: Mapped[float] = mapped_column(Float)
+    n_trials: Mapped[int] = mapped_column(Integer)
+    top_activity_id: Mapped[str | None] = mapped_column(String(64))
+    top_tier: Mapped[int | None] = mapped_column(SmallInteger)
+    top_step: Mapped[int | None] = mapped_column(SmallInteger)
+
+
 class GameSession(IdTimeMixin, Base):
     """One sitting of play. Its seconds count towards the 20-minute daily limit."""
 

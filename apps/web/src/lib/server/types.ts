@@ -48,6 +48,9 @@ export type AssistantAnswer = Schemas["Answer"];
 export type MessageOut = Schemas["MessageOut"];
 export type ChatSummary = Schemas["ChatSummary"];
 export type ChatOut = Schemas["ChatOut"];
+/** B89: the progress panel (games spec §8); the therapist's also has tries and access events per area. */
+export type ProgressOut = Schemas["ProgressOut"];
+export type TherapistProgressOut = Schemas["TherapistProgressOut"];
 
 /** Every address the website calls (under /api/v1, which the website proxies). */
 export const ADDRESSES = [

@@ -23,7 +23,7 @@ from app.modules.kits import router as kits
 from app.modules.places import bookings, clinic
 from app.modules.places import router as places
 from app.modules.plans import router as plans
-from app.modules.play import cards
+from app.modules.play import cards, progress
 from app.modules.play import router as play
 from app.modules.privacy import router as privacy
 from app.modules.therapists import form as therapist_form
@@ -83,6 +83,8 @@ app.include_router(clips.router, prefix="/api/v1")
 app.include_router(clips.therapist_router, prefix="/api/v1")
 app.include_router(play.router, prefix="/api/v1")
 app.include_router(cards.router, prefix="/api/v1")
+app.include_router(progress.router, prefix="/api/v1")
+app.include_router(progress.therapist_router, prefix="/api/v1")
 app.include_router(videos.router, prefix="/api/v1")
 app.include_router(videos.review_router, prefix="/api/v1")
 app.include_router(videos.family_router, prefix="/api/v1")

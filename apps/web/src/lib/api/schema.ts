@@ -4,7 +4,7 @@
 
 import type { Profession, TherapistAnswers, TherapistProfile } from "@/content/therapist";
 import type { AccessSettings } from "../playcheck";
-import type { Area } from "../skill";
+import type { Area, AreaProgress, Snapshot } from "../skill";
 import type { TryRecord } from "../tries";
 import type { AacCustomCard, AacEvent, AdaptationChange, AiMessage, Assignment, AuditLog, CareLink, Child, Consent, DailyAnswer, ExerciseVideo, FamilyMember, FeatureFlag, IntakeAnswer, IntakeRound, Goal, InteractionEvent, LearningSession, LevelProgress, Note, Notification, PausedDay, Place, Plan, ReportReason, Slot, Booking, KitOrder, ProfileRecord, Roadmap, SkillMastery, TaskDone, User, Wallet } from "../types";
 
@@ -61,6 +61,10 @@ export interface DB {
   skills: { childId: string; area: Area; theta: number; n: number }[];
   /** The highest open tier per child and area (games spec §3.2, B83); no row = Seed (1). Never goes down. */
   areaTiers?: { childId: string; area: Area; topTier: number; openedAt: string }[];
+  /** Each skill area's θ once a week (games spec §8.2, B89), written after each batch of tries that moved it. */
+  skillSnapshots?: ({ childId: string; area: Area } & Snapshot)[];
+  /** Live mode: the server's progress answer per child (GET /children/{id}/progress, or the therapist's). */
+  skillProgress?: Record<string, AreaProgress[]>;
   /** Seconds of game time per child and day (YYYY-MM-DD), for the 20-minute daily limit (B18). */
   playTime: { childId: string; date: string; seconds: number }[];
   /** T1 of the therapist form, once per therapist (B23); the name is the user's. */
@@ -123,6 +127,6 @@ const CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"; // no 0/O/1/I/L (SEC-5)
 export const makeCode = (n = 6) => Array.from({ length: n }, () => CODE_ALPHABET[Math.floor(Math.random() * CODE_ALPHABET.length)]).join("");
 
 /** Bump when the DB shape changes: browsers holding an older shape are reseeded instead of crashing. */
-export const DB_VERSION = 20;
+export const DB_VERSION = 21; // 21: B89, Ali's skill history in the demo
 /** Same limit as the server (MAX_HELPERS_PER_FAMILY). */
 export const MAX_HELPERS = 1;

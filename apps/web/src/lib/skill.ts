@@ -182,6 +182,101 @@ export const speedCorrect = (correct: boolean, responseMs: number | null | undef
 /** Speed closed: its games are in no slot and not in the Skill games tab (§7.1). */
 export const withSpeed = <G extends { area: Area }>(games: G[], open: boolean) => (open ? games : games.filter((g) => g.area !== "speed"));
 
+// ---------------------------------------------------------------- Progress panel (games spec §8)
+
+/** The level parents and therapists see (rule 1): θ −3 … 4.5 becomes 1 … 100. The plan reads the same θ. */
+export const skillLevel = (theta: number) => Math.min(100, Math.max(1, Math.round(((theta + 3) / 7.5) * 99) + 1));
+/** Under this many clean tries an area says "Not enough games yet" instead of a level (§8.1). */
+export const LEVEL_TRIES = 10;
+export const shownLevel = (theta: number, n: number) => (n >= LEVEL_TRIES ? skillLevel(theta) : null);
+/** Weeks in the history line, and how far back "4 weeks ago" is. */
+export const HISTORY_WEEKS = 8;
+export const BEFORE_WEEKS = 4;
+/** "Can do now" (§8.2): the hardest step with at least 3 right clean tries in the last 14 days. */
+export const CAN_DO_DAYS = 14;
+export const CAN_DO_RIGHT = 3;
+
+const DAY_MS = 86_400_000;
+const TASHKENT_MS = 5 * 3_600_000; // UTC+5 all year
+
+/** Monday (YYYY-MM-DD) of the week this moment falls in, Tashkent time. */
+export function weekStart(ts: string): string {
+  const t = new Date(Date.parse(ts) + TASHKENT_MS);
+  return new Date(t.getTime() - ((t.getUTCDay() + 6) % 7) * DAY_MS).toISOString().slice(0, 10);
+}
+const addDays = (day: string, n: number) => new Date(Date.parse(day) + n * DAY_MS).toISOString().slice(0, 10);
+
+export interface StepRef {
+  activityId: string;
+  tier: number;
+  step: number;
+}
+export interface Snapshot {
+  weekStart: string;
+  theta: number;
+  n: number;
+  top: StepRef | null;
+}
+
+/**
+ * The hardest step with at least 3 right tries (§8.2). `tries`: the area's clean skill-game tries of the last 14 days,
+ * `correct` already judged (Speed by its window). Same tier and step: more right tries first, then the activity id.
+ */
+export function topStep(tries: { activityId: string; tier: number; step: number; correct: boolean }[]): StepRef | null {
+  const right = new Map<string, StepRef & { n: number }>();
+  for (const t of tries) {
+    if (!t.correct) continue;
+    const key = `${t.activityId}@${t.tier}.${t.step}`;
+    const row = right.get(key) ?? { activityId: t.activityId, tier: t.tier, step: t.step, n: 0 };
+    row.n += 1;
+    right.set(key, row);
+  }
+  const best = [...right.values()]
+    .filter((r) => r.n >= CAN_DO_RIGHT)
+    .sort((a, b) => b.tier - a.tier || b.step - a.step || b.n - a.n || (a.activityId < b.activityId ? -1 : a.activityId > b.activityId ? 1 : 0))[0];
+  return best ? { activityId: best.activityId, tier: best.tier, step: best.step } : null;
+}
+
+/** The area's snapshot in force in this week: its own, or the latest before it (θ moves only with tries). */
+export const snapshotAt = (snaps: Snapshot[], week: string) => snaps.filter((s) => s.weekStart <= week).sort((a, b) => (a.weekStart < b.weekStart ? 1 : -1))[0] ?? null;
+
+/**
+ * The history line (§8.2): the 8 weeks up to this one, oldest first, each with its level; null before the first
+ * snapshot or while there were under 10 clean tries. `before`: what the child could do 4 weeks ago.
+ */
+export function history(snaps: Snapshot[], thisWeek: string): { weeks: { weekStart: string; level: number | null }[]; before: StepRef | null } {
+  const weeks = Array.from({ length: HISTORY_WEEKS }, (_, k) => {
+    const week = addDays(thisWeek, (k - HISTORY_WEEKS + 1) * 7);
+    const s = snapshotAt(snaps, week);
+    return { weekStart: week, level: s ? shownLevel(s.theta, s.n) : null };
+  });
+  return { weeks, before: snapshotAt(snaps, addDays(thisWeek, -BEFORE_WEEKS * 7))?.top ?? null };
+}
+
+/**
+ * One card of the progress panel (§8), as GET /children/{id}/progress gives it: the level now (null = "Not enough
+ * games yet"), the highest ever, the last 8 weeks, what the child can do now and 4 weeks ago, the open tier; for a
+ * therapist also the tries and access events of the last 4 weeks.
+ */
+export interface AreaProgress {
+  area: Area;
+  level: number | null;
+  best: number | null;
+  weeks: { weekStart: string; level: number | null }[];
+  now: StepRef | null;
+  before: StepRef | null;
+  topTier: number;
+  tries?: number;
+  accessEvents?: number;
+}
+
+/** The highest level an area ever showed (the child's tree grows from it and never shrinks, §8.5). */
+export const bestLevel = (snaps: Snapshot[], now: number | null) =>
+  snaps.reduce<number | null>((best, s) => {
+    const l = shownLevel(s.theta, s.n);
+    return l !== null && (best === null || l > best) ? l : best;
+  }, now);
+
 /**
  * At most one new kind of game a week; a game already played is never taken away. `firstPlayed`: the date
  * (YYYY-MM-DD) each kind was first played. A new tier of a kind already played is not a new kind.

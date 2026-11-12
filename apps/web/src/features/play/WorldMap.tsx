@@ -32,8 +32,10 @@ export const KIND_EMOJI: Record<GameKind, string> = {
   quick_snap: "🃏", tap_star: "🌟", fast_sort: "📥",
 };
 
-/** The two tabs of the map (games spec §9): the world map and the skill games. */
-export function MapTabs({ child, tab, onTab }: { child: Child; tab: "map" | "skills"; onTab: (tab: "map" | "skills") => void }) {
+export type MapTab = "map" | "skills" | "trees";
+
+/** The tabs of the map (games spec §9, §8.5): the world map, the skill games and the child's trees. */
+export function MapTabs({ child, tab, onTab }: { child: Child; tab: MapTab; onTab: (tab: MapTab) => void }) {
   const t = useT(child.uiLang);
   return (
     <div className="mb-4 flex justify-center gap-2" role="tablist">
@@ -41,6 +43,7 @@ export function MapTabs({ child, tab, onTab }: { child: Child; tab: "map" | "ski
         [
           ["map", "🗺️", "play.map.title"],
           ["skills", "🎯", "play.nav.skills"],
+          ["trees", "🌳", "play.nav.trees"],
         ] as const
       ).map(([id, icon, key]) => (
         <Target
@@ -48,12 +51,12 @@ export function MapTabs({ child, tab, onTab }: { child: Child; tab: "map" | "ski
           label={t(key)}
           selected={tab === id}
           onSelect={() => onTab(id)}
-          className={`flex items-center gap-2 rounded-full px-4 text-base font-extrabold shadow-soft sm:px-6 sm:text-lg ${tab === id ? "bg-teal-soft text-ink" : "bg-surface/80 text-ink-2"}`}
+          className={`flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-3xl px-2 py-1 text-center text-sm font-extrabold leading-tight shadow-soft sm:flex-none sm:flex-row sm:gap-2 sm:rounded-full sm:px-6 sm:text-lg ${tab === id ? "bg-teal-soft text-ink" : "bg-surface/80 text-ink-2"}`}
         >
           <span className="text-2xl" aria-hidden>
             {icon}
           </span>
-          {t(key)}
+          <span className="[overflow-wrap:anywhere]">{t(key)}</span>
         </Target>
       ))}
     </div>
@@ -61,7 +64,7 @@ export function MapTabs({ child, tab, onTab }: { child: Child; tab: "map" | "ski
 }
 
 /** World map: 16 levels on a winding path. Locked levels are sleeping clouds, never padlocks. */
-export function WorldMap({ child, onOpen, onTab }: { child: Child; onOpen: (levelId: string) => void; onTab: (tab: "map" | "skills") => void }) {
+export function WorldMap({ child, onOpen, onTab }: { child: Child; onOpen: (levelId: string) => void; onTab: (tab: MapTab) => void }) {
   const db = useDb();
   const t = useT(child.uiLang);
   const { profile } = usePlay();

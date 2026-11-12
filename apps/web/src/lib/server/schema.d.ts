@@ -2056,6 +2056,48 @@ export interface paths {
         patch: operations["change_card_api_v1_children__child_id__voice_cards__card_id__patch"];
         trace?: never;
     };
+    "/api/v1/children/{child_id}/progress": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Progress
+         * @description The progress panel for the family (§8.3): per shown area, the level now, the last 8 weeks and what the child
+         *     can do now and 4 weeks ago.
+         */
+        get: operations["get_progress_api_v1_children__child_id__progress_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/therapist/children/{child_id}/progress": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Therapist Progress
+         * @description The same for a therapist the child is shared with (§8.4), plus each area's tries and access events of the
+         *     last 4 weeks and its open tier. 404 for anyone else.
+         */
+        get: operations["get_therapist_progress_api_v1_therapist_children__child_id__progress_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/videos/upload-link": {
         parameters: {
             query?: never;
@@ -2222,6 +2264,20 @@ export interface components {
             answers: {
                 [key: string]: unknown;
             };
+        };
+        /** AreaProgress */
+        AreaProgress: {
+            area: components["schemas"]["SkillArea"];
+            /** Level */
+            level: number | null;
+            /** Best */
+            best: number | null;
+            /** Weeks */
+            weeks: components["schemas"]["WeekLevel"][];
+            now: components["schemas"]["StepRef"] | null;
+            before: components["schemas"]["StepRef"] | null;
+            /** Toptier */
+            topTier: number;
         };
         /** AuditOut */
         AuditOut: {
@@ -3491,6 +3547,11 @@ export interface components {
             /** Required */
             required: string[];
         };
+        /** ProgressOut */
+        ProgressOut: {
+            /** Areas */
+            areas: components["schemas"]["AreaProgress"][];
+        };
         /** Question */
         Question: {
             /** Text */
@@ -3831,10 +3892,45 @@ export interface components {
              */
             allergyChecked: boolean;
         };
+        /**
+         * StepRef
+         * @description A skill-game step; the website shows its "can do" sentence (content/skillGames.ts) in the reader's language.
+         */
+        StepRef: {
+            /** Activityid */
+            activityId: string;
+            /** Tier */
+            tier: number;
+            /** Step */
+            step: number;
+        };
+        /** TherapistAreaProgress */
+        TherapistAreaProgress: {
+            area: components["schemas"]["SkillArea"];
+            /** Level */
+            level: number | null;
+            /** Best */
+            best: number | null;
+            /** Weeks */
+            weeks: components["schemas"]["WeekLevel"][];
+            now: components["schemas"]["StepRef"] | null;
+            before: components["schemas"]["StepRef"] | null;
+            /** Toptier */
+            topTier: number;
+            /** Tries */
+            tries: number;
+            /** Accessevents */
+            accessEvents: number;
+        };
         /** TherapistInvite */
         TherapistInvite: {
             /** Phone */
             phone?: string | null;
+        };
+        /** TherapistProgressOut */
+        TherapistProgressOut: {
+            /** Areas */
+            areas: components["schemas"]["TherapistAreaProgress"][];
         };
         /** TodayOut */
         TodayOut: {
@@ -4040,6 +4136,16 @@ export interface components {
             feltHard: number;
             /** Dayspaused */
             daysPaused: number;
+        };
+        /** WeekLevel */
+        WeekLevel: {
+            /**
+             * Weekstart
+             * Format: date
+             */
+            weekStart: string;
+            /** Level */
+            level: number | null;
         };
         /** WeekSummary */
         WeekSummary: {
@@ -7894,6 +8000,68 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CardOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_progress_api_v1_children__child_id__progress_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProgressOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_therapist_progress_api_v1_therapist_children__child_id__progress_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                child_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TherapistProgressOut"];
                 };
             };
             /** @description Validation Error */

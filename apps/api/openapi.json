@@ -5466,6 +5466,94 @@
     }
    }
   },
+  "/api/v1/children/{child_id}/progress": {
+   "get": {
+    "tags": [
+     "play"
+    ],
+    "summary": "Get Progress",
+    "description": "The progress panel for the family (§8.3): per shown area, the level now, the last 8 weeks and what the child\ncan do now and 4 weeks ago.",
+    "operationId": "get_progress_api_v1_children__child_id__progress_get",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ProgressOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/therapist/children/{child_id}/progress": {
+   "get": {
+    "tags": [
+     "play"
+    ],
+    "summary": "Get Therapist Progress",
+    "description": "The same for a therapist the child is shared with (§8.4), plus each area's tries and access events of the\nlast 4 weeks and its open tier. 404 for anyone else.",
+    "operationId": "get_therapist_progress_api_v1_therapist_children__child_id__progress_get",
+    "parameters": [
+     {
+      "name": "child_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Child Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/TherapistProgressOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/v1/admin/videos/upload-link": {
    "post": {
     "tags": [
@@ -5871,6 +5959,77 @@
      "answers"
     ],
     "title": "AnswersIn"
+   },
+   "AreaProgress": {
+    "properties": {
+     "area": {
+      "$ref": "#/components/schemas/SkillArea"
+     },
+     "level": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Level"
+     },
+     "best": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Best"
+     },
+     "weeks": {
+      "items": {
+       "$ref": "#/components/schemas/WeekLevel"
+      },
+      "type": "array",
+      "title": "Weeks"
+     },
+     "now": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/StepRef"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "before": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/StepRef"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "topTier": {
+      "type": "integer",
+      "title": "Toptier"
+     }
+    },
+    "type": "object",
+    "required": [
+     "area",
+     "level",
+     "best",
+     "weeks",
+     "now",
+     "before",
+     "topTier"
+    ],
+    "title": "AreaProgress"
    },
    "AuditOut": {
     "properties": {
@@ -9559,6 +9718,22 @@
     ],
     "title": "ProfileOut"
    },
+   "ProgressOut": {
+    "properties": {
+     "areas": {
+      "items": {
+       "$ref": "#/components/schemas/AreaProgress"
+      },
+      "type": "array",
+      "title": "Areas"
+     }
+    },
+    "type": "object",
+    "required": [
+     "areas"
+    ],
+    "title": "ProgressOut"
+   },
    "Question": {
     "properties": {
      "text": {
@@ -10468,6 +10643,111 @@
     ],
     "title": "StatusChange"
    },
+   "StepRef": {
+    "properties": {
+     "activityId": {
+      "type": "string",
+      "title": "Activityid"
+     },
+     "tier": {
+      "type": "integer",
+      "title": "Tier"
+     },
+     "step": {
+      "type": "integer",
+      "title": "Step"
+     }
+    },
+    "type": "object",
+    "required": [
+     "activityId",
+     "tier",
+     "step"
+    ],
+    "title": "StepRef",
+    "description": "A skill-game step; the website shows its \"can do\" sentence (content/skillGames.ts) in the reader's language."
+   },
+   "TherapistAreaProgress": {
+    "properties": {
+     "area": {
+      "$ref": "#/components/schemas/SkillArea"
+     },
+     "level": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Level"
+     },
+     "best": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Best"
+     },
+     "weeks": {
+      "items": {
+       "$ref": "#/components/schemas/WeekLevel"
+      },
+      "type": "array",
+      "title": "Weeks"
+     },
+     "now": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/StepRef"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "before": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/StepRef"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "topTier": {
+      "type": "integer",
+      "title": "Toptier"
+     },
+     "tries": {
+      "type": "integer",
+      "title": "Tries"
+     },
+     "accessEvents": {
+      "type": "integer",
+      "title": "Accessevents"
+     }
+    },
+    "type": "object",
+    "required": [
+     "area",
+     "level",
+     "best",
+     "weeks",
+     "now",
+     "before",
+     "topTier",
+     "tries",
+     "accessEvents"
+    ],
+    "title": "TherapistAreaProgress"
+   },
    "TherapistInvite": {
     "properties": {
      "phone": {
@@ -10484,6 +10764,22 @@
     },
     "type": "object",
     "title": "TherapistInvite"
+   },
+   "TherapistProgressOut": {
+    "properties": {
+     "areas": {
+      "items": {
+       "$ref": "#/components/schemas/TherapistAreaProgress"
+      },
+      "type": "array",
+      "title": "Areas"
+     }
+    },
+    "type": "object",
+    "required": [
+     "areas"
+    ],
+    "title": "TherapistProgressOut"
    },
    "TodayOut": {
     "properties": {
@@ -11067,6 +11363,32 @@
      "daysPaused"
     ],
     "title": "WeekFacts"
+   },
+   "WeekLevel": {
+    "properties": {
+     "weekStart": {
+      "type": "string",
+      "format": "date",
+      "title": "Weekstart"
+     },
+     "level": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Level"
+     }
+    },
+    "type": "object",
+    "required": [
+     "weekStart",
+     "level"
+    ],
+    "title": "WeekLevel"
    },
    "WeekSummary": {
     "properties": {

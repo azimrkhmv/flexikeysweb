@@ -5,5 +5,6 @@ import { intake } from "./intake";
 import { parent } from "./parent";
 import { planGames } from "./planGames";
 import { pro } from "./pro";
+import { progress } from "./progress";
 
-registerMessages(auth, parent, pro, intake, planGames);
+registerMessages(auth, parent, pro, intake, planGames, progress);

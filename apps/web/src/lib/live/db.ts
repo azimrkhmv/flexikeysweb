@@ -7,7 +7,7 @@ import { ApiError, type ChildAuth, type DB } from "@/lib/api/schema";
 import { sessionStore } from "@/lib/session";
 import { useStore } from "@/lib/store";
 import { http } from "./http";
-import type { ChatOut, ChatSummary, MessageOut, PlanReasons, FeedbackOut, AuditOut, FlagOut, Overview, KitOrderOut, BookingOut, ClinicBooking, ClinicSlot, FreeSlot, MyPlace, PlaceView, CardOut, ChildOut, ClipOut, Helpers, InviteForMe, Consents, DailyOut, FormOut, InUse, InviteOut, PlanOut, PlanStatus, ProfileOut, ReviewItem, RoundOut, RoundSummary, ShareOut, SharedChild } from "@/lib/server/types";
+import type { ChatOut, ChatSummary, MessageOut, PlanReasons, FeedbackOut, AuditOut, FlagOut, Overview, KitOrderOut, BookingOut, ClinicBooking, ClinicSlot, FreeSlot, MyPlace, PlaceView, CardOut, ChildOut, ClipOut, Helpers, InviteForMe, Consents, DailyOut, FormOut, InUse, InviteOut, PlanOut, PlanStatus, ProfileOut, ProgressOut, ReviewItem, RoundOut, RoundSummary, ShareOut, SharedChild, TherapistProgressOut } from "@/lib/server/types";
 import {
   kitOrderFrom, bookingFrom, clinicBookingFrom, myPlaceFrom, placeFrom, slotFrom,
   answersFrom, chatFrom, clipsFrom, dailyFrom, doneFrom, familyChildFrom, familyConsentsFrom, familyPlanFrom, inUseFrom, pausedFrom, planFrom, planVideosFrom, reviewVideosFrom, shareFrom, sharedChildFrom, voiceCardFrom,
@@ -32,14 +32,14 @@ const empty = (): DB => ({
 });
 
 /** A family child's data on the new server (apps/api); each round's answers are loaded after the round list. */
-const PER_CHILD = ["consents", "rounds", "plan", "daily", "cards", "shares", "inUse", "clips", "bookings", "chat", "chats"] as const;
+const PER_CHILD = ["consents", "rounds", "plan", "daily", "cards", "shares", "inUse", "clips", "bookings", "chat", "chats", "progress"] as const;
 const REVIEW_STATUSES = ["waiting_review", "changes_requested", "rejected", "approved"] as const;
 type PerChild = (typeof PER_CHILD)[number];
 const path = (kind: PerChild, id: string) =>
   ({
     consents: `/children/${id}/consents`, rounds: `/children/${id}/intake`, plan: `/children/${id}/plan`, daily: `/children/${id}/daily`,
     cards: `/children/${id}/voice-cards`, shares: `/children/${id}/therapists`, inUse: `/children/${id}/answers-in-use`, clips: `/children/${id}/clips`, bookings: `/children/${id}/bookings`,
-    chat: `/children/${id}/assistant/messages`, chats: `/children/${id}/chats`,
+    chat: `/children/${id}/assistant/messages`, chats: `/children/${id}/chats`, progress: `/children/${id}/progress`,
   })[kind];
 /** "No plan yet" and "no daily question list loaded" are answers, not errors to retry. */
 const MAY_BE_MISSING: PerChild[] = ["plan", "daily"];
@@ -77,6 +77,13 @@ export function useLiveDb(): DB {
   // ---- child mode
   const own = useQueries({
     queries: child ? OWN.map((kind) => ({ queryKey: ["own", kind, child.childId], queryFn: () => http<unknown>("GET", OWN_PATH[kind]) })) : [],
+  });
+  // B89: on a parent's device the playing child's progress (tiers, Speed, the trees); same cache as the parent's.
+  // ponytail: a class device has no adult signed in and no child-token progress address yet, so it shows Seed only.
+  const playing = useQuery({
+    queryKey: ["progress", child?.childId],
+    enabled: !!child && role === "parent",
+    queryFn: () => http<ProgressOut>("GET", `/children/${child!.childId}/progress`),
   });
   const ownMeError = own[0]?.error;
   useEffect(() => {
@@ -169,7 +176,7 @@ export function useLiveDb(): DB {
     queryFn: () => http<ProfileOut>("GET", "/therapist/profile").catch((e) => (e instanceof ApiError && e.code === "no_profile" ? null : Promise.reject(e))),
   });
   const shared = role === "therapist" ? (linked.data ?? []) : [];
-  const VIEWS = 5; // queries per shared child, in this order: form, clips, chat, chat summary, plan reasons
+  const VIEWS = 6; // queries per shared child, in this order: form, clips, chat, chat summary, plan reasons, progress
   const views = useQueries({
     queries: shared.flatMap((c) => [
       { queryKey: ["therapist-form", c.id], enabled: !!tprofile.data, queryFn: () => http<unknown>("GET", `/therapist/children/${c.id}/form`) },
@@ -184,6 +191,7 @@ export function useLiveDb(): DB {
         queryKey: ["plan-reasons", c.id],
         queryFn: () => http<unknown>("GET", `/therapist/children/${c.id}/plan-reasons`).catch((e) => (e instanceof ApiError && e.code === "not_found" ? null : Promise.reject(e))), // no plan yet
       },
+      { queryKey: ["therapist-progress", c.id], queryFn: () => http<unknown>("GET", `/therapist/children/${c.id}/progress`) },
     ]),
   });
 
@@ -201,7 +209,7 @@ export function useLiveDb(): DB {
     if (signedIn !== undefined && sessionStore.get().role !== signedIn) sessionStore.set({ role: signedIn });
   }, [signedIn]);
 
-  const all = [me, kids, linked, invites, tprofile, family, familyPlan, helpInvites, places, kitOrders, clinicPlaces, notifications, flags, ...own, ...per, ...answers, ...review, ...views, ...admin, ...freeTimes, ...clinicViews];
+  const all = [me, kids, linked, invites, tprofile, family, familyPlan, helpInvites, places, kitOrders, clinicPlaces, notifications, flags, playing, ...own, ...per, ...answers, ...review, ...views, ...admin, ...freeTimes, ...clinicViews];
   const stamp = all.map((q) => q.dataUpdatedAt).join();
   const loading =
     me.isPending ||
@@ -241,6 +249,7 @@ export function useLiveDb(): DB {
         if (a) db.assignments.push(a);
       }
     }
+    if (child && playing.data) (db.skillProgress ??= {})[child.childId] = playing.data.areas;
 
     if (role === "parent") {
       for (const k of kids.data ?? []) if (!db.children.some((c) => c.id === k.id)) db.children.push(familyChildFrom(k));
@@ -278,6 +287,8 @@ export function useLiveDb(): DB {
         db.aiMessages.push(...chatFrom(id, user!.id, (perChild(i, "chat") as MessageOut[] | undefined) ?? []));
         const chatList = perChild(i, "chats") as ChatOut[] | undefined;
         if (chatList) (db.chatList ??= {})[id] = chatList.map((c) => ({ userId: c.userId, name: c.name ?? "", messages: c.messages, at: c.lastAt }));
+        const progress = perChild(i, "progress") as ProgressOut | undefined;
+        if (progress) (db.skillProgress ??= {})[id] = progress.areas;
         const daily = perChild(i, "daily") as DailyOut | null | undefined;
         if (daily) db.dailyAnswers.push(...dailyFrom(id, daily));
         db.intakeRounds.push(...rounds.map((r) => ({ childId: id, round: r.number, questionnaire: r.questionnaire, startedAt: r.startedAt, completedAt: r.completedAt ?? undefined })));
@@ -359,6 +370,8 @@ export function useLiveDb(): DB {
         const why = views[k * VIEWS + 4]?.data as PlanReasons | null | undefined;
         type Why = NonNullable<DB["planReasons"]>[string];
         if (why) (db.planReasons ??= {})[c.id] = { ...why, reasons: why.reasons.map((r) => ({ ...r, source: r.source ?? undefined })) as Why["reasons"] };
+        const progress = views[k * VIEWS + 5]?.data as TherapistProgressOut | undefined;
+        if (progress) (db.skillProgress ??= {})[c.id] = progress.areas;
         // The server lists clips only with the movement-videos consent.
         if (clips.clips.length) db.consents.push({ id: `videos-${c.id}`, childId: c.id, scope: "movement_videos", version: "", grantedBy: "", grantedAt: "" });
       });

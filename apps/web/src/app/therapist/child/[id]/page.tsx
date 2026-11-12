@@ -7,6 +7,7 @@ import { ArrowLeft, Trash } from "lucide-react";
 import { aacCard } from "@/content/aac";
 import { LEVELS } from "@/content/levels";
 import { Avatar, Button, Card, Chip, Empty, Field, Input, PageHeader, Select, Textarea, Toggle, useAction } from "@/components/ui";
+import { SkillCards } from "@/features/parent/SkillProgress";
 import { SupportCard } from "@/features/parent/support";
 import { TherapistAssistant } from "@/features/therapist/Assistant";
 import { Clips } from "@/features/therapist/Clips";
@@ -49,6 +50,7 @@ export default function TherapistChild() {
         <TherapistForm childId={id} />
         <NotAsked childId={id} />
         <PlanReasons childId={id} />
+        <SkillCards childId={id} therapist />
         <Clips childId={id} />
         <TherapistAssistant childId={id} />
       </div>

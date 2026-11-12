@@ -14,6 +14,7 @@ import { hasVoice, subscribeVoices } from "@/lib/audio";
 import { aacLabel, BIRTH_YEARS, download, profileLines } from "./lib";
 import { AccessPicker, AvatarGrid } from "./pickers";
 import { ProLock } from "./ProLock";
+import { SkillCards } from "./SkillProgress";
 import { SupportCard } from "./support";
 import { FREE } from "@/content/plans";
 
@@ -36,6 +37,7 @@ export function ProgressTab({ childId }: { childId: string }) {
 
   return (
     <div className="space-y-6">
+      <SkillCards childId={childId} />
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Stat label={t("parent.progress.week")} value={t("common.minutes", { n: week })} icon={<Clock className="size-6" />} tone="sky" />
         <Stat label={t("parent.progress.streak")} value={t("common.days", { n: sel.streak(db, childId) })} icon={<Flame className="size-6" />} tone="sun" />

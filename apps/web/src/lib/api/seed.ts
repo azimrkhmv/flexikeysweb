@@ -7,6 +7,7 @@ import { exerciseLibrary } from "@/content/exercises";
 import { LEVEL_BY_ID } from "@/content/levels";
 import { DEFAULT_PROFILE } from "../adaptive";
 import { buildRoadmap } from "../roadmap";
+import { weekStart, type Area } from "../skill";
 import type { Lang } from "../i18n";
 import { CONSENT_VERSION, DEMO_PHONES, DAY, DB_VERSION, id, iso, localDate, type DB } from "./schema";
 import type { AdaptationChange, Child, Consent, ConsentScope, IntakeValue, ProfileRecord, Role, User, UserStatus } from "../types";
@@ -35,6 +36,23 @@ export function seed(): DB {
   const consent = (childId: string, scope: ConsentScope, by = "u_parent"): Consent => ({
     id: id(), childId, scope, version: CONSENT_VERSION, grantedBy: by, grantedAt: iso(now - 30 * DAY),
   });
+
+  // B89: about six weeks of Ali's skill games, so the progress panel and the trees have something to show in the demo.
+  // [area, skill game, weeks ago of the first week, θ each week, clean tries so far, "can do" step each week]
+  const skillHistory: [Area, string, number, number[], number[], ([number, number] | null)[]][] = [
+    ["attention", "find_same-skill", 5, [-0.9, -0.7, -0.4, -0.2, 0.1, 0.4], [12, 20, 28, 37, 45, 52], [[1, 1], [1, 2], [1, 2], [1, 3], [2, 1], [2, 1]]],
+    ["memory", "card_pairs-skill", 5, [-1.4, -1.3, -1, -0.8, -0.8, -0.5], [10, 15, 21, 26, 30, 36], [[1, 1], [1, 1], [1, 2], [1, 2], [1, 2], [1, 3]]],
+    ["flexibility", "switch_sort-skill", 3, [-0.5, -0.3, 0, 0.2], [10, 16, 22, 27], [[1, 1], [1, 2], [1, 2], [1, 3]]],
+    ["reasoning", "next_pattern-skill", 2, [0.6, 0.9, 1.1], [11, 17, 24], [[1, 2], [1, 3], [2, 1]]],
+    ["literacy", "rhyme-skill", 5, [0, 0.3, 0.2, 0.1, 0.3, 0.5], [14, 22, 28, 33, 40, 46], [[1, 2], [1, 3], [1, 3], [1, 3], [2, 1], [2, 2]]],
+    ["numeracy", "more_less-skill", 1, [-0.5, -0.4], [4, 7], [null, [1, 1]]], // under 10 tries: "Not enough games yet"
+  ];
+  const snapshots = skillHistory.flatMap(([area, activityId, first, thetas, ns, tops]) =>
+    thetas.map((theta, k) => ({
+      childId: "ch_ali", area, weekStart: weekStart(iso(now - (first - k) * 7 * DAY)), theta, n: ns[k],
+      top: tops[k] ? { activityId, tier: tops[k][0], step: tops[k][1] } : null,
+    })),
+  );
 
   const db: DB = {
     v: DB_VERSION,
@@ -117,7 +135,9 @@ export function seed(): DB {
     dailyAnswers: [],
     tries: [],
     accessProfiles: [],
-    skills: [],
+    skills: skillHistory.map(([area, , , thetas, ns]) => ({ childId: "ch_ali", area, theta: thetas.at(-1)!, n: ns.at(-1)! })),
+    skillSnapshots: snapshots,
+    areaTiers: (["attention", "reasoning", "literacy"] as const).map((area) => ({ childId: "ch_ali", area, topTier: 2, openedAt: iso(now - 9 * DAY) })),
     playTime: [],
     therapistProfiles: [],
     therapistAnswers: [],

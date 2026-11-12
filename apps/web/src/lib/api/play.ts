@@ -2,7 +2,7 @@
 
 // Child-token endpoints: child mode entry, sessions & events, rewards, AAC.
 
-import { AREA_OF, AREAS, elo, openTiers, speedCorrect, START_FROM, tryDifficulty } from "../skill";
+import { AREA_OF, AREAS, CAN_DO_DAYS, elo, openTiers, speedCorrect, START_FROM, topStep, tryDifficulty, weekStart } from "../skill";
 import type { TryRecord } from "../tries";
 import { LEVEL_BY_ID, levelComplete } from "@/content/levels";
 import { SHOP_BY_ID } from "@/content/shop";
@@ -100,6 +100,16 @@ export const playApi = {
         if (next === top) continue;
         if (row) Object.assign(row, { topTier: next, openedAt: now });
         else db.areaTiers = [...(db.areaTiers ?? []), { childId, area, topTier: next, openedAt: now }];
+      }
+      // This week's snapshot of each area moved, for the progress panel (games spec §8.2), as on the server.
+      const week = weekStart(now);
+      const since = new Date(Date.parse(now) - CAN_DO_DAYS * 86_400_000).toISOString();
+      for (const area of moved) {
+        const recent = db.tries
+          .filter((t) => clean(t) && t.level === 0 && t.tier && t.step && AREA_OF[t.game as ActivityKind] === area && t.ts >= since)
+          .map((t) => ({ activityId: `${t.game}-skill`, tier: t.tier!, step: t.step!, correct: area === "speed" ? speedCorrect(t.outcome === "correct", t.responseMs, t.tier, t.step) : t.outcome === "correct" }));
+        const snap = { childId, area, weekStart: week, theta: skills[area].theta, n: skills[area].n, top: topStep(recent) };
+        db.skillSnapshots = [...(db.skillSnapshots ?? []).filter((s) => !(s.childId === childId && s.area === area && s.weekStart === week)), snap];
       }
       if (db.tries.length > 4000) db.tries = db.tries.slice(-4000); // ponytail: localStorage cap; the server keeps 90 days
     });

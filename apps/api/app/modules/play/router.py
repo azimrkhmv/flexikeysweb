@@ -31,6 +31,7 @@ from app.modules.play.models import (
     RunStatus,
     SkillArea,
     SkillLevel,
+    SkillSnapshot,
     Try,
 )
 from app.schemas import ApiModel
@@ -233,7 +234,9 @@ async def save_tries(
         )
     clean = [t for t in new if not t.access_event and t.outcome != Outcome.skipped]
     levels = await _move_skills(db, child_id, clean)
-    await _open_tiers(db, child_id, levels, {a for t in clean if (a := skill.AREA_OF.get(t.game))}, now)
+    moved = {a for t in clean if (a := skill.AREA_OF.get(t.game))}
+    await _open_tiers(db, child_id, levels, moved, now)
+    await _write_snapshots(db, child_id, levels, moved, now)
     await db.commit()
     return TriesStored(stored=len(added))
 
@@ -274,6 +277,53 @@ async def _open_tiers(
             row.top_tier, row.opened_at = new, now
         else:
             db.add(AreaTier(child_id=child_id, area=SkillArea(area), top_tier=new, opened_at=now))
+
+
+async def _write_snapshots(
+    db: AsyncSession, child_id: uuid.UUID, levels: dict[SkillArea, SkillLevel], areas: set[str], now: datetime
+) -> None:
+    """After new clean tries: this week's row of each area they moved (games spec §8.2, the progress panel), with the
+    hardest skill-game step that had at least 3 right clean tries in the last 14 days (Speed judged by its window)."""
+    week = skill.week_start(now)
+    for area in sorted(areas):
+        found = await db.execute(
+            select(Try.game, Try.tier, Try.step, Try.outcome, Try.response_ms).where(
+                Try.child_id == child_id,
+                Try.game.in_([k for k, a in skill.AREA_OF.items() if a == area]),
+                Try.level == 0,  # skill games: their steps have the "can do" sentences
+                Try.tier.is_not(None),
+                Try.step.is_not(None),
+                Try.access_event.is_(False),
+                Try.outcome != Outcome.skipped,
+                Try.ts >= now - timedelta(days=skill.CAN_DO_DAYS),
+            )
+        )
+        tries = [
+            {
+                "activity_id": f"{game}-skill",
+                "tier": tier,
+                "step": step,
+                "correct": skill.speed_correct(outcome == Outcome.correct, ms, tier, step)
+                if area == "speed"
+                else outcome == Outcome.correct,
+            }
+            for game, tier, step, outcome, ms in found
+        ]
+        top = skill.top_step(tries) or {}
+        row = levels[SkillArea(area)]
+        values = {
+            "theta": row.theta,
+            "n_trials": row.n_trials,
+            "top_activity_id": top.get("activity_id"),
+            "top_tier": top.get("tier"),
+            "top_step": top.get("step"),
+        }
+        stmt = insert(SkillSnapshot).values(child_id=child_id, area=SkillArea(area), week_start=week, **values)
+        await db.execute(
+            stmt.on_conflict_do_update(
+                index_elements=[SkillSnapshot.child_id, SkillSnapshot.area, SkillSnapshot.week_start], set_=values
+            )
+        )
 
 
 async def skill_rows(db: AsyncSession, child_id: uuid.UUID) -> dict[SkillArea, SkillLevel]:

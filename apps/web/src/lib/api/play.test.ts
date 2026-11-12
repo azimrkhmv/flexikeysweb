@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { LEVEL_BY_ID } from "@/content/levels";
+import { skillLevel } from "../skill";
 import { createTryLog } from "../tries";
 import { api, DEMO_PHONES, dbStore, sel } from "./index";
 
@@ -73,6 +74,7 @@ describe("skill levels from tries", () => {
   beforeEach(async () => {
     api.resetDemo();
     await asAli();
+    dbStore.set((db) => ({ ...db, skills: [], skillSnapshots: [], areaTiers: [] })); // Ali without the demo's skill history
   });
 
   it("a right answer raises θ, an access event changes nothing", async () => {
@@ -99,5 +101,27 @@ describe("skill levels from tries", () => {
     expect(sel.tiers(dbStore.get(), "ch_ali")).toMatchObject({ attention: 2, memory: 1 });
     await api.saveTries("ch_ali", Array.from({ length: 30 }, (_, i) => add({ ...at, tier: 1, step: 1, t: 40 + i, type: "select", correct: false })!));
     expect(sel.tiers(dbStore.get(), "ch_ali").attention).toBe(2);
+  });
+
+  // B89 (games spec §8): this week's snapshot after each batch; a level from 10 clean tries; access never, speed closed.
+  it("keeps this week's snapshot and shows a level from 10 clean tries, as the server does", async () => {
+    const add = createTryLog({ childId: "ch_ali", sessionId: "s1", startedAt: Date.now(), access: "touch" });
+    const at = { activityId: "card_pairs-skill", tier: 1, step: 2 };
+    const memory = () => sel.skillProgress(dbStore.get(), "ch_ali").find((p) => p.area === "memory")!;
+    expect(sel.skillProgress(dbStore.get(), "ch_ali").map((p) => p.area)).toEqual(["attention", "memory", "flexibility", "reasoning", "literacy", "numeracy"]);
+    await api.saveTries("ch_ali", Array.from({ length: 9 }, (_, i) => add({ ...at, t: i, type: "select", correct: true })!));
+    expect(memory()).toMatchObject({ level: null, best: null, now: { activityId: "card_pairs-skill", tier: 1, step: 2 } });
+    await api.saveTries("ch_ali", [add({ ...at, t: 20, type: "accidental_tap" })!, add({ ...at, t: 21, type: "select", correct: true })!]);
+    const m = memory();
+    expect(m.level).toBe(skillLevel(sel.skills(dbStore.get(), "ch_ali").memory.theta));
+    expect(m.weeks.at(-1)!.level).toBe(m.level);
+    expect(dbStore.get().skillSnapshots).toHaveLength(1); // one row per area and week, written again
+    const therapist = sel.skillProgress(dbStore.get(), "ch_ali", true).find((p) => p.area === "memory")!;
+    expect([therapist.tries, therapist.accessEvents]).toEqual([11, 1]);
+    // Live mode: the server's answer wins, tiers and Speed included.
+    const live = [{ ...m, area: "speed" as const, topTier: 3 }];
+    dbStore.set((db) => ({ ...db, skillProgress: { ch_ali: live } }));
+    expect(sel.skillProgress(dbStore.get(), "ch_ali")).toBe(live);
+    expect([sel.speedOpen(dbStore.get(), "ch_ali"), sel.tiers(dbStore.get(), "ch_ali").speed]).toEqual([true, 3]);
   });
 });

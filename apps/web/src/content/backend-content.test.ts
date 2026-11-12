@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { readFileSync, writeFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { buildRoadmap, type PlanInput } from "@/lib/roadmap";
-import { AREA_OF, AREA_QUESTIONS, AREAS, chooseGames, corrected, difficulty, elo, levelDifficulty, levelFor, openSkillSteps, openTiers, pCorrect, speedCorrect, speedOpen, speedWindow, START_FROM, startingTheta, weeklyNew, type Area, type Bucket, type Game } from "@/lib/skill";
+import { AREA_OF, AREA_QUESTIONS, AREAS, bestLevel, chooseGames, corrected, difficulty, elo, history, levelDifficulty, levelFor, openSkillSteps, openTiers, pCorrect, shownLevel, skillLevel, speedCorrect, speedOpen, speedWindow, START_FROM, startingTheta, topStep, weekStart, weeklyNew, type Area, type Bucket, type Game, type Snapshot, type StepRef } from "@/lib/skill";
 import { LEVELS } from "./levels";
 import { SKILL_GAMES } from "./skillGames";
 import type { TherapistInput } from "@/lib/types";
@@ -52,6 +52,41 @@ const SPEED_ACCESS = [
   { input_mode: "touch", repeat_lock: false, release_ok: false },
   { input_mode: "dwell", repeat_lock: false, release_ok: true },
   { input_mode: "switch", repeat_lock: false, release_ok: true },
+];
+
+/** "Can do now" cases (B89): which step is the hardest with 3 right tries. */
+const rightTries = (activityId: string, tier: number, step: number, right: number, wrong = 0) => [
+  ...Array.from({ length: right }, () => ({ activityId, tier, step, correct: true })),
+  ...Array.from({ length: wrong }, () => ({ activityId, tier, step, correct: false })),
+];
+const TOP_STEP_CASES = [
+  [],
+  rightTries("find_same-skill", 1, 1, 2, 5),
+  rightTries("find_same-skill", 1, 1, 3),
+  [...rightTries("find_same-skill", 1, 1, 6), ...rightTries("find_same-skill", 2, 1, 3, 4), ...rightTries("scene-skill", 1, 3, 9)],
+  [...rightTries("find_same-skill", 2, 2, 3), ...rightTries("scene-skill", 2, 2, 4)],
+  [...rightTries("scene-skill", 2, 2, 3), ...rightTries("find_same-skill", 2, 2, 3)],
+  [...rightTries("story-skill", 3, 1, 2), ...rightTries("scene-skill", 2, 3, 3, 1)],
+];
+const snakeRef = (r: StepRef | null) => r && { activity_id: r.activityId, tier: r.tier, step: r.step };
+const snap = (weekStart: string, theta: number, n: number, top: StepRef | null = null): Snapshot => ({ weekStart, theta, n, top });
+const HISTORY_CASES: { snaps: Snapshot[]; thisWeek: string; now: number | null }[] = [
+  { snaps: [], thisWeek: "2026-11-09", now: null },
+  { snaps: [snap("2026-11-09", 0.2, 6)], thisWeek: "2026-11-09", now: null },
+  {
+    snaps: [
+      snap("2026-09-07", -1, 12, { activityId: "find_same-skill", tier: 1, step: 1 }),
+      snap("2026-09-28", -0.4, 30, { activityId: "find_same-skill", tier: 1, step: 3 }),
+      snap("2026-10-12", 0.3, 44, { activityId: "scene-skill", tier: 2, step: 1 }),
+      snap("2026-11-02", 1.1, 70, { activityId: "scene-skill", tier: 2, step: 3 }),
+    ],
+    thisWeek: "2026-11-09",
+    now: 50,
+  },
+  // A child who got worse: the line goes down, the best level stays the highest ever shown.
+  { snaps: [snap("2026-10-19", 2, 40), snap("2026-10-26", 0.5, 52, { activityId: "pipes-skill", tier: 1, step: 2 })], thisWeek: "2026-11-09", now: 40 },
+  // Across a new year.
+  { snaps: [snap("2025-12-22", 0, 15), snap("2025-12-29", 0.4, 20)], thisWeek: "2026-01-05", now: 54 },
 ];
 
 /** The roadmap in the backend's field names; key order is part of the contract (the hash covers it). */
@@ -184,6 +219,18 @@ describe("backend content", () => {
       })),
       speed_window: [1, 2, 3, 4].flatMap((tier) => [1, 2, 3].map((step) => ({ tier, step, ms: speedWindow(tier, step) }))),
       speed_correct: [[true, 2999, 1, 1], [true, 3000, 1, 1], [true, 3001, 1, 1], [false, 500, 1, 1], [true, null, 2, 2], [true, 1767, 2, 2], [true, 1768, 2, 2], [true, 800, 4, 3], [true, 801, 4, 3], [true, 5000, null, null]].map(([correct, ms, tier, step]) => ({ correct, response_ms: ms, tier, step, out: speedCorrect(correct as boolean, ms as number | null, tier as number | null, step as number | null) })),
+      // Games spec §8 (B89): the level people see, the week, "can do now", the 8-week line and the tree's best level.
+      skill_level: [-9, -3, -2.99, -1.5, 0, 0.75, 1.5, 2.2, 4.5, 4.6, 9].flatMap((theta) => [9, 10].map((n) => ({ theta, n, level: skillLevel(theta), shown: shownLevel(theta, n) }))),
+      week_start: ["2026-11-09T00:00:00Z", "2026-11-08T18:59:59Z", "2026-11-08T19:00:00Z", "2026-11-15T18:59:59.999Z", "2026-11-12T10:00:00+05:00", "2026-12-31T20:00:00Z"].map((ts) => ({ ts, out: weekStart(ts) })),
+      top_step: TOP_STEP_CASES.map((tries) => ({ tries: tries.map((t) => ({ activity_id: t.activityId, tier: t.tier, step: t.step, correct: t.correct })), out: snakeRef(topStep(tries)) })),
+      history: HISTORY_CASES.map(({ snaps, thisWeek, now }) => {
+        const h = history(snaps, thisWeek);
+        return {
+          snaps: snaps.map((s) => ({ week_start: s.weekStart, theta: s.theta, n: s.n, top: snakeRef(s.top) })),
+          this_week: thisWeek, now,
+          weeks: h.weeks.map((w) => ({ week_start: w.weekStart, level: w.level })), before: snakeRef(h.before), best: bestLevel(snaps, now),
+        };
+      }),
       elo: [-1, 0, 0.8].flatMap((theta) => [0, 7, 40].flatMap((n) => [1, 6, 15].flatMap((level) => [true, false].map((correct) => ({ theta, n, level, correct, d: levelDifficulty(level), p: pCorrect(theta, levelDifficulty(level)), out: elo(theta, n, levelDifficulty(level), correct) }))))),
     });
   });

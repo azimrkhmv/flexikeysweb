@@ -2,6 +2,7 @@
 
 import json
 from collections.abc import Iterator
+from datetime import date, datetime
 from pathlib import Path
 from typing import Any
 
@@ -126,3 +127,20 @@ def test_speed_opens_only_for_steady_touch_and_scores_by_time() -> None:
     assert not skill.speed_open({"input_mode": "dwell", "repeat_lock": False, "release_ok": True}, steady)
     assert not skill.speed_open({"input_mode": "switch", "repeat_lock": False, "release_ok": True}, steady)
     assert skill.speed_open({"input_mode": "touch", "repeat_lock": False, "release_ok": True}, steady)
+
+
+def test_progress_levels_weeks_and_can_do() -> None:
+    """Games spec §8 (B89): the level 1-100, the Tashkent week, "can do now", the 8-week line and the best level."""
+    for c in CASES["skill_level"]:
+        assert skill.skill_level(c["theta"]) == c["level"], c
+        assert skill.shown_level(c["theta"], c["n"]) == c["shown"], c
+    for c in CASES["week_start"]:
+        assert skill.week_start(datetime.fromisoformat(c["ts"])).isoformat() == c["out"], c
+    for c in CASES["top_step"]:
+        assert skill.top_step(c["tries"]) == c["out"], c
+    for c in CASES["history"]:
+        snaps = [{**s, "week_start": date.fromisoformat(s["week_start"])} for s in c["snaps"]]
+        h = skill.history(snaps, date.fromisoformat(c["this_week"]))
+        assert [{"week_start": w["week_start"].isoformat(), "level": w["level"]} for w in h["weeks"]] == c["weeks"], c
+        assert h["before"] == c["before"], c
+        assert skill.best_level(snaps, c["now"]) == c["best"], c
