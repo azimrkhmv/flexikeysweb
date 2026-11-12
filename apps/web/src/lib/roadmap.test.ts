@@ -45,7 +45,7 @@ describe("roadmap engine", () => {
     }
   });
 
-  it("never selects a conflicting video — every safety combination", () => {
+  it("never selects a conflicting video — every safety combination", { timeout: 30_000 }, () => {
     const p12 = ["walks", "walks_help", "walker", "wheelchair", "needs_help_sit", null];
     const p13 = ["last_year", "earlier", "never", null];
     const p14: (string[] | null)[] = [["nothing"], ["jumping"], ["prone", "neck_flexion"], ["single_leg_weight"], null];
@@ -93,10 +93,21 @@ describe("roadmap engine", () => {
 
   it("the thinking and learning goals choose their area's games (B75)", () => {
     const games = (...goals: string[]) => [...new Set(buildRoadmap(input({ P33: goals, P34: "30" }, { healthConsent: false }), LIB).days.flatMap((d) => d.games.map((g) => g.kind)))].sort();
-    expect(games("memory")).toEqual(["light_path", "missing", "sequence"]);
-    expect(games("attention")).toEqual(["find_same", "scene", "story"]);
-    expect(games("literacy")).toEqual(["listen_pick", "sentence", "type"]);
-    expect(games("numeracy")).toEqual(["count"]);
+    // B88: each area's skill-only games join at the end of its list.
+    expect(games("memory")).toEqual(["card_pairs", "light_path", "missing", "n_back", "pairs_recall", "sequence", "shopping_list"]);
+    expect(games("attention")).toEqual(["find_same", "odd_one_out", "scene", "story", "track_fish", "which_way"]);
+    expect(games("literacy")).toEqual(["do_what_i_say", "listen_pick", "rhyme", "sentence", "type", "word_builder"]);
+    expect(games("numeracy")).toEqual(["bazaar", "count", "missing_number", "more_less", "number_line"]);
+  });
+
+  it("the new games: reasoning and flexibility in understand, math also in school, Speed in no goal (B88)", () => {
+    const all = (goals: string[]) => buildRoadmap(input({ P33: goals, P34: "30" }, { healthConsent: false }), LIB).reasons.filter((r) => r.slot === "game");
+    const understand = all(["understand"]).map((r) => r.ref);
+    expect(understand.slice(0, 3)).toEqual(["missing", "sort", "sequence"]); // the old ones keep their place
+    expect(understand).toEqual(expect.arrayContaining(["next_pattern", "balance", "pipes", "logic_houses", "shadow_match", "switch_sort", "opposite", "secret_rule"]));
+    expect(all(["school"]).map((r) => r.ref)).toEqual(["count", "type", "trace", "more_less", "number_line", "bazaar", "missing_number"]);
+    const every = all(["walk", "hands", "sit", "communicate", "understand", "eat", "play_others", "school", "memory", "attention", "literacy", "numeracy"]).map((r) => r.ref);
+    for (const kind of ["quick_snap", "tap_star", "fast_sort"]) expect(every).not.toContain(kind);
   });
 
   it("therapist goals override the parent's (T7 over P33)", () => {

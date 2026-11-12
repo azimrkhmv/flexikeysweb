@@ -19,25 +19,30 @@ from typing import Any
 
 from app.modules.plans.safety import Facts, LibraryExercise, Therapist, exclusion_reason, plan_facts
 
-ENGINE_VERSION = "py-1"  # stored with every plan; change it whenever the rules change
+ENGINE_VERSION = "py-2"  # stored with every plan; change it whenever the rules change (py-2: B88, the new games)
 DAYS = 28
 GAME_LIMIT_MIN = 20
 GAME_SLOT_MIN = 5
-# Games that serve each goal.
+# Games that serve each goal. B88: the skill-only games come at the end of their area's list (games spec §11, task 9);
+# reasoning and flexibility games (no goal of their own) go to "understand", the math games to "school" as well.
+# Speed games are in no goal: they come only through the day's game choice, while Speed is open (§7.1).
 GOAL_GAMES: dict[str, tuple[str, ...]] = {
     "walk": ("path", "light_path"),
     "hands": ("trace", "color", "dots"),
     "sit": ("find_same", "scene"),
     "communicate": ("listen_pick", "sentence"),
-    "understand": ("missing", "sort", "sequence"),
+    "understand": (
+        *("missing", "sort", "sequence"),
+        *("next_pattern", "balance", "pipes", "logic_houses", "shadow_match", "switch_sort", "opposite", "secret_rule"),
+    ),
     "eat": ("sort", "find_same"),
     "play_others": ("story", "scene"),
-    "school": ("count", "type", "trace"),
+    "school": ("count", "type", "trace", "more_less", "number_line", "bazaar", "missing_number"),
     # B75: the games of each skill area.
-    "memory": ("sequence", "missing", "light_path"),
-    "attention": ("find_same", "scene", "story"),
-    "literacy": ("listen_pick", "type", "sentence"),
-    "numeracy": ("count",),
+    "memory": ("sequence", "missing", "light_path", "card_pairs", "shopping_list", "n_back", "pairs_recall"),
+    "attention": ("find_same", "scene", "story", "odd_one_out", "track_fish", "which_way"),
+    "literacy": ("listen_pick", "type", "sentence", "rhyme", "word_builder", "do_what_i_say"),
+    "numeracy": ("count", "more_less", "number_line", "bazaar", "missing_number"),
 }
 GAMES: tuple[str, ...] = tuple(dict.fromkeys(k for kinds in GOAL_GAMES.values() for k in kinds))  # the fixed set
 # The tools in the standard Home Kit box.

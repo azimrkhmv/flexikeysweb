@@ -469,7 +469,7 @@ export interface TherapistInput {
 export interface RoadmapDay {
   date: string;
   exercises: { videoId: string; level: 1 | 2 | 3 }[];
-  games: { kind: ActivityKind; minutes: number }[];
+  games: { kind: GameKind; minutes: number }[];
 }
 
 /** Structured reasons the rules give for each choice; AI (later) only rewords these. */

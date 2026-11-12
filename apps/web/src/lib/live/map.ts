@@ -7,7 +7,7 @@ import { TRIAL_DAYS } from "@/content/plans";
 import type { MessageOut, AdminUser, AuditOut, BookingOut, KitOrderOut, CardOut, ChildOut, ClinicBooking, ClinicSlot, ClipOut, ConsentKind, Consents, DailyOut, FreeSlot, InUse, Me, MyPlace, PlaceView, PlanOut, PlanStatus, ReviewItem, RoundOut, ShareOut, SharedChild, UserOut } from "@/lib/server/types";
 import type { DB } from "@/lib/api/schema";
 import type { Lang } from "@/lib/translate";
-import type { ChildSupport, ActivityKind, AgeBand, BodyArea, DailyAnswer, ExerciseVideo, FnLevel, GoalKey, IntakeAnswer, IntakeValue, L10n, PausedDay, Restriction, Roadmap, TaskDone,
+import type { ChildSupport, AgeBand, GameKind, BodyArea, DailyAnswer, ExerciseVideo, FnLevel, GoalKey, IntakeAnswer, IntakeValue, L10n, PausedDay, Restriction, Roadmap, TaskDone,
   AacCustomCard, AacEvent, KitOrder, Booking, Place, PlaceNeed, Slot, AccessMode, AuditLog, AdaptationChange, AdaptiveProfile, Assignment, CareLink, Child, Consent, ConsentScope, Goal,
   InteractionEvent, LearningSession, LevelProgress, Note, Notification, ParamKey, Role, SkillMastery, User,
 } from "@/lib/types";
@@ -99,7 +99,7 @@ export function planFrom(childId: string, round: number, p: PlanOut): Roadmap {
     days: p.days.map((d) => ({
       date: d.date,
       exercises: d.exercises.map((e) => ({ videoId: e.exerciseId, level: Math.min(3, Math.max(1, made.get(e.exerciseId) ?? e.level)) as 1 | 2 | 3 })),
-      games: d.games.map((g) => ({ kind: g.kind as ActivityKind, minutes: g.minutes })),
+      games: d.games.map((g) => ({ kind: g.kind as GameKind, minutes: g.minutes })),
     })),
     reasons: p.reasons.map((r) => ({ slot: r.slot, goal: r.goal as GoalKey, ref: r.ref, level: r.level, source: r.source ?? undefined })),
   };
