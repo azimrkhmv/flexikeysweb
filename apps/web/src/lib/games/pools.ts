@@ -1,5 +1,5 @@
 import { VOCAB } from "@/content/vocab";
-import { SOUND_GROUPS } from "@/content/words";
+import { DROPS, RHYMES, SOUND_GROUPS } from "@/content/words";
 import type { Lang } from "@/lib/i18n";
 import { isGlyph, looks } from "./glyph";
 
@@ -32,9 +32,9 @@ export const baseId = (id: string) => (id.includes("~") ? id.slice(0, id.indexOf
 export const numId = (n: number) => `num:${n}`;
 export const numOf = (id: string) => Number(id.slice(4));
 export const wordId = (lang: Lang, word: string) => `w:${lang}:${word}`;
-const WORD_EMOJI: Record<string, string> = Object.fromEntries(
-  (Object.keys(SOUND_GROUPS) as Lang[]).flatMap((lang) => SOUND_GROUPS[lang].flat().map((x) => [wordId(lang, x.word), x.emoji])),
-);
+/** Every picture word of the language games (sound groups, rhymes, sounds taken away): one picture per word. */
+export const PIC_WORDS = (lang: Lang) => [...SOUND_GROUPS[lang].flat(), ...RHYMES[lang].flat(), ...DROPS[lang].flatMap((x) => [x.from, x.to])];
+const WORD_EMOJI: Record<string, string> = Object.fromEntries((Object.keys(SOUND_GROUPS) as Lang[]).flatMap((lang) => PIC_WORDS(lang).map((x) => [wordId(lang, x.word), x.emoji])));
 export const wordEmoji = (id: string) => WORD_EMOJI[id];
 /** The word an item stands for in a language (what listen_pick says aloud). */
 export function wordOf(id: string, lang: Lang): string | undefined {

@@ -3060,5 +3060,677 @@
   "area": "reasoning",
   "tier": 4,
   "step": 3
+ },
+ {
+  "activity_id": "more_less-skill",
+  "kind": "more_less",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 1,
+  "step": 1
+ },
+ {
+  "activity_id": "more_less-skill",
+  "kind": "more_less",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 1,
+  "step": 2
+ },
+ {
+  "activity_id": "more_less-skill",
+  "kind": "more_less",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 1,
+  "step": 3
+ },
+ {
+  "activity_id": "more_less-skill",
+  "kind": "more_less",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 2,
+  "step": 1
+ },
+ {
+  "activity_id": "more_less-skill",
+  "kind": "more_less",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 2,
+  "step": 2
+ },
+ {
+  "activity_id": "more_less-skill",
+  "kind": "more_less",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 2,
+  "step": 3
+ },
+ {
+  "activity_id": "more_less-skill",
+  "kind": "more_less",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 3,
+  "step": 1
+ },
+ {
+  "activity_id": "more_less-skill",
+  "kind": "more_less",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 3,
+  "step": 2
+ },
+ {
+  "activity_id": "more_less-skill",
+  "kind": "more_less",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 3,
+  "step": 3
+ },
+ {
+  "activity_id": "more_less-skill",
+  "kind": "more_less",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 4,
+  "step": 1
+ },
+ {
+  "activity_id": "more_less-skill",
+  "kind": "more_less",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 4,
+  "step": 2
+ },
+ {
+  "activity_id": "more_less-skill",
+  "kind": "more_less",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 4,
+  "step": 3
+ },
+ {
+  "activity_id": "number_line-skill",
+  "kind": "number_line",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 1,
+  "step": 1
+ },
+ {
+  "activity_id": "number_line-skill",
+  "kind": "number_line",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 1,
+  "step": 2
+ },
+ {
+  "activity_id": "number_line-skill",
+  "kind": "number_line",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 1,
+  "step": 3
+ },
+ {
+  "activity_id": "number_line-skill",
+  "kind": "number_line",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 2,
+  "step": 1
+ },
+ {
+  "activity_id": "number_line-skill",
+  "kind": "number_line",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 2,
+  "step": 2
+ },
+ {
+  "activity_id": "number_line-skill",
+  "kind": "number_line",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 2,
+  "step": 3
+ },
+ {
+  "activity_id": "number_line-skill",
+  "kind": "number_line",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 3,
+  "step": 1
+ },
+ {
+  "activity_id": "number_line-skill",
+  "kind": "number_line",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 3,
+  "step": 2
+ },
+ {
+  "activity_id": "number_line-skill",
+  "kind": "number_line",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 3,
+  "step": 3
+ },
+ {
+  "activity_id": "number_line-skill",
+  "kind": "number_line",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 4,
+  "step": 1
+ },
+ {
+  "activity_id": "number_line-skill",
+  "kind": "number_line",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 4,
+  "step": 2
+ },
+ {
+  "activity_id": "number_line-skill",
+  "kind": "number_line",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 4,
+  "step": 3
+ },
+ {
+  "activity_id": "bazaar-skill",
+  "kind": "bazaar",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 1,
+  "step": 1
+ },
+ {
+  "activity_id": "bazaar-skill",
+  "kind": "bazaar",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 1,
+  "step": 2
+ },
+ {
+  "activity_id": "bazaar-skill",
+  "kind": "bazaar",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 1,
+  "step": 3
+ },
+ {
+  "activity_id": "bazaar-skill",
+  "kind": "bazaar",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 2,
+  "step": 1
+ },
+ {
+  "activity_id": "bazaar-skill",
+  "kind": "bazaar",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 2,
+  "step": 2
+ },
+ {
+  "activity_id": "bazaar-skill",
+  "kind": "bazaar",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 2,
+  "step": 3
+ },
+ {
+  "activity_id": "bazaar-skill",
+  "kind": "bazaar",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 3,
+  "step": 1
+ },
+ {
+  "activity_id": "bazaar-skill",
+  "kind": "bazaar",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 3,
+  "step": 2
+ },
+ {
+  "activity_id": "bazaar-skill",
+  "kind": "bazaar",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 3,
+  "step": 3
+ },
+ {
+  "activity_id": "bazaar-skill",
+  "kind": "bazaar",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 4,
+  "step": 1
+ },
+ {
+  "activity_id": "bazaar-skill",
+  "kind": "bazaar",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 4,
+  "step": 2
+ },
+ {
+  "activity_id": "bazaar-skill",
+  "kind": "bazaar",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 4,
+  "step": 3
+ },
+ {
+  "activity_id": "missing_number-skill",
+  "kind": "missing_number",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 1,
+  "step": 1
+ },
+ {
+  "activity_id": "missing_number-skill",
+  "kind": "missing_number",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 1,
+  "step": 2
+ },
+ {
+  "activity_id": "missing_number-skill",
+  "kind": "missing_number",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 1,
+  "step": 3
+ },
+ {
+  "activity_id": "missing_number-skill",
+  "kind": "missing_number",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 2,
+  "step": 1
+ },
+ {
+  "activity_id": "missing_number-skill",
+  "kind": "missing_number",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 2,
+  "step": 2
+ },
+ {
+  "activity_id": "missing_number-skill",
+  "kind": "missing_number",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 2,
+  "step": 3
+ },
+ {
+  "activity_id": "missing_number-skill",
+  "kind": "missing_number",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 3,
+  "step": 1
+ },
+ {
+  "activity_id": "missing_number-skill",
+  "kind": "missing_number",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 3,
+  "step": 2
+ },
+ {
+  "activity_id": "missing_number-skill",
+  "kind": "missing_number",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 3,
+  "step": 3
+ },
+ {
+  "activity_id": "missing_number-skill",
+  "kind": "missing_number",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 4,
+  "step": 1
+ },
+ {
+  "activity_id": "missing_number-skill",
+  "kind": "missing_number",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 4,
+  "step": 2
+ },
+ {
+  "activity_id": "missing_number-skill",
+  "kind": "missing_number",
+  "level": 0,
+  "area": "numeracy",
+  "tier": 4,
+  "step": 3
+ },
+ {
+  "activity_id": "rhyme-skill",
+  "kind": "rhyme",
+  "level": 0,
+  "area": "literacy",
+  "tier": 1,
+  "step": 1
+ },
+ {
+  "activity_id": "rhyme-skill",
+  "kind": "rhyme",
+  "level": 0,
+  "area": "literacy",
+  "tier": 1,
+  "step": 2
+ },
+ {
+  "activity_id": "rhyme-skill",
+  "kind": "rhyme",
+  "level": 0,
+  "area": "literacy",
+  "tier": 1,
+  "step": 3
+ },
+ {
+  "activity_id": "rhyme-skill",
+  "kind": "rhyme",
+  "level": 0,
+  "area": "literacy",
+  "tier": 2,
+  "step": 1
+ },
+ {
+  "activity_id": "rhyme-skill",
+  "kind": "rhyme",
+  "level": 0,
+  "area": "literacy",
+  "tier": 2,
+  "step": 2
+ },
+ {
+  "activity_id": "rhyme-skill",
+  "kind": "rhyme",
+  "level": 0,
+  "area": "literacy",
+  "tier": 2,
+  "step": 3
+ },
+ {
+  "activity_id": "rhyme-skill",
+  "kind": "rhyme",
+  "level": 0,
+  "area": "literacy",
+  "tier": 3,
+  "step": 1
+ },
+ {
+  "activity_id": "rhyme-skill",
+  "kind": "rhyme",
+  "level": 0,
+  "area": "literacy",
+  "tier": 3,
+  "step": 2
+ },
+ {
+  "activity_id": "rhyme-skill",
+  "kind": "rhyme",
+  "level": 0,
+  "area": "literacy",
+  "tier": 3,
+  "step": 3
+ },
+ {
+  "activity_id": "rhyme-skill",
+  "kind": "rhyme",
+  "level": 0,
+  "area": "literacy",
+  "tier": 4,
+  "step": 1
+ },
+ {
+  "activity_id": "rhyme-skill",
+  "kind": "rhyme",
+  "level": 0,
+  "area": "literacy",
+  "tier": 4,
+  "step": 2
+ },
+ {
+  "activity_id": "rhyme-skill",
+  "kind": "rhyme",
+  "level": 0,
+  "area": "literacy",
+  "tier": 4,
+  "step": 3
+ },
+ {
+  "activity_id": "word_builder-skill",
+  "kind": "word_builder",
+  "level": 0,
+  "area": "literacy",
+  "tier": 1,
+  "step": 1
+ },
+ {
+  "activity_id": "word_builder-skill",
+  "kind": "word_builder",
+  "level": 0,
+  "area": "literacy",
+  "tier": 1,
+  "step": 2
+ },
+ {
+  "activity_id": "word_builder-skill",
+  "kind": "word_builder",
+  "level": 0,
+  "area": "literacy",
+  "tier": 1,
+  "step": 3
+ },
+ {
+  "activity_id": "word_builder-skill",
+  "kind": "word_builder",
+  "level": 0,
+  "area": "literacy",
+  "tier": 2,
+  "step": 1
+ },
+ {
+  "activity_id": "word_builder-skill",
+  "kind": "word_builder",
+  "level": 0,
+  "area": "literacy",
+  "tier": 2,
+  "step": 2
+ },
+ {
+  "activity_id": "word_builder-skill",
+  "kind": "word_builder",
+  "level": 0,
+  "area": "literacy",
+  "tier": 2,
+  "step": 3
+ },
+ {
+  "activity_id": "word_builder-skill",
+  "kind": "word_builder",
+  "level": 0,
+  "area": "literacy",
+  "tier": 3,
+  "step": 1
+ },
+ {
+  "activity_id": "word_builder-skill",
+  "kind": "word_builder",
+  "level": 0,
+  "area": "literacy",
+  "tier": 3,
+  "step": 2
+ },
+ {
+  "activity_id": "word_builder-skill",
+  "kind": "word_builder",
+  "level": 0,
+  "area": "literacy",
+  "tier": 3,
+  "step": 3
+ },
+ {
+  "activity_id": "word_builder-skill",
+  "kind": "word_builder",
+  "level": 0,
+  "area": "literacy",
+  "tier": 4,
+  "step": 1
+ },
+ {
+  "activity_id": "word_builder-skill",
+  "kind": "word_builder",
+  "level": 0,
+  "area": "literacy",
+  "tier": 4,
+  "step": 2
+ },
+ {
+  "activity_id": "word_builder-skill",
+  "kind": "word_builder",
+  "level": 0,
+  "area": "literacy",
+  "tier": 4,
+  "step": 3
+ },
+ {
+  "activity_id": "do_what_i_say-skill",
+  "kind": "do_what_i_say",
+  "level": 0,
+  "area": "literacy",
+  "tier": 1,
+  "step": 1
+ },
+ {
+  "activity_id": "do_what_i_say-skill",
+  "kind": "do_what_i_say",
+  "level": 0,
+  "area": "literacy",
+  "tier": 1,
+  "step": 2
+ },
+ {
+  "activity_id": "do_what_i_say-skill",
+  "kind": "do_what_i_say",
+  "level": 0,
+  "area": "literacy",
+  "tier": 1,
+  "step": 3
+ },
+ {
+  "activity_id": "do_what_i_say-skill",
+  "kind": "do_what_i_say",
+  "level": 0,
+  "area": "literacy",
+  "tier": 2,
+  "step": 1
+ },
+ {
+  "activity_id": "do_what_i_say-skill",
+  "kind": "do_what_i_say",
+  "level": 0,
+  "area": "literacy",
+  "tier": 2,
+  "step": 2
+ },
+ {
+  "activity_id": "do_what_i_say-skill",
+  "kind": "do_what_i_say",
+  "level": 0,
+  "area": "literacy",
+  "tier": 2,
+  "step": 3
+ },
+ {
+  "activity_id": "do_what_i_say-skill",
+  "kind": "do_what_i_say",
+  "level": 0,
+  "area": "literacy",
+  "tier": 3,
+  "step": 1
+ },
+ {
+  "activity_id": "do_what_i_say-skill",
+  "kind": "do_what_i_say",
+  "level": 0,
+  "area": "literacy",
+  "tier": 3,
+  "step": 2
+ },
+ {
+  "activity_id": "do_what_i_say-skill",
+  "kind": "do_what_i_say",
+  "level": 0,
+  "area": "literacy",
+  "tier": 3,
+  "step": 3
+ },
+ {
+  "activity_id": "do_what_i_say-skill",
+  "kind": "do_what_i_say",
+  "level": 0,
+  "area": "literacy",
+  "tier": 4,
+  "step": 1
+ },
+ {
+  "activity_id": "do_what_i_say-skill",
+  "kind": "do_what_i_say",
+  "level": 0,
+  "area": "literacy",
+  "tier": 4,
+  "step": 2
+ },
+ {
+  "activity_id": "do_what_i_say-skill",
+  "kind": "do_what_i_say",
+  "level": 0,
+  "area": "literacy",
+  "tier": 4,
+  "step": 3
  }
 ]

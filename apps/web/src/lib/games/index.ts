@@ -2,6 +2,8 @@ import type { Lang } from "@/lib/i18n";
 import * as attention from "./attention";
 import * as existing from "./existing";
 import * as flexibility from "./flexibility";
+import * as language from "./language";
+import * as math from "./math";
 import * as memory from "./memory";
 import * as reasoning from "./reasoning";
 import { rngOf, type Rng } from "./rng";
@@ -51,6 +53,15 @@ export const GENERATORS = {
   pipes: reasoning.pipes,
   logic_houses: reasoning.logicHouses,
   shadow_match: reasoning.shadowMatch,
+  // §6.5 Math
+  more_less: math.moreLess,
+  number_line: math.numberLine,
+  bazaar: math.bazaar,
+  missing_number: math.missingNumber,
+  // §6.6 Language
+  rhyme: language.rhyme,
+  word_builder: language.wordBuilder,
+  do_what_i_say: language.doWhatISay,
 };
 export type SkillKind = keyof typeof GENERATORS;
 export type SettingsOf<K extends SkillKind> = Parameters<(typeof GENERATORS)[K]["make"]>[0];

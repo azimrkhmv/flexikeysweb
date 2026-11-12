@@ -1,6 +1,6 @@
 import type { Lang } from "@/lib/i18n";
 
-// Word lists of the language games (games spec 8 Nov 2026, §5 listen_pick and type; §6.6 later). Each language has its
+// Word lists of the language games (games spec 8 Nov 2026, §5 listen_pick and type; §6.6 rhyme). Each language has its
 // OWN lists: similar sounds and rhymes are never translated. Every word has a picture (an Emoji ≤ 12, see
 // emoji.test.ts). uz text drafted 8 Nov 2026 — native-speaker check (B44).
 
@@ -76,6 +76,88 @@ export const SOUND_GROUPS: Record<Lang, PicWord[][]> = {
     w("baliq 🐟, bulut ☁️, bodring 🥒, burun 👃"),
     w("qush 🐦, quloq 👂, quyon 🐰, quyosh ☀️"),
   ],
+};
+
+/**
+ * Rhyme families (rhyme's rounds, §6.6): every word of a family rhymes with the others, and with no word of another
+ * family. Pairs per language (n·(n−1)/2 per family) are at least 30 (games.test.ts).
+ */
+export const RHYMES: Record<Lang, PicWord[][]> = {
+  en: [
+    w("cat 🐱, hat 🎩, bat 🦇"),
+    w("bee 🐝, tree 🌳, key 🔑, three 3️⃣"),
+    w("mouse 🐭, house 🏠"),
+    w("frog 🐸, dog 🐶"),
+    w("bear 🐻, pear 🍐, chair 🪑, hair 💇"),
+    w("moon 🌙, spoon 🥄, balloon 🎈"),
+    w("goat 🐐, boat ⛵, coat 🧥"),
+    w("snake 🐍, cake 🍰"),
+    w("king 🤴, ring 💍"),
+    w("star ⭐, car 🚗, jar 🍯"),
+    w("fox 🦊, box 📦, socks 🧦"),
+    w("rain 🌧️, train 🚂, plane ✈️, chain ⛓️"),
+    w("bell 🔔, shell 🐚"),
+    w("nose 👃, rose 🌹, toes 🦶"),
+    w("clock 🕐, lock 🔒"),
+    w("fish 🐟, dish 🍽️"),
+    w("pen 🖊️, hen 🐔, ten 🔟"),
+    w("kite 🪁, light 💡"),
+    w("tie 👔, pie 🥧, eye 👁️"),
+    w("whale 🐋, snail 🐌, nail 💅, mail 📬"),
+    w("ball ⚽, wall 🧱"),
+  ],
+  ru: [
+    w("коза 🐐, роза 🌹, гроза ⛈️, глаза 👀"),
+    w("ложка 🥄, кошка 🐈, картошка 🥔"),
+    w("мак 🌺, рак 🦞, флаг 🚩"),
+    w("жук 🐞, лук 🧅"),
+    w("сова 🦉, трава 🌿"),
+    w("луна 🌙, волна 🌊, стена 🧱"),
+    w("часы ⌚, весы ⚖️, бусы 📿"),
+    w("мишка 🧸, мышка 🐭"),
+    w("зайка 🐰, майка 👕, гайка 🔩"),
+    w("дочка 👧, бочка 🛢️, точка ⚫"),
+    w("мяч ⚽, врач 🩺, калач 🥨"),
+    w("шар 🎈, комар 🦟"),
+    w("дом 🏠, гном 🧙, сом 🐟"),
+    w("кружка ☕, игрушка 🪀, лягушка 🐸"),
+    w("ёлка 🎄, пчёлка 🐝"),
+    w("сок 🧃, носок 🧦"),
+    w("нож 🔪, ёж 🦔"),
+    w("банан 🍌, барабан 🥁, диван 🛋️"),
+  ],
+  uz: [
+    w("qoʻl ✋, yoʻl 🛣️, koʻl 🏞️, choʻl 🏜️"),
+    w("oy 🌙, toy 💒, choy 🍵, qoʻy 🐑"),
+    w("non 🍞, son 🔢, quyon 🐰, ilon 🐍"),
+    w("gul 🌷, pul 💵"),
+    w("tuz 🧂, muz 🧊, yuz 🙂, kuz 🍂"),
+    w("bola 👦, lola 🌺, xola 👩"),
+    w("it 🐶, kit 🐋"),
+    w("tovuq 🐔, sovuq 🥶"),
+    w("uy 🏠, kuy 🎵"),
+    w("tish 🦷, qish ❄️"),
+    w("qovun 🍈, sovun 🧼"),
+    w("ari 🐝, pari 🧚"),
+    w("qalam ✏️, olam 🌍"),
+  ],
+};
+
+/** Take one sound away (rhyme's Summit, §6.6): the word, the sound taken away, and the word left. */
+export interface DropWord {
+  from: PicWord;
+  sound: string;
+  to: PicWord;
+}
+const d = (s: string): DropWord[] =>
+  s.split(",").map((x) => {
+    const [from, fromEmoji, sound, to, toEmoji] = x.trim().split(" ");
+    return { from: { word: from, emoji: fromEmoji }, sound, to: { word: to, emoji: toEmoji } };
+  });
+export const DROPS: Record<Lang, DropWord[]> = {
+  en: d("train 🚂 t rain 🌧️, clock 🕐 c lock 🔒, fox 🦊 f ox 🐂, pear 🍐 p ear 👂, bowl 🥣 b owl 🦉, frog 🐸 r fog 🌫️, pants 👖 p ants 🐜, snail 🐌 s nail 💅"),
+  ru: d("гроза ⛈️ г роза 🌹, слон 🐘 л сон 😴, шарф 🧣 ф шар 🎈, уточка 🦆 у точка ⚫, волк 🐺 к вол 🐂, скот 🐄 с кот 🐱, краска 🎨 р каска ⛑️"),
+  uz: d("kuy 🎵 k uy 🏠, toy 💒 t oy 🌙, choy 🍵 ch oy 🌙, kit 🐋 k it 🐶, ota 👨 a ot 🐴"),
 };
 
 /** Short sentences to type from hearing them (type's Summit: "a whole short sentence from hearing it"). */

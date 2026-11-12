@@ -27,6 +27,10 @@ export interface ChoiceSpec {
   quietMiss?: boolean;
   /** Told about every pick (the stage can react to it). */
   onPick?: (id: string, correct: boolean) => void;
+  /** Wide option cards (an amount of money): their height; `size` is then the width. */
+  height?: Size;
+  /** Places the option cards itself (Number Line Jump: over the marks of the line). */
+  layout?: (card: (id: string) => ReactNode) => ReactNode;
 }
 
 export function ChoiceEngine({ rounds, onDone, offset = 0, total }: { rounds: ChoiceSpec[]; onDone: () => void; offset?: number; total?: number }) {
@@ -65,6 +69,21 @@ function ChoiceRound({ spec, index, total, last, onNext }: { spec: ChoiceSpec; i
     }
   };
 
+  const card = (id: string) => (
+    <OptionCard
+      key={id}
+      label={label(id)}
+      size={size}
+      height={spec.height}
+      onSelect={(info) => choose(id, info)}
+      pulse={!solved && hint.show && id === spec.answer}
+      faded={!solved && hint.fade && id !== spec.answer}
+      state={solved && id === spec.answer ? "solved" : tried.includes(id) ? "tried" : undefined}
+    >
+      {spec.art ? spec.art(id, size) : <ItemArt id={id} size={times(size, 0.62)} />}
+    </OptionCard>
+  );
+
   return (
     <Frame
       prompt={spec.prompt}
@@ -75,23 +94,18 @@ function ChoiceRound({ spec, index, total, last, onNext }: { spec: ChoiceSpec; i
       action={solved && <ActionButton label={t(last ? "act.done" : "act.next")} onSelect={onNext} pulse />}
     >
       {spec.stage}
-      <div className="flex flex-wrap justify-center" style={{ gap: spec.size ? DENSE_GAP : 12 + ctx.profile.spacing }}>
-        {spec.options.map((id) => (
-          <div key={id} className="flex flex-col items-center gap-2">
-            <OptionCard
-              label={label(id)}
-              size={size}
-              onSelect={(info) => choose(id, info)}
-              pulse={!solved && hint.show && id === spec.answer}
-              faded={!solved && hint.fade && id !== spec.answer}
-              state={solved && id === spec.answer ? "solved" : tried.includes(id) ? "tried" : undefined}
-            >
-              {spec.art ? spec.art(id, size) : <ItemArt id={id} size={times(size, 0.62)} />}
-            </OptionCard>
-            {spec.labels && <span className="text-lg font-bold text-ink-2 short:text-base">{label(id)}</span>}
-          </div>
-        ))}
-      </div>
+      {spec.layout ? (
+        spec.layout(card)
+      ) : (
+        <div className="flex flex-wrap justify-center" style={{ gap: spec.size ? DENSE_GAP : 12 + ctx.profile.spacing }}>
+          {spec.options.map((id) => (
+            <div key={id} className="flex flex-col items-center gap-2">
+              {card(id)}
+              {spec.labels && <span className="text-lg font-bold text-ink-2 short:text-base">{label(id)}</span>}
+            </div>
+          ))}
+        </div>
+      )}
     </Frame>
   );
 }

@@ -25,6 +25,8 @@ AREA_OF: dict[str, str] = {
     **dict.fromkeys(("switch_sort", "opposite", "secret_rule"), "flexibility"),  # §6.3
     "puzzle": "reasoning",
     **dict.fromkeys(("next_pattern", "balance", "pipes", "logic_houses", "shadow_match"), "reasoning"),  # §6.4
+    **dict.fromkeys(("more_less", "number_line", "bazaar", "missing_number"), "numeracy"),  # §6.5
+    **dict.fromkeys(("rhyme", "word_builder", "do_what_i_say"), "literacy"),  # §6.6
     **dict.fromkeys(("listen_pick", "type", "sentence"), "literacy"),
     "count": "numeracy",
     **dict.fromkeys(("path", "trace", "dots", "color", "paint"), "access"),

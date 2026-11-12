@@ -26,6 +26,8 @@ export const AREA_OF: Record<GameKind, Area> = {
   switch_sort: "flexibility", opposite: "flexibility", secret_rule: "flexibility",
   puzzle: "reasoning",
   next_pattern: "reasoning", balance: "reasoning", pipes: "reasoning", logic_houses: "reasoning", shadow_match: "reasoning",
+  more_less: "numeracy", number_line: "numeracy", bazaar: "numeracy", missing_number: "numeracy",
+  rhyme: "literacy", word_builder: "literacy", do_what_i_say: "literacy",
   listen_pick: "literacy", type: "literacy", sentence: "literacy",
   count: "numeracy",
   path: "access", trace: "access", dots: "access", color: "access", paint: "access",

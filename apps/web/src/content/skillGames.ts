@@ -4,6 +4,8 @@ import type { OddOneOutSettings, TrackFishSettings, WhichWaySettings } from "@/l
 import type { CardPairsSettings, NBackSettings, PairsRecallSettings, ShoppingSettings } from "@/lib/games/memory";
 import type { OppositeSettings, SecretRuleSettings, SwitchSortSettings } from "@/lib/games/flexibility";
 import type { BalanceSettings, LogicHousesSettings, NextPatternSettings, PipesSettings, ShadowSettings } from "@/lib/games/reasoning";
+import type { BazaarSettings, MissingNumberSettings, MoreLessSettings, NumberLineSettings } from "@/lib/games/math";
+import type { RhymeSettings, SaySettings, WordBuilderSettings } from "@/lib/games/language";
 import { AREA_OF, type Area, type StepN, type Tier } from "@/lib/skill";
 import type { ActivityStep, InputModeId, L10n } from "@/lib/types";
 
@@ -561,10 +563,150 @@ const shadowMatch = game<ShadowSettings>(
   },
 );
 
+// ---------------------------------------------------------------- §6.5 Math
+const moreLess = game<MoreLessSettings>(
+  "more_less",
+  [
+    { min: 1, max: 5, diff: [3, 4], ask: "more" }, { min: 1, max: 6, diff: [2, 3], ask: "more" }, { min: 1, max: 8, diff: [2, 3], ask: "both" },
+    { min: 3, max: 10, diff: [2, 2], ask: "both" }, { min: 4, max: 12, diff: [2, 3], mixed: true, ask: "more" }, { min: 5, max: 12, diff: [1, 2], ask: "both" },
+    { min: 6, max: 15, diff: [2, 2], mixed: true, ask: "both" }, { min: 8, max: 16, diff: [2, 3], cover: 3, ask: "both" }, { min: 8, max: 16, diff: [1, 2], mixed: true, cover: 3, ask: "both" },
+    { min: 10, max: 18, diff: [2, 2], mixed: true, cover: 2, ask: "both" }, { min: 12, max: 20, diff: [2, 2], mixed: true, cover: 2, ask: "both" }, { min: 16, max: 20, diff: [1, 2], mixed: true, cover: 2, ask: "both" },
+  ],
+  ({ min, max, diff, mixed, cover, ask }) => {
+    const which = { more: { en: "more", ru: "больше", uz: "koʻproq" }, less: { en: "fewer", ru: "меньше", uz: "kamroq" }, both: { en: "more or fewer", ru: "больше или меньше", uz: "koʻproq yoki kamroq" } }[ask];
+    const by = diff[0] === diff[1] ? `${diff[0]}` : `${diff[0]}–${diff[1]}`;
+    return {
+      en: `Sees which group of ${min}–${max} dots has ${which.en}, ${by} apart${mixed ? ", dots of mixed sizes" : ""}${cover ? `, seen for ${cover} s` : ""}`,
+      ru: `Видит, где ${which.ru} точек (${min}–${max}, разница ${by})${mixed ? ", точки разного размера" : ""}${cover ? `, видит их ${cover} с` : ""}`,
+      uz: `${min}–${max} ta nuqtadan qaysi guruhda ${which.uz} ekanini koʻradi (farqi ${by})${mixed ? ", nuqtalar har xil kattalikda" : ""}${cover ? `, ${cover} soniya koʻrib` : ""}`,
+    };
+  },
+);
+
+const numberLine = game<NumberLineSettings>(
+  "number_line",
+  [
+    { max: 10, tick: 1, labels: 5, options: 5 }, { max: 10, tick: 1, labels: 0, options: 5 }, { max: 20, tick: 1, labels: 5, options: 5 },
+    { max: 20, tick: 1, labels: 10, options: 5 }, { max: 50, tick: 5, labels: 25, options: 4 }, { max: 50, tick: 5, labels: 0, options: 5 },
+    { max: 100, tick: 10, labels: 50, options: 5 }, { max: 100, tick: 10, labels: 0, options: 5 }, { max: 100, tick: 5, labels: 50, options: 4 },
+    { max: 1000, tick: 100, labels: 500, options: 5 }, { max: 1000, tick: 50, labels: 0, options: 4 }, { max: 12, tick: 1, labels: 4, options: 4, frac: 4 },
+  ],
+  ({ max, tick, labels, options: n, frac }) =>
+    frac
+      ? { en: `Places halves and quarters on a line from 0 to ${max / 4}, among ${n} marks`, ru: `Находит место половин и четвертей на прямой от 0 до ${max / 4}, среди ${n} отметок`, uz: `0 dan ${max / 4} gacha chiziqda yarim va chorak oʻrnini ${n} ta belgi orasidan topadi` }
+      : {
+          en: `Places a number on a line from 0 to ${max} (marks every ${tick}${labels ? `, numbers every ${labels}` : ", only the ends numbered"}), among ${n}`,
+          ru: `Находит место числа на прямой от 0 до ${max} (отметки через ${tick}${labels ? `, числа через ${labels}` : ", подписаны только концы"}), среди ${n}`,
+          uz: `0 dan ${max} gacha chiziqda sonning oʻrnini ${n} ta belgidan topadi (belgi har ${tick} da${labels ? `, son har ${labels} da` : ", son faqat uchlarida"})`,
+        },
+);
+
+const bazaar = game<BazaarSettings>(
+  "bazaar",
+  [
+    { mode: "note", top: 5000, options: 2 }, { mode: "note", top: 10000, options: 3 }, { mode: "note", top: 20000, options: 4 },
+    { mode: "pay", top: 10000, notes: 2, wallet: 4 }, { mode: "pay", top: 10000, notes: 2, wallet: 5 }, { mode: "pay", top: 20000, notes: 3, wallet: 5 },
+    { mode: "pay", top: 50000, notes: 3, wallet: 6 }, { mode: "change", top: 10000, paid: 10000, options: 3 }, { mode: "pay", top: 100000, notes: 4, wallet: 7 },
+    { mode: "change", top: 20000, paid: 20000, options: 4, half: true }, { mode: "pay", top: 100000, notes: 5, wallet: 8 }, { mode: "change", top: 50000, paid: 50000, options: 4, half: true },
+  ],
+  ({ mode, top, options: n, notes, wallet, paid }) => {
+    const som = (v: number) => v.toLocaleString("en").replace(/,/g, " ");
+    if (mode === "note") return { en: `Pays with one note, choosing among ${n} notes up to ${som(top)} so'm`, ru: `Платит одной купюрой, выбирая из ${n} купюр до ${som(top)} сумов`, uz: `${som(top)} soʻmgacha ${n} ta kupyura orasidan bittasi bilan toʻlaydi` };
+    if (mode === "pay") return { en: `Makes a price from ${notes} of ${wallet} notes (up to ${som(top)} so'm)`, ru: `Набирает цену из ${notes} купюр из ${wallet} (до ${som(top)} сумов)`, uz: `${wallet} ta kupyura orasidan ${notes} tasi bilan narxni yigʻadi (${som(top)} soʻmgacha)` };
+    return { en: `Picks the change from ${som(paid!)} so'm, among ${n}`, ru: `Находит сдачу с ${som(paid!)} сумов, среди ${n}`, uz: `${som(paid!)} soʻmdan qaytimni ${n} ta javobdan topadi` };
+  },
+);
+
+const missingNumber = game<MissingNumberSettings>(
+  "missing_number",
+  [
+    { form: "add", max: 5, options: 2, pics: true }, { form: "add", max: 5, options: 3, pics: true }, { form: "add", max: 10, options: 3, pics: true },
+    { form: "add", max: 10, options: 3 }, { form: "sub", max: 10, options: 4 }, { form: "addsub", max: 20, options: 4 },
+    { form: "addsub", max: 100, options: 4 }, { form: "mul", max: 5, options: 4 }, { form: "muldiv", max: 10, options: 4 },
+    { form: "two", max: 50, options: 4 }, { form: "muladd", max: 10, options: 4 }, { form: "mulsub", max: 12, options: 4 },
+  ],
+  ({ form, max, options: n, pics }) => {
+    const what = {
+      add: { en: "an addition", ru: "сложении", uz: "qoʻshishda" },
+      sub: { en: "a subtraction", ru: "вычитании", uz: "ayirishda" },
+      addsub: { en: "an addition or subtraction", ru: "сложении или вычитании", uz: "qoʻshish yoki ayirishda" },
+      mul: { en: "a times sum", ru: "умножении", uz: "koʻpaytirishda" },
+      muldiv: { en: "a times or sharing sum", ru: "умножении или делении", uz: "koʻpaytirish yoki boʻlishda" },
+      two: { en: "a sum with two steps (+ and −)", ru: "примере в два действия (+ и −)", uz: "ikki amalli misolda (+ va −)" },
+      muladd: { en: "a sum with × and +", ru: "примере с × и +", uz: "× va + bor misolda" },
+      mulsub: { en: "a sum with × and −", ru: "примере с × и −", uz: "× va − bor misolda" },
+    }[form];
+    return {
+      en: `Finds the missing number in ${what.en} up to ${max}${pics ? ", with pictures" : ""}, among ${n}`,
+      ru: `Находит пропущенное число в ${what.ru} до ${max}${pics ? ", с картинками" : ""}, среди ${n}`,
+      uz: `${max} gacha ${what.uz} tushib qolgan sonni topadi${pics ? ", rasmlar bilan" : ""}, ${n} tadan`,
+    };
+  },
+);
+
+// ---------------------------------------------------------------- §6.6 Language
+const rhyme = game<RhymeSettings>(
+  "rhyme",
+  [
+    { mode: "rhyme", options: 2 }, { mode: "rhyme", options: 3 }, { mode: "rhyme", options: 3, near: true },
+    { mode: "rhyme", options: 4 }, { mode: "rhyme", options: 4, near: true }, { mode: "rhyme", options: 5, near: true },
+    { mode: "rhyme", options: 6 }, { mode: "rhyme", options: 6, near: true }, { mode: "drop", options: 2 },
+    { mode: "drop", options: 3 }, { mode: "drop", options: 4 }, { mode: "drop", options: 4, near: true },
+  ],
+  ({ mode, options: n, near }) =>
+    mode === "drop"
+      ? {
+          en: `Says a word without one sound and finds it among ${n} pictures${near ? ", some sounding alike" : ""}`,
+          ru: `Убирает звук из слова и находит новое слово среди ${n} картинок${near ? ", некоторые звучат похоже" : ""}`,
+          uz: `Soʻzdan bitta tovushni olib tashlab, yangi soʻzni ${n} ta rasm orasidan topadi${near ? ", baʼzilari oʻxshash eshitiladi" : ""}`,
+        }
+      : {
+          en: `Finds the word that rhymes among ${n} pictures${near ? ", some starting with the same sound" : ""}`,
+          ru: `Находит рифму среди ${n} картинок${near ? ", некоторые начинаются с того же звука" : ""}`,
+          uz: `${n} ta rasm orasidan qofiyadosh soʻzni topadi${near ? ", baʼzilari bir xil tovush bilan boshlanadi" : ""}`,
+        },
+);
+
+const wordBuilder = game<WordBuilderSettings>(
+  "word_builder",
+  [
+    { min: 3, max: 3, picture: true, extra: 0 }, { min: 3, max: 3, picture: true, extra: 2 }, { min: 3, max: 4, picture: true, extra: 2 },
+    { min: 4, max: 4, picture: true, extra: 2 }, { min: 4, max: 5, picture: true, extra: 3 }, { min: 5, max: 5, picture: true, extra: 3 },
+    { min: 5, max: 6, picture: true, extra: 4 }, { min: 5, max: 6, picture: false, extra: 2 }, { min: 6, max: 6, picture: false, extra: 3 },
+    { min: 6, max: 7, picture: false, extra: 2 }, { min: 6, max: 7, picture: false, extra: 4 }, { min: 7, max: 7, picture: false, extra: 0 },
+  ],
+  ({ min, max, picture, extra }) => ({
+    en: `Builds a word of ${range(min, max)} letters ${picture ? "with a picture" : "only heard"}${extra ? `, with ${extra} extra letters` : ""}`,
+    ru: `Собирает слово из ${range(min, max)} букв ${picture ? "по картинке" : "на слух"}${extra ? `, есть ${pl(extra, `${extra} лишняя буква`, `${extra} лишние буквы`, `${extra} лишних букв`)}` : ""}`,
+    uz: `${range(min, max)} harfli soʻzni ${picture ? "rasmga qarab" : "eshitib"} yigʻadi${extra ? `, ${extra} ta ortiqcha harf bilan` : ""}`,
+  }),
+);
+
+const doWhatISay = game<SaySettings>(
+  "do_what_i_say",
+  [
+    { mode: "where", options: 2 }, { mode: "where", options: 3 }, { mode: "where", options: 4 },
+    { mode: "color", options: 3 }, { mode: "color", options: 4 }, { mode: "size", options: 4 },
+    { mode: "text", options: 3, texts: 3 }, { mode: "text", options: 4, texts: 3 }, { mode: "text", options: 4, texts: 3, read: true },
+    { mode: "text", options: 3, texts: 4 }, { mode: "text", options: 4, texts: 4 }, { mode: "text", options: 4, texts: 4, read: true },
+  ],
+  ({ mode, options: n, texts, read }) =>
+    ({
+      where: { en: `Hears "Show me the cat" and picks it among ${n}`, ru: `Слышит «Где кошка?» и выбирает её среди ${n}`, uz: `«Mushukni koʻrsat» deganni eshitib, ${n} ta rasmdan tanlaydi` },
+      color: { en: `Picks a shape by its colour and name, among ${n}`, ru: `Выбирает фигуру по цвету и названию, среди ${n}`, uz: `Shaklni rangi va nomiga qarab ${n} tadan tanlaydi` },
+      size: { en: `Picks a shape by size, colour and name, among ${n}`, ru: `Выбирает фигуру по размеру, цвету и названию, среди ${n}`, uz: `Shaklni kattaligi, rangi va nomiga qarab ${n} tadan tanlaydi` },
+      text: {
+        en: `Answers a question about a ${texts === 3 ? "two-sentence" : "three- or four-sentence"} text${read ? " read alone" : ""}, among ${n}`,
+        ru: `Отвечает на вопрос по тексту из ${texts === 3 ? "двух предложений" : "трёх-четырёх предложений"}${read ? ", прочитанному самостоятельно" : ""}, среди ${n}`,
+        uz: `${texts === 3 ? "Ikki gapli" : "Uch-toʻrt gapli"} matn${read ? "ni oʻzi oʻqib," : " boʻyicha"} savolga ${n} tadan javob tanlaydi`,
+      },
+    })[mode],
+);
 export const SKILL_GAMES: SkillGame[] = [
   findSame, scene, story, sequence, missing, lightPath, sort, maze, puzzle, listenPick, type, count,
   oddOneOut, trackFish, whichWay, cardPairs, shoppingList, nBack, pairsRecall,
   switchSort, opposite, secretRule, nextPattern, balance, pipes, logicHouses, shadowMatch,
+  moreLess, numberLine, bazaar, missingNumber, rhyme, wordBuilder, doWhatISay,
 ] as unknown as SkillGame[]; // prettier-ignore
 export const SKILL_GAME_BY_ID: Record<string, SkillGame> = Object.fromEntries(SKILL_GAMES.map((g) => [g.id, g]));
 export const stepOf = (g: SkillGame, tier: number, step: number) => g.steps.find((s) => s.tier === tier && s.step === step);

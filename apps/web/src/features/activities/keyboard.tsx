@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import type { Lang } from "@/lib/i18n";
+import { ItemArt, times } from "@/components/ItemArt";
 import { LAYOUTS, tokenize } from "@/lib/keys";
 import { markAccept, usePlay } from "@/features/play/context";
 import { Target, type SelectInfo } from "@/features/play/Target";
@@ -20,9 +21,15 @@ export function reducedKeys(lang: Lang, needed: string[], total = 8): string[] {
   const want = Math.max(0, total - need.size);
   let seed = [...need].join("").split("").reduce((a, c) => a + c.charCodeAt(0), 0);
   const extra = new Set<string>();
+  // Steps of 7 around the other keys; on a key already taken, one step on (7 steps alone can circle back forever
+  // when the number of other keys is a multiple of 7).
   while (extra.size < Math.min(want, rest.length)) {
-    extra.add(rest[seed % rest.length]);
-    seed += 7;
+    const k = rest[seed % rest.length];
+    if (extra.has(k)) seed += 1;
+    else {
+      extra.add(k);
+      seed += 7;
+    }
   }
   return all.filter((k) => need.has(k) || extra.has(k));
 }
@@ -58,7 +65,10 @@ export function AdaptiveKeyboard({
   reduced: forceReduced,
   disabled,
   only,
+  total,
 }: {
+  /** Keys on a reduced keyboard (Word Builder: the word's letters and a few more). */
+  total?: number;
   /** After 4 mistakes: every other key fades and rests, so this one is left (5 Oct brief). */
   only?: string | null;
   lang: Lang;
@@ -78,7 +88,7 @@ export function AdaptiveKeyboard({
   const p = ctx.profile;
   // Scanning a full keyboard takes ~50 s per letter: switch users always get the reduced keys.
   const reduced = forceReduced ?? (p.hintLevel >= 2 || narrow || ctx.access === "scan");
-  const rows = reduced ? [reducedKeys(lang, needed)] : LAYOUTS[lang];
+  const rows = reduced ? [reducedKeys(lang, needed, total)] : LAYOUTS[lang];
   const size = Math.max(64, Math.round(76 * p.keyScale));
   // A row never wraps: keys shrink to fit the longest row in the keyboard's width (not below 64 px), so the whole
   // keyboard stays in view on a laptop (B66). The +0.5 key leaves room for the lower rows' offset.
@@ -173,7 +183,29 @@ export function TypeActivity({ activity, onDone }: EngineProps<"type">) {
  * One word (or letter) to type. Skill games add "sentence": a short sentence heard; its spaces fill in by themselves,
  * so only letters are ever typed.
  */
-export function TypeRound({ word, mode, needed, index, total, last, next }: { word: string; mode: "letter" | "word" | "listen" | "sentence"; needed: string[]; index: number; total: number; last: boolean; next: () => void }) {
+export function TypeRound({
+  word,
+  mode,
+  needed,
+  index,
+  total,
+  last,
+  next,
+  picture,
+  keys,
+}: {
+  word: string;
+  mode: "letter" | "word" | "listen" | "sentence" | "build";
+  needed: string[];
+  index: number;
+  total: number;
+  last: boolean;
+  next: () => void;
+  /** build (Word Builder): a picture of the word, or none (the word is only heard). */
+  picture?: string;
+  /** build: the keys on the keyboard (the word's letters, mixed up, and a few more). */
+  keys?: number;
+}) {
   const ctx = usePlay();
   const t = useActT();
   const clock = useClock();
@@ -183,7 +215,9 @@ export function TypeRound({ word, mode, needed, index, total, last, next }: { wo
   const hint = useHint(() => ctx.say(expected ?? word, ctx.learnLang));
   const later = useLater();
   const solved = pos >= tokens.length;
-  const prompt = t(mode === "letter" ? "act.type.letter" : mode === "word" ? "act.type.word" : mode === "sentence" ? "act.skill.type.sentence" : "act.type.listen");
+  const prompt = t(
+    mode === "letter" ? "act.type.letter" : mode === "word" ? "act.type.word" : mode === "sentence" ? "act.skill.type.sentence" : mode === "build" ? (picture ? "act.skill.build" : "act.skill.build.listen") : "act.type.listen",
+  );
 
   const onKey = (k: string, info: SelectInfo) => {
     if (solved) return;
@@ -201,7 +235,7 @@ export function TypeRound({ word, mode, needed, index, total, last, next }: { wo
 
   const ghost = mode === "word" || (mode !== "letter" && hint.show);
   // Long words and sentences get smaller letter boxes, so they and the keyboard fit the screen.
-  const small = tokens.length > 7;
+  const small = tokens.length > 7 || (mode === "build" && tokens.length > 3);
   return (
     <Frame
       prompt={prompt}
@@ -211,6 +245,11 @@ export function TypeRound({ word, mode, needed, index, total, last, next }: { wo
       total={total}
       action={solved && <ActionButton label={t(last ? "act.done" : "act.next")} onSelect={next} pulse />}
     >
+      {mode === "build" && picture && (
+        <span className="grid size-32 place-items-center rounded-fk-lg bg-sun-soft/60 shadow-soft short:size-24" aria-hidden>
+          <ItemArt id={picture} size={times("8rem", 0.66)} />
+        </span>
+      )}
       {mode === "letter" ? (
         <span className={`grid size-40 place-items-center rounded-fk-lg text-8xl font-extrabold text-ink shadow-soft short:size-28 short:text-7xl ${solved ? "bg-teal-soft" : "bg-sun-soft"}`}>{word}</span>
       ) : (
@@ -231,7 +270,7 @@ export function TypeRound({ word, mode, needed, index, total, last, next }: { wo
           )}
         </div>
       )}
-      <AdaptiveKeyboard lang={ctx.learnLang} needed={needed} expected={expected} hint={!solved && (hint.show || ctx.profile.hintLevel >= 3) ? expected : null} only={!solved && hint.fade ? expected : null} onKey={onKey} disabled={solved} />
+      <AdaptiveKeyboard lang={ctx.learnLang} needed={needed} expected={expected} hint={!solved && (hint.show || ctx.profile.hintLevel >= 3) ? expected : null} only={!solved && hint.fade ? expected : null} onKey={onKey} disabled={solved} reduced={mode === "build" ? true : undefined} total={keys} />
     </Frame>
   );
 }

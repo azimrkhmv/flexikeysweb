@@ -22,6 +22,8 @@ import { OppositePlayer, SecretRulePlayer, SwitchSortPlayer } from "./skillFlex"
 import { Series, type PlayerProps } from "./skillKit";
 import { CardPairsPlayer, NBackPlayer, PairsRecallPlayer, ShoppingListPlayer } from "./skillMemory";
 import { BalancePlayer, LogicHousesPlayer, NextPatternPlayer, PipesPlayer, ShadowMatchPlayer } from "./skillReason";
+import { BazaarPlayer, MissingNumberPlayer, MoreLessPlayer, NumberLinePlayer } from "./skillMath";
+import { DoWhatISayPlayer, RhymePlayer, WordBuilderPlayer } from "./skillLang";
 
 // Skill games (games spec 8 Nov 2026, §2.3, §5, §6): the 12 kinds of the theme worlds and the new skill-only kinds, 12\n// steps each. The rounds
 // come from the kind's generator (lib/games) with the day's seed; the players below show them with the engines' own
@@ -604,4 +606,11 @@ const PLAYERS: { [K in SkillKind]: ComponentType<PlayerProps<K>> } = {
   pipes: PipesPlayer,
   logic_houses: LogicHousesPlayer,
   shadow_match: ShadowMatchPlayer,
+  more_less: MoreLessPlayer,
+  number_line: NumberLinePlayer,
+  bazaar: BazaarPlayer,
+  missing_number: MissingNumberPlayer,
+  rhyme: RhymePlayer,
+  word_builder: WordBuilderPlayer,
+  do_what_i_say: DoWhatISayPlayer,
 };
