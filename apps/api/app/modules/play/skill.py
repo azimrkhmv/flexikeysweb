@@ -6,7 +6,7 @@ therapists see θ as a level 1-100 (rule 1, 8 Nov 2026); the child never sees a 
 
 import json
 import math
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from datetime import date, timedelta
 from pathlib import Path
 from typing import Any
@@ -29,6 +29,7 @@ AREA_OF: dict[str, str] = {
     **dict.fromkeys(("rhyme", "word_builder", "do_what_i_say"), "literacy"),  # §6.6
     **dict.fromkeys(("listen_pick", "type", "sentence"), "literacy"),
     "count": "numeracy",
+    **dict.fromkeys(("quick_snap", "tap_star", "fast_sort"), "speed"),  # §7
     **dict.fromkeys(("path", "trace", "dots", "color", "paint"), "access"),
 }
 
@@ -141,6 +142,35 @@ def open_skill_steps(steps: list[dict[str, Any]], top: Mapping[str, int], pro: b
         and (pro or g["tier"] <= FREE_TIER)
         and (not g.get("needs_area") or top.get(g["needs_area"], 1) >= g["needs_tier"])
     ]
+
+
+# ---------------------------------------------------------------- Speed (games spec §7)
+
+SPEED_TRIES = 30  # Speed is judged on this many of the child's latest tries (about 3 sessions) ...
+SPEED_ACCESS_SHARE = 0.1  # ... and opens only while access events are under this share of them
+
+
+def speed_open(access: Mapping[str, Any] | None, recent: Sequence[bool]) -> bool:
+    """Who gets Speed (§7.1): only a child who plays by touch, with no repeat guard, who may let go of a target, and
+    whose access events are under 10% of their latest 30 or more tries. `recent`: whether each of the latest tries was
+    an access event. No access settings yet (no play check) = no Speed. Closed again later: Speed hides, θ is kept."""
+    if not access or access["input_mode"] != "touch" or access["repeat_lock"] or not access["release_ok"]:
+        return False
+    return len(recent) >= SPEED_TRIES and sum(1 for r in recent if r) < SPEED_ACCESS_SHARE * len(recent)
+
+
+# The time to answer one Speed item, in ms (§7.2): Seed 3000, Sprout 2000, Tree 1300, Summit 800 at each tier's first
+# step, the steps between spread evenly towards the next tier. Summit stays at 800: never faster.
+SPEED_WINDOW_MS = ((3000, 2667, 2333), (2000, 1767, 1533), (1300, 1133, 967), (800, 800, 800))
+
+
+def speed_window(tier: int, step: int) -> int:
+    return SPEED_WINDOW_MS[tier - 1][step - 1]
+
+
+def speed_correct(correct: bool, response_ms: int | None, tier: int | None, step: int | None) -> bool:
+    """A Speed try counts as correct only when the answer is right and came within its step's window (§7.2)."""
+    return correct and (not tier or not step or (response_ms is not None and response_ms <= speed_window(tier, step)))
 
 
 def weekly_new(unlocked: list[dict[str, Any]], first_played: Mapping[str, str], today: str) -> list[dict[str, Any]]:

@@ -1982,7 +1982,8 @@ export interface paths {
          * Choose
          * @description Today's games: an easy win, a growth game and the child's choice (spec §13). Open games are the theme-world
          *     levels up to one past the highest tried, plus every skill-game step in an open tier (Seed free, the rest Pro; games
-         *     spec §3.3); at most one new kind of game a week; a game already played is never taken away.
+         *     spec §3.3), Speed only while `speed_open` (§7.1); at most one new kind of game a week; a game already played is
+         *     never taken away.
          */
         get: operations["choose_api_v1_children__child_id__games_get"];
         put?: never;

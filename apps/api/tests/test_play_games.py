@@ -105,6 +105,51 @@ def test_tiers_open_by_success_and_seed_is_free(client: TestClient) -> None:
     assert tops()["attention"] == 2  # an opened tier never closes
 
 
+def test_speed_only_for_steady_touch_and_right_only_in_time(client: TestClient) -> None:
+    """B87 (games spec §7): Speed is in no slot until the play check says touch, no repeat guard, may let go, and the
+    latest 30 tries have under 10% access events; it hides again when that changes. A right answer that came after
+    its step's window counts as not right, and only for the speed area."""
+    owner = parent(client)
+    child = add_child(client, owner)
+
+    def speed() -> set[tuple[str, int]]:
+        # Tap the Star is this week's one new kind: while Speed is closed nothing else may come, so no slots at all.
+        slots = client.get(f"{API}/children/{child}/games", headers=owner).json()["slots"]
+        games = [g for s in slots if s["slot"] == "choice" for g in s["games"]]
+        return {(g["kind"], g["tier"]) for g in games if g["kind"] == "tap_star"}
+
+    def theta() -> dict[str, tuple[float, int]]:
+        return {
+            s["area"]: (s["theta"], s["nTrials"])
+            for s in client.get(f"{API}/children/{child}/skills", headers=owner).json()
+        }
+
+    star = {"game": "tap_star", "level": 0, "tier": 1, "step": 1}
+    send(client, owner, child, [a_try(**star, responseMs=900) for _ in range(30)])
+    assert not speed()  # no play check yet
+    access = {"minTargetMm": 20, "dwellMs": 800, "repeatLock": False, "releaseOk": True}
+    for mode in ("dwell", "switch"):
+        client.put(f"{API}/children/{child}/access", headers=owner, json={**access, "inputMode": mode})
+        assert not speed()
+    client.put(
+        f"{API}/children/{child}/access", headers=owner, json={**access, "inputMode": "touch", "repeatLock": True}
+    )
+    assert not speed()
+    client.put(f"{API}/children/{child}/access", headers=owner, json={**access, "inputMode": "touch"})
+    assert speed() == {("tap_star", 1)}
+
+    before = theta()
+    send(client, owner, child, [a_try(**star, responseMs=3000)])  # right, just in time
+    in_time = theta()
+    assert in_time["speed"][0] > before["speed"][0] and in_time["attention"] == before["attention"]
+    send(client, owner, child, [a_try(**star, responseMs=3001)])  # right, but late: counts as not right
+    assert theta()["speed"][0] < in_time["speed"][0]
+
+    send(client, owner, child, [a_try(**star, accessEvent=True, outcome="skipped") for _ in range(3)])
+    assert not speed()  # 3 of the latest 30 are access events: closed again, θ kept
+    assert theta()["speed"][1] == 32
+
+
 def test_only_the_family(client: TestClient) -> None:
     child = add_child(client, parent(client))
     assert title(client.get(f"{API}/children/{child}/games", headers=parent(client))) == (404, "not_found")

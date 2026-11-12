@@ -6,6 +6,7 @@ import * as language from "./language";
 import * as math from "./math";
 import * as memory from "./memory";
 import * as reasoning from "./reasoning";
+import * as speed from "./speed";
 import { rngOf, type Rng } from "./rng";
 
 // Rounds are generated, not hand-written (games spec 8 Nov 2026, §1): a step gives the settings, `makeRounds` builds
@@ -62,6 +63,10 @@ export const GENERATORS = {
   rhyme: language.rhyme,
   word_builder: language.wordBuilder,
   do_what_i_say: language.doWhatISay,
+  // §7 Speed
+  quick_snap: speed.quickSnap,
+  tap_star: speed.tapStar,
+  fast_sort: speed.fastSort,
 };
 export type SkillKind = keyof typeof GENERATORS;
 export type SettingsOf<K extends SkillKind> = Parameters<(typeof GENERATORS)[K]["make"]>[0];

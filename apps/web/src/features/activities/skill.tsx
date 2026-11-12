@@ -8,8 +8,7 @@ import { PlayContext, usePlay, type PlayCtx } from "@/features/play/context";
 import { Target, type SelectInfo } from "@/features/play/Target";
 import { makeRounds, type SettingsOf, type SkillKind } from "@/lib/games";
 import { sortFits, type MissingSkillRound, type PuzzleSkillRound, type SceneObject } from "@/lib/games/existing";
-import { glyph, glyphId, type GlyphColor, type GlyphShape } from "@/lib/games/glyph";
-import { CATEGORY_ICON, lookOf, numId, wordOf, type Category } from "@/lib/games/pools";
+import { lookOf, numId, wordOf } from "@/lib/games/pools";
 import { tokenize } from "@/lib/keys";
 import type { ActivityStep } from "@/lib/types";
 import { ChoiceEngine, PromptCard, ScenePanel, type ChoiceSpec } from "./choice";
@@ -19,11 +18,12 @@ import { ActionButton, answer, denseSize, fitSize, Frame, sizeFor, useActT, useC
 import { SequenceRound, useSequence } from "./memory";
 import { OddOneOutPlayer, TrackFishPlayer, WhichWayPlayer } from "./skillAttention";
 import { OppositePlayer, SecretRulePlayer, SwitchSortPlayer } from "./skillFlex";
-import { Series, type PlayerProps } from "./skillKit";
+import { BoxIcon, boxName, Series, type PlayerProps } from "./skillKit";
 import { CardPairsPlayer, NBackPlayer, PairsRecallPlayer, ShoppingListPlayer } from "./skillMemory";
 import { BalancePlayer, LogicHousesPlayer, NextPatternPlayer, PipesPlayer, ShadowMatchPlayer } from "./skillReason";
 import { BazaarPlayer, MissingNumberPlayer, MoreLessPlayer, NumberLinePlayer } from "./skillMath";
 import { DoWhatISayPlayer, RhymePlayer, WordBuilderPlayer } from "./skillLang";
+import { FastSortPlayer, QuickSnapPlayer, TapStarPlayer } from "./skillSpeed";
 
 // Skill games (games spec 8 Nov 2026, §2.3, §5, §6): the 12 kinds of the theme worlds and the new skill-only kinds, 12\n// steps each. The rounds
 // come from the kind's generator (lib/games) with the day's seed; the players below show them with the engines' own
@@ -38,7 +38,7 @@ export function SkillPlay({ game, step, seed, onDone }: { game: SkillGame; step:
   const Player = PLAYERS[kind] as ComponentType<PlayerProps<SkillKind>>;
   return (
     <PlayContext.Provider value={inner}>
-      <Player rounds={rounds} onDone={onDone} />
+      <Player rounds={rounds} onDone={onDone} at={{ tier: step.tier, step: step.step }} />
     </PlayContext.Provider>
   );
 }
@@ -406,21 +406,6 @@ function SortPlayer({ rounds, onDone }: PlayerProps<"sort">) {
   );
 }
 
-type T = ReturnType<typeof useActT>;
-function boxName(group: string, t: T): string {
-  const [by, a, b] = group.split(":");
-  if (by === "cat") return t(`skill.cat.${a}`);
-  if (by === "color") return t(`skill.color.${a}`);
-  if (by === "shape") return t(`skill.shape.${a}`);
-  return t("skill.glyph", { color: t(`skill.color.${a}`), shape: t(`skill.shape.${b}`) });
-}
-function BoxIcon({ group }: { group: string }) {
-  const [by, a, b] = group.split(":");
-  if (by === "cat") return <span className="text-3xl" aria-hidden>{CATEGORY_ICON[a as Category]}</span>;
-  const g = by === "color" ? glyph({ shape: "circle", color: a as GlyphColor }) : by === "shape" ? glyph({ shape: a as GlyphShape, color: "shadow" }) : glyph({ shape: b as GlyphShape, color: a as GlyphColor });
-  return <ItemArt id={glyphId(g)} size={36} />;
-}
-
 // ---------------------------------------------------------------- maze
 function MazePlayer({ rounds, onDone }: PlayerProps<"maze">) {
   return (
@@ -613,4 +598,7 @@ const PLAYERS: { [K in SkillKind]: ComponentType<PlayerProps<K>> } = {
   rhyme: RhymePlayer,
   word_builder: WordBuilderPlayer,
   do_what_i_say: DoWhatISayPlayer,
+  quick_snap: QuickSnapPlayer,
+  tap_star: TapStarPlayer,
+  fast_sort: FastSortPlayer,
 };

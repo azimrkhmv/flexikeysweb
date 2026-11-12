@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { AREA_OF, AREAS, chooseGames, corrected, difficulty, elo, levelDifficulty, pCorrect, startingTheta, STEP, tryDifficulty, weeklyNew, type Area, type Game } from "./skill";
+import { AREA_OF, AREAS, chooseGames, corrected, difficulty, elo, levelDifficulty, pCorrect, speedCorrect, speedOpen, speedWindow, startingTheta, STEP, tryDifficulty, weeklyNew, type Area, type Game } from "./skill";
 
 describe("skill levels (spec §13)", () => {
   it("P(correct) = 1 / (1 + e^−(θ − d))", () => {
@@ -58,6 +58,30 @@ describe("skill levels (spec §13)", () => {
 
   it("every game kind trains one area", () => {
     for (const area of Object.values(AREA_OF)) expect(AREAS).toContain(area);
+  });
+});
+
+describe("Speed (games spec §7)", () => {
+  const touch = { inputMode: "touch", repeatLock: false, releaseOk: true };
+  const steady = (n: number, events = 0) => Array.from({ length: n }, (_, k) => k < events);
+  it("opens only for steady touch: no dwell, no switch, no repeat guard, 30 tries with under 10% access events", () => {
+    expect(speedOpen(touch, steady(30))).toBe(true);
+    expect(speedOpen(touch, steady(29))).toBe(false);
+    expect(speedOpen(touch, steady(30, 3))).toBe(false);
+    expect(speedOpen({ ...touch, inputMode: "dwell" }, steady(60))).toBe(false);
+    expect(speedOpen({ ...touch, inputMode: "switch" }, steady(60))).toBe(false);
+    expect(speedOpen({ ...touch, repeatLock: true }, steady(60))).toBe(false);
+    expect(speedOpen({ ...touch, releaseOk: false }, steady(60))).toBe(false);
+    expect(speedOpen(null, steady(60))).toBe(false);
+  });
+  it("windows: Seed 3000, Sprout 2000, Tree 1300, Summit 800 ms, evenly between; right only within the window", () => {
+    expect([1, 2, 3, 4].map((tier) => speedWindow(tier, 1))).toEqual([3000, 2000, 1300, 800]);
+    expect(speedWindow(1, 2)).toBe(2667);
+    expect(speedWindow(4, 3)).toBe(800);
+    expect(speedCorrect(true, 3000, 1, 1)).toBe(true);
+    expect(speedCorrect(true, 3001, 1, 1)).toBe(false);
+    expect(speedCorrect(false, 100, 1, 1)).toBe(false);
+    expect(speedCorrect(true, null, 1, 1)).toBe(false);
   });
 });
 

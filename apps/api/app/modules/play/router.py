@@ -316,9 +316,26 @@ async def _move_skills(db: AsyncSession, child_id: uuid.UUID, clean: list[TryIn]
             continue
         row = levels[SkillArea(area)]
         d = skill.try_difficulty(t.level, t.tier, t.step)
-        row.theta = skill.elo(row.theta, row.n_trials, d, t.outcome == Outcome.correct)
+        correct = t.outcome == Outcome.correct
+        if area == "speed":  # right only when it also came within its step's window (games spec §7.2)
+            correct = skill.speed_correct(correct, t.response_ms, t.tier, t.step)
+        row.theta = skill.elo(row.theta, row.n_trials, d, correct)
         row.n_trials += 1
     return levels
+
+
+async def speed_is_open(db: AsyncSession, child_id: uuid.UUID) -> bool:
+    """Speed for this child now (games spec §7.1): their access settings and their latest 30 tries."""
+    access = await db.get(AccessProfile, child_id)
+    recent = await db.scalars(
+        select(Try.access_event).where(Try.child_id == child_id).order_by(Try.ts.desc()).limit(skill.SPEED_TRIES)
+    )
+    settings = (
+        {"input_mode": access.input_mode.value, "repeat_lock": access.repeat_lock, "release_ok": access.release_ok}
+        if access
+        else None
+    )
+    return skill.speed_open(settings, list(recent))
 
 
 # ---------------------------------------------------------------- skill levels
@@ -453,7 +470,8 @@ class GamesOut(ApiModel):
 async def choose(child_id: uuid.UUID, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]) -> GamesOut:
     """Today's games: an easy win, a growth game and the child's choice (spec §13). Open games are the theme-world
     levels up to one past the highest tried, plus every skill-game step in an open tier (Seed free, the rest Pro; games
-    spec §3.3); at most one new kind of game a week; a game already played is never taken away."""
+    spec §3.3), Speed only while `speed_open` (§7.1); at most one new kind of game a week; a game already played is
+    never taken away."""
     await get_visible_child(db, user, child_id)
     left = max(0, skill.GAME_LIMIT_S - await seconds_today(db, child_id))
     if not left:
@@ -462,6 +480,8 @@ async def choose(child_id: uuid.UUID, user: CurrentUser, db: Annotated[AsyncSess
     reach = max((p.top_level for p in played.values()), default=0) + 1
     worlds = [g for g in skill.GAMES if g["level"] <= reach or g["kind"] in played]
     steps = skill.open_skill_steps(skill.SKILL_STEPS, await tier_tops(db, child_id), await is_pro(db, child_id))
+    if not await speed_is_open(db, child_id):  # closed: Speed is in no slot (games spec §7.1)
+        steps = [g for g in steps if g["area"] != "speed"]
     unlocked = worlds + steps
     today = datetime.now(TASHKENT).date().isoformat()
     games = skill.weekly_new(unlocked, {k: p.first_played.isoformat() for k, p in played.items()}, today)

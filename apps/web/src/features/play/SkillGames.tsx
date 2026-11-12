@@ -3,7 +3,7 @@
 import { SKILL_GAMES, type SkillGame } from "@/content/skillGames";
 import { sel, useDb } from "@/lib/api";
 import { useT } from "@/lib/i18n";
-import { FREE_TIER, needsMet, SHOWN_AREAS, type Area } from "@/lib/skill";
+import { FREE_TIER, needsMet, SHOWN_AREAS, withSpeed, type Area } from "@/lib/skill";
 import type { Child } from "@/lib/types";
 import { Target } from "./Target";
 import { KIND_EMOJI, MapTabs } from "./WorldMap";
@@ -30,7 +30,9 @@ export function SkillGames({ child, onPlay, onTab }: { child: Child; onPlay: (ga
   const t = useT(child.uiLang);
   const tops = sel.tiers(db, child.id);
   const pro = sel.isPro(db, child.id);
-  const areas = SHOWN_AREAS.filter((a) => SKILL_GAMES.some((g) => g.area === a));
+  // Speed only for a child it is open for (games spec §7.1): closed, it is not here at all.
+  const games = withSpeed(SKILL_GAMES, sel.speedOpen(db, child.id));
+  const areas = SHOWN_AREAS.filter((a) => games.some((g) => g.area === a));
   return (
     <div className="mx-auto w-full max-w-4xl">
       <h1 className="sr-only">{t("play.nav.skills")}</h1>
@@ -42,7 +44,7 @@ export function SkillGames({ child, onPlay, onTab }: { child: Child; onPlay: (ga
               <span aria-hidden>{AREA_ICON[area]}</span> {t(`skill.area.${area}`)}
             </h2>
             <div className="flex flex-col gap-3">
-              {SKILL_GAMES.filter((g) => g.area === area).map((g) => (
+              {games.filter((g) => g.area === area).map((g) => (
                 <div key={g.id} className="flex min-w-0 flex-col gap-2 rounded-3xl bg-surface-2/60 p-2 sm:flex-row sm:items-center">
                   <p className="flex min-w-0 items-center gap-2 px-1 font-extrabold text-ink sm:w-36 sm:flex-col sm:text-center">
                     <span className="text-3xl" aria-hidden>

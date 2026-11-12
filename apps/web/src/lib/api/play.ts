@@ -2,7 +2,7 @@
 
 // Child-token endpoints: child mode entry, sessions & events, rewards, AAC.
 
-import { AREA_OF, AREAS, elo, openTiers, START_FROM, tryDifficulty } from "../skill";
+import { AREA_OF, AREAS, elo, openTiers, speedCorrect, START_FROM, tryDifficulty } from "../skill";
 import type { TryRecord } from "../tries";
 import { LEVEL_BY_ID, levelComplete } from "@/content/levels";
 import { SHOP_BY_ID } from "@/content/shop";
@@ -81,7 +81,9 @@ export const playApi = {
         const area = AREA_OF[t.game as ActivityKind];
         if (t.accessEvent || t.outcome === "skipped" || !area) continue;
         const s = skills[area];
-        s.theta = elo(s.theta, s.n, tryDifficulty(t), t.outcome === "correct");
+        // A Speed try is right only when it also came within its step's window (games spec §7.2).
+        const correct = area === "speed" ? speedCorrect(t.outcome === "correct", t.responseMs, t.tier, t.step) : t.outcome === "correct";
+        s.theta = elo(s.theta, s.n, tryDifficulty(t), correct);
         s.n += 1;
       }
       // Reasoning and speed keep the start they got the first time they were needed (as on the server).

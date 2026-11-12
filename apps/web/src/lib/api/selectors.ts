@@ -5,7 +5,7 @@
 import { FREE_LEVELS, LEVEL_BY_ID, LEVELS, levelComplete } from "@/content/levels";
 import { computeMetrics, startingProfile, withFloors } from "../adaptive";
 import { levelAfter } from "../roadmap";
-import { AREAS, START_FROM, startingTheta, type Area } from "../skill";
+import { AREAS, SPEED_TRIES, speedOpen, START_FROM, startingTheta, type Area } from "../skill";
 import type { Answers } from "@/content/intake";
 import { typicalFilled } from "@/content/questionnaire";
 import { rulesView } from "@/content/questionnaireBridge";
@@ -83,6 +83,15 @@ export const sel = {
   /** The highest open tier of every area (games spec §3.2): Seed (1) without a row. */
   tiers: (db: DB, childId: string): Record<Area, number> =>
     Object.fromEntries(AREAS.map((a) => [a, (db.areaTiers ?? []).find((r) => r.childId === childId && r.area === a)?.topTier ?? 1])) as Record<Area, number>,
+  /**
+   * Speed is open (games spec §7.1): touch, no repeat guard, may let go, and access events under 10% of the latest 30
+   * tries. Closed, its games and its level are hidden; its θ is kept.
+   */
+  speedOpen: (db: DB, childId: string): boolean => {
+    const access = (db.accessProfiles ?? []).find((a) => a.childId === childId);
+    const recent = (db.tries ?? []).filter((t) => t.childId === childId).sort((a, b) => (a.ts < b.ts ? 1 : -1)).slice(0, SPEED_TRIES);
+    return speedOpen(access, recent.map((t) => t.accessEvent));
+  },
   /** Seconds of game time today (this device's date). */
   playedToday: (db: DB, childId: string) => (db.playTime ?? []).find((p) => p.childId === childId && p.date === localDate())?.seconds ?? 0,
   /** The child's answer to the question of this day, if given. */

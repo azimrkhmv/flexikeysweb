@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { readFileSync, writeFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { buildRoadmap, type PlanInput } from "@/lib/roadmap";
-import { AREA_OF, AREA_QUESTIONS, AREAS, chooseGames, corrected, difficulty, elo, levelDifficulty, levelFor, openSkillSteps, openTiers, pCorrect, START_FROM, startingTheta, weeklyNew, type Area, type Bucket, type Game } from "@/lib/skill";
+import { AREA_OF, AREA_QUESTIONS, AREAS, chooseGames, corrected, difficulty, elo, levelDifficulty, levelFor, openSkillSteps, openTiers, pCorrect, speedCorrect, speedOpen, speedWindow, START_FROM, startingTheta, weeklyNew, type Area, type Bucket, type Game } from "@/lib/skill";
 import { LEVELS } from "./levels";
 import { SKILL_GAMES } from "./skillGames";
 import type { TherapistInput } from "@/lib/types";
@@ -42,6 +42,16 @@ const TIER_CASES: { top: Partial<Record<Area, number>>; pro: boolean }[] = [
   // B85: Opposite Day's Summit (colour words) needs Language tier 3 as well.
   { top: { flexibility: 4, literacy: 2 }, pro: true },
   { top: { flexibility: 4, literacy: 3 }, pro: true },
+];
+
+/** Access settings for the Speed cases (snake_case, as the server stores them); null = no play check yet. */
+const SPEED_ACCESS = [
+  null,
+  { input_mode: "touch", repeat_lock: false, release_ok: true },
+  { input_mode: "touch", repeat_lock: true, release_ok: true },
+  { input_mode: "touch", repeat_lock: false, release_ok: false },
+  { input_mode: "dwell", repeat_lock: false, release_ok: true },
+  { input_mode: "switch", repeat_lock: false, release_ok: true },
 ];
 
 /** The roadmap in the backend's field names; key order is part of the contract (the hash covers it). */
@@ -166,6 +176,14 @@ describe("backend content", () => {
         const unlocked = [...WORLD_GAMES.filter((g) => g.level <= 6), ...openSkillSteps(SKILL_STEPS, top, pro)];
         return { theta, top, pro, up_to: 6, out: chooseGames(theta as Record<Area, number>, unlocked).map((s) => ({ slot: s.slot, area: s.area ?? null, games: s.games.map(stepKey) })) };
       }),
+      // Games spec §7 (B87): who gets Speed, its time windows, and a Speed try right only within its window.
+      speed_open: SPEED_ACCESS.flatMap((access) => [[29, 0], [30, 0], [30, 2], [30, 3], [40, 3], [40, 4]].map(([tries, events]) => {
+        const recent = Array.from({ length: tries }, (_, k) => k < events);
+        const camel = access && { inputMode: access.input_mode, repeatLock: access.repeat_lock, releaseOk: access.release_ok };
+        return { access, tries, events, out: speedOpen(camel, recent) };
+      })),
+      speed_window: [1, 2, 3, 4].flatMap((tier) => [1, 2, 3].map((step) => ({ tier, step, ms: speedWindow(tier, step) }))),
+      speed_correct: [[true, 2999, 1, 1], [true, 3000, 1, 1], [true, 3001, 1, 1], [false, 500, 1, 1], [true, null, 2, 2], [true, 1767, 2, 2], [true, 1768, 2, 2], [true, 800, 4, 3], [true, 801, 4, 3], [true, 5000, null, null]].map(([correct, ms, tier, step]) => ({ correct, response_ms: ms, tier, step, out: speedCorrect(correct as boolean, ms as number | null, tier as number | null, step as number | null) })),
       elo: [-1, 0, 0.8].flatMap((theta) => [0, 7, 40].flatMap((n) => [1, 6, 15].flatMap((level) => [true, false].map((correct) => ({ theta, n, level, correct, d: levelDifficulty(level), p: pCorrect(theta, levelDifficulty(level)), out: elo(theta, n, levelDifficulty(level), correct) }))))),
     });
   });

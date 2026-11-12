@@ -35,6 +35,9 @@
   "type": "literacy",
   "sentence": "literacy",
   "count": "numeracy",
+  "quick_snap": "speed",
+  "tap_star": "speed",
+  "fast_sort": "speed",
   "path": "access",
   "trace": "access",
   "dots": "access",
@@ -1664,7 +1667,16 @@
     "word_builder-skill@1.3",
     "do_what_i_say-skill@1.1",
     "do_what_i_say-skill@1.2",
-    "do_what_i_say-skill@1.3"
+    "do_what_i_say-skill@1.3",
+    "quick_snap-skill@1.1",
+    "quick_snap-skill@1.2",
+    "quick_snap-skill@1.3",
+    "tap_star-skill@1.1",
+    "tap_star-skill@1.2",
+    "tap_star-skill@1.3",
+    "fast_sort-skill@1.1",
+    "fast_sort-skill@1.2",
+    "fast_sort-skill@1.3"
    ]
   },
   {
@@ -1772,7 +1784,16 @@
     "word_builder-skill@1.3",
     "do_what_i_say-skill@1.1",
     "do_what_i_say-skill@1.2",
-    "do_what_i_say-skill@1.3"
+    "do_what_i_say-skill@1.3",
+    "quick_snap-skill@1.1",
+    "quick_snap-skill@1.2",
+    "quick_snap-skill@1.3",
+    "tap_star-skill@1.1",
+    "tap_star-skill@1.2",
+    "tap_star-skill@1.3",
+    "fast_sort-skill@1.1",
+    "fast_sort-skill@1.2",
+    "fast_sort-skill@1.3"
    ]
   },
   {
@@ -1883,7 +1904,16 @@
     "word_builder-skill@1.3",
     "do_what_i_say-skill@1.1",
     "do_what_i_say-skill@1.2",
-    "do_what_i_say-skill@1.3"
+    "do_what_i_say-skill@1.3",
+    "quick_snap-skill@1.1",
+    "quick_snap-skill@1.2",
+    "quick_snap-skill@1.3",
+    "tap_star-skill@1.1",
+    "tap_star-skill@1.2",
+    "tap_star-skill@1.3",
+    "fast_sort-skill@1.1",
+    "fast_sort-skill@1.2",
+    "fast_sort-skill@1.3"
    ]
   },
   {
@@ -2051,7 +2081,16 @@
     "word_builder-skill@1.3",
     "do_what_i_say-skill@1.1",
     "do_what_i_say-skill@1.2",
-    "do_what_i_say-skill@1.3"
+    "do_what_i_say-skill@1.3",
+    "quick_snap-skill@1.1",
+    "quick_snap-skill@1.2",
+    "quick_snap-skill@1.3",
+    "tap_star-skill@1.1",
+    "tap_star-skill@1.2",
+    "tap_star-skill@1.3",
+    "fast_sort-skill@1.1",
+    "fast_sort-skill@1.2",
+    "fast_sort-skill@1.3"
    ]
   },
   {
@@ -2394,7 +2433,16 @@
     "do_what_i_say-skill@1.3",
     "do_what_i_say-skill@2.1",
     "do_what_i_say-skill@2.2",
-    "do_what_i_say-skill@2.3"
+    "do_what_i_say-skill@2.3",
+    "quick_snap-skill@1.1",
+    "quick_snap-skill@1.2",
+    "quick_snap-skill@1.3",
+    "tap_star-skill@1.1",
+    "tap_star-skill@1.2",
+    "tap_star-skill@1.3",
+    "fast_sort-skill@1.1",
+    "fast_sort-skill@1.2",
+    "fast_sort-skill@1.3"
    ]
   },
   {
@@ -2562,7 +2610,16 @@
     "do_what_i_say-skill@1.3",
     "do_what_i_say-skill@2.1",
     "do_what_i_say-skill@2.2",
-    "do_what_i_say-skill@2.3"
+    "do_what_i_say-skill@2.3",
+    "quick_snap-skill@1.1",
+    "quick_snap-skill@1.2",
+    "quick_snap-skill@1.3",
+    "tap_star-skill@1.1",
+    "tap_star-skill@1.2",
+    "tap_star-skill@1.3",
+    "fast_sort-skill@1.1",
+    "fast_sort-skill@1.2",
+    "fast_sort-skill@1.3"
    ]
   },
   {
@@ -2748,7 +2805,16 @@
     "do_what_i_say-skill@2.3",
     "do_what_i_say-skill@3.1",
     "do_what_i_say-skill@3.2",
-    "do_what_i_say-skill@3.3"
+    "do_what_i_say-skill@3.3",
+    "quick_snap-skill@1.1",
+    "quick_snap-skill@1.2",
+    "quick_snap-skill@1.3",
+    "tap_star-skill@1.1",
+    "tap_star-skill@1.2",
+    "tap_star-skill@1.3",
+    "fast_sort-skill@1.1",
+    "fast_sort-skill@1.2",
+    "fast_sort-skill@1.3"
    ]
   }
  ],
@@ -2911,7 +2977,16 @@
       "word_builder-skill@1.3",
       "do_what_i_say-skill@1.1",
       "do_what_i_say-skill@1.2",
-      "do_what_i_say-skill@1.3"
+      "do_what_i_say-skill@1.3",
+      "quick_snap-skill@1.1",
+      "quick_snap-skill@1.2",
+      "quick_snap-skill@1.3",
+      "tap_star-skill@1.1",
+      "tap_star-skill@1.2",
+      "tap_star-skill@1.3",
+      "fast_sort-skill@1.1",
+      "fast_sort-skill@1.2",
+      "fast_sort-skill@1.3"
      ]
     }
    ]
@@ -3074,7 +3149,16 @@
       "word_builder-skill@1.3",
       "do_what_i_say-skill@1.1",
       "do_what_i_say-skill@1.2",
-      "do_what_i_say-skill@1.3"
+      "do_what_i_say-skill@1.3",
+      "quick_snap-skill@1.1",
+      "quick_snap-skill@1.2",
+      "quick_snap-skill@1.3",
+      "tap_star-skill@1.1",
+      "tap_star-skill@1.2",
+      "tap_star-skill@1.3",
+      "fast_sort-skill@1.1",
+      "fast_sort-skill@1.2",
+      "fast_sort-skill@1.3"
      ]
     }
    ]
@@ -3240,7 +3324,16 @@
       "word_builder-skill@1.3",
       "do_what_i_say-skill@1.1",
       "do_what_i_say-skill@1.2",
-      "do_what_i_say-skill@1.3"
+      "do_what_i_say-skill@1.3",
+      "quick_snap-skill@1.1",
+      "quick_snap-skill@1.2",
+      "quick_snap-skill@1.3",
+      "tap_star-skill@1.1",
+      "tap_star-skill@1.2",
+      "tap_star-skill@1.3",
+      "fast_sort-skill@1.1",
+      "fast_sort-skill@1.2",
+      "fast_sort-skill@1.3"
      ]
     }
    ]
@@ -3463,7 +3556,16 @@
       "word_builder-skill@1.3",
       "do_what_i_say-skill@1.1",
       "do_what_i_say-skill@1.2",
-      "do_what_i_say-skill@1.3"
+      "do_what_i_say-skill@1.3",
+      "quick_snap-skill@1.1",
+      "quick_snap-skill@1.2",
+      "quick_snap-skill@1.3",
+      "tap_star-skill@1.1",
+      "tap_star-skill@1.2",
+      "tap_star-skill@1.3",
+      "fast_sort-skill@1.1",
+      "fast_sort-skill@1.2",
+      "fast_sort-skill@1.3"
      ]
     }
    ]
@@ -3861,7 +3963,16 @@
       "do_what_i_say-skill@1.3",
       "do_what_i_say-skill@2.1",
       "do_what_i_say-skill@2.2",
-      "do_what_i_say-skill@2.3"
+      "do_what_i_say-skill@2.3",
+      "quick_snap-skill@1.1",
+      "quick_snap-skill@1.2",
+      "quick_snap-skill@1.3",
+      "tap_star-skill@1.1",
+      "tap_star-skill@1.2",
+      "tap_star-skill@1.3",
+      "fast_sort-skill@1.1",
+      "fast_sort-skill@1.2",
+      "fast_sort-skill@1.3"
      ]
     }
    ]
@@ -4084,7 +4195,16 @@
       "do_what_i_say-skill@1.3",
       "do_what_i_say-skill@2.1",
       "do_what_i_say-skill@2.2",
-      "do_what_i_say-skill@2.3"
+      "do_what_i_say-skill@2.3",
+      "quick_snap-skill@1.1",
+      "quick_snap-skill@1.2",
+      "quick_snap-skill@1.3",
+      "tap_star-skill@1.1",
+      "tap_star-skill@1.2",
+      "tap_star-skill@1.3",
+      "fast_sort-skill@1.1",
+      "fast_sort-skill@1.2",
+      "fast_sort-skill@1.3"
      ]
     }
    ]
@@ -4325,10 +4445,491 @@
       "do_what_i_say-skill@2.3",
       "do_what_i_say-skill@3.1",
       "do_what_i_say-skill@3.2",
-      "do_what_i_say-skill@3.3"
+      "do_what_i_say-skill@3.3",
+      "quick_snap-skill@1.1",
+      "quick_snap-skill@1.2",
+      "quick_snap-skill@1.3",
+      "tap_star-skill@1.1",
+      "tap_star-skill@1.2",
+      "tap_star-skill@1.3",
+      "fast_sort-skill@1.1",
+      "fast_sort-skill@1.2",
+      "fast_sort-skill@1.3"
      ]
     }
    ]
+  }
+ ],
+ "speed_open": [
+  {
+   "access": null,
+   "tries": 29,
+   "events": 0,
+   "out": false
+  },
+  {
+   "access": null,
+   "tries": 30,
+   "events": 0,
+   "out": false
+  },
+  {
+   "access": null,
+   "tries": 30,
+   "events": 2,
+   "out": false
+  },
+  {
+   "access": null,
+   "tries": 30,
+   "events": 3,
+   "out": false
+  },
+  {
+   "access": null,
+   "tries": 40,
+   "events": 3,
+   "out": false
+  },
+  {
+   "access": null,
+   "tries": 40,
+   "events": 4,
+   "out": false
+  },
+  {
+   "access": {
+    "input_mode": "touch",
+    "repeat_lock": false,
+    "release_ok": true
+   },
+   "tries": 29,
+   "events": 0,
+   "out": false
+  },
+  {
+   "access": {
+    "input_mode": "touch",
+    "repeat_lock": false,
+    "release_ok": true
+   },
+   "tries": 30,
+   "events": 0,
+   "out": true
+  },
+  {
+   "access": {
+    "input_mode": "touch",
+    "repeat_lock": false,
+    "release_ok": true
+   },
+   "tries": 30,
+   "events": 2,
+   "out": true
+  },
+  {
+   "access": {
+    "input_mode": "touch",
+    "repeat_lock": false,
+    "release_ok": true
+   },
+   "tries": 30,
+   "events": 3,
+   "out": false
+  },
+  {
+   "access": {
+    "input_mode": "touch",
+    "repeat_lock": false,
+    "release_ok": true
+   },
+   "tries": 40,
+   "events": 3,
+   "out": true
+  },
+  {
+   "access": {
+    "input_mode": "touch",
+    "repeat_lock": false,
+    "release_ok": true
+   },
+   "tries": 40,
+   "events": 4,
+   "out": false
+  },
+  {
+   "access": {
+    "input_mode": "touch",
+    "repeat_lock": true,
+    "release_ok": true
+   },
+   "tries": 29,
+   "events": 0,
+   "out": false
+  },
+  {
+   "access": {
+    "input_mode": "touch",
+    "repeat_lock": true,
+    "release_ok": true
+   },
+   "tries": 30,
+   "events": 0,
+   "out": false
+  },
+  {
+   "access": {
+    "input_mode": "touch",
+    "repeat_lock": true,
+    "release_ok": true
+   },
+   "tries": 30,
+   "events": 2,
+   "out": false
+  },
+  {
+   "access": {
+    "input_mode": "touch",
+    "repeat_lock": true,
+    "release_ok": true
+   },
+   "tries": 30,
+   "events": 3,
+   "out": false
+  },
+  {
+   "access": {
+    "input_mode": "touch",
+    "repeat_lock": true,
+    "release_ok": true
+   },
+   "tries": 40,
+   "events": 3,
+   "out": false
+  },
+  {
+   "access": {
+    "input_mode": "touch",
+    "repeat_lock": true,
+    "release_ok": true
+   },
+   "tries": 40,
+   "events": 4,
+   "out": false
+  },
+  {
+   "access": {
+    "input_mode": "touch",
+    "repeat_lock": false,
+    "release_ok": false
+   },
+   "tries": 29,
+   "events": 0,
+   "out": false
+  },
+  {
+   "access": {
+    "input_mode": "touch",
+    "repeat_lock": false,
+    "release_ok": false
+   },
+   "tries": 30,
+   "events": 0,
+   "out": false
+  },
+  {
+   "access": {
+    "input_mode": "touch",
+    "repeat_lock": false,
+    "release_ok": false
+   },
+   "tries": 30,
+   "events": 2,
+   "out": false
+  },
+  {
+   "access": {
+    "input_mode": "touch",
+    "repeat_lock": false,
+    "release_ok": false
+   },
+   "tries": 30,
+   "events": 3,
+   "out": false
+  },
+  {
+   "access": {
+    "input_mode": "touch",
+    "repeat_lock": false,
+    "release_ok": false
+   },
+   "tries": 40,
+   "events": 3,
+   "out": false
+  },
+  {
+   "access": {
+    "input_mode": "touch",
+    "repeat_lock": false,
+    "release_ok": false
+   },
+   "tries": 40,
+   "events": 4,
+   "out": false
+  },
+  {
+   "access": {
+    "input_mode": "dwell",
+    "repeat_lock": false,
+    "release_ok": true
+   },
+   "tries": 29,
+   "events": 0,
+   "out": false
+  },
+  {
+   "access": {
+    "input_mode": "dwell",
+    "repeat_lock": false,
+    "release_ok": true
+   },
+   "tries": 30,
+   "events": 0,
+   "out": false
+  },
+  {
+   "access": {
+    "input_mode": "dwell",
+    "repeat_lock": false,
+    "release_ok": true
+   },
+   "tries": 30,
+   "events": 2,
+   "out": false
+  },
+  {
+   "access": {
+    "input_mode": "dwell",
+    "repeat_lock": false,
+    "release_ok": true
+   },
+   "tries": 30,
+   "events": 3,
+   "out": false
+  },
+  {
+   "access": {
+    "input_mode": "dwell",
+    "repeat_lock": false,
+    "release_ok": true
+   },
+   "tries": 40,
+   "events": 3,
+   "out": false
+  },
+  {
+   "access": {
+    "input_mode": "dwell",
+    "repeat_lock": false,
+    "release_ok": true
+   },
+   "tries": 40,
+   "events": 4,
+   "out": false
+  },
+  {
+   "access": {
+    "input_mode": "switch",
+    "repeat_lock": false,
+    "release_ok": true
+   },
+   "tries": 29,
+   "events": 0,
+   "out": false
+  },
+  {
+   "access": {
+    "input_mode": "switch",
+    "repeat_lock": false,
+    "release_ok": true
+   },
+   "tries": 30,
+   "events": 0,
+   "out": false
+  },
+  {
+   "access": {
+    "input_mode": "switch",
+    "repeat_lock": false,
+    "release_ok": true
+   },
+   "tries": 30,
+   "events": 2,
+   "out": false
+  },
+  {
+   "access": {
+    "input_mode": "switch",
+    "repeat_lock": false,
+    "release_ok": true
+   },
+   "tries": 30,
+   "events": 3,
+   "out": false
+  },
+  {
+   "access": {
+    "input_mode": "switch",
+    "repeat_lock": false,
+    "release_ok": true
+   },
+   "tries": 40,
+   "events": 3,
+   "out": false
+  },
+  {
+   "access": {
+    "input_mode": "switch",
+    "repeat_lock": false,
+    "release_ok": true
+   },
+   "tries": 40,
+   "events": 4,
+   "out": false
+  }
+ ],
+ "speed_window": [
+  {
+   "tier": 1,
+   "step": 1,
+   "ms": 3000
+  },
+  {
+   "tier": 1,
+   "step": 2,
+   "ms": 2667
+  },
+  {
+   "tier": 1,
+   "step": 3,
+   "ms": 2333
+  },
+  {
+   "tier": 2,
+   "step": 1,
+   "ms": 2000
+  },
+  {
+   "tier": 2,
+   "step": 2,
+   "ms": 1767
+  },
+  {
+   "tier": 2,
+   "step": 3,
+   "ms": 1533
+  },
+  {
+   "tier": 3,
+   "step": 1,
+   "ms": 1300
+  },
+  {
+   "tier": 3,
+   "step": 2,
+   "ms": 1133
+  },
+  {
+   "tier": 3,
+   "step": 3,
+   "ms": 967
+  },
+  {
+   "tier": 4,
+   "step": 1,
+   "ms": 800
+  },
+  {
+   "tier": 4,
+   "step": 2,
+   "ms": 800
+  },
+  {
+   "tier": 4,
+   "step": 3,
+   "ms": 800
+  }
+ ],
+ "speed_correct": [
+  {
+   "correct": true,
+   "response_ms": 2999,
+   "tier": 1,
+   "step": 1,
+   "out": true
+  },
+  {
+   "correct": true,
+   "response_ms": 3000,
+   "tier": 1,
+   "step": 1,
+   "out": true
+  },
+  {
+   "correct": true,
+   "response_ms": 3001,
+   "tier": 1,
+   "step": 1,
+   "out": false
+  },
+  {
+   "correct": false,
+   "response_ms": 500,
+   "tier": 1,
+   "step": 1,
+   "out": false
+  },
+  {
+   "correct": true,
+   "response_ms": null,
+   "tier": 2,
+   "step": 2,
+   "out": false
+  },
+  {
+   "correct": true,
+   "response_ms": 1767,
+   "tier": 2,
+   "step": 2,
+   "out": true
+  },
+  {
+   "correct": true,
+   "response_ms": 1768,
+   "tier": 2,
+   "step": 2,
+   "out": false
+  },
+  {
+   "correct": true,
+   "response_ms": 800,
+   "tier": 4,
+   "step": 3,
+   "out": true
+  },
+  {
+   "correct": true,
+   "response_ms": 801,
+   "tier": 4,
+   "step": 3,
+   "out": false
+  },
+  {
+   "correct": true,
+   "response_ms": 5000,
+   "tier": null,
+   "step": null,
+   "out": true
   }
  ],
  "elo": [

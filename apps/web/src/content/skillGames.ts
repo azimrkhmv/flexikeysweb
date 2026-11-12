@@ -6,7 +6,8 @@ import type { OppositeSettings, SecretRuleSettings, SwitchSortSettings } from "@
 import type { BalanceSettings, LogicHousesSettings, NextPatternSettings, PipesSettings, ShadowSettings } from "@/lib/games/reasoning";
 import type { BazaarSettings, MissingNumberSettings, MoreLessSettings, NumberLineSettings } from "@/lib/games/math";
 import type { RhymeSettings, SaySettings, WordBuilderSettings } from "@/lib/games/language";
-import { AREA_OF, type Area, type StepN, type Tier } from "@/lib/skill";
+import type { FastSortSettings, QuickSnapSettings, TapStarSettings } from "@/lib/games/speed";
+import { AREA_OF, speedWindow, type Area, type StepN, type Tier } from "@/lib/skill";
 import type { ActivityStep, InputModeId, L10n } from "@/lib/types";
 
 // Skill games (games spec 8 Nov 2026, §2.3, §5, §6): one game per kind, `<kind>-skill`, with 12 steps — tiers Seed,
@@ -32,15 +33,18 @@ const pl = (n: number, one: string, few: string, many: string) => {
 };
 const range = (min = 1, max = 99) => (min === max ? `${min}` : max >= 99 ? `${min}+` : `${min}–${max}`);
 
-function game<S>(kind: SkillKind, table: S[], canDo: (s: S) => L10n, needs?: (s: S) => ActivityStep["needs"]): SkillGame<S> {
+function game<S>(kind: SkillKind, table: S[], canDo: (s: S, at: { tier: Tier; step: StepN }) => L10n, needs?: (s: S) => ActivityStep["needs"], modes = ALL_MODES): SkillGame<S> {
   if (table.length !== 12) throw new Error(`${kind}: 12 steps, not ${table.length}`);
   return {
     id: `${kind}-skill`,
     kind,
     area: AREA_OF[kind],
     theme: "mixed",
-    input_modes: ALL_MODES,
-    steps: table.map((settings, k) => ({ tier: (Math.floor(k / 3) + 1) as Tier, step: ((k % 3) + 1) as StepN, settings, can_do: canDo(settings), ...(needs?.(settings) ? { needs: needs(settings) } : {}) })),
+    input_modes: modes,
+    steps: table.map((settings, k) => {
+      const at = { tier: (Math.floor(k / 3) + 1) as Tier, step: ((k % 3) + 1) as StepN };
+      return { ...at, settings, can_do: canDo(settings, at), ...(needs?.(settings) ? { needs: needs(settings) } : {}) };
+    }),
   };
 }
 
@@ -702,11 +706,93 @@ const doWhatISay = game<SaySettings>(
       },
     })[mode],
 );
+
+// ---------------------------------------------------------------- §7 Speed (touch only; the window is lib/skill.ts)
+/** The step's window as a parent reads it: "3", "2.7", "0.8" seconds. */
+const secs = (at: { tier: Tier; step: StepN }, lang: "en" | "ru" | "uz") => {
+  const s = String(Math.round(speedWindow(at.tier, at.step) / 100) / 10);
+  return lang === "en" ? s : s.replace(".", ",");
+};
+const quickSnap = game<QuickSnapSettings>(
+  "quick_snap",
+  [
+    { cards: 8, pool: 2, look: "far" }, { cards: 10, pool: 2, look: "far" }, { cards: 10, pool: 3, look: "far" },
+    { cards: 10, pool: 3, look: "shape" }, { cards: 12, pool: 4, look: "shape" }, { cards: 12, pool: 3, look: "color" },
+    { cards: 12, pool: 4, look: "color" }, { cards: 12, pool: 2, look: "near" }, { cards: 12, pool: 3, look: "near" },
+    { cards: 12, pool: 3, look: "shade" }, { cards: 12, pool: 2, look: "turn" }, { cards: 12, pool: 4, look: "turn" },
+  ],
+  ({ cards, pool, look }, at) => {
+    const what = {
+      far: { en: `${pool} very different cards`, ru: `${pool} очень разных карточки`, uz: `${pool} ta juda boshqacha karta` },
+      shape: { en: `${pool} shapes of one colour`, ru: `${pool} ${pl(pool, "фигура", "фигуры", "фигур")} одного цвета`, uz: `bir rangdagi ${pool} ta shakl` },
+      color: { en: `one shape in ${pool} colours`, ru: `одна фигура ${pool} цветов`, uz: `${pool} xil rangdagi bitta shakl` },
+      near: { en: `${pool} shapes that look alike`, ru: `${pool} похожие фигуры`, uz: `${pool} ta oʻxshash shakl` },
+      shade: { en: "one shape, lighter or darker", ru: "одна фигура, светлее или темнее", uz: "bitta shakl, ochroq yoki toʻqroq" },
+      turn: { en: `one shape turned ${pool} ways`, ru: `одна фигура, повёрнутая ${pool} способами`, uz: `${pool} xil burilgan bitta shakl` },
+    }[look];
+    return {
+      en: `Says whether a card is the same as the one before (${what.en}), ${cards - 1} times, each within ${secs(at, "en")} s`,
+      ru: `Говорит, такая же ли карточка, как перед ней (${what.ru}), ${cards - 1} раз, каждый раз за ${secs(at, "ru")} с`,
+      uz: `Karta oldingisi bilan bir xilmi, aytadi (${what.uz}), ${cards - 1} marta, har biri ${secs(at, "uz")} soniyada`,
+    };
+  },
+  undefined,
+  ["touch"],
+);
+
+const tapStar = game<TapStarSettings>(
+  "tap_star",
+  [
+    { items: 8, moons: 0, look: "plain" }, { items: 10, moons: 0, look: "plain" }, { items: 10, moons: 0.2, look: "plain" },
+    { items: 10, moons: 0.3, look: "plain" }, { items: 12, moons: 0.3, look: "plain" }, { items: 12, moons: 0.3, look: "color" },
+    { items: 12, moons: 0.4, look: "color" }, { items: 12, moons: 0.3, look: "twin" }, { items: 14, moons: 0.4, look: "twin" },
+    { items: 14, moons: 0.4, look: "twin" }, { items: 16, moons: 0.4, look: "twin" }, { items: 18, moons: 0.5, look: "twin" },
+  ],
+  ({ items: n, moons, look }, at) => {
+    if (!moons) return { en: `Taps ${n} stars as they come, each within ${secs(at, "en")} s`, ru: `Нажимает на ${n} звёзд, каждую за ${secs(at, "ru")} с`, uz: `${n} ta yulduzni bosadi, har birini ${secs(at, "uz")} soniyada` };
+    const moon = {
+      plain: { en: "", ru: "", uz: "" },
+      color: { en: " of the same colour", ru: " того же цвета", uz: " xuddi shu rangdagi" },
+      twin: { en: " that look like stars", ru: ", похожие на звёзды", uz: " yulduzga oʻxshash" },
+    }[look];
+    return {
+      en: `Taps the stars and leaves the moons${moon.en} alone, ${n} in a row, each within ${secs(at, "en")} s`,
+      ru: `Нажимает на звёзды и не трогает месяц${moon.ru}, ${n} подряд, каждый раз за ${secs(at, "ru")} с`,
+      uz: `Yulduzlarni bosadi,${moon.uz} oyga tegmaydi, ketma-ket ${n} ta, har biri ${secs(at, "uz")} soniyada`,
+    };
+  },
+  undefined,
+  ["touch"],
+);
+
+const fastSort = game<FastSortSettings>(
+  "fast_sort",
+  [
+    { items: 8, by: "cat", groups: ["animals", "transport"] }, { items: 10, by: "cat", groups: ["fruits", "toys"] }, { items: 10, by: "cat", groups: ["animals", "transport", "clothes"] },
+    { items: 12, by: "cat", groups: ["fruits", "toys", "transport"] }, { items: 12, by: "color", groups: ["red", "blue"] }, { items: 12, by: "color", groups: ["green", "yellow", "blue"] },
+    { items: 12, by: "cat", groups: ["fruits", "vegetables"] }, { items: 12, by: "cat", groups: ["fruits", "vegetables", "nature"] }, { items: 12, by: "color", groups: ["blue", "purple", "green"] },
+    { items: 12, by: "cat", groups: ["fruits", "vegetables", "nature", "animals"] }, { items: 14, by: "color", groups: ["red", "orange", "pink", "yellow"] }, { items: 16, by: "color", groups: ["red", "orange", "pink", "purple"] },
+  ],
+  ({ items: n, by, groups }, at) => {
+    const k = groups.length;
+    const close = by === "color" ? groups.some((g) => ["orange", "pink", "purple"].includes(g)) : groups.includes("vegetables");
+    const what = by === "cat" ? { en: "pictures", ru: "картинок", uz: "rasm" } : { en: "shapes by colour", ru: "фигур по цвету", uz: "shaklni rangiga qarab" };
+    return {
+      en: `Sorts ${n} ${what.en} into ${k}${close ? " close" : ""} boxes as they come, each within ${secs(at, "en")} s`,
+      ru: `Раскладывает ${n} ${what.ru} в ${k} ${close ? "похожие " : ""}коробки, каждую за ${secs(at, "ru")} с`,
+      uz: `${n} ta ${what.uz} ${k} ta${close ? " oʻxshash" : ""} qutiga ajratadi, har birini ${secs(at, "uz")} soniyada`,
+    };
+  },
+  undefined,
+  ["touch"],
+);
+
 export const SKILL_GAMES: SkillGame[] = [
   findSame, scene, story, sequence, missing, lightPath, sort, maze, puzzle, listenPick, type, count,
   oddOneOut, trackFish, whichWay, cardPairs, shoppingList, nBack, pairsRecall,
   switchSort, opposite, secretRule, nextPattern, balance, pipes, logicHouses, shadowMatch,
   moreLess, numberLine, bazaar, missingNumber, rhyme, wordBuilder, doWhatISay,
+  quickSnap, tapStar, fastSort,
 ] as unknown as SkillGame[]; // prettier-ignore
 export const SKILL_GAME_BY_ID: Record<string, SkillGame> = Object.fromEntries(SKILL_GAMES.map((g) => [g.id, g]));
 export const stepOf = (g: SkillGame, tier: number, step: number) => g.steps.find((s) => s.tier === tier && s.step === step);

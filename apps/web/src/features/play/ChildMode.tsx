@@ -296,7 +296,8 @@ export function ChildMode({ child }: { child: Child }) {
 
   // A skill game (games spec §9): the step of that tier where the child succeeds about 75% of the time.
   const playSkill = (game: SkillGame, tier: number, open: boolean, run = 0) => {
-    if (!open) {
+    // Speed closed (games spec §7.1): its games sleep like a closed tier, whatever led here.
+    if (!open || (game.area === "speed" && !sel.speedOpen(db, child.id))) {
       setMoodFor("sleepy");
       speak(t("play.skills.sleeping"), lang);
       return;

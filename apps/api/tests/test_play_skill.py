@@ -111,3 +111,18 @@ def test_tiers_open_by_success_and_seed_is_free() -> None:
         got = skill.choose_games(c["theta"], worlds + skill.open_skill_steps(skill.SKILL_STEPS, c["top"], c["pro"]))
         assert [{"slot": s["slot"], "area": s["area"], "games": [_key(g) for g in s["games"]]} for s in got] == c["out"]
     assert len(skill.SKILL_STEPS) == 12 * len({g["kind"] for g in skill.SKILL_STEPS})
+
+
+def test_speed_opens_only_for_steady_touch_and_scores_by_time() -> None:
+    for c in CASES["speed_open"]:
+        recent = [k < c["events"] for k in range(c["tries"])]
+        assert skill.speed_open(c["access"], recent) == c["out"], c
+    for c in CASES["speed_window"]:
+        assert skill.speed_window(c["tier"], c["step"]) == c["ms"]
+    for c in CASES["speed_correct"]:
+        assert skill.speed_correct(c["correct"], c["response_ms"], c["tier"], c["step"]) == c["out"], c
+    # Never for a child who plays by dwell or switch, however steady (games spec §7.1).
+    steady = [False] * 40
+    assert not skill.speed_open({"input_mode": "dwell", "repeat_lock": False, "release_ok": True}, steady)
+    assert not skill.speed_open({"input_mode": "switch", "repeat_lock": False, "release_ok": True}, steady)
+    assert skill.speed_open({"input_mode": "touch", "repeat_lock": False, "release_ok": True}, steady)

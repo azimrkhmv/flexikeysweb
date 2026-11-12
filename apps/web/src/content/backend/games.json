@@ -3732,5 +3732,293 @@
   "area": "literacy",
   "tier": 4,
   "step": 3
+ },
+ {
+  "activity_id": "quick_snap-skill",
+  "kind": "quick_snap",
+  "level": 0,
+  "area": "speed",
+  "tier": 1,
+  "step": 1
+ },
+ {
+  "activity_id": "quick_snap-skill",
+  "kind": "quick_snap",
+  "level": 0,
+  "area": "speed",
+  "tier": 1,
+  "step": 2
+ },
+ {
+  "activity_id": "quick_snap-skill",
+  "kind": "quick_snap",
+  "level": 0,
+  "area": "speed",
+  "tier": 1,
+  "step": 3
+ },
+ {
+  "activity_id": "quick_snap-skill",
+  "kind": "quick_snap",
+  "level": 0,
+  "area": "speed",
+  "tier": 2,
+  "step": 1
+ },
+ {
+  "activity_id": "quick_snap-skill",
+  "kind": "quick_snap",
+  "level": 0,
+  "area": "speed",
+  "tier": 2,
+  "step": 2
+ },
+ {
+  "activity_id": "quick_snap-skill",
+  "kind": "quick_snap",
+  "level": 0,
+  "area": "speed",
+  "tier": 2,
+  "step": 3
+ },
+ {
+  "activity_id": "quick_snap-skill",
+  "kind": "quick_snap",
+  "level": 0,
+  "area": "speed",
+  "tier": 3,
+  "step": 1
+ },
+ {
+  "activity_id": "quick_snap-skill",
+  "kind": "quick_snap",
+  "level": 0,
+  "area": "speed",
+  "tier": 3,
+  "step": 2
+ },
+ {
+  "activity_id": "quick_snap-skill",
+  "kind": "quick_snap",
+  "level": 0,
+  "area": "speed",
+  "tier": 3,
+  "step": 3
+ },
+ {
+  "activity_id": "quick_snap-skill",
+  "kind": "quick_snap",
+  "level": 0,
+  "area": "speed",
+  "tier": 4,
+  "step": 1
+ },
+ {
+  "activity_id": "quick_snap-skill",
+  "kind": "quick_snap",
+  "level": 0,
+  "area": "speed",
+  "tier": 4,
+  "step": 2
+ },
+ {
+  "activity_id": "quick_snap-skill",
+  "kind": "quick_snap",
+  "level": 0,
+  "area": "speed",
+  "tier": 4,
+  "step": 3
+ },
+ {
+  "activity_id": "tap_star-skill",
+  "kind": "tap_star",
+  "level": 0,
+  "area": "speed",
+  "tier": 1,
+  "step": 1
+ },
+ {
+  "activity_id": "tap_star-skill",
+  "kind": "tap_star",
+  "level": 0,
+  "area": "speed",
+  "tier": 1,
+  "step": 2
+ },
+ {
+  "activity_id": "tap_star-skill",
+  "kind": "tap_star",
+  "level": 0,
+  "area": "speed",
+  "tier": 1,
+  "step": 3
+ },
+ {
+  "activity_id": "tap_star-skill",
+  "kind": "tap_star",
+  "level": 0,
+  "area": "speed",
+  "tier": 2,
+  "step": 1
+ },
+ {
+  "activity_id": "tap_star-skill",
+  "kind": "tap_star",
+  "level": 0,
+  "area": "speed",
+  "tier": 2,
+  "step": 2
+ },
+ {
+  "activity_id": "tap_star-skill",
+  "kind": "tap_star",
+  "level": 0,
+  "area": "speed",
+  "tier": 2,
+  "step": 3
+ },
+ {
+  "activity_id": "tap_star-skill",
+  "kind": "tap_star",
+  "level": 0,
+  "area": "speed",
+  "tier": 3,
+  "step": 1
+ },
+ {
+  "activity_id": "tap_star-skill",
+  "kind": "tap_star",
+  "level": 0,
+  "area": "speed",
+  "tier": 3,
+  "step": 2
+ },
+ {
+  "activity_id": "tap_star-skill",
+  "kind": "tap_star",
+  "level": 0,
+  "area": "speed",
+  "tier": 3,
+  "step": 3
+ },
+ {
+  "activity_id": "tap_star-skill",
+  "kind": "tap_star",
+  "level": 0,
+  "area": "speed",
+  "tier": 4,
+  "step": 1
+ },
+ {
+  "activity_id": "tap_star-skill",
+  "kind": "tap_star",
+  "level": 0,
+  "area": "speed",
+  "tier": 4,
+  "step": 2
+ },
+ {
+  "activity_id": "tap_star-skill",
+  "kind": "tap_star",
+  "level": 0,
+  "area": "speed",
+  "tier": 4,
+  "step": 3
+ },
+ {
+  "activity_id": "fast_sort-skill",
+  "kind": "fast_sort",
+  "level": 0,
+  "area": "speed",
+  "tier": 1,
+  "step": 1
+ },
+ {
+  "activity_id": "fast_sort-skill",
+  "kind": "fast_sort",
+  "level": 0,
+  "area": "speed",
+  "tier": 1,
+  "step": 2
+ },
+ {
+  "activity_id": "fast_sort-skill",
+  "kind": "fast_sort",
+  "level": 0,
+  "area": "speed",
+  "tier": 1,
+  "step": 3
+ },
+ {
+  "activity_id": "fast_sort-skill",
+  "kind": "fast_sort",
+  "level": 0,
+  "area": "speed",
+  "tier": 2,
+  "step": 1
+ },
+ {
+  "activity_id": "fast_sort-skill",
+  "kind": "fast_sort",
+  "level": 0,
+  "area": "speed",
+  "tier": 2,
+  "step": 2
+ },
+ {
+  "activity_id": "fast_sort-skill",
+  "kind": "fast_sort",
+  "level": 0,
+  "area": "speed",
+  "tier": 2,
+  "step": 3
+ },
+ {
+  "activity_id": "fast_sort-skill",
+  "kind": "fast_sort",
+  "level": 0,
+  "area": "speed",
+  "tier": 3,
+  "step": 1
+ },
+ {
+  "activity_id": "fast_sort-skill",
+  "kind": "fast_sort",
+  "level": 0,
+  "area": "speed",
+  "tier": 3,
+  "step": 2
+ },
+ {
+  "activity_id": "fast_sort-skill",
+  "kind": "fast_sort",
+  "level": 0,
+  "area": "speed",
+  "tier": 3,
+  "step": 3
+ },
+ {
+  "activity_id": "fast_sort-skill",
+  "kind": "fast_sort",
+  "level": 0,
+  "area": "speed",
+  "tier": 4,
+  "step": 1
+ },
+ {
+  "activity_id": "fast_sort-skill",
+  "kind": "fast_sort",
+  "level": 0,
+  "area": "speed",
+  "tier": 4,
+  "step": 2
+ },
+ {
+  "activity_id": "fast_sort-skill",
+  "kind": "fast_sort",
+  "level": 0,
+  "area": "speed",
+  "tier": 4,
+  "step": 3
  }
 ]

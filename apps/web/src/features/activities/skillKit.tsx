@@ -1,13 +1,19 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
+import { ItemArt } from "@/components/ItemArt";
 import type { RoundOf, SkillKind } from "@/lib/games";
+import { glyph, glyphId, type GlyphColor, type GlyphShape } from "@/lib/games/glyph";
+import { CATEGORY_ICON, type Category } from "@/lib/games/pools";
+import type { useActT } from "./kit";
 
-// Shared parts of the skill-game players (skill.tsx, skillAttention.tsx, skillMemory.tsx).
+// Shared parts of the skill-game players (skill.tsx, skillAttention.tsx, skillMemory.tsx, skillSpeed.tsx).
 
 export type PlayerProps<K extends SkillKind> = {
   rounds: RoundOf<K>[];
   onDone: () => void;
+  /** The step played: Speed games take their time window from it (games spec §7.2). */
+  at?: { tier: number; step: number };
 };
 
 /** Rounds one after another; `render` gets the round, its index and what to do next. */
@@ -49,4 +55,20 @@ export function bestGrid(n: number, w: number, h: number, max: number, gap = 8, 
     if (size > best.size) best = { cols, size };
   }
   return { cols: best.cols, size: Math.floor(best.size) };
+}
+
+type T = ReturnType<typeof useActT>;
+/** A sort box's name: "cat:fruits", "color:red", "shape:star" or "glyph:red:star" (Sort, Fast Sort). */
+export function boxName(group: string, t: T): string {
+  const [by, a, b] = group.split(":");
+  if (by === "cat") return t(`skill.cat.${a}`);
+  if (by === "color") return t(`skill.color.${a}`);
+  if (by === "shape") return t(`skill.shape.${a}`);
+  return t("skill.glyph", { color: t(`skill.color.${a}`), shape: t(`skill.shape.${b}`) });
+}
+export function BoxIcon({ group }: { group: string }) {
+  const [by, a, b] = group.split(":");
+  if (by === "cat") return <span className="text-3xl" aria-hidden>{CATEGORY_ICON[a as Category]}</span>;
+  const g = by === "color" ? glyph({ shape: "circle", color: a as GlyphColor }) : by === "shape" ? glyph({ shape: a as GlyphShape, color: "shadow" }) : glyph({ shape: b as GlyphShape, color: a as GlyphColor });
+  return <ItemArt id={glyphId(g)} size={36} />;
 }

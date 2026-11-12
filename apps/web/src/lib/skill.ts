@@ -30,6 +30,7 @@ export const AREA_OF: Record<GameKind, Area> = {
   rhyme: "literacy", word_builder: "literacy", do_what_i_say: "literacy",
   listen_pick: "literacy", type: "literacy", sentence: "literacy",
   count: "numeracy",
+  quick_snap: "speed", tap_star: "speed", fast_sort: "speed",
   path: "access", trace: "access", dots: "access", color: "access", paint: "access",
 }; // prettier-ignore
 
@@ -137,13 +138,49 @@ export function openTiers(top: number, theta: number, cleanSince: number): numbe
   return top < 4 && cleanSince >= TIER_TRIES && pCorrect(theta, difficulty(top, 3)) >= TIER_P ? top + 1 : top;
 }
 
-/** The skill-game steps the child may play: in an open tier of their area, and above Seed only with Pro. */
 /** A step that needs another area's tier (Opposite Day's colour words need Language tier 3): is that tier open? */
 export const needsMet = (needs: { area: Area; tier: number } | undefined, top: Partial<Record<Area, number>>) => !needs || (top[needs.area] ?? 1) >= needs.tier;
 
+/** The skill-game steps the child may play: in an open tier of their area, and above Seed only with Pro. */
 export function openSkillSteps<G extends { area: Area; tier: number; needs?: { area: Area; tier: number } }>(steps: G[], top: Partial<Record<Area, number>>, pro: boolean): G[] {
   return steps.filter((g) => g.tier <= (top[g.area] ?? 1) && (pro || g.tier <= FREE_TIER) && needsMet(g.needs, top));
 }
+
+// ---------------------------------------------------------------- Speed (games spec §7)
+
+/** Speed is judged on this many of the child's latest tries (about 3 sessions) … */
+export const SPEED_TRIES = 30;
+/** … and opens only while access events are under this share of them. */
+export const SPEED_ACCESS_SHARE = 0.1;
+
+/**
+ * Who gets Speed (§7.1): only a child who plays by touch, with no repeat guard, who may let go of a target, and whose
+ * access events are under 10% of their latest 30 or more tries. `recent`: whether each of the latest tries was an
+ * access event. No access settings yet (no play check) = no Speed. Closed again later: Speed hides, its θ is kept.
+ */
+export function speedOpen(access: { inputMode: string; repeatLock: boolean; releaseOk: boolean } | null | undefined, recent: boolean[]): boolean {
+  if (!access || access.inputMode !== "touch" || access.repeatLock || !access.releaseOk) return false;
+  return recent.length >= SPEED_TRIES && recent.filter(Boolean).length < SPEED_ACCESS_SHARE * recent.length;
+}
+
+/**
+ * The time to answer one Speed item, in ms (§7.2): Seed 3000, Sprout 2000, Tree 1300, Summit 800 at each tier's first
+ * step, the steps between spread evenly towards the next tier. Summit stays at 800: never faster.
+ */
+export const SPEED_WINDOW_MS = [
+  [3000, 2667, 2333],
+  [2000, 1767, 1533],
+  [1300, 1133, 967],
+  [800, 800, 800],
+] as const;
+export const speedWindow = (tier: number, step: number) => SPEED_WINDOW_MS[tier - 1][step - 1];
+
+/** A Speed try counts as correct only when the answer is right and came within its step's window (§7.2). */
+export const speedCorrect = (correct: boolean, responseMs: number | null | undefined, tier: number | null | undefined, step: number | null | undefined) =>
+  correct && (!tier || !step || (responseMs != null && responseMs <= speedWindow(tier, step)));
+
+/** Speed closed: its games are in no slot and not in the Skill games tab (§7.1). */
+export const withSpeed = <G extends { area: Area }>(games: G[], open: boolean) => (open ? games : games.filter((g) => g.area !== "speed"));
 
 /**
  * At most one new kind of game a week; a game already played is never taken away. `firstPlayed`: the date
