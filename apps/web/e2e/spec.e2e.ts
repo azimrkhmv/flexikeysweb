@@ -236,7 +236,7 @@ test("at 1 am Tashkent time the plan and the plan view use that day, like the To
   await page.goto("/parent/child/ch_ali");
   await page.getByRole("tab", { name: "Plan" }).click();
   await page.getByRole("button", { name: "Week 1" }).click(); // Ali's plan started 3 days ago, on the 26th
-  const days = page.locator("li").filter({ has: page.getByText("Games", { exact: true }) });
+  const days = page.getByRole("tabpanel").locator("li").filter({ has: page.getByText("Games", { exact: true }) }); // not the menu's "Games" (B96)
   await expect(days.first()).toContainText("26");
   await expect(days.filter({ has: page.getByText("Today", { exact: true }) })).toContainText("29");
 });
@@ -248,7 +248,7 @@ test("after a pause the plan view moves its dates like the Today screen", async 
   await page.goto("/parent/child/ch_ali");
   await page.getByRole("tab", { name: "Plan" }).click();
   await page.getByRole("button", { name: "Week 1" }).click();
-  const days = page.locator("li").filter({ has: page.getByText("Games", { exact: true }) });
+  const days = page.getByRole("tabpanel").locator("li").filter({ has: page.getByText("Games", { exact: true }) }); // not the menu's "Games" (B96)
   const dates = await days.locator("p.font-extrabold").allInnerTexts();
   expect(dates.some((d) => /\b29\b/.test(d))).toBe(false); // the paused day holds no plan day
   expect(dates[3]).toMatch(/\b30\b/); // plan day 3 moved to tomorrow, where the Today screen will show it

@@ -21,7 +21,7 @@ test("a parent sees the real 4-week plan from the server", async ({ page }) => {
   let putty = 0;
   for (let w = 1; w <= 4; w++) {
     await page.getByRole("button", { name: `Week ${w}` }).click();
-    const days = page.locator("li").filter({ has: page.getByText("Games", { exact: true }) });
+    const days = page.getByRole("tabpanel").locator("li").filter({ has: page.getByText("Games", { exact: true }) }); // not the menu's "Games" (B96)
     await expect(days).toHaveCount(7);
     putty += await page.getByText("Squeeze the putty").count();
   }
