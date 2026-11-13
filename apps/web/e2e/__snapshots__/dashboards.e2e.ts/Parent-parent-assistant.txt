@@ -9,6 +9,8 @@ Madina
 
 This is educational guidance, not medical advice. For health or development questions, please talk to a doctor or your therapist.
 
+Demo: the real assistant is not connected on this site. The answers here are a short example made from the plan.
+
 Hello! Ask me about today's task, an exercise or a game in your child's plan.
 
 What do we do today?

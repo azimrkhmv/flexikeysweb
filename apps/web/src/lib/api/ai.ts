@@ -5,11 +5,10 @@
 import { answerLang } from "@/content/answerLang";
 import { isEmergency } from "@/content/emergency";
 import { topicsOf } from "@/content/topics";
-import { LEVEL_BY_ID } from "@/content/levels";
 import { translate, type Lang } from "../i18n";
 import { read, write, net } from "./db";
 import { audit, requireUser, requireChildAccess, FAMILY } from "./guards";
-import { ApiError, AI_DAILY_QUOTA, id, iso, type DB } from "./schema";
+import { ApiError, AI_DAILY_QUOTA, id, iso, localDate, type DB } from "./schema";
 import { sel } from "./selectors";
 
 /** Keywords (en/uz/ru stems) → the hint they suggest. ponytail: keyword stub for the LLM extraction (spec P39). */
@@ -74,20 +73,24 @@ export const aiApi = {
 
 const MEDICAL = /(cerebral|palsy|diagnos|therapy|medic|doctor|autism|церебр|диагноз|врач|лечени|аутизм|shifokor|tashxis|kasal|autizm|davolash)/i;
 
-// ponytail: rule-based stand-in for the Anthropic LlmProvider. Uses only aggregated, name-free stats.
+// ponytail: a stand-in for the server's AI, which the demo does not have (B94). It says what the child's plan has
+// today, the one thing the real assistant always knows (the server's `plan_words`), and how to do an exercise. The
+// chat says plainly that this is a demo answer (`ai.demo.note` in features/assistant/Chat.tsx).
 function stubAssistant(db: DB, childId: string, text: string, lang: Lang): string {
   const t = (key: string, vars?: Record<string, string | number>) => translate(lang, key, vars);
-  const mastery = sel.mastery(db, childId).filter((m) => m.attempts > 0).sort((a, b) => b.pKnown - a.pKnown);
-  const strong = mastery[0] ? LEVEL_BY_ID[mastery[0].skill].title[lang] : "—";
-  const weak = mastery.length ? LEVEL_BY_ID[mastery[mastery.length - 1].skill].title[lang] : "—";
-  const minutes = sel.dailyMinutes(db, childId, 7).reduce((a, d) => a + d.minutes, 0);
-  const change = sel.changes(db, childId)[0];
+  const plan = sel.roadmap(db, childId);
+  const on = plan ? sel.planDayOn(db, childId, localDate()) : null;
+  const free = sel.freeDays(db, childId); // Free: the first week only, as on the Today screen
+  const day = plan && typeof on === "number" && (free === null || on < free) ? plan.days[on] : undefined;
+  const tasks = day
+    ? [
+        ...day.exercises.flatMap((e) => sel.video(db, e.videoId)?.title[lang] ?? []),
+        ...day.games.map((g) => `${t(`game.${g.kind}`)} (${t("plan.minutes", { n: g.minutes })})`),
+      ]
+    : [];
   const parts = [
-    t("ai.parent.intro", { minutes }),
-    t("ai.parent.strong", { skill: strong }),
-    t("ai.parent.practice", { skill: weak }),
-    change ? t("ai.parent.adapt", { change: t(change.reasonKey) }) : "",
-    t("ai.parent.tip"),
+    !plan ? t("ai.demo.noPlan") : on === "paused" ? t("ai.demo.rest") : tasks.length ? t("ai.demo.today", { tasks: tasks.join("; ") }) : t("ai.demo.noDay"),
+    plan ? t("ai.demo.how") : "",
   ];
   if (MEDICAL.test(text)) parts.push(t("ai.disclaimer"));
   return parts.filter(Boolean).join("\n\n");

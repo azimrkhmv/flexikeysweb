@@ -82,11 +82,13 @@ Ask the assistant about this child
 
 This is educational guidance, not medical advice. For health or development questions, please talk to a doctor or your therapist.
 
-Hi! Ask me anything about your child's learning.
+Demo: the real assistant is not connected on this site. The answers here are a short example made from the plan.
 
-How is my child doing this week?
-What can we practise at home?
-Why did the keys get bigger?
+Hello! Ask me about today's task, an exercise or a game in your child's plan.
+
+What do we do today?
+How do I fit the tasks into our day?
+My child is tired today. What should we do?
 Notes
 New note
 Visible to parent

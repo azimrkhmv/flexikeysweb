@@ -43,6 +43,12 @@ export function AssistantChat({ childId, needConsent }: { childId: string; needC
       <p role="note" className="rounded-2xl bg-sun-soft p-3 text-sm text-[#7a5a0c]">
         {t("ai.disclaimer")}
       </p>
+      {/* The demo has no AI behind it (B94): say so before the first question. */}
+      {!LIVE && (
+        <p role="note" className="rounded-2xl bg-sky-soft p-3 text-sm text-ink">
+          {t("ai.demo.note")}
+        </p>
+      )}
 
       {!enabled ? (
         <p className="text-ink-2">{t("parent.ai.off")}</p>

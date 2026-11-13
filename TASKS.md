@@ -1091,9 +1091,10 @@ day. Order: B90 to B96.*
   - Done when: a Russian question on the Uzbek screen gets a Russian answer and the other way round; a mixed question gets the language most of it is in; a question with no clear language keeps the screen's language; Uzbek in Cyrillic is answered in Uzbek Latin until the founders decide; the demo does the same
   - Needs: —
   - Note (13 Nov 2026): `answer_lang` in `assistant/safety.py` and `answerLang` in the website's `content/answerLang.ts`, from one word list (`languages.json`, both copies, checked by a test). Before: the answer came in the screen's language, so "Сколько минут нужно играть?" on the Uzbek screen was answered in Uzbek. After: each word of the question counts for one language (Uzbek and Russian words in either alphabet, English), the most words win, and the screen's language is kept on a tie or when no word tells. The fixed answers (103, the safe answer, the month's limit, "no source") and the exercise names told to the AI follow the same language, and the saved message keeps it. Unchanged address: `POST /children/{id}/assistant/messages` still takes `{text, lang}`; `lang` is now the screen's language, used only as the fallback. Uzbek in Cyrillic is answered in Uzbek Latin ("Tasks for Founders", F4)
-- [ ] **Bekzod** — `B94` The demo assistant fits the product and says it is a demo
+- [x] **Bekzod** — `B94` The demo assistant fits the product and says it is a demo
   - Done when: in demo mode the answer names today's exercises and games from the child's plan, and the chat says plainly that the real assistant is not connected here
   - Needs: B90
+  - Note (13 Nov 2026): before, the demo answered every question with "This week your child played about 68 minutes in total. Strongest area right now: Letters. Good to practise together: Animals…" (the old product's levels). After: "Today's plan: <exercises>; <games with minutes>." and one line on how to do an exercise, or "There is no plan yet…", a rest day, or no task today (Free: the first week only, as on Today); the "not medical advice" line is added for a medical word, as before. Above the chat, in demo mode only: "Demo: the real assistant is not connected on this site. The answers here are a short example made from the plan." The therapist's chat on the child page shows the parent's greeting and questions ("your child's plan"), as it did before. uz and ru text drafted 13 Nov 2026 — native-speaker check (B44)
 - [ ] **Bekzod** — `B95` Leftover text from the old product on the parent's first screens
   - Done when: the parent home page no longer says "pick a nickname and avatar" or "teachers", in en, ru, uz; every changed text is listed with before and after in the task note
   - Needs: —
@@ -1103,6 +1104,9 @@ day. Order: B90 to B96.*
 - [ ] **Bekzod** — `B97` A "What I can do / What I cannot do" box in the assistant
   - Done when: a parent sees both lists before the first question, in en, ru, uz
   - Needs: the founders' approval of the wording ("Tasks for Founders", F5)
+- [ ] **Bekzod** — `B98` The weekly report's summary still describes the old product: "Strongest area right now: Letters. Good to practise together: Animals. Try naming these things…" (`ai.parent.*` in `parent/reports/page.tsx`; found during B94, 13 Nov 2026)
+  - Done when: the summary on the Reports page is made from the plan and the skill levels (tasks done this week, the area that moved), in en, ru, uz, and the `ai.parent.*` texts are gone
+  - Needs: —
 
 ### Hosting (31 Oct 2026)
 
