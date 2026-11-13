@@ -1068,6 +1068,38 @@ drops the ones he does not like after trying them. Order: B80 to B89. Each task 
   - Needs: B88
   - Note (13 Nov 2026): migration 0043 (`skill_snapshot`, one row per child, area and Monday, Tashkent time). `skillLevel` / `skill_level` (θ −3 … 4.5 → 1 … 100; Python rounds halves up like the website), `shownLevel` (null under 10 clean tries), `weekStart`, `topStep`, `history`, `snapshotAt` and `bestLevel` in both skill copies, with `skill_level`, `week_start`, `top_step` and `history` rows in `skill_cases.json`. After each batch of tries the server (`_write_snapshots` in `play/router.py`) and the mock's `saveTries` write this week's row of every area the batch moved: θ, clean tries so far, and "can do now" = the hardest skill-game step with at least 3 right clean tries in the last 14 days (Speed right only within its window; same step in two games: more right tries, then the game id). New addresses in `play/progress.py`: `GET /children/{id}/progress` (family) and `GET /therapist/children/{id}/progress` (a therapist the child is shared with; adds tries and access events of the last 4 weeks). Each gives the shown areas (access never, Speed only while open) with the level now (from the same θ as the plan, null = "Not enough games yet"), the highest level ever (for the trees), the 8 weeks up to this one (a week without games carries the last snapshot forward; null before the first or under 10 tries), the step now and 4 weeks ago, and the open tier. Parents: the cards are at the top of the Progress tab (`features/parent/SkillProgress.tsx`): area, big level, a plain SVG line of 8 weeks, "Now: … 4 weeks ago: …" (only "Now" when the same; no sentence while there are under 10 tries), the not-a-diagnosis line, and — without Pro — a `ProLock` saying the harder tiers come with Pro (the B83 promise). Therapists: the same cards on the child page with tries, access events as "3 of 40" (a count, never a percentage) and the highest open tier. Child: a third tab beside the map and the skill games, "My trees" (`features/play/Trees.tsx`): branches = the highest level ÷ 10, so a tree never shrinks; under 10 clean tries it is a seed (the spec says "no tries"; with under 10 there is no level to grow from yet). New branches grow in (motion, off with reduced motion); the line "You got better at {area}!" is shown and said once per device (the last trees seen are kept in this browser). The three map tabs sit in one row on a 390 px phone. Live mode: the parent pages and the therapist page read the progress addresses; `sel.tiers` and `sel.speedOpen` take the open tiers and Speed from them, so the live Skill games tab now shows the real tiers and Speed (the B83 and B87 promises) on a parent's device. A class device in child mode has no adult signed in and the new server has no child-token progress address yet, so there it still shows Seed only and seeds for the trees. The demo seeds about six weeks of Ali's skill history (Math under 10 tries), `DB_VERSION` 21, so the demo shows the panel at once. Checked in Edge at 390×844 and 1366×657 in en, ru and uz: no horizontal scroll, no "%" in any card, no digit on the child's trees screen, no target under 60 px, the "got better" line once and not on the next visit. uz text drafted 8 Nov 2026 — native-speaker check (B44)
 
+### Localize MVP and games for parents (13 Nov 2026)
+
+*The founders' "Localize MVP" task: the part a local parent meets first (home page, sign-up, add a child, the first
+questionnaire section, the assistant) fits their language and habits. Found by reading the code on 13 Nov 2026; the
+questions only the founders can answer are in "Tasks for Founders" (13 Nov 2026). B96 is Bekzod's request of the same
+day. Order: B90 to B96.*
+
+- [ ] **Bekzod** — `B90` The assistant's first screen is about the home plan
+  - Done when: the subtitle, the greeting and the three suggested questions are about today's task, the exercises and the games, in en, ru, uz; nothing says "learning" or "keys"
+  - Needs: —
+- [ ] **Bekzod** — `B91` Emergency and safety words the way people type them
+  - Done when: Uzbek words without the apostrophe ("qattiq ogri"), Uzbek Cyrillic without its special letters and Russian in Latin letters ("sudorogi") get the 103 answer; the website's copy of the list is the server's; calm questions still pass
+  - Needs: —
+- [ ] **Bekzod** — `B92` The child's name never reaches the AI, in any form
+  - Done when: the name with Uzbek and Russian endings ("Alining", "Алига", "Али") and typed in the other alphabet is replaced before anything is sent; a test proves it
+  - Needs: —
+- [ ] **Bekzod** — `B93` The assistant answers in the language of the question
+  - Done when: a Russian question on the Uzbek screen gets a Russian answer and the other way round; a mixed question gets the language most of it is in; a question with no clear language keeps the screen's language; Uzbek in Cyrillic is answered in Uzbek Latin until the founders decide; the demo does the same
+  - Needs: —
+- [ ] **Bekzod** — `B94` The demo assistant fits the product and says it is a demo
+  - Done when: in demo mode the answer names today's exercises and games from the child's plan, and the chat says plainly that the real assistant is not connected here
+  - Needs: B90
+- [ ] **Bekzod** — `B95` Leftover text from the old product on the parent's first screens
+  - Done when: the parent home page no longer says "pick a nickname and avatar" or "teachers", in en, ru, uz; every changed text is listed with before and after in the task note
+  - Needs: —
+- [ ] **Bekzod** — `B96` Parents see the games right away, and the games chosen for their child
+  - Done when: the parent menu has "Games"; "All games" lists every skill game by area and each can be tried with no child added; "For your child" shows the games of the child's plan (today's first), or says what is needed when there is no child or no plan; a try from this page saves nothing; without Pro a parent tries the Seed steps
+  - Needs: —
+- [ ] **Bekzod** — `B97` A "What I can do / What I cannot do" box in the assistant
+  - Done when: a parent sees both lists before the first question, in en, ru, uz
+  - Needs: the founders' approval of the wording ("Tasks for Founders", F5)
+
 ### Hosting (31 Oct 2026)
 
 - [x] **Bekzod** — Website demo on Vercel (mock mode, no server)
