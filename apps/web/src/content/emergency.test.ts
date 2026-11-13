@@ -13,3 +13,11 @@ it("finds emergencies in all 4 languages, and nothing in calm questions", () => 
     expect(isEmergency(text), text).toBe(true);
   for (const text of ["How long should we play?", "Приступайте к упражнению", "Qachon mashq qilamiz?"]) expect(isEmergency(text), text).toBe(false);
 });
+
+it("finds emergencies the way people type them (B91)", () => {
+  // Uzbek without the apostrophe, x for h, Uzbek Cyrillic without its special letters, Russian in Latin letters.
+  for (const text of ["qattiq ogri", "Bola xushidan ketdi", "bogilib qoldi", "каттик огрияпти", "тутканок булди", "u rebenka sudorogi", "on ne dishit", "silno bolit noga"])
+    expect(isEmergency(text), text).toBe(true);
+  for (const text of ["one dish of plov", "Bugun mashq qilamizmi?", "Farzandim bugun charchagan. Nima qilaylik?", "Ребёнок сегодня устал. Что делать?"])
+    expect(isEmergency(text), text).toBe(false);
+});

@@ -44,7 +44,7 @@ RESTRICTIONS: dict[str, tuple[str, list[str]]] = {
     "neck_flexion": (
         "bending the head or neck forward",
         [r"chin to (the )?chest", r"bend\w* the (head|neck)", r"подбородок к груди", r"наклон\w* (головы|шеи)",
-         r"iyagini ko'krak", r"boshini oldinga eg", r"иягини кўкрак", r"бошини олдинга эг"],
+         r"iyagini ko'?krak", r"boshini oldinga eg", r"иягини к[ўу]крак", r"бошини олдинга эг"],
     ),
     "single_leg_weight": (
         "standing on one leg",

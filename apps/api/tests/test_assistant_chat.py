@@ -101,9 +101,21 @@ def test_emergency_words() -> None:
         "nafas ololmayapti",
         "кучли оғрияпти",
         "boshini urib oldi",
+        # B91, the way people type: no apostrophe, x for h, Cyrillic without its special letters, Russian in Latin
+        "qattiq ogri",
+        "Bola xushidan ketdi",
+        "каттик огрияпти",
+        "u rebenka sudorogi",
+        "on ne dishit",
     ):
         assert is_emergency(text), text
-    for text in ("Приступайте к упражнению", "How long should we play?", "Qachon mashq qilamiz?"):
+    for text in (
+        "Приступайте к упражнению",
+        "How long should we play?",
+        "Qachon mashq qilamiz?",
+        "one dish of plov",
+        "Ребёнок сегодня устал. Что делать?",
+    ):
         assert not is_emergency(text), text
 
 

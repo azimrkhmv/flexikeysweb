@@ -1079,9 +1079,10 @@ day. Order: B90 to B96.*
   - Done when: the subtitle, the greeting and the three suggested questions are about today's task, the exercises and the games, in en, ru, uz; nothing says "learning" or "keys"
   - Needs: —
   - Note (13 Nov 2026): before → after (en). Subtitle: "Ask about progress and get ideas for playing together at home." → "Ask about today's task, the exercises and the games in your child's plan." Greeting: "Hi! Ask me anything about your child's learning." → "Hello! Ask me about today's task, an exercise or a game in your child's plan." Questions: "How is my child doing this week?" / "What can we practise at home?" / "Why did the keys get bigger?" → "What do we do today?" / "How do I fit the tasks into our day?" / "My child is tired today. What should we do?" uz and ru text drafted 13 Nov 2026 — native-speaker check (B44)
-- [ ] **Bekzod** — `B91` Emergency and safety words the way people type them
+- [x] **Bekzod** — `B91` Emergency and safety words the way people type them
   - Done when: Uzbek words without the apostrophe ("qattiq ogri"), Uzbek Cyrillic without its special letters and Russian in Latin letters ("sudorogi") get the 103 answer; the website's copy of the list is the server's; calm questions still pass
   - Needs: —
+  - Note (13 Nov 2026): `emergency.json` (both copies). Before: "qattiq ogri", "xushidan ketdi", "каттик огрияпти", "u rebenka sudorogi" and "on ne dishit" went to the AI as normal questions. After: each gets "Call 103 now". The apostrophe is optional, k may stand for q and x for h, Cyrillic қ ғ ў ҳ may be к г у х, and 13 Russian words are also listed in Latin letters. "ne dish" needs a word start, so "one dish" stays calm. "Epilepsy" in Latin letters is left out: in English it is a calm word. The neck restriction's Uzbek words also take the missing apostrophe (`safety.py`)
 - [ ] **Bekzod** — `B92` The child's name never reaches the AI, in any form
   - Done when: the name with Uzbek and Russian endings ("Alining", "Алига", "Али") and typed in the other alphabet is replaced before anything is sent; a test proves it
   - Needs: —
