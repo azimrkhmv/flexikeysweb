@@ -1083,9 +1083,10 @@ day. Order: B90 to B96.*
   - Done when: Uzbek words without the apostrophe ("qattiq ogri"), Uzbek Cyrillic without its special letters and Russian in Latin letters ("sudorogi") get the 103 answer; the website's copy of the list is the server's; calm questions still pass
   - Needs: —
   - Note (13 Nov 2026): `emergency.json` (both copies). Before: "qattiq ogri", "xushidan ketdi", "каттик огрияпти", "u rebenka sudorogi" and "on ne dishit" went to the AI as normal questions. After: each gets "Call 103 now". The apostrophe is optional, k may stand for q and x for h, Cyrillic қ ғ ў ҳ may be к г у х, and 13 Russian words are also listed in Latin letters. "ne dish" needs a word start, so "one dish" stays calm. "Epilepsy" in Latin letters is left out: in English it is a calm word. The neck restriction's Uzbek words also take the missing apostrophe (`safety.py`)
-- [ ] **Bekzod** — `B92` The child's name never reaches the AI, in any form
+- [x] **Bekzod** — `B92` The child's name never reaches the AI, in any form
   - Done when: the name with Uzbek and Russian endings ("Alining", "Алига", "Али") and typed in the other alphabet is replaced before anything is sent; a test proves it
   - Needs: —
+  - Note (13 Nov 2026): `name_pattern` in `assistant/safety.py`. Before: only the exact name was replaced, so "Alining", "Алига" and "Мадины" went to the AI service. After: the name is found in Latin and Cyrillic letters (a letter table each way, with the usual variants: q / к / қ, h / х / ҳ, oʻ / о / у / ў, o / а), with the Uzbek endings (-jon, -xon, -m, -ning, -ni, -ga, -da, -dan …) and the Russian case endings (Мадины, Мадине, Мадину, Мадиной; Тимура, Тимуру, Тимуром). It can match too much (the name "Alim" for Ali), never too little on the forms in the tests; a spelling with another vowel ("Темур" for Тимур) is not found
 - [ ] **Bekzod** — `B93` The assistant answers in the language of the question
   - Done when: a Russian question on the Uzbek screen gets a Russian answer and the other way round; a mixed question gets the language most of it is in; a question with no clear language keeps the screen's language; Uzbek in Cyrillic is answered in Uzbek Latin until the founders decide; the demo does the same
   - Needs: —

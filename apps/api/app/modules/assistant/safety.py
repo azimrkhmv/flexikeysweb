@@ -106,6 +106,58 @@ def names_any(answer: str, titles: Iterable[str]) -> bool:
     return any(_norm(t) in text for t in titles)
 
 
+# B92: the child's name in every form a parent writes it. Uzbek and Russian add endings to a name ("Alining",
+# "Алига", "Мадины"), and parents write a Latin name in Cyrillic and the other way round.
+# ponytail: letter tables and ending lists, so a name can be over-matched ("Alim" for Ali); a name is never let through.
+_APOS = "['ʻʼ‘’`]?"
+_CYRILLIC = re.compile("[а-яёўқғҳ]")
+_TO_CYRILLIC = {
+    "sh": "ш", "ch": "ч", "o'": "[ўоу]", "g'": "[ғг]", "yo": "ё", "yu": "ю", "ya": "я", "ye": "е", "ts": "ц",
+    "a": "а", "b": "б", "d": "д", "e": "[еэ]", "f": "ф", "g": "г", "h": "[ҳх]", "i": "[ийы]", "j": "ж", "k": "к",
+    "l": "ль?", "m": "м", "n": "н", "o": "[оа]", "p": "п", "q": "[қк]", "r": "р", "s": "с", "t": "т", "u": "у",
+    "v": "в", "x": "х", "y": "[йи]", "z": "з", "'": "ъ?",
+}  # fmt: skip
+_TO_LATIN = {
+    "ш": "sh", "ч": "ch", "ў": "o" + _APOS, "ғ": "g" + _APOS, "ё": "yo", "ю": "yu", "я": "ya", "ц": "ts",
+    "а": "[ao]", "б": "b", "в": "v", "г": "g" + _APOS, "д": "d", "е": "(?:ye|e)", "э": "e", "ж": "j", "з": "z",
+    "и": "i", "й": "y", "ы": "i", "к": "[kq]", "қ": "q", "л": "l", "м": "m", "н": "n", "о": "o" + _APOS, "п": "p",
+    "р": "r", "с": "s", "т": "t", "у": "(?:u|o" + _APOS + ")", "ф": "f", "х": "[xh]", "ҳ": "h", "ь": "", "ъ": _APOS,
+}  # fmt: skip
+_SAME_CYRILLIC = {c: f"[{pair}]" for pair in ("қк", "ғг", "ўу", "ҳх") for c in pair}
+_LATIN_ENDING = "(?:jon|xon)?(?:m|im|ng|ing|si|i)?(?:ning|ni|ga|ka|qa|da|dan|niki|dagi)?"
+_CYRILLIC_ENDING = "(?:жон|хон)?(?:м|им|нг|инг|си)?(?:нинг|ни|га|ка|да|дан|ники|даги)?"
+
+
+def _spell(name: str, table: dict[str, str]) -> list[str]:
+    """The name letter by letter in the other alphabet, each letter as the ways people write it."""
+    out, i = [], 0
+    while i < len(name):
+        two = name[i : i + 2]
+        key = two if two in table else name[i]
+        out.append(table.get(key, re.escape(key)))
+        i += len(key)
+    return out
+
+
+def name_pattern(name: str) -> re.Pattern[str]:
+    """Finds the name in Latin and in Cyrillic letters, alone or with an Uzbek or Russian ending."""
+    n = _norm(name.strip())
+    if not n:
+        return re.compile(r"(?!)")
+    if _CYRILLIC.search(n):
+        cyrillic = [_SAME_CYRILLIC.get(c, re.escape(c)) for c in n]
+        latin = _spell(n, _TO_LATIN)
+    else:
+        latin = [_APOS if c == "'" else re.escape(c) for c in n]
+        cyrillic = _spell(n, _TO_CYRILLIC)
+    if cyrillic and any(re.fullmatch(cyrillic[-1], v) for v in "ая"):  # Мадина: Мадины, Мадине, Мадину, Мадиной
+        russian = "".join(cyrillic[:-1]) + "[аяыеуюио](?:й|ю)?"
+    else:  # Тимур: Тимура, Тимуру, Тимуром
+        russian = "".join(cyrillic) + "(?:а|у|е|ом|ы|и|ой|я|ю|ем|ей)?"
+    forms = ["".join(latin) + _LATIN_ENDING, russian + _CYRILLIC_ENDING]
+    return re.compile(r"(?<!\w)(?:" + "|".join(forms) + r")(?!\w)", re.IGNORECASE)
+
+
 # A9.4: what a question was about, for the therapist's summary (spec §12: topics and warnings, never the chat).
 TOPICS: dict[str, list[str]] = json.loads((Path(__file__).parents[2] / "content" / "topics.json").read_text())["topics"]
 

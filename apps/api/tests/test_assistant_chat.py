@@ -10,7 +10,7 @@ from httpx2 import Response
 
 from app.main import app
 from app.modules.assistant.ai import FakeAi, get_ai
-from app.modules.assistant.safety import is_emergency
+from app.modules.assistant.safety import is_emergency, name_pattern
 from app.settings import settings
 from tests.test_billing_plan import on_pro
 from tests.test_children import API, add_child, add_helper, parent
@@ -47,6 +47,21 @@ def test_the_ai_never_gets_the_name_or_birth_date(client: TestClient, ai: FakeAi
     assert "ali" not in sent.lower().replace("uzbekistan", "") and "2019" not in sent
     assert ("the child" in sent and "7 years old" in sent) or "years old" in sent
     assert len(ai.sent[1]) == 4  # the instructions, the first question and answer, the new question
+    # B92: with Uzbek and Russian endings, and in Cyrillic letters
+    mixed = "Alining qoʻli charchadi. Алига нима қилай? У Али болит рука"
+    client.post(url, headers=owner, json={"text": mixed, "lang": "uz"})
+    sent = str(ai.sent[2]).lower().replace("uzbekistan", "")
+    assert "ali" not in sent and "али" not in sent and sent.count("the child") >= 3
+
+
+def test_the_name_in_every_form() -> None:
+    def hidden(name: str, text: str) -> str:
+        return name_pattern(name).sub("*", text)
+
+    assert hidden("Madina", "Madinaning, Мадины, Мадине, с Мадиной, Мадинага, madinam") == "*, *, *, с *, *, *"
+    assert hidden("Oʻgʻiloy", "Ogiloyga, O'g'iloyning, Угилой, Ўғилой") == "*, *, *, *"
+    assert hidden("Тимур", "Тимуру, с Тимуром, Timurga") == "*, с *, *"
+    assert hidden("Ali", "alive, align, Alisher") == "alive, align, Alisher"  # other words stay
 
 
 def test_free_has_a_daily_limit_and_pro_none(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:

@@ -3,7 +3,6 @@ one child in their own chat; the AI gets the question, the recent chat, the chil
 (B30), never the child's name or birth date. Free families have about 20 messages a day, Pro has no limit; a
 therapist's questions are not counted against the family."""
 
-import re
 import uuid
 from collections import Counter
 from datetime import UTC, datetime, time, timedelta
@@ -30,6 +29,7 @@ from app.modules.assistant.safety import (
     avoid_words,
     breaks_restriction,
     is_emergency,
+    name_pattern,
     names_any,
     topics_of,
 )  # fmt: skip
@@ -79,8 +79,9 @@ class Answer(ApiModel):
 
 
 def without_child(text: str, child: Child) -> str:
-    """The child's name (any case) and birth date are replaced before anything is sent to the AI."""
-    text = re.sub(rf"\b{re.escape(child.name)}\b", "the child", text, flags=re.IGNORECASE)
+    """The child's name and birth date are replaced before anything is sent to the AI: the name in any case, in Latin
+    or Cyrillic letters, alone or with an Uzbek or Russian ending (B92)."""
+    text = name_pattern(child.name).sub("the child", text)
     for form in (child.birth_date.isoformat(), child.birth_date.strftime("%d.%m.%Y")):
         text = text.replace(form, "[date]")
     return text
