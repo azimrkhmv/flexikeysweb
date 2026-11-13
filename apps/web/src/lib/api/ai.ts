@@ -2,6 +2,7 @@
 
 // /ai-assistant/* — rule-based stand-ins for the LlmProvider (PRD §16).
 
+import { answerLang } from "@/content/answerLang";
 import { isEmergency } from "@/content/emergency";
 import { topicsOf } from "@/content/topics";
 import { LEVEL_BY_ID } from "@/content/levels";
@@ -30,8 +31,9 @@ export const aiApi = {
   // ------------------------------------------------------------ AI (/ai-assistant/*)
   /** POST /ai-assistant/chat — pseudonymized context, consent-gated, quota-limited (PRD §16). The family and a
    *  shared therapist ask (spec §6, §12); each question keeps its topics for the therapist's summary (B31). */
-  async askAssistant(childId: string, text: string, lang: Lang) {
+  async askAssistant(childId: string, text: string, screenLang: Lang) {
     const { user } = requireChildAccess(childId, [...FAMILY, "therapist"]);
+    const lang = answerLang(text, screenLang); // B93: the answer follows the question's language, as on the server
     const topics = topicsOf(text);
     const db = read();
     // Emergency words get 103 first: before the consent, the daily limit or any AI (spec §12, the server's A9.3).

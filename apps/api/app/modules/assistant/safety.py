@@ -158,6 +158,34 @@ def name_pattern(name: str) -> re.Pattern[str]:
     return re.compile(r"(?<!\w)(?:" + "|".join(forms) + r")(?!\w)", re.IGNORECASE)
 
 
+# B93: the language the question is written in. Parents mix Uzbek and Russian and write both in either alphabet, so
+# the answer follows the question, not the screen. ponytail: word lists; a question with none of the words keeps the
+# screen's language. Uzbek in Cyrillic letters is Uzbek: the answer comes in Uzbek Latin, the app's Uzbek.
+_LANGUAGES = json.loads((Path(__file__).parents[2] / "content" / "languages.json").read_text())
+_WORDS = {key: frozenset(_LANGUAGES[key]) for key in ("uz", "uz_cyrillic", "ru_latin", "en")}
+_WORD = re.compile(r"[^\W\d_]+(?:'[^\W\d_]+)*")
+_UZBEK_CYRILLIC = re.compile("[ўқғҳ]")
+_UZBEK_LATIN = re.compile("[og]'")
+
+
+def answer_lang(text: str, screen: Lang) -> Lang:
+    """The language most of the question's words are in; the screen's language when no word tells, or on a tie."""
+    score = {Lang.uz: 0, Lang.ru: 0, Lang.en: 0}
+    for word in _WORD.findall(_norm(text)):
+        if _CYRILLIC.search(word):
+            score[Lang.uz if word in _WORDS["uz_cyrillic"] or _UZBEK_CYRILLIC.search(word) else Lang.ru] += 1
+        elif word in _WORDS["uz"] or _UZBEK_LATIN.search(word):
+            score[Lang.uz] += 1
+        elif word in _WORDS["ru_latin"]:
+            score[Lang.ru] += 1
+        elif word in _WORDS["en"]:
+            score[Lang.en] += 1
+    best = max(score.values())
+    if best == 0 or score[screen] == best:
+        return screen
+    return next(lang for lang, n in score.items() if n == best)
+
+
 # A9.4: what a question was about, for the therapist's summary (spec §12: topics and warnings, never the chat).
 TOPICS: dict[str, list[str]] = json.loads((Path(__file__).parents[2] / "content" / "topics.json").read_text())["topics"]
 

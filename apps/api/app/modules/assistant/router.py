@@ -26,6 +26,7 @@ from app.modules.assistant.safety import (
     EMERGENCY_ANSWER,
     RESTING_ANSWER,
     SAFE_ANSWER,
+    answer_lang,
     avoid_words,
     breaks_restriction,
     is_emergency,
@@ -138,8 +139,10 @@ async def ask(
 ) -> Answer:
     """Emergency words (A9.3) get the fixed 103 answer first, before any limit or AI. 429 daily_limit when a Free family
     used today's messages; 503 ai_unavailable when the AI does not answer. An answer that mentions a movement the
-    child must avoid is replaced by a fixed safe answer."""
+    child must avoid is replaced by a fixed safe answer. The answer is in the language of the question (B93); `lang`,
+    the screen's language, is used when the question's words do not tell."""
     child = await asking_about(db, user, child_id)
+    lang = answer_lang(body.text, body.lang)
     chat = await db.scalar(
         select(Chat).where(Chat.child_id == child.id, Chat.user_id == user.id).order_by(Chat.created_at.desc())
     )
@@ -151,16 +154,16 @@ async def ask(
     def store(speaker: Speaker, text: str, emergency: bool = False, topics: list[str] | None = None) -> None:
         db.add(
             ChatMessage(
-                chat_id=chat.id, speaker=speaker, text_secret=encrypt_json(text), lang=body.lang, topics=topics,
+                chat_id=chat.id, speaker=speaker, text_secret=encrypt_json(text), lang=lang, topics=topics,
                 emergency=emergency, created_at=datetime.now(UTC),  # not now(): both messages share one transaction
             )
         )  # fmt: skip
 
     if is_emergency(body.text):
         store(Speaker.adult, body.text, emergency=True, topics=topics_of(body.text))
-        store(Speaker.assistant, EMERGENCY_ANSWER[body.lang], emergency=True)
+        store(Speaker.assistant, EMERGENCY_ANSWER[lang], emergency=True)
         await db.commit()
-        return Answer(answer=EMERGENCY_ANSWER[body.lang], emergency=True, remaining_today=None)
+        return Answer(answer=EMERGENCY_ANSWER[lang], emergency=True, remaining_today=None)
 
     therapist = user.role == Role.therapist
     pro = (await plan_of(db, child.family_id)).plan == "pro"
@@ -176,10 +179,10 @@ async def ask(
 
     if await over_budget(db):  # A9.6: fixed words until next month, not counted against the day
         store(Speaker.adult, body.text, topics=topics_of(body.text))
-        store(Speaker.assistant, RESTING_ANSWER[body.lang])
+        store(Speaker.assistant, RESTING_ANSWER[lang])
         await db.commit()
         left = None if limit is None else limit - (used or 0)
-        return Answer(answer=RESTING_ANSWER[body.lang], emergency=False, remaining_today=left)
+        return Answer(answer=RESTING_ANSWER[lang], emergency=False, remaining_today=left)
 
     earlier = list(
         await db.scalars(
@@ -197,9 +200,9 @@ async def ask(
     who = "a therapist who guides the family" if therapist else "a parent"
     condition = condition_words(await latest_parent_answers(db, child.id))  # FA9: not every child has CP
     system = SYSTEM.format(
-        who=who, condition=condition, age=age, lang=LANG_NAME[body.lang], avoid=avoid_words(restrictions) or "nothing"
+        who=who, condition=condition, age=age, lang=LANG_NAME[lang], avoid=avoid_words(restrictions) or "nothing"
     )
-    system += " " + await plan_words(db, child, body.lang)
+    system += " " + await plan_words(db, child, lang)
     messages = [{"role": "system", "content": system}]
     for m in earlier:
         role = "user" if m.speaker == Speaker.adult else "assistant"
@@ -220,11 +223,11 @@ async def ask(
         or names_any(reply.text, (t for title in forbidden.values() for t in title.values()))
     )
     if reply is None:
-        answer = research.NO_SOURCE[body.lang]
+        answer = research.NO_SOURCE[lang]
     elif blocked:
-        answer = SAFE_ANSWER[body.lang]
+        answer = SAFE_ANSWER[lang]
     elif library:
-        answer = research.with_sources(reply.text, chosen, about_plan, body.lang) or research.NO_SOURCE[body.lang]
+        answer = research.with_sources(reply.text, chosen, about_plan, lang) or research.NO_SOURCE[lang]
     else:
         answer = reply.text
     store(Speaker.assistant, answer, topics=[RESTRICTED] if blocked else None)

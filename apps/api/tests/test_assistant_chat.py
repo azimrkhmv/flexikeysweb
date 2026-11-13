@@ -9,8 +9,9 @@ from fastapi.testclient import TestClient
 from httpx2 import Response
 
 from app.main import app
+from app.modules.accounts.models import Lang
 from app.modules.assistant.ai import FakeAi, get_ai
-from app.modules.assistant.safety import is_emergency, name_pattern
+from app.modules.assistant.safety import answer_lang, is_emergency, name_pattern
 from app.settings import settings
 from tests.test_billing_plan import on_pro
 from tests.test_children import API, add_child, add_helper, parent
@@ -62,6 +63,30 @@ def test_the_name_in_every_form() -> None:
     assert hidden("Oʻgʻiloy", "Ogiloyga, O'g'iloyning, Угилой, Ўғилой") == "*, *, *, *"
     assert hidden("Тимур", "Тимуру, с Тимуром, Timurga") == "*, с *, *"
     assert hidden("Ali", "alive, align, Alisher") == "alive, align, Alisher"  # other words stay
+
+
+# B93: the answer follows the language of the question, not the screen.
+def test_the_language_of_the_question() -> None:
+    uz, ru, en = Lang.uz, Lang.ru, Lang.en
+    assert answer_lang("Что делаем сегодня?", uz) == ru
+    assert answer_lang("Bugun nima qilamiz?", ru) == uz
+    assert answer_lang("Болам бугун машқ қилмади", ru) == uz  # Uzbek in Cyrillic letters
+    assert answer_lang("Bolam bugun mashq qilmadi, устал", ru) == uz  # mixed: most of it is Uzbek
+    assert answer_lang("Rebenok segodnya ustal, chto delat?", uz) == ru  # Russian in Latin letters
+    assert answer_lang("What do we do today?", uz) == en
+    assert answer_lang("Ogiloy", uz) == uz and answer_lang("ok 👍", ru) == ru  # no word tells: the screen's language
+    assert answer_lang("Bugun игра", uz) == uz and answer_lang("Bugun игра", ru) == ru  # a tie: the screen's language
+
+
+def test_a_russian_question_on_the_uzbek_screen_is_answered_in_russian(client: TestClient, ai: FakeAi) -> None:
+    owner = parent(client)
+    url = f"{API}/children/{add_child(client, owner)}/assistant/messages"
+    client.post(url, headers=owner, json={"text": "Сколько минут нужно играть?", "lang": "uz"})
+    assert "Answer in Russian" in ai.sent[-1][0]["content"]
+    client.post(url, headers=owner, json={"text": "Болам чарчади, нима қилай?", "lang": "ru"})
+    assert "Answer in Uzbek (Latin script)" in ai.sent[-1][0]["content"]
+    r = client.post(url, headers=owner, json={"text": "u rebenka sudorogi", "lang": "uz"}).json()
+    assert r["emergency"] is True and r["answer"].startswith("Позвоните 103")
 
 
 def test_free_has_a_daily_limit_and_pro_none(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -205,7 +230,7 @@ def test_the_ai_knows_the_plan_and_what_was_done(client: TestClient, ai: FakeAi,
     day = next(d for d in client.get(f"{API}/children/{child}/plan", headers=owner).json()["days"] if d["exercises"])
     move_start(client, child, day["day"])  # today is a day with the putty
     url = f"{API}/children/{child}/assistant/messages"
-    client.post(url, headers=owner, json={"text": "What do we do today?", "lang": "ru"})
+    client.post(url, headers=owner, json={"text": "Что делаем сегодня?", "lang": "en"})  # B93: a Russian question
     told = ai.sent[-1][0]["content"]
     assert "Сжимаем пластилин (not done yet)" in told and "finished 0 tasks" in told and "Suggest no other" in told
     assert client.post(
