@@ -999,7 +999,8 @@ export interface paths {
          * Ask
          * @description Emergency words (A9.3) get the fixed 103 answer first, before any limit or AI. 429 daily_limit when a Free family
          *     used today's messages; 503 ai_unavailable when the AI does not answer. An answer that mentions a movement the
-         *     child must avoid is replaced by a fixed safe answer.
+         *     child must avoid is replaced by a fixed safe answer. The answer is in the language of the question (B93); `lang`,
+         *     the screen's language, is used when the question's words do not tell.
          */
         post: operations["ask_api_v1_children__child_id__assistant_messages_post"];
         /**
