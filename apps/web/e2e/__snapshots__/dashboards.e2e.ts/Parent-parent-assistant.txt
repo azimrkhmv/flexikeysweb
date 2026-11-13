@@ -1,6 +1,6 @@
 Assistant
 
-Ask about progress and get ideas for playing together at home.
+Ask about today's task, the exercises and the games in your child's plan.
 
 🦊
 Ali
@@ -9,8 +9,8 @@ Madina
 
 This is educational guidance, not medical advice. For health or development questions, please talk to a doctor or your therapist.
 
-Hi! Ask me anything about your child's learning.
+Hello! Ask me about today's task, an exercise or a game in your child's plan.
 
-How is my child doing this week?
-What can we practise at home?
-Why did the keys get bigger?
+What do we do today?
+How do I fit the tasks into our day?
+My child is tired today. What should we do?

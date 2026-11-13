@@ -1075,9 +1075,10 @@ questionnaire section, the assistant) fits their language and habits. Found by r
 questions only the founders can answer are in "Tasks for Founders" (13 Nov 2026). B96 is Bekzod's request of the same
 day. Order: B90 to B96.*
 
-- [ ] **Bekzod** — `B90` The assistant's first screen is about the home plan
+- [x] **Bekzod** — `B90` The assistant's first screen is about the home plan
   - Done when: the subtitle, the greeting and the three suggested questions are about today's task, the exercises and the games, in en, ru, uz; nothing says "learning" or "keys"
   - Needs: —
+  - Note (13 Nov 2026): before → after (en). Subtitle: "Ask about progress and get ideas for playing together at home." → "Ask about today's task, the exercises and the games in your child's plan." Greeting: "Hi! Ask me anything about your child's learning." → "Hello! Ask me about today's task, an exercise or a game in your child's plan." Questions: "How is my child doing this week?" / "What can we practise at home?" / "Why did the keys get bigger?" → "What do we do today?" / "How do I fit the tasks into our day?" / "My child is tired today. What should we do?" uz and ru text drafted 13 Nov 2026 — native-speaker check (B44)
 - [ ] **Bekzod** — `B91` Emergency and safety words the way people type them
   - Done when: Uzbek words without the apostrophe ("qattiq ogri"), Uzbek Cyrillic without its special letters and Russian in Latin letters ("sudorogi") get the 103 answer; the website's copy of the list is the server's; calm questions still pass
   - Needs: —
