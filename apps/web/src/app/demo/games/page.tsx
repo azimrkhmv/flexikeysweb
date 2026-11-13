@@ -1,7 +1,9 @@
 "use client";
 
 import "@/messages/child";
+import Link from "next/link";
 import { useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { ArrowLeft } from "lucide-react";
 import { LangSwitch, Logo } from "@/components/brand";
 import { Mascot } from "@/components/Mascot";
 import { SKILL_GAMES } from "@/content/skillGames";
@@ -14,12 +16,15 @@ import { LIVE } from "@/lib/api/mode";
 import { sfx, unlockAudio } from "@/lib/audio";
 import { daySeed } from "@/lib/games/rng";
 import { useLang, useT } from "@/lib/i18n";
+import { FREE_TIER } from "@/lib/skill";
 import type { AccessMode } from "@/lib/types";
 
 // Games spec 8 Nov 2026, §9: every skill game and every one of its 12 steps, playable straight away — no tiers, no
 // weekly rule, no Free / Pro, and nothing is saved to any child. Bekzod uses it to try all games. Mock mode (the
 // Vercel demo) lets anyone in; the live app only admins. `?game=<kind>&step=<1–12>` opens a step, `?access=dwell|scan`
 // plays with hold-to-choose or switch scanning (Space moves, Enter chooses), as on /demo.
+// B96: a parent tries the games from the Games page (`?from=parent`, and every parent in the live app): a way back,
+// and without Pro the Seed steps only, the tier Free includes. Still nothing is saved.
 
 const DEMO_DWELL_MS = 600;
 const noSubscribe = () => () => {};
@@ -30,28 +35,33 @@ function useOptions() {
   const access = q.get("access");
   const game = Math.max(0, SKILL_GAMES.findIndex((g) => g.kind === q.get("game")));
   const step = Math.min(11, Math.max(0, Number(q.get("step") ?? 1) - 1 || 0));
-  return { access: (access === "dwell" || access === "scan" ? access : "touch") as AccessMode, game, step };
+  return { access: (access === "dwell" || access === "scan" ? access : "touch") as AccessMode, game, step, fromParent: q.get("from") === "parent" };
 }
 
 export default function SkillGamesDemo() {
   const db = useDb();
   const t = useT();
-  if (LIVE && sel.me(db)?.role !== "admin")
+  const options = useOptions();
+  const me = sel.me(db);
+  if (LIVE && me?.role !== "admin" && me?.role !== "parent")
     return (
       <div className="grid min-h-dvh place-items-center bg-bg p-6 text-center">
         <p className="max-w-md text-lg font-bold text-ink-2">{t("skill.demo.admins")}</p>
       </div>
     );
-  return <Player />;
+  const asParent = options.fromParent || (LIVE && me?.role === "parent");
+  const pro = !!me && sel.familyPlan(db, sel.familyOf(db, me.id)).plan === "pro";
+  return <Player back={asParent} maxTier={asParent && !pro ? FREE_TIER : 4} />;
 }
 
-function Player() {
+function Player({ back, maxTier }: { back: boolean; maxTier: number }) {
   const [lang] = useLang();
   const t = useT();
   const options = useOptions();
   const [pick, setPick] = useState<{ game: number; step: number } | null>(null);
   const game = SKILL_GAMES[pick?.game ?? options.game];
-  const stepIndex = pick?.step ?? options.step;
+  const asked = pick?.step ?? options.step;
+  const stepIndex = game.steps[asked].tier <= maxTier ? asked : 0; // a step above the open tiers: the first step
   const step = game.steps[stepIndex];
   const [run, setRun] = useState(0);
   const [finished, setFinished] = useState(false);
@@ -87,10 +97,15 @@ function Player() {
         <span className="hidden sm:block">
           <Logo />
         </span>
+        {back && (
+          <Link href="/parent/games" aria-label={t("skill.demo.back")} title={t("skill.demo.back")} className="grid size-11 shrink-0 place-items-center rounded-full border border-line bg-surface text-ink hover:bg-surface-2">
+            <ArrowLeft className="size-5" aria-hidden />
+          </Link>
+        )}
         <h1 className="sr-only">{t("skill.demo.title")}</h1>
         <label className="flex min-w-0 items-center gap-1 text-sm font-bold text-ink-2 sm:ml-auto">
           <span className="hidden sm:inline">{t("skill.demo.games")}</span>
-          <select className="h-11 min-w-0 max-w-[44vw] rounded-fk border border-line bg-surface px-2 text-sm font-bold text-ink sm:max-w-none sm:text-base" value={gi} onChange={(e) => go(Number(e.target.value), 0)}>
+          <select className="h-11 min-w-0 max-w-[36vw] rounded-fk border border-line bg-surface px-2 text-sm font-bold text-ink sm:max-w-none sm:text-base" value={gi} onChange={(e) => go(Number(e.target.value), 0)}>
             {SKILL_GAMES.map((g, k) => (
               <option key={g.id} value={k}>
                 {t(`skill.game.${g.kind}`)} · {t(`skill.area.${g.area}`)}
@@ -101,11 +116,13 @@ function Player() {
         <label className="flex min-w-0 items-center gap-1 text-sm font-bold text-ink-2">
           <span className="hidden sm:inline">{t("skill.demo.steps")}</span>
           <select className="h-11 min-w-0 rounded-fk border border-line bg-surface px-2 text-sm font-bold text-ink sm:text-base" value={stepIndex} onChange={(e) => go(gi, Number(e.target.value))}>
-            {game.steps.map((s, k) => (
-              <option key={k} value={k}>
-                {tierStep(k)}
-              </option>
-            ))}
+            {game.steps.map((s, k) =>
+              s.tier <= maxTier ? (
+                <option key={k} value={k}>
+                  {tierStep(k)}
+                </option>
+              ) : null,
+            )}
           </select>
         </label>
         <LangSwitch compact />
@@ -124,7 +141,7 @@ function Player() {
                   <button type="button" onClick={() => go(gi, stepIndex)} className="h-14 rounded-full bg-sky-soft px-8 text-lg font-extrabold text-ink hover:bg-[#d6e6f8]">
                     {t("skill.demo.again")}
                   </button>
-                  {stepIndex < 11 && (
+                  {stepIndex < 11 && game.steps[stepIndex + 1].tier <= maxTier && (
                     <button type="button" onClick={() => go(gi, stepIndex + 1)} className="h-14 rounded-full bg-teal px-8 text-lg font-extrabold text-white">
                       {t("skill.demo.next")} · {tierStep(stepIndex + 1)}
                     </button>

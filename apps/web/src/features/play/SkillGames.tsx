@@ -11,7 +11,7 @@ import { KIND_EMOJI, MapTabs, type MapTab } from "./WorldMap";
 /** The four tiers as the child sees them: a picture and a name, never a number (rule 1). */
 export const TIER_ICON = ["", "🌰", "🌱", "🌳", "⛰️"] as const;
 const TIER_TONE = ["", "var(--fk-sun-soft)", "var(--fk-leaf-soft)", "var(--fk-teal-soft)", "var(--fk-lavender-soft)"];
-const AREA_ICON: Partial<Record<Area, string>> = { attention: "👀", memory: "🧠", flexibility: "🔀", reasoning: "💡", literacy: "🔤", numeracy: "🔢", speed: "⚡" };
+export const AREA_ICON: Partial<Record<Area, string>> = { attention: "👀", memory: "🧠", flexibility: "🔀", reasoning: "💡", literacy: "🔤", numeracy: "🔢", speed: "⚡" };
 
 /** A tier the child may play now: open by success in its area (games spec §3.2), and above Seed only with Pro. */
 export function tierOpen(top: number, tier: number, pro: boolean) {

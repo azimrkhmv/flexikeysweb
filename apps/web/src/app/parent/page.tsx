@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronRight, Clock, Flame, MessageCircle, Play, Plus, School, Star, Stethoscope } from "lucide-react";
+import { ChevronRight, Clock, Flame, Gamepad2, MessageCircle, Play, Plus, School, Star, Stethoscope } from "lucide-react";
 import { Mascot } from "@/components/Mascot";
 import { Avatar, Card, Chip, LinkButton, Meter, PageHeader, Stat } from "@/components/ui";
 import { LEVEL_BY_ID } from "@/content/levels";
@@ -60,9 +60,15 @@ export default function ParentHome() {
           <Mascot mood="wave" size={150} />
           <h2 className="text-xl font-extrabold">{t("parent.home.emptyTitle")}</h2>
           <p className="max-w-md text-ink-2">{t("parent.home.emptyText")}</p>
-          <LinkButton href="/parent/children/new" size="lg">
-            <Plus className="size-5" aria-hidden /> {t("parent.home.addChild")}
-          </LinkButton>
+          <div className="flex flex-wrap justify-center gap-3">
+            <LinkButton href="/parent/children/new" size="lg">
+              <Plus className="size-5" aria-hidden /> {t("parent.home.addChild")}
+            </LinkButton>
+            {/* B96: the games can be seen and tried before any child is added. */}
+            <LinkButton href="/parent/games" size="lg" variant="soft">
+              <Gamepad2 className="size-5" aria-hidden /> {t("parent.home.seeGames")}
+            </LinkButton>
+          </div>
         </Card>
       ) : (
         <>
