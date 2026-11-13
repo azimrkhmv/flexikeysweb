@@ -68,6 +68,60 @@ Build a sentence · Talk or communicate
 
 To change the plan, use the restrictions and the exercise list in your form above.
 
+Skill levels
+
+Levels go from 1 to 100 and show how the child is doing in FlexiKeys games, not a diagnosis.
+
+Attention
+Level
+46
+
+Now: finds the same shape among 5. 4 weeks ago: finds the same picture among 4.
+
+Tries in the last 4 weeks: 0
+Access events (missed or double taps, left out of the level): 0 of 0
+Highest open tier: Sprout
+Memory
+Level
+34
+
+Now: finds 4 pairs among 8 cards. 4 weeks ago: finds 2 pairs among 4 cards.
+
+Tries in the last 4 weeks: 0
+Access events (missed or double taps, left out of the level): 0 of 0
+Highest open tier: Seed
+Flexibility
+Level
+43
+
+Now: sorts 12 cards by colour or by shape into 2 boxes; the rule changes every 4 cards, said aloud.
+
+Tries in the last 4 weeks: 0
+Access events (missed or double taps, left out of the level): 0 of 0
+Highest open tier: Seed
+Reasoning
+Level
+55
+
+Now: finishes an AAB row of shapes and colours, out of 3.
+
+Tries in the last 4 weeks: 0
+Access events (missed or double taps, left out of the level): 0 of 0
+Highest open tier: Sprout
+Language
+Level
+47
+
+Now: finds the word that rhymes among 4 pictures, some starting with the same sound. 4 weeks ago: finds the word that rhymes among 3 pictures, some starting with the same sound.
+
+Tries in the last 4 weeks: 0
+Access events (missed or double taps, left out of the level): 0 of 0
+Highest open tier: Sprout
+Math
+Not enough games yet
+Tries in the last 4 weeks: 0
+Access events (missed or double taps, left out of the level): 0 of 0
+Highest open tier: Seed
 Movement videos from the parent
 
 No videos yet. A parent can add up to 3 short clips when they allow movement videos.
