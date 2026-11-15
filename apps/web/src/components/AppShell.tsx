@@ -54,11 +54,11 @@ export function RequireRole({ role, children }: { role: Role | Role[]; children:
  * `more` (B100, the parent area): entries kept behind one "More" entry. On a laptop "More" opens them in the side
  * panel; on a phone it is the last entry of the bottom bar and leads to a page that lists them.
  */
-export function AppShell({ role, nav, more, foot, children }: { role: Role | Role[]; nav: NavItem[]; more?: { item: NavItem; items: NavItem[] }; foot?: ReactNode; children: (me: User) => ReactNode }) {
+export function AppShell({ role, nav, more, foot, backdrop, headerExtra, children }: { role: Role | Role[]; nav: NavItem[]; more?: { item: NavItem; items: NavItem[] }; foot?: ReactNode; backdrop?: ReactNode; headerExtra?: ReactNode; children: (me: User) => ReactNode }) {
   return (
     <RequireRole role={role}>
       {(me) => (
-        <Shell me={me} nav={nav} more={more} foot={foot}>
+        <Shell me={me} nav={nav} more={more} foot={foot} backdrop={backdrop} headerExtra={headerExtra}>
           {/* Live mode connects the parent area first; other dashboards come in later phases. */}
           {children(me)}
         </Shell>
@@ -67,7 +67,7 @@ export function AppShell({ role, nav, more, foot, children }: { role: Role | Rol
   );
 }
 
-function Shell({ me, nav, more, foot, children }: { me: User; nav: NavItem[]; more?: { item: NavItem; items: NavItem[] }; foot?: ReactNode; children: ReactNode }) {
+function Shell({ me, nav, more, foot, backdrop, headerExtra, children }: { me: User; nav: NavItem[]; more?: { item: NavItem; items: NavItem[] }; foot?: ReactNode; backdrop?: ReactNode; headerExtra?: ReactNode; children: ReactNode }) {
   const t = useT();
   const [lang] = useLang();
   // The language picked on this device is the user's preference: keep the account in sync (PATCH /users/me).
@@ -89,6 +89,8 @@ function Shell({ me, nav, more, foot, children }: { me: User; nav: NavItem[]; mo
 
   return (
     <div className="min-h-dvh bg-bg">
+      {/* Behind all content (B102: the drifting clouds and Cloudy). */}
+      {backdrop}
       {/* Desktop: the menu is a full-height panel fixed to the left edge — brand on top, the signed-in person at the bottom. */}
       <aside className="fixed inset-y-0 left-0 z-20 hidden w-64 flex-col border-r border-line bg-surface p-4 print:!hidden lg:flex">
           <div className="flex items-center gap-2 px-2 pb-6 pt-2">
@@ -144,7 +146,7 @@ function Shell({ me, nav, more, foot, children }: { me: User; nav: NavItem[]; mo
       </aside>
 
       {/* Content sits right of the panel; on very wide screens it stays centred in the remaining space. */}
-      <div className={`flex min-h-dvh flex-col pb-28 lg:pl-64 ${foot ? "lg:pb-0" : "lg:pb-8"}`}>
+      <div className={`relative z-[1] flex min-h-dvh flex-col pb-28 lg:pl-64 ${foot ? "lg:pb-0" : "lg:pb-8"}`}>
         <div className="mx-auto w-full min-w-0 max-w-[1200px] flex-1 px-4 pb-8 lg:px-8">
           {/* Top bar: brand + sign-out only on small screens (the panel holds them on desktop). */}
           <header className="sticky top-0 z-30 -mx-4 flex h-16 items-center gap-3 bg-bg/90 px-4 backdrop-blur lg:static lg:mx-0 lg:mt-6 lg:h-12 lg:bg-transparent lg:px-0 lg:backdrop-blur-none">
@@ -153,6 +155,7 @@ function Shell({ me, nav, more, foot, children }: { me: User; nav: NavItem[]; mo
               <span className="hidden rounded-full bg-surface-2 px-3 py-1 text-xs font-bold text-ink-2 sm:inline">{t(`role.${me.role}`)}</span>
             </div>
             <div className="ml-auto flex items-center gap-2">
+              {headerExtra}
               <LangSwitch compact />
               <Notifications userId={me.id} />
               <button type="button" onClick={logout} className="grid size-10 place-items-center rounded-full text-ink-2 hover:bg-surface-2 lg:hidden" aria-label={t("nav.logout")} title={t("nav.logout")}>

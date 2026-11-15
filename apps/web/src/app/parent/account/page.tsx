@@ -5,6 +5,8 @@ import { useState } from "react";
 import { LogOut, Trash } from "lucide-react";
 import { SchemePicker } from "@/components/SchemePicker";
 import { Button, Card, Field, Input, Modal, PageHeader, Select, useAction } from "@/components/ui";
+import { CloudySwitch } from "@/features/parent/CloudyRoam";
+import { askForTour } from "@/features/parent/cloudyStore";
 import { api, sel, useDb } from "@/lib/api";
 import { normalizePhone } from "@/lib/api/auth";
 import { LANGS, useLang, useT, type Lang } from "@/lib/i18n";
@@ -74,6 +76,17 @@ export default function Account() {
         <h2 className="text-lg font-extrabold">{t("scheme.title")}</h2>
         <p className="text-sm text-muted">{t("scheme.hint")}</p>
         <SchemePicker />
+      </Card>
+
+      <Card className="space-y-3">
+        <h2 className="text-lg font-extrabold">{t("cloudy.account")}</h2>
+        <p className="text-sm text-muted">{t("cloudy.account.hint")}</p>
+        <div className="flex flex-wrap gap-3">
+          <CloudySwitch />
+          <Button variant="outline" size="sm" className="!h-10" onClick={askForTour}>
+            {t("cloudy.tour.yes")}
+          </Button>
+        </div>
       </Card>
 
       <Card className="space-y-3">

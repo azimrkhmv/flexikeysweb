@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { CalendarCheck, Ellipsis, Gamepad2, HeartPulse, House } from "lucide-react";
 import { AppShell, type NavItem } from "@/components/AppShell";
 import { Ground, PageFx } from "@/components/Scenery";
+import { CloudyRoam, CloudySwitch } from "@/features/parent/CloudyRoam";
 import { useMoreNav } from "@/features/parent/nav";
 import { useT } from "@/lib/i18n";
 
@@ -18,7 +19,7 @@ export default function ParentLayout({ children }: { children: ReactNode }) {
   ];
   const more = { item: { href: "/parent/more", label: t("nav.more"), icon: Ellipsis }, items: useMoreNav() };
   return (
-    <AppShell role="parent" nav={nav} more={more} foot={<Ground />}>
+    <AppShell role="parent" nav={nav} more={more} foot={<Ground />} backdrop={<CloudyRoam />} headerExtra={<CloudySwitch />}>
       {() => (
         <>
           <PageFx />

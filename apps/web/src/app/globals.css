@@ -369,6 +369,35 @@ h1, h2, h3 {
 @keyframes fk-spark { to { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .fk-spark { display: none; } }
 
+/* ---------- Cloudy on the parent pages (B102, spec 5.2; features/parent/CloudyRoam.tsx) ---------- */
+.fk-cloudy { position: fixed; left: 0; top: 0; z-index: 25; will-change: transform; pointer-events: none; }
+.fk-cloudy-bob { display: block; animation: fk-bob 3.6s ease-in-out infinite; }
+@keyframes fk-bob { 50% { transform: translateY(-6px) rotate(-2deg); } }
+.fk-skycloud { position: fixed; left: 0; top: 0; z-index: 0; pointer-events: none; opacity: 0.95; will-change: transform; }
+.fk-skycloud svg { transition: transform 0.4s, opacity 0.4s; }
+.fk-skycloud.kick svg { animation: fk-kick 0.8s; }
+@keyframes fk-kick { 30% { transform: translateY(8px) scale(1.06, 0.9); } 60% { transform: translateY(-4px); } }
+.fk-skycloud i { position: absolute; top: 78%; width: 7px; height: 11px; border-radius: 50% 50% 50% 50% / 65% 65% 35% 35%; background: #8fd3f0; border: 1.2px solid var(--edge); opacity: 0; }
+.fk-skycloud i:nth-of-type(1) { left: 22%; } .fk-skycloud i:nth-of-type(2) { left: 36%; } .fk-skycloud i:nth-of-type(3) { left: 50%; } .fk-skycloud i:nth-of-type(4) { left: 64%; } .fk-skycloud i:nth-of-type(5) { left: 78%; }
+.fk-skycloud.rainy i { animation: fk-rain 0.85s linear 3; }
+.fk-skycloud.rainy i:nth-of-type(even) { animation-delay: 0.3s; }
+@keyframes fk-rain { 0% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translateY(80px); } }
+.fk-skycloud.pop svg { transform: scale(1.6); opacity: 0; }
+.fk-trail { position: fixed; left: 0; top: 0; z-index: 24; width: 14px; height: 14px; border-radius: 50%; background: var(--sun); border: 1.5px solid var(--edge); pointer-events: none; animation: fk-trail 0.8s ease-out forwards; }
+.fk-trail:nth-of-type(odd) { background: #fff; }
+@keyframes fk-trail { to { transform: scale(0.1) translateY(14px); opacity: 0; } }
+/* The button Cloudy sits on squashes a little. */
+.fk-sat { animation: fk-sat 0.5s; }
+@keyframes fk-sat { 40% { transform: translateY(4px) scale(1.04, 0.9); } }
+.fk-bubble { position: fixed; z-index: 45; left: 50%; bottom: 16px; transform: translateX(-50%); width: min(440px, calc(100% - 32px)); background: var(--ink); color: #fff; border-radius: 20px; padding: 14px 18px; box-shadow: var(--shadow-soft); }
+.fk-bubble[hidden] { display: none; }
+.fk-bubble small { color: var(--sky-deep); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.72rem; }
+.fk-bubble p { margin: 2px 0 10px; }
+.fk-bubble button { border-radius: 999px; border: 2px solid #fff; background: #fff; color: var(--ink); font-weight: 700; padding: 5px 14px; font-size: 0.9rem; }
+.fk-bubble button.q { background: transparent; color: #fff; border-color: rgb(255 255 255 / 0.5); }
+.fk-bubble :focus-visible { outline-color: #fff; }
+@media (max-width: 1023px) { .fk-bubble { bottom: 84px; } }
+
 /* Calm screen (per child, set by an adult): same as reduced motion, regardless of the device setting. */
 .fk-calm *, .fk-calm *::before, .fk-calm *::after {
   animation: none !important;
