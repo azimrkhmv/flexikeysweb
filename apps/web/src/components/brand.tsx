@@ -12,16 +12,18 @@ export function Logo({ href = "/", small }: { href?: string; small?: boolean }) 
       <svg viewBox="0 0 48 36" width={small ? 32 : 40} height={small ? 24 : 30} aria-hidden>
         <path
           d="M13 32h24a9 9 0 0 0 1.5-17.9A12 12 0 0 0 15.3 11 10.5 10.5 0 0 0 13 32Z"
-          fill="#e9f5f3"
-          stroke="#3fa79c"
-          strokeWidth="3"
+          fill="#fff"
+          stroke="var(--edge)"
+          strokeWidth="2.6"
           strokeLinejoin="round"
         />
-        <circle cx="20" cy="22" r="1.8" fill="#27406b" />
-        <circle cx="30" cy="22" r="1.8" fill="#27406b" />
-        <path d="M22.5 26q2.5 2 5 0" stroke="#27406b" strokeWidth="1.6" fill="none" strokeLinecap="round" />
+        <circle cx="20" cy="22" r="1.8" fill="var(--edge)" />
+        <circle cx="30" cy="22" r="1.8" fill="var(--edge)" />
+        <path d="M22.5 26q2.5 2 5 0" stroke="var(--edge)" strokeWidth="1.6" fill="none" strokeLinecap="round" />
       </svg>
-      <span className={`font-extrabold tracking-tight text-ink ${small ? "text-lg" : "text-xl"}`}>FlexiKeys</span>
+      <span className={`font-[family-name:var(--font-display)] font-semibold tracking-tight text-ink ${small ? "text-lg" : "text-xl"}`}>
+        Flexi<span className="text-primary">Keys</span>
+      </span>
     </Link>
   );
 }

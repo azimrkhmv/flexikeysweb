@@ -4,27 +4,125 @@
    fits without scrolling (B66). */
 @custom-variant short (@media (max-height: 820px) and (orientation: landscape));
 
-/* FlexiKeys design tokens — calm, warm, friendly. No harsh colors, no red, no black. */
+/* FlexiKeys design tokens. "Warm Hills" (B99, 15 Nov 2026) is the default colour scheme; Sky, Mint and Lilac are a
+   setting kept on the device (lib/scheme.ts sets data-pal on <html>). The values are the spec's table (2.1), copied
+   from the approved demo. Three tokens are ours, added so text reaches 4.5:1 (lib/contrast.test.ts measures all four
+   schemes): --link (accent used as text), --soft (a pale accent behind that text), --leaf-deep (success used as text
+   or under white text). No red, no black. There is no dark mode yet, so no scheme has dark values. */
 :root {
-  --fk-bg: #f7f6f1;
-  --fk-surface: #ffffff;
-  --fk-surface-2: #f2f5fa;
-  --fk-line: #e3e8ef;
-  --fk-ink: #27406b;
-  --fk-ink-2: #4c5b7a;
-  --fk-muted: #5f6b84; /* ≥4.5:1 on bg, surface, surface-2 */
+  --sky: #fff1d6;
+  --sky-deep: #f9c785;
+  --paper: #fff9ec;
+  --ink: #4a2e1a;
+  --muted: #7a6248;
+  --accent: #f08a3c;
+  --accent-text: #b5531a;
+  --leaf: #5b8c4a;
+  --sun: #ffc85c;
+  --line: #ebd3a9;
+  --edge: #6b4426;
+  --glow: #ffe9a8;
+  --hill1: #f7be6e;
+  --hill2: #efa349;
+  --btn-a: #ffb25e;
+  --btn-b: #f08a3c;
+  --btn-text: #4a2e1a;
+  --shade: 150, 90, 30;
+  --link: #a84c16;
+  --soft: #ffe3b3;
+  --leaf-deep: #3f6e33;
+}
+:root[data-pal="sky"] {
+  --sky: #eff5fd;
+  --sky-deep: #c3d8f5;
+  --paper: #ffffff;
+  --ink: #1f2a56;
+  --muted: #59627a;
+  --accent: #5b76d6;
+  --accent-text: #3b53b5;
+  --leaf: #2a8271;
+  --sun: #bfd0f7;
+  --line: #d5e1f2;
+  --edge: #34447f;
+  --glow: #fff1bf;
+  --hill1: #b7cff2;
+  --hill2: #93b3e8;
+  --btn-a: #5670d0; /* the demo's #6C86DE gives white text only 3.4:1 */
+  --btn-b: #4a63c4;
+  --btn-text: #ffffff;
+  --shade: 60, 85, 150;
+  --link: #3b53b5;
+  --soft: #dce8fa;
+  --leaf-deep: #267870;
+}
+:root[data-pal="mint"] {
+  --sky: #edf8f1;
+  --sky-deep: #b9e2cc;
+  --paper: #ffffff;
+  --ink: #1f3a44;
+  --muted: #566a66;
+  --accent: #3ba98c;
+  --accent-text: #1f7a66;
+  --leaf: #2a8271;
+  --sun: #ffc94d;
+  --line: #cfe7da;
+  --edge: #2c5a4e;
+  --glow: #fff1bf;
+  --hill1: #a5dbc0;
+  --hill2: #7cc7a4;
+  --btn-a: #ffcb73;
+  --btn-b: #f9ae3f;
+  --btn-text: #1f3a44;
+  --shade: 40, 110, 90;
+  --link: #1b6e5c;
+  --soft: #cdebdb;
+  --leaf-deep: #267870;
+}
+:root[data-pal="lilac"] {
+  --sky: #f5f0fc;
+  --sky-deep: #d6c7f2;
+  --paper: #ffffff;
+  --ink: #2a2550;
+  --muted: #655f7a;
+  --accent: #8b6bd6;
+  --accent-text: #6344b5;
+  --leaf: #2a8271;
+  --sun: #d3c4f5;
+  --line: #e2d8f3;
+  --edge: #4a3f7a;
+  --glow: #fff1bf;
+  --hill1: #cbbbf0;
+  --hill2: #b09ae6;
+  --btn-a: #8061ce; /* the demo's #9C7FE0 gives white text only 3.2:1 */
+  --btn-b: #7352c4;
+  --btn-text: #ffffff;
+  --shade: 90, 60, 150;
+  --link: #6344b5;
+  --soft: #e4d9f7;
+  --leaf-deep: #267870;
+}
 
-  --fk-primary: #3d5bbf; /* ≥4.5:1 with white and on primary-soft */
-  --fk-primary-soft: #dfe8f8;
+/* The names the components already use, mapped onto the scheme. */
+:root {
+  --fk-bg: var(--sky);
+  --fk-surface: var(--paper);
+  --fk-surface-2: var(--sky);
+  --fk-line: var(--line);
+  --fk-ink: var(--ink);
+  --fk-ink-2: var(--muted);
+  --fk-muted: var(--muted);
+
+  --fk-primary: var(--link);
+  --fk-primary-soft: var(--soft);
   --fk-sky: #a9c8ec;
   --fk-sky-soft: #e4effb;
   --fk-leaf: #7fbf85;
   --fk-leaf-soft: #e1f1de;
-  --fk-sun: #f5d272;
+  --fk-sun: var(--sun);
   --fk-sun-soft: #fdf3d4;
   --fk-lavender: #b3a8e8;
   --fk-lavender-soft: #ece9fa;
-  --fk-teal: #267870; /* ≥4.5:1 with white; focus ring ≥3:1 on bg — checked by lib/contrast.test.ts */
+  --fk-teal: var(--leaf-deep);
   --fk-teal-soft: #d9f0ec;
   --fk-peach: #f5c6b5;
   --fk-peach-soft: #fdebe4;
@@ -52,11 +150,15 @@
   --color-teal-soft: var(--fk-teal-soft);
   --color-peach: var(--fk-peach);
   --color-peach-soft: var(--fk-peach-soft);
+  --color-edge: var(--edge);
+  --color-accent: var(--accent);
+  --color-sky-deep: var(--sky-deep);
   --font-sans: var(--font-nunito), ui-rounded, system-ui, sans-serif;
-  --radius-fk: 20px;
+  --font-display: var(--font-fredoka), var(--font-nunito), ui-rounded, system-ui, sans-serif;
+  --radius-fk: 24px;
   --radius-fk-lg: 28px;
-  --shadow-soft: 0 1px 2px rgb(39 64 107 / 0.05), 0 6px 20px rgb(39 64 107 / 0.07);
-  --shadow-lift: 0 2px 4px rgb(39 64 107 / 0.06), 0 14px 34px rgb(39 64 107 / 0.12);
+  --shadow-soft: 0 12px 28px rgb(var(--shade) / 0.16);
+  --shadow-lift: 0 14px 34px rgb(var(--shade) / 0.24);
 }
 
 html {
@@ -92,6 +194,40 @@ body {
   font-family: var(--font-nunito), ui-rounded, system-ui, sans-serif;
 }
 
+/* Headings: Fredoka (Latin letters; Russian headings fall back to Nunito, which has Cyrillic). */
+h1, h2, h3 {
+  font-family: var(--font-display);
+}
+
+/* Warm Hills shapes (B99, spec 2.2). The main button looks like a key: a gradient, a 1.5 px outline and a 4 px solid
+   lower edge; it moves down 3 px when pressed. The second button is paper with the outline and no lower edge. */
+@layer components {
+  .fk-btn {
+    position: relative;
+    overflow: hidden;
+    border: 1.5px solid var(--edge);
+    background: linear-gradient(180deg, var(--btn-a), var(--btn-b));
+    color: var(--btn-text);
+    box-shadow: 0 4px 0 var(--edge);
+    margin-bottom: 4px;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .fk-btn:hover { transform: translateY(-2px); }
+  .fk-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--edge); }
+  .fk-btn:disabled, .fk-btn[aria-disabled="true"] { box-shadow: none; transform: none; }
+  .fk-btn-2 {
+    border: 1.5px solid var(--edge);
+    background: var(--paper);
+    color: var(--ink);
+    transition: transform 0.15s, background 0.15s;
+  }
+  .fk-btn-2:hover { background: var(--sky); }
+  /* Cards, tiles and inputs: the outline in --edge. */
+  .fk-card { border: 1.5px solid var(--edge); border-radius: 24px; background: var(--paper); box-shadow: var(--shadow-soft); }
+  .fk-tile { border: 1.5px solid var(--edge); border-radius: 18px; }
+  .fk-input { border: 1.5px solid var(--edge); border-radius: 16px; background: var(--paper); }
+}
+
 :focus-visible {
   outline: 3px solid var(--fk-teal);
   outline-offset: 3px;
@@ -115,7 +251,7 @@ body {
 [data-scan-active="true"] {
   outline: 5px solid var(--fk-teal);
   outline-offset: 4px;
-  box-shadow: 0 0 0 10px rgb(38 120 112 / 0.18);
+  box-shadow: 0 0 0 10px color-mix(in srgb, var(--fk-teal) 18%, transparent);
 }
 
 /* Dwell ("waiting") progress ring drawn with a conic gradient on ::after */

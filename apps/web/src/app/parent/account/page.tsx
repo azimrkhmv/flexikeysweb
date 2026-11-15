@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { LogOut, Trash } from "lucide-react";
+import { SchemePicker } from "@/components/SchemePicker";
 import { Button, Card, Field, Input, Modal, PageHeader, Select, useAction } from "@/components/ui";
 import { api, sel, useDb } from "@/lib/api";
 import { normalizePhone } from "@/lib/api/auth";
@@ -67,6 +68,12 @@ export default function Account() {
             )}
           </div>
         </form>
+      </Card>
+
+      <Card className="space-y-3">
+        <h2 className="text-lg font-extrabold">{t("scheme.title")}</h2>
+        <p className="text-sm text-muted">{t("scheme.hint")}</p>
+        <SchemePicker />
       </Card>
 
       <Card className="space-y-3">

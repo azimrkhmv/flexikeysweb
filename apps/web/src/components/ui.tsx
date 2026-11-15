@@ -9,10 +9,10 @@ import { useT } from "@/lib/i18n";
 
 type Variant = "primary" | "soft" | "ghost" | "outline" | "danger";
 const VARIANTS: Record<Variant, string> = {
-  primary: "bg-primary text-white hover:brightness-110 shadow-soft",
-  soft: "bg-primary-soft text-primary hover:bg-[#d2def5]",
+  primary: "fk-btn",
+  soft: "bg-primary-soft text-primary hover:brightness-95",
   ghost: "text-ink-2 hover:bg-surface-2",
-  outline: "border border-line bg-surface text-ink hover:bg-surface-2",
+  outline: "fk-btn-2",
   danger: "bg-peach-soft text-[#8f3a2c] hover:bg-[#fbdcd0]",
 };
 const SIZES = { sm: "h-9 px-3 text-sm", md: "h-11 px-5 text-[15px]", lg: "h-14 px-7 text-lg" };
@@ -46,7 +46,7 @@ export function LinkButton({ href, variant = "primary", size = "md", className =
 }
 
 export function Card({ children, className = "", as: Tag = "div" }: { children: ReactNode; className?: string; as?: "div" | "section" | "article" | "li" }) {
-  return <Tag className={`rounded-fk border border-line bg-surface p-5 shadow-soft ${className}`}>{children}</Tag>;
+  return <Tag className={`fk-card p-5 ${className}`}>{children}</Tag>;
 }
 
 export function Field({ label, hint, error, children }: { label: string; hint?: string; error?: string | null; children: ReactNode }) {
@@ -64,7 +64,7 @@ export function Field({ label, hint, error, children }: { label: string; hint?: 
   );
 }
 
-const inputCls = "w-full rounded-2xl border border-line bg-surface px-4 h-12 text-[15px] text-ink placeholder:text-muted focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary-soft";
+const inputCls = "fk-input w-full px-4 h-12 text-[15px] text-ink placeholder:text-muted focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary-soft";
 
 export function Input(props: InputHTMLAttributes<HTMLInputElement>) {
   return <input {...props} className={`${inputCls} ${props.className ?? ""}`} />;
@@ -174,7 +174,7 @@ export function Modal({ open, onClose, title, children }: { open: boolean; onClo
       aria-labelledby={titleId}
       onClose={onClose}
       onClick={(e) => e.target === ref.current && onClose()}
-      className="m-auto w-[min(560px,calc(100vw-32px))] rounded-fk-lg border border-line bg-surface p-0 text-ink shadow-lift backdrop:bg-[#27406b]/30 backdrop:backdrop-blur-sm"
+      className="m-auto w-[min(560px,calc(100vw-32px))] rounded-fk-lg border-[1.5px] border-edge bg-surface p-0 text-ink shadow-lift backdrop:bg-ink/30 backdrop:backdrop-blur-sm"
     >
       <div className="p-6">
         <h2 id={titleId} className="mb-4 text-xl font-extrabold">
