@@ -5,7 +5,7 @@ import { FeedbackBox, TestBanner } from "./Pilot";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Bell, LogOut, type LucideIcon } from "lucide-react";
+import { Bell, ChevronDown, LogOut, type LucideIcon } from "lucide-react";
 import { api, sel, useDb } from "@/lib/api";
 import { useT, useLang } from "@/lib/i18n";
 import { useMounted } from "@/lib/store";
@@ -18,6 +18,8 @@ export interface NavItem {
   href: string;
   label: string;
   icon: LucideIcon;
+  /** Other paths that light this entry up (the Plan entry is also every child page). */
+  match?: string[];
 }
 
 /**
@@ -48,11 +50,15 @@ export function RequireRole({ role, children }: { role: Role | Role[]; children:
   return <>{children(me)}</>;
 }
 
-export function AppShell({ role, nav, children }: { role: Role | Role[]; nav: NavItem[]; children: (me: User) => ReactNode }) {
+/**
+ * `more` (B100, the parent area): entries kept behind one "More" entry. On a laptop "More" opens them in the side
+ * panel; on a phone it is the last entry of the bottom bar and leads to a page that lists them.
+ */
+export function AppShell({ role, nav, more, foot, children }: { role: Role | Role[]; nav: NavItem[]; more?: { item: NavItem; items: NavItem[] }; foot?: ReactNode; children: (me: User) => ReactNode }) {
   return (
     <RequireRole role={role}>
       {(me) => (
-        <Shell me={me} nav={nav}>
+        <Shell me={me} nav={nav} more={more} foot={foot}>
           {/* Live mode connects the parent area first; other dashboards come in later phases. */}
           {children(me)}
         </Shell>
@@ -61,7 +67,7 @@ export function AppShell({ role, nav, children }: { role: Role | Role[]; nav: Na
   );
 }
 
-function Shell({ me, nav, children }: { me: User; nav: NavItem[]; children: ReactNode }) {
+function Shell({ me, nav, more, foot, children }: { me: User; nav: NavItem[]; more?: { item: NavItem; items: NavItem[] }; foot?: ReactNode; children: ReactNode }) {
   const t = useT();
   const [lang] = useLang();
   // The language picked on this device is the user's preference: keep the account in sync (PATCH /users/me).
@@ -70,7 +76,10 @@ function Shell({ me, nav, children }: { me: User; nav: NavItem[]; children: Reac
   }, [me.uiLang, lang]);
   const path = usePathname();
   const router = useRouter();
-  const active = (href: string) => (href === `/${me.role}` ? path === href : path.startsWith(href));
+  const active = (href: string, match?: string[]) => (href === `/${me.role}` ? path === href : path.startsWith(href)) || !!match?.some((m) => path.startsWith(m));
+  const inMore = !!more && (path.startsWith(more.item.href) || more.items.some((i) => path.startsWith(i.href)));
+  const [moreOpen, setMoreOpen] = useState(false);
+  const linkCls = (on: boolean) => `flex items-center gap-3 rounded-2xl px-3 py-2.5 font-bold transition ${on ? "bg-primary-soft text-primary" : "text-ink-2 hover:bg-surface-2"}`;
 
   const logout = async () => {
     await api.logout();
@@ -89,19 +98,36 @@ function Shell({ me, nav, children }: { me: User; nav: NavItem[]; children: Reac
           {/* A scroll container clips what's outside it: -m/p-1.5 leaves room for the 3px + 3px focus ring. */}
           <nav aria-label={t("nav.menu")} className="-m-1.5 min-h-0 flex-1 overflow-y-auto p-1.5">
             <ul className="space-y-1">
-              {nav.map(({ href, label, icon: Icon }) => (
+              {nav.map(({ href, label, icon: Icon, match }) => (
                 <li key={href}>
-                  <Link
-                    href={href}
-                    aria-current={active(href) ? "page" : undefined}
-                    className={`flex items-center gap-3 rounded-2xl px-3 py-2.5 font-bold transition ${active(href) ? "bg-primary-soft text-primary" : "text-ink-2 hover:bg-surface-2"}`}
-                  >
+                  <Link href={href} aria-current={active(href, match) ? "page" : undefined} className={linkCls(active(href, match))}>
                     <Icon className="size-5" aria-hidden />
                     {label}
                   </Link>
                 </li>
               ))}
             </ul>
+            {more && (
+              <div className="mt-3 border-t-[1.5px] border-line pt-3">
+                <button type="button" aria-expanded={moreOpen || inMore} onClick={() => setMoreOpen((o) => !o)} className={`w-full ${linkCls(false)}`}>
+                  <more.item.icon className="size-5" aria-hidden />
+                  {more.item.label}
+                  <ChevronDown className={`ml-auto size-4 transition ${moreOpen || inMore ? "rotate-180" : ""}`} aria-hidden />
+                </button>
+                {(moreOpen || inMore) && (
+                  <ul className="mt-1 space-y-1">
+                    {more.items.map(({ href, label, icon: Icon }) => (
+                      <li key={href}>
+                        <Link href={href} aria-current={active(href) ? "page" : undefined} className={`${linkCls(active(href))} pl-6 text-[15px]`}>
+                          <Icon className="size-[18px]" aria-hidden />
+                          {label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
           </nav>
           <div className="mt-4 flex items-center gap-3 rounded-2xl bg-surface-2 p-3">
             <span className="grid size-10 shrink-0 place-items-center rounded-full bg-primary text-sm font-extrabold text-white" aria-hidden>
@@ -118,8 +144,8 @@ function Shell({ me, nav, children }: { me: User; nav: NavItem[]; children: Reac
       </aside>
 
       {/* Content sits right of the panel; on very wide screens it stays centred in the remaining space. */}
-      <div className="pb-28 lg:pb-8 lg:pl-64">
-        <div className="mx-auto min-w-0 max-w-[1200px] px-4 lg:px-8">
+      <div className={`flex min-h-dvh flex-col pb-28 lg:pl-64 ${foot ? "lg:pb-0" : "lg:pb-8"}`}>
+        <div className="mx-auto w-full min-w-0 max-w-[1200px] flex-1 px-4 pb-8 lg:px-8">
           {/* Top bar: brand + sign-out only on small screens (the panel holds them on desktop). */}
           <header className="sticky top-0 z-30 -mx-4 flex h-16 items-center gap-3 bg-bg/90 px-4 backdrop-blur lg:static lg:mx-0 lg:mt-6 lg:h-12 lg:bg-transparent lg:px-0 lg:backdrop-blur-none">
             <div className="flex items-center gap-2 lg:hidden">
@@ -144,17 +170,18 @@ function Shell({ me, nav, children }: { me: User; nav: NavItem[]; children: Reac
             {children}
           </main>
         </div>
+        {foot}
       </div>
 
       {me.role !== "admin" && <FeedbackBox />}
       <nav aria-label={t("nav.menu")} className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden">
         <ul className="flex overflow-x-auto">
-          {nav.map(({ href, label, icon: Icon }) => (
-            <li key={href} className="min-w-[76px] flex-1">
+          {(more ? [...nav, { ...more.item, on: inMore }] : nav).map(({ href, label, icon: Icon, match, ...x }) => (
+            <li key={href} className={more ? "min-w-0 flex-1" : "min-w-[76px] flex-1"}>
               <Link
                 href={href}
-                aria-current={active(href) ? "page" : undefined}
-                className={`flex flex-col items-center gap-1 px-2 py-2.5 text-[11px] font-bold ${active(href) ? "text-primary" : "text-muted"}`}
+                aria-current={("on" in x ? x.on : active(href, match)) ? "page" : undefined}
+                className={`flex flex-col items-center gap-1 px-2 py-2.5 text-[11px] font-bold ${("on" in x ? x.on : active(href, match)) ? "text-primary" : "text-muted"}`}
               >
                 <Icon className="size-5" aria-hidden />
                 <span className="max-w-full truncate">{label}</span>

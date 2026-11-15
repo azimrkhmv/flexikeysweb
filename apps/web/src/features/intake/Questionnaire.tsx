@@ -172,7 +172,7 @@ export function QuestionnaireWizard({ childId: initialChild, version }: { childI
         </Card>
       ) : (
         <form
-          className="mt-6 space-y-6"
+          className="fk-slide mt-6 space-y-6"
           onSubmit={(e) => {
             e.preventDefault();
             if (open.size) showFirstOpen();

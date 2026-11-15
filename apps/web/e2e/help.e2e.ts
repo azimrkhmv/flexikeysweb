@@ -8,6 +8,7 @@ test("find help: needs, free centres first, I'm not sure, and a report", async (
   test.skip(info.project.name !== "desktop");
   await setup(page);
   await loginAs(page, "Parent");
+  await page.getByRole("button", { name: "More" }).click(); // B100: Find help sits behind "More"
   await page.getByRole("link", { name: "Find help" }).first().click();
   await expect(page.getByRole("heading", { level: 1, name: "Find help" })).toBeVisible();
   await expect(page.getByRole("note").filter({ hasText: "sample places" })).toBeVisible();
