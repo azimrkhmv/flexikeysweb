@@ -13,9 +13,9 @@ const block = (selector: string) => {
 const hills = block(":root");
 export const SCHEME_TOKENS: Record<string, Record<string, string>> = {
   hills,
-  sky: { ...hills, ...block(':root[data-pal="sky"]') },
-  mint: { ...hills, ...block(':root[data-pal="mint"]') },
-  lilac: { ...hills, ...block(':root[data-pal="lilac"]') },
+  sky: { ...hills, ...block('[data-pal="sky"]') },
+  mint: { ...hills, ...block('[data-pal="mint"]') },
+  lilac: { ...hills, ...block('[data-pal="lilac"]') },
 };
 const lum = (hex: string) => {
   const [r, g, b] = [1, 3, 5].map((i) => {
