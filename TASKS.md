@@ -118,6 +118,13 @@ Every task must keep these. They come from the spec.
 | Four tiers per area (Bekzod, 8 Nov 2026) | Seed, Sprout, Tree, Summit, each with 3 steps. Summit is hard for adults too. A tier opens by success in that area, never by age |
 | Animation package (Bekzod, 8 Nov 2026) | `motion` (the current name of framer-motion) may be added to `apps/web`. The only new package of the 8 Nov games spec |
 | Free and Pro for skill games (Bekzod's default, 8 Nov 2026; founders may change it) | The Seed tier of every area is free; Sprout, Tree and Summit are Pro. The 16 theme worlds keep their `FREE_LEVELS` rule |
+| Vision (Bekzod, 15 Nov 2026) | The site is minimal and built around five things: a short start questionnaire, the plan, games, exercise videos, and Cloudy. Everything else is secondary and sits behind one "More" entry |
+| Design: Warm Hills (Bekzod, 15 Nov 2026) | "Warm Hills" is the default look. Three other colour schemes (Sky, Mint, Lilac) stay as a setting. The approved demo is in `docs/demo-2026-11-15/`, the spec in `docs/warm-hills-cloudy-spec-2026-11-15.md` |
+| Quick start (Bekzod, 15 Nov 2026) | A new parent gets a first plan after **at most 22 questions**. The full questionnaire stays, as an optional "Make the plan more exact" step. This goes further than the 5 Nov "10 minutes" decision; it does not replace the Quick check |
+| Cloudy (Bekzod, 15 Nov 2026) | Cloudy moves around the parent pages, changes into animals, and gives a 4-step tour. A switch "Cloudy moves" turns the movement off. Cloudy never moves around during a child's game |
+| Two Cloudy games (Bekzod, 15 Nov 2026) | Find Cloudy and Grow Cloudy are the featured games |
+| Exercise videos in slots (Bekzod, 15 Nov 2026) | Exercise videos ship as a section with empty slots. A video is shown only after the physio approves that exercise |
+| No dragon for now (Bekzod, 15 Nov 2026) | Bekzod skipped the dragon form. Grow Cloudy ends with the tiger. No dragon is drawn or added; see `Q16` |
 
 **Families**
 
@@ -1110,6 +1117,38 @@ day. Order: B90 to B96.*
   - Done when: the summary on the Reports page is made from the plan and the skill levels (tasks done this week, the area that moved), in en, ru, uz, and the `ai.parent.*` texts are gone
   - Needs: —
 
+### Warm Hills and Cloudy (15 Nov 2026)
+
+*Bekzod's "FlexiKeys — Warm Hills design, Cloudy, quick start, Cloudy games and exercise slots" (15 Nov 2026):
+`docs/warm-hills-cloudy-spec-2026-11-15.md`, from the one-page demo he approved (`docs/demo-2026-11-15/`). The demo
+shows how things look and move; the spec says what to build, and wins where they disagree. Order: B99 to B106
+(B104–B106 in any order after their needs).*
+
+- [ ] **Bekzod** — `B99` Warm Hills tokens, shapes and the colour setting (spec 2.1, 2.2)
+  - Done when: the four schemes exist as tokens; Warm Hills is the default; the swatches in Account switch the scheme and it is remembered on the device; cards, buttons, tiles and inputs have the outline and the key-style button; contrast numbers are in the note; dark mode still works
+  - Needs: —
+- [ ] **Bekzod** — `B100` First screen and simpler navigation (spec 2.3, 2.4, 3)
+  - Done when: a parent with no child sees the new first screen with scenery; the sidebar shows four main entries and "More"; no page is lost; tilt, shine and slide effects work and are off with reduced motion
+  - Needs: B99
+- [ ] **Bekzod** — `B101` Cloudy component (spec 5.1)
+  - Done when: one component draws the six forms and four faces, changes form with sparkles, takes its colours from the scheme and repaints on a scheme change; a test page shows every form in every scheme
+  - Needs: B99
+- [ ] **Bekzod** — `B102` Cloudy on the parent pages, the switch and the tour (spec 5.2, 5.3, 5.4)
+  - Done when: clouds drift and Cloudy does all six actions; he never blocks a click; he is absent from child play screens and still on the questionnaire; "Cloudy moves: Off" parks him and pressing him still changes form and face; the tour runs its 4 steps and can be stopped; reduced motion starts Off; the frame cost is in the note
+  - Needs: B101
+- [ ] **Bekzod** — `B103` Quick start (spec 4)
+  - Done when: quick mode shows at most 22 questions for personas M, W and S (test); a plan is built right after; the safety cases pass and are listed for the physio; the "more exact" card opens the full questionnaire with answers filled in; finishing it clears `quick`; old children are unchanged; works in mock and live mode
+  - Needs: B100
+- [ ] **Bekzod** — `B104` Find Cloudy (spec 6.1)
+  - Done when: the game plays all 12 steps on `/demo/games` with touch, hold-to-choose, switch and keyboard; rounds pass the one-right-answer test; nothing is timed; texts in en, ru, uz
+  - Needs: B101, B82
+- [ ] **Bekzod** — `B105` Grow Cloudy (spec 6.2)
+  - Done when: as B104 for this game; the four stages end with the tiger; the ending has no sound and is calm with reduced motion; Summit is offered only with Math tier 2 open
+  - Needs: B104
+- [ ] **Bekzod** — `B106` Exercises section with slots (spec 7)
+  - Done when: the page shows the seven slots as "Waiting for physio check"; an admin can upload a video and mark an exercise approved; an approved exercise with a video plays; the plan never includes an exercise that is not approved (test); works in mock and live mode
+  - Needs: B100
+
 ### Hosting (31 Oct 2026)
 
 - [x] **Bekzod** — Website demo on Vercel (mock mode, no server)
@@ -1191,6 +1230,10 @@ These are not programming. The named developer asks the right person and writes 
 
 - [ ] **Bekzod** — `Q15` Ask the founders: the spec allows one new kind of game a week. With 43 kinds a child needs about 10 months to see them all. Should it be one new kind a week **per area**?
   - Needed for: nothing (the current rule stays until they answer)
+- [ ] **Bekzod** — `Q16` Dragon art for Cloudy: Bekzod supplies an original or licensed image file. Until then there is no dragon form
+  - Needed for: nothing
+- [ ] **Bekzod** — `Q17` Which colour scheme is the default for the jury demo: Warm Hills, Sky, Mint or Lilac?
+  - Needed for: nothing (Warm Hills until answered)
 
 ---
 
