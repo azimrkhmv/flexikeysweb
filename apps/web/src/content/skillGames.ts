@@ -1,6 +1,7 @@
 import type { CountSettings, FindSameSettings, LightPathSettings, ListenPickSettings, MazeSettings, MissingSettings, PuzzleSettings, SceneSettings, SequenceSettings, SortSettings, StorySettings, TypeSettings } from "@/lib/games/existing";
 import type { SkillKind } from "@/lib/games";
 import type { OddOneOutSettings, TrackFishSettings, WhichWaySettings } from "@/lib/games/attention";
+import type { FindCloudySettings } from "@/lib/games/cloudy";
 import type { CardPairsSettings, NBackSettings, PairsRecallSettings, ShoppingSettings } from "@/lib/games/memory";
 import type { OppositeSettings, SecretRuleSettings, SwitchSortSettings } from "@/lib/games/flexibility";
 import type { BalanceSettings, LogicHousesSettings, NextPatternSettings, PipesSettings, ShadowSettings } from "@/lib/games/reasoning";
@@ -787,12 +788,38 @@ const fastSort = game<FastSortSettings>(
   ["touch"],
 );
 
+// ---------------------------------------------------------------- Warm Hills spec §6.1: Find Cloudy
+// Seed: Cloudy stays half out · Sprout: he peeks again and again, with longer waits · Tree and Summit: one peek, then
+// the clouds swap (Summit 3: he also jumps to another cloud once). The demo's tier steps 1 are Seed 1, Sprout 1
+// (5 clouds), Tree 1 (6 clouds, 3 swaps) and Summit 3 (8 clouds, 6 swaps and the jump).
+const findCloudy = game<FindCloudySettings>(
+  "find_cloudy",
+  [
+    { clouds: 3, peek: "stay" }, { clouds: 4, peek: "stay" }, { clouds: 5, peek: "stay" },
+    { clouds: 5, peek: "peek", every: 3 }, { clouds: 5, peek: "peek", every: 5 }, { clouds: 6, peek: "peek", every: 5 },
+    { clouds: 6, peek: "once", swaps: 3 }, { clouds: 6, peek: "once", swaps: 4 }, { clouds: 7, peek: "once", swaps: 4 },
+    { clouds: 7, peek: "once", swaps: 5 }, { clouds: 8, peek: "once", swaps: 5 }, { clouds: 8, peek: "once", swaps: 6, jump: true },
+  ],
+  ({ clouds: n, peek, every = 0, swaps = 0, jump }) =>
+    peek === "stay"
+      ? { en: `Finds Cloudy half out of one of ${n} clouds`, ru: `Находит Облачко, выглянувшее из одного из ${n} облаков`, uz: `${n} ta bulutdan biridan yarim chiqib turgan Bulutchani topadi` }
+      : peek === "peek"
+        ? { en: `Finds Cloudy among ${n} clouds when he peeks out every ${every} seconds`, ru: `Находит Облачко среди ${n} облаков, когда оно выглядывает раз в ${every} ${pl(every, "секунду", "секунды", "секунд")}`, uz: `Bulutcha har ${every} soniyada moʻralaganda uni ${n} ta bulut ichidan topadi` }
+        : jump
+          ? { en: `Follows Cloudy's cloud through ${swaps} swaps of ${n} clouds, and his jump to another one`, ru: `Следит за облаком с Облачком: ${n} облаков меняются местами ${swaps} раз, и Облачко перепрыгивает`, uz: `${n} ta bulut ${swaps} marta joy almashganda va Bulutcha boshqasiga sakraganda uni kuzatadi` }
+          : { en: `Follows Cloudy's cloud while ${n} clouds swap places ${swaps} times`, ru: `Следит за облаком с Облачком, пока ${n} облаков меняются местами ${swaps} ${pl(swaps, "раз", "раза", "раз")}`, uz: `${n} ta bulut ${swaps} marta joy almashganda Bulutcha bulutini kuzatadi` },
+);
+
+// The Cloudy games come first (spec §6: first and larger in the Skill games tab and on /demo/games).
 export const SKILL_GAMES: SkillGame[] = [
+  findCloudy,
   findSame, scene, story, sequence, missing, lightPath, sort, maze, puzzle, listenPick, type, count,
   oddOneOut, trackFish, whichWay, cardPairs, shoppingList, nBack, pairsRecall,
   switchSort, opposite, secretRule, nextPattern, balance, pipes, logicHouses, shadowMatch,
   moreLess, numberLine, bazaar, missingNumber, rhyme, wordBuilder, doWhatISay,
   quickSnap, tapStar, fastSort,
 ] as unknown as SkillGame[]; // prettier-ignore
+/** The Cloudy games: first and larger wherever the skill games are listed (spec §6). */
+export const CLOUDY_KINDS: readonly string[] = ["find_cloudy", "grow_cloudy"];
 export const SKILL_GAME_BY_ID: Record<string, SkillGame> = Object.fromEntries(SKILL_GAMES.map((g) => [g.id, g]));
 export const stepOf = (g: SkillGame, tier: number, step: number) => g.steps.find((s) => s.tier === tier && s.step === step);

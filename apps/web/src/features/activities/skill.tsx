@@ -17,6 +17,7 @@ import { TypeRound } from "./keyboard";
 import { ActionButton, answer, denseSize, fitSize, Frame, sizeFor, useActT, useClock, useHint, WatchAgain } from "./kit";
 import { SequenceRound, useSequence } from "./memory";
 import { OddOneOutPlayer, TrackFishPlayer, WhichWayPlayer } from "./skillAttention";
+import { FindCloudyPlayer } from "./skillCloudy";
 import { OppositePlayer, SecretRulePlayer, SwitchSortPlayer } from "./skillFlex";
 import { BoxIcon, boxName, Series, type PlayerProps } from "./skillKit";
 import { CardPairsPlayer, NBackPlayer, PairsRecallPlayer, ShoppingListPlayer } from "./skillMemory";
@@ -579,6 +580,7 @@ const PLAYERS: { [K in SkillKind]: ComponentType<PlayerProps<K>> } = {
   odd_one_out: OddOneOutPlayer,
   track_fish: TrackFishPlayer,
   which_way: WhichWayPlayer,
+  find_cloudy: FindCloudyPlayer,
   card_pairs: CardPairsPlayer,
   shopping_list: ShoppingListPlayer,
   n_back: NBackPlayer,

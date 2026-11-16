@@ -464,6 +464,102 @@
   "step": 3
  },
  {
+  "activity_id": "find_cloudy-skill",
+  "kind": "find_cloudy",
+  "level": 0,
+  "area": "attention",
+  "tier": 1,
+  "step": 1
+ },
+ {
+  "activity_id": "find_cloudy-skill",
+  "kind": "find_cloudy",
+  "level": 0,
+  "area": "attention",
+  "tier": 1,
+  "step": 2
+ },
+ {
+  "activity_id": "find_cloudy-skill",
+  "kind": "find_cloudy",
+  "level": 0,
+  "area": "attention",
+  "tier": 1,
+  "step": 3
+ },
+ {
+  "activity_id": "find_cloudy-skill",
+  "kind": "find_cloudy",
+  "level": 0,
+  "area": "attention",
+  "tier": 2,
+  "step": 1
+ },
+ {
+  "activity_id": "find_cloudy-skill",
+  "kind": "find_cloudy",
+  "level": 0,
+  "area": "attention",
+  "tier": 2,
+  "step": 2
+ },
+ {
+  "activity_id": "find_cloudy-skill",
+  "kind": "find_cloudy",
+  "level": 0,
+  "area": "attention",
+  "tier": 2,
+  "step": 3
+ },
+ {
+  "activity_id": "find_cloudy-skill",
+  "kind": "find_cloudy",
+  "level": 0,
+  "area": "attention",
+  "tier": 3,
+  "step": 1
+ },
+ {
+  "activity_id": "find_cloudy-skill",
+  "kind": "find_cloudy",
+  "level": 0,
+  "area": "attention",
+  "tier": 3,
+  "step": 2
+ },
+ {
+  "activity_id": "find_cloudy-skill",
+  "kind": "find_cloudy",
+  "level": 0,
+  "area": "attention",
+  "tier": 3,
+  "step": 3
+ },
+ {
+  "activity_id": "find_cloudy-skill",
+  "kind": "find_cloudy",
+  "level": 0,
+  "area": "attention",
+  "tier": 4,
+  "step": 1
+ },
+ {
+  "activity_id": "find_cloudy-skill",
+  "kind": "find_cloudy",
+  "level": 0,
+  "area": "attention",
+  "tier": 4,
+  "step": 2
+ },
+ {
+  "activity_id": "find_cloudy-skill",
+  "kind": "find_cloudy",
+  "level": 0,
+  "area": "attention",
+  "tier": 4,
+  "step": 3
+ },
+ {
   "activity_id": "find_same-skill",
   "kind": "find_same",
   "level": 0,

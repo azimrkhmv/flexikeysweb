@@ -1,5 +1,6 @@
 import type { Lang } from "@/lib/i18n";
 import * as attention from "./attention";
+import * as cloudy from "./cloudy";
 import * as existing from "./existing";
 import * as flexibility from "./flexibility";
 import * as language from "./language";
@@ -39,6 +40,8 @@ export const GENERATORS = {
   odd_one_out: attention.oddOneOut,
   track_fish: attention.trackFish,
   which_way: attention.whichWay,
+  // Warm Hills spec §6: the Cloudy games
+  find_cloudy: cloudy.findCloudy,
   // §6.2 Memory
   card_pairs: memory.cardPairs,
   shopping_list: memory.shoppingList,

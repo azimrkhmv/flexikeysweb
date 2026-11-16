@@ -4,7 +4,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Gamepad2, Play, Plus } from "lucide-react";
 import { Avatar, Button, Card, Chip, LinkButton, PageHeader, useAction } from "@/components/ui";
-import { SKILL_GAMES } from "@/content/skillGames";
+import { Cloudy } from "@/components/Cloudy";
+import { CLOUDY_KINDS, SKILL_GAMES } from "@/content/skillGames";
 import { planGames } from "@/features/parent/games";
 import { ProLock } from "@/features/parent/ProLock";
 import { AREA_ICON } from "@/features/play/SkillGames";
@@ -74,12 +75,17 @@ function AllGames({ pro }: { pro: boolean }) {
           <ul className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {SKILL_GAMES.filter((g) => g.area === area).map((g) => {
               const name = t(`game.${g.kind}`);
+              const big = CLOUDY_KINDS.includes(g.kind); // first and larger (Warm Hills spec §6)
               return (
-                <Card as="li" key={g.id} className="flex flex-col gap-3 p-4">
-                  <h3 className="flex items-center gap-3 font-extrabold text-ink">
-                    <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-surface-2 text-2xl" aria-hidden>
-                      {KIND_EMOJI[g.kind]}
-                    </span>
+                <Card as="li" key={g.id} className={`flex flex-col gap-3 p-4 ${big ? "bg-sun-soft sm:col-span-2" : ""}`}>
+                  <h3 className={`flex items-center gap-3 font-extrabold text-ink ${big ? "text-lg" : ""}`}>
+                    {big ? (
+                      <Cloudy size={56} className="shrink-0" />
+                    ) : (
+                      <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-surface-2 text-2xl" aria-hidden>
+                        {KIND_EMOJI[g.kind]}
+                      </span>
+                    )}
                     {name}
                   </h3>
                   <p className="text-sm text-ink-2">

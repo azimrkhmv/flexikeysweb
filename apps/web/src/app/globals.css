@@ -398,6 +398,17 @@ h1, h2, h3 {
 .fk-bubble :focus-visible { outline-color: #fff; }
 @media (max-width: 1023px) { .fk-bubble { bottom: 84px; } }
 
+/* ---------- Find Cloudy (B104, spec 6.1; features/activities/skillCloudy.tsx) ---------- */
+/* A wrong cloud wobbles softly; the found Cloudy shows his animal's move (reduced motion: none of these). */
+.fk-wobble { animation: fk-wobble 0.5s ease-in-out; }
+@keyframes fk-wobble { 25% { transform: rotate(-4deg); } 75% { transform: rotate(4deg); } }
+.fk-cloudy-bunny { animation: fk-hop 0.55s ease-in-out 0.9s 3; }
+@keyframes fk-hop { 50% { transform: translateY(-30%); } }
+.fk-cloudy-fox { animation: fk-dash 1.6s ease-in-out 0.9s both; }
+@keyframes fk-dash { 45%, 55% { transform: translateX(calc(var(--dx) * var(--far))); } }
+.fk-cloudy-cat { animation: fk-cat 1.6s ease-in-out 0.9s both; }
+@keyframes fk-cat { 35% { opacity: 0; transform: none; } 36% { opacity: 0; transform: translateX(calc(var(--dx) * var(--far))); } 70%, 100% { opacity: 1; transform: translateX(calc(var(--dx) * var(--far))); } }
+
 /* Calm screen (per child, set by an adult): same as reduced motion, regardless of the device setting. */
 .fk-calm *, .fk-calm *::before, .fk-calm *::after {
   animation: none !important;

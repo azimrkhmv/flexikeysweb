@@ -8,6 +8,7 @@ import { reducedKeys } from "@/features/activities/keyboard";
 import type { Lang } from "@/lib/i18n";
 import { LAYOUTS } from "@/lib/keys";
 import { GENERATORS, makeRounds, type Generator, type SkillKind } from "./index";
+import { afterMoves, cloudPlaces, cloudRows } from "./cloudy";
 import { holds, lineText } from "./math";
 import { lookOf, PIC_WORDS, PICTURES } from "./pools";
 import { daySeed, rngOf } from "./rng";
@@ -33,7 +34,7 @@ describe("skill game rounds", () => {
       }, 30_000); // 600 rounds each; the 9×9 mazes need more than the default 5 s on a busy machine
 
   it("the same seed gives the same rounds, another day other rounds", () => {
-    const g = SKILL_GAMES[0];
+    const g = SKILL_GAMES.find((x) => x.kind === "find_same")!;
     const a = makeRounds("find_same", g.steps[5].settings as never, daySeed("c1", "2026-11-09", g.id), "en");
     expect(makeRounds("find_same", g.steps[5].settings as never, daySeed("c1", "2026-11-09", g.id), "en")).toEqual(a);
     expect(makeRounds("find_same", g.steps[5].settings as never, daySeed("c1", "2026-11-10", g.id), "en")).not.toEqual(a);
@@ -125,5 +126,53 @@ describe("skill game rounds", () => {
     expect(lineText(2, 4)).toBe("½");
     expect(lineText(0, 4)).toBe("0");
     expect(lineText(8, 4)).toBe("2");
+  });
+});
+
+// B104, Warm Hills spec §6.1: Find Cloudy's tiers do what the table says.
+describe("find_cloudy", () => {
+  const g = SKILL_GAMES.find((x) => x.kind === "find_cloudy")!;
+  const roundsOf = (k: number, day: number) => makeRounds("find_cloudy", g.steps[k].settings as never, daySeed("c", `d${day}`, g.id), "en");
+  it("Seed: Cloudy stays out, Sprout: he peeks, Tree and Summit: the clouds swap and he is followed", () => {
+    expect(g.steps.map((s) => (s.settings as { clouds: number }).clouds)).toEqual([3, 4, 5, 5, 5, 6, 6, 6, 7, 7, 8, 8]);
+    for (let k = 0; k < 12; k++)
+      for (let day = 0; day < 30; day++)
+        for (const r of roundsOf(k, day)) {
+          const want = k < 3 ? "stay" : k < 6 ? "peek" : "once";
+          expect(r.peek).toBe(want);
+          const swaps = r.moves.filter((m) => "swap" in m);
+          if (want !== "once") expect(r.moves).toEqual([]);
+          else {
+            expect(swaps.length).toBe((g.steps[k].settings as { swaps: number }).swaps);
+            // At least one swap moves Cloudy's own cloud, so watching it is needed.
+            let cloudy = r.hide;
+            let own = 0;
+            for (const m of r.moves) {
+              if ("jump" in m) cloudy = m.jump;
+              else if (m.swap.includes(cloudy)) own++;
+            }
+            expect(own).toBeGreaterThan(0);
+          }
+          // The jump only at Summit 3, once, to another cloud.
+          expect(r.moves.filter((m) => "jump" in m).length).toBe(k === 11 ? 1 : 0);
+          expect(afterMoves(r).cloudy).toBeGreaterThanOrEqual(0);
+        }
+  });
+  it("the clouds never cover each other, in a wide or a tall sky", () => {
+    for (let n = 3; n <= 8; n++)
+      for (const tall of [false, true]) {
+        const p = cloudPlaces(n, tall);
+        expect(p).toHaveLength(n);
+        const cols = Math.max(...cloudRows(n, tall));
+        const [w, h] = tall ? [330, 440] : [640, 480];
+        const cw = (w * 0.8) / cols; // as the player sizes them
+        for (let a = 0; a < n; a++)
+          for (let b = a + 1; b < n; b++) {
+            const dx = Math.abs(p[a][0] - p[b][0]) * (w / 100);
+            const dy = Math.abs(p[a][1] - p[b][1]) * (h / 100);
+            expect(dx >= cw * 0.95 || dy >= cw * 0.6, `${n} ${tall} ${a}-${b}`).toBe(true);
+          }
+        for (const [x] of p) expect(x - ((cw / w) * 100) / 2).toBeGreaterThanOrEqual(0);
+      }
   });
 });

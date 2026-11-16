@@ -1,6 +1,7 @@
 "use client";
 
-import { SKILL_GAMES, type SkillGame } from "@/content/skillGames";
+import { Cloudy } from "@/components/Cloudy";
+import { CLOUDY_KINDS, SKILL_GAMES, type SkillGame } from "@/content/skillGames";
 import { sel, useDb } from "@/lib/api";
 import { useT } from "@/lib/i18n";
 import { FREE_TIER, needsMet, SHOWN_AREAS, withSpeed, type Area } from "@/lib/skill";
@@ -44,13 +45,19 @@ export function SkillGames({ child, onPlay, onTab }: { child: Child; onPlay: (ga
               <span aria-hidden>{AREA_ICON[area]}</span> {t(`skill.area.${area}`)}
             </h2>
             <div className="flex flex-col gap-3">
-              {games.filter((g) => g.area === area).map((g) => (
-                <div key={g.id} className="flex min-w-0 flex-col gap-2 rounded-3xl bg-surface-2/60 p-2 sm:flex-row sm:items-center">
+              {games.filter((g) => g.area === area).map((g) => {
+                const big = CLOUDY_KINDS.includes(g.kind); // the Cloudy games: first in the list and larger (spec §6)
+                return (
+                <div key={g.id} className={`flex min-w-0 flex-col gap-2 rounded-3xl p-2 sm:flex-row sm:items-center ${big ? "border-4 border-white bg-sun-soft py-3" : "bg-surface-2/60"}`}>
                   <p className="flex min-w-0 items-center gap-2 px-1 font-extrabold text-ink sm:w-36 sm:flex-col sm:text-center">
-                    <span className="text-3xl" aria-hidden>
-                      {KIND_EMOJI[g.kind]}
-                    </span>
-                    <span className="text-sm leading-tight">{t(`skill.game.${g.kind}`)}</span>
+                    {big ? (
+                      <Cloudy size={64} />
+                    ) : (
+                      <span className="text-3xl" aria-hidden>
+                        {KIND_EMOJI[g.kind]}
+                      </span>
+                    )}
+                    <span className={big ? "text-base leading-tight" : "text-sm leading-tight"}>{t(`skill.game.${g.kind}`)}</span>
                   </p>
                   <div className="flex flex-1 flex-wrap gap-1.5 sm:gap-2">
                     {[1, 2, 3, 4].map((tier) => {
@@ -62,7 +69,7 @@ export function SkillGames({ child, onPlay, onTab }: { child: Child; onPlay: (ga
                           label={open ? `${t(`skill.game.${g.kind}`)}, ${name}` : `${name}. ${t("play.skills.sleeping")}`}
                           onSelect={() => onPlay(g, tier, open)}
                           scanSkip={!open}
-                          className={`flex flex-1 basis-[76px] flex-col items-center justify-center gap-0.5 rounded-2xl border-2 px-1 font-bold shadow-soft ${open ? "border-white text-ink" : "border-white/70 bg-[#eef2f8] text-muted"}`}
+                          className={`flex flex-1 basis-[76px] flex-col ${big ? "min-h-24" : ""} items-center justify-center gap-0.5 rounded-2xl border-2 px-1 font-bold shadow-soft ${open ? "border-white text-ink" : "border-white/70 bg-[#eef2f8] text-muted"}`}
                           style={{ background: open ? TIER_TONE[tier] : undefined }}
                         >
                           <span className="text-2xl leading-none" aria-hidden>
@@ -74,7 +81,8 @@ export function SkillGames({ child, onPlay, onTab }: { child: Child; onPlay: (ga
                     })}
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           </section>
         ))}
