@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { Cloud, CloudOff } from "lucide-react";
 import { Cloudy, CloudShape, CLOUDY_FACES, type CloudyFace, type CloudyForm } from "@/components/Cloudy";
 import { useT } from "@/lib/i18n";
 import { markTourOffered, setCloudyMoves, tourNotOffered, useCloudyMoves, useTourAsked } from "./cloudyStore";
@@ -446,8 +447,10 @@ export function CloudyRoam() {
             <Cloudy size={SIZE} form={form} face={face} walk={walk} />
           </span>
         </div>
-        {!still &&
-          CLOUDS.map((k, i) => (
+        {/* The clouds are clipped to the screen, so one drifting past the edge never widens the page. */}
+        {!still && (
+          <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+          {CLOUDS.map((k, i) => (
             <div
               key={i}
               ref={(e) => {
@@ -464,6 +467,8 @@ export function CloudyRoam() {
               <i />
             </div>
           ))}
+          </div>
+        )}
       </div>
       {/* What Cloudy says: the tour text is a polite live region. */}
       <div role="status" aria-live="polite" className="fk-bubble print:hidden" hidden={!bubble}>
@@ -496,14 +501,15 @@ export function CloudySwitch({ className = "" }: { className?: string }) {
       type="button"
       aria-pressed={moves}
       onClick={() => setCloudyMoves(!moves)}
-      className={`fk-btn-2 inline-flex h-10 items-center gap-1.5 rounded-full px-3.5 text-sm font-bold ${className}`}
+      title={`${t("cloudy.moves")}: ${t(moves ? "cloudy.on" : "cloudy.off")}`}
+      // On a phone the header has no room for the words: a round button with a cloud (crossed out when Off).
+      className={`fk-btn-2 inline-flex size-10 shrink-0 items-center justify-center gap-1.5 rounded-full text-sm font-bold sm:w-auto sm:px-3.5 ${className}`}
     >
-      <span className="hidden sm:inline">{t("cloudy.moves")}:</span>
       <span className="sm:hidden" aria-hidden>
-        ☁️
+        {moves ? <Cloud className="size-5 text-teal" /> : <CloudOff className="size-5 text-muted" />}
       </span>
-      <span className="sr-only sm:hidden">{t("cloudy.moves")}:</span>
-      <b className={moves ? "text-teal" : "text-muted"}>{t(moves ? "cloudy.on" : "cloudy.off")}</b>
+      <span className="sr-only sm:not-sr-only">{t("cloudy.moves")}:</span>
+      <b className={`sr-only sm:not-sr-only ${moves ? "text-teal" : "text-muted"}`}>{t(moves ? "cloudy.on" : "cloudy.off")}</b>
     </button>
   );
 }

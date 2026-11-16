@@ -79,7 +79,8 @@ test("phone sign-up → intake with a restriction → 4-week plan without that e
   await expect(page.getByRole("heading", { name: "Why this plan" })).toBeVisible();
   for (let w = 1; w <= 4; w++) {
     await page.getByRole("button", { name: `Week ${w}` }).click();
-    const days = page.locator("li").filter({ has: page.getByText("Exercises", { exact: true }) });
+    // The day cards of the plan panel (B100: the menu has an "Exercises" entry too).
+    const days = page.locator("main").last().locator("li").filter({ has: page.getByText("Exercises", { exact: true }) });
     await expect(days).toHaveCount(7);
     for (const d of await days.all()) {
       const n = await d.locator("ul").first().locator("li").count();

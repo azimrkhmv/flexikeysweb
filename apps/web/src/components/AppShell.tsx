@@ -154,7 +154,7 @@ function Shell({ me, nav, more, foot, backdrop, headerExtra, children }: { me: U
               <Logo href={`/${me.role}`} small />
               <span className="hidden rounded-full bg-surface-2 px-3 py-1 text-xs font-bold text-ink-2 sm:inline">{t(`role.${me.role}`)}</span>
             </div>
-            <div className="ml-auto flex items-center gap-2">
+            <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
               {headerExtra}
               <LangSwitch compact />
               <Notifications userId={me.id} />
