@@ -21,7 +21,7 @@ export const AREA_OF: Record<GameKind, Area> = {
   find_same: "attention", scene: "attention", story: "attention",
   odd_one_out: "attention", track_fish: "attention", which_way: "attention", find_cloudy: "attention",
   sequence: "memory", missing: "memory", light_path: "memory",
-  card_pairs: "memory", shopping_list: "memory", n_back: "memory", pairs_recall: "memory",
+  card_pairs: "memory", shopping_list: "memory", n_back: "memory", pairs_recall: "memory", grow_cloudy: "memory",
   sort: "flexibility", maze: "flexibility",
   switch_sort: "flexibility", opposite: "flexibility", secret_rule: "flexibility",
   puzzle: "reasoning",

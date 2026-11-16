@@ -1,7 +1,7 @@
 import type { CountSettings, FindSameSettings, LightPathSettings, ListenPickSettings, MazeSettings, MissingSettings, PuzzleSettings, SceneSettings, SequenceSettings, SortSettings, StorySettings, TypeSettings } from "@/lib/games/existing";
 import type { SkillKind } from "@/lib/games";
 import type { OddOneOutSettings, TrackFishSettings, WhichWaySettings } from "@/lib/games/attention";
-import type { FindCloudySettings } from "@/lib/games/cloudy";
+import type { FindCloudySettings, GrowCloudySettings } from "@/lib/games/cloudy";
 import type { CardPairsSettings, NBackSettings, PairsRecallSettings, ShoppingSettings } from "@/lib/games/memory";
 import type { OppositeSettings, SecretRuleSettings, SwitchSortSettings } from "@/lib/games/flexibility";
 import type { BalanceSettings, LogicHousesSettings, NextPatternSettings, PipesSettings, ShadowSettings } from "@/lib/games/reasoning";
@@ -810,9 +810,30 @@ const findCloudy = game<FindCloudySettings>(
           : { en: `Follows Cloudy's cloud while ${n} clouds swap places ${swaps} times`, ru: `Следит за облаком с Облачком, пока ${n} облаков меняются местами ${swaps} ${pl(swaps, "раз", "раза", "раз")}`, uz: `${n} ta bulut ${swaps} marta joy almashganda Bulutcha bulutini kuzatadi` },
 );
 
+// ---------------------------------------------------------------- Warm Hills spec §6.2: Grow Cloudy
+// Seed: tap any drop · Sprout: only the drops, a tapped leaf just floats away · Tree: smallest to biggest · Summit:
+// numbered drops, shown for a few seconds, tapped in order (only with Math tier 2 open: the child reads digits).
+const growCloudy = game<GrowCloudySettings>(
+  "grow_cloudy",
+  [
+    { drops: 3, rule: "any" }, { drops: 4, rule: "any" }, { drops: 5, rule: "any" },
+    { drops: 3, rule: "drops", leaves: 3 }, { drops: 4, rule: "drops", leaves: 3 }, { drops: 4, rule: "drops", leaves: 4 },
+    { drops: 4, rule: "size" }, { drops: 5, rule: "size" }, { drops: 6, rule: "size" },
+    { drops: 4, rule: "order", show: 4 }, { drops: 5, rule: "order", show: 4 }, { drops: 5, rule: "order", show: 3 },
+  ],
+  ({ drops: n, rule, leaves = 0, show = 3 }) =>
+    ({
+      any: { en: `Taps ${n} raindrops for Cloudy`, ru: `Нажимает на ${n} ${pl(n, "капельку", "капельки", "капелек")} для Облачка`, uz: `Bulutcha uchun ${n} ta tomchini bosadi` },
+      drops: { en: `Taps only the ${n} raindrops, not the ${leaves} leaves`, ru: `Нажимает только на ${n} ${pl(n, "капельку", "капельки", "капелек")}, а не на ${leaves} ${pl(leaves, "листик", "листика", "листиков")}`, uz: `${leaves} ta barg orasidan faqat ${n} ta tomchini bosadi` },
+      size: { en: `Taps ${n} raindrops from the smallest to the biggest`, ru: `Нажимает на ${n} ${pl(n, "капельку", "капельки", "капелек")} от самой маленькой до самой большой`, uz: `${n} ta tomchini eng kichigidan eng kattasigacha bosadi` },
+      order: { en: `Remembers the numbers on ${n} raindrops, shown for ${show} seconds, and taps them in order`, ru: `Запоминает числа на ${n} капельках (видны ${show} ${pl(show, "секунду", "секунды", "секунд")}) и нажимает по порядку`, uz: `${n} ta tomchidagi ${show} soniya koʻringan raqamlarni eslab, ularni tartib bilan bosadi` },
+    })[rule],
+  ({ rule }) => (rule === "order" ? { area: "numeracy", tier: 2 } : undefined),
+);
+
 // The Cloudy games come first (spec §6: first and larger in the Skill games tab and on /demo/games).
 export const SKILL_GAMES: SkillGame[] = [
-  findCloudy,
+  findCloudy, growCloudy,
   findSame, scene, story, sequence, missing, lightPath, sort, maze, puzzle, listenPick, type, count,
   oddOneOut, trackFish, whichWay, cardPairs, shoppingList, nBack, pairsRecall,
   switchSort, opposite, secretRule, nextPattern, balance, pipes, logicHouses, shadowMatch,

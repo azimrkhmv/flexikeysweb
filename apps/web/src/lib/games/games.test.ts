@@ -8,7 +8,7 @@ import { reducedKeys } from "@/features/activities/keyboard";
 import type { Lang } from "@/lib/i18n";
 import { LAYOUTS } from "@/lib/keys";
 import { GENERATORS, makeRounds, type Generator, type SkillKind } from "./index";
-import { afterMoves, cloudPlaces, cloudRows } from "./cloudy";
+import { afterMoves, cloudPlaces, cloudRows, GROW_CELLS } from "./cloudy";
 import { holds, lineText } from "./math";
 import { lookOf, PIC_WORDS, PICTURES } from "./pools";
 import { daySeed, rngOf } from "./rng";
@@ -174,5 +174,33 @@ describe("find_cloudy", () => {
           }
         for (const [x] of p) expect(x - ((cw / w) * 100) / 2).toBeGreaterThanOrEqual(0);
       }
+  });
+});
+
+// B105, Warm Hills spec §6.2: Grow Cloudy's tiers, and Summit only with Math tier 2 open.
+describe("grow_cloudy", () => {
+  const g = SKILL_GAMES.find((x) => x.kind === "grow_cloudy")!;
+  it("four growth stages a session; Seed any drop, Sprout drops and leaves, Tree sizes, Summit numbers 1…n", () => {
+    const rules = g.steps.map((s) => (s.settings as { rule: string }).rule);
+    expect(rules).toEqual(["any", "any", "any", "drops", "drops", "drops", "size", "size", "size", "order", "order", "order"]);
+    for (let k = 0; k < 12; k++)
+      for (let day = 0; day < 30; day++) {
+        const rounds = makeRounds("grow_cloudy", g.steps[k].settings as never, daySeed("c", `d${day}`, g.id), "en");
+        expect(rounds).toHaveLength(4);
+        for (const r of rounds) {
+          const st = g.steps[k].settings as { drops: number; leaves?: number };
+          expect(r.drops).toHaveLength(st.drops);
+          expect(r.leaves).toHaveLength(st.leaves ?? 0);
+          expect(r.drops.length + r.leaves.length).toBeLessThanOrEqual(GROW_CELLS);
+          const ranks = r.drops.map((d) => d.rank).sort((a, b) => a - b);
+          if (r.rule === "size" || r.rule === "order") expect(ranks).toEqual(ranks.map((_, i) => i + 1));
+          else expect(new Set(ranks)).toEqual(new Set([0]));
+        }
+      }
+    expect(g.steps[0].settings).toMatchObject({ drops: 3, rule: "any" }); // the demo's Seed 1
+    expect(g.steps[11].settings).toMatchObject({ drops: 5, rule: "order", show: 3 }); // and Summit 3
+  });
+  it("the Summit steps need Math tier 2 open (the numbers are read); no other step needs anything", () => {
+    for (const s of g.steps) expect(s.needs).toEqual(s.tier === 4 ? { area: "numeracy", tier: 2 } : undefined);
   });
 });

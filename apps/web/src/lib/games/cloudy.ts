@@ -1,4 +1,4 @@
-import { int, one, sample } from "./rng";
+import { int, one, sample, shuffled } from "./rng";
 import type { Generator } from "./index";
 
 // Round generators of the two Cloudy games (Warm Hills spec 15 Nov 2026, §6): find_cloudy (Attention) and, in B105,
@@ -88,5 +88,50 @@ export const findCloudy: Generator<FindCloudySettings, FindCloudyRound> = {
       return moved;
     });
     return [ok && r.hide >= 0 && r.hide < r.clouds ? 1 : 0];
+  },
+};
+
+// ---------------------------------------------------------------- grow_cloudy
+export interface GrowCloudySettings {
+  drops: number;
+  /** any: tap any drop · drops: only the drops, not the leaves · size: smallest to biggest · order: 1, 2, 3… */
+  rule: "any" | "drops" | "size" | "order";
+  /** Leaves among the drops (drops). */
+  leaves?: number;
+  /** Seconds the numbers show before they hide (order). */
+  show?: number;
+}
+export interface GrowDrop {
+  /** Where it floats: one of the 8 places above Cloudy. */
+  cell: number;
+  /** size: 1 (smallest) … drops · order: the number on it · any, drops: its turn does not matter (0). */
+  rank: number;
+}
+export interface GrowCloudyRound {
+  rule: GrowCloudySettings["rule"];
+  drops: GrowDrop[];
+  /** The places of the leaves. */
+  leaves: number[];
+  show: number;
+}
+/** The 8 places above Cloudy; the player lays them out for a wide or a tall sky. */
+export const GROW_CELLS = 8;
+/** The 4 growth stages of a session, and what Cloudy turns into after each (spec §6.2). */
+export const GROW_FORMS = ["cloud", "bunny", "fox", "bear", "tiger"] as const;
+
+export const growCloudy: Generator<GrowCloudySettings, GrowCloudyRound> = {
+  rounds: 4,
+  make({ drops: n, rule, leaves = 0, show = 3 }, rng) {
+    const cells = sample(rng, all(GROW_CELLS), n + leaves);
+    const ranks = rule === "size" || rule === "order" ? shuffled(rng, all(n).map((k) => k + 1)) : all(n).map(() => 0);
+    return { rule, drops: cells.slice(0, n).map((cell, k) => ({ cell, rank: ranks[k] })), leaves: cells.slice(n), show };
+  },
+  key: (r) => `${r.drops.map((d) => `${d.cell}:${d.rank}`).join(",")}|${r.leaves.join(",")}`,
+  // One right way through: every drop and leaf has a place of its own and, for size and order, the turns are 1…n.
+  answers: (r) => {
+    const places = [...r.drops.map((d) => d.cell), ...r.leaves];
+    const ranks = r.drops.map((d) => d.rank).sort((a, b) => a - b);
+    const turns = r.rule === "size" || r.rule === "order" ? ranks.every((x, k) => x === k + 1) : ranks.every((x) => x === 0);
+    return [new Set(places).size === places.length && places.every((c) => c >= 0 && c < GROW_CELLS) && turns && r.drops.length > 0 ? 1 : 0];
   },
 };

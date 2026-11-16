@@ -21,6 +21,7 @@ AREA_OF: dict[str, str] = {
     **dict.fromkeys(("find_same", "scene", "story"), "attention"),
     **dict.fromkeys(("odd_one_out", "track_fish", "which_way"), "attention"),  # skill games only (games spec §6.1)
     "find_cloudy": "attention",  # Warm Hills spec §6.1
+    "grow_cloudy": "memory",  # Warm Hills spec §6.2
     **dict.fromkeys(("sequence", "missing", "light_path"), "memory"),
     **dict.fromkeys(("card_pairs", "shopping_list", "n_back", "pairs_recall"), "memory"),  # §6.2
     **dict.fromkeys(("sort", "maze"), "flexibility"),

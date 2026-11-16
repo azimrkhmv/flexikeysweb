@@ -409,6 +409,19 @@ h1, h2, h3 {
 .fk-cloudy-cat { animation: fk-cat 1.6s ease-in-out 0.9s both; }
 @keyframes fk-cat { 35% { opacity: 0; transform: none; } 36% { opacity: 0; transform: translateX(calc(var(--dx) * var(--far))); } 70%, 100% { opacity: 1; transform: translateX(calc(var(--dx) * var(--far))); } }
 
+/* ---------- Grow Cloudy (B105, spec 6.2) ---------- */
+/* Cloudy gulps a drop; at the end the tiger leaps, the sky turns to evening with stars, and the scene shakes a little
+   for about a second (none of it with reduced motion; the rainbow fades in from the player). */
+.fk-gulp { animation: fk-gulp 0.45s ease-out; }
+@keyframes fk-gulp { 40% { transform: scale(1.1, 0.9); } 70% { transform: scale(0.96, 1.05); } }
+.fk-leap { animation: fk-leap 0.9s ease-out 0.4s 2; }
+@keyframes fk-leap { 45% { transform: translateY(-38%) rotate(-6deg); } }
+.fk-shake { animation: fk-shake 1s ease-in-out 0.4s; }
+@keyframes fk-shake { 10%, 50%, 90% { transform: translateX(-3px); } 30%, 70% { transform: translateX(3px); } }
+.fk-evening { background: linear-gradient(180deg, #7d86c7 0%, #c6a6d8 55%, #f6c7a1 100%); animation: fk-fade-in 1.2s ease-out both; }
+.fk-evening span { animation: fk-fade-in 0.6s ease-out both; }
+@keyframes fk-fade-in { from { opacity: 0; } }
+
 /* Calm screen (per child, set by an adult): same as reduced motion, regardless of the device setting. */
 .fk-calm *, .fk-calm *::before, .fk-calm *::after {
   animation: none !important;

@@ -42,6 +42,7 @@ export const GENERATORS = {
   which_way: attention.whichWay,
   // Warm Hills spec §6: the Cloudy games
   find_cloudy: cloudy.findCloudy,
+  grow_cloudy: cloudy.growCloudy,
   // §6.2 Memory
   card_pairs: memory.cardPairs,
   shopping_list: memory.shoppingList,

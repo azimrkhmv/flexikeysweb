@@ -9,7 +9,7 @@ test("a parent sees all games, tries one, and sees the games of the child's plan
   await page.goto("/parent/games");
   const main = page.locator("main").last();
   await expect(main.getByRole("heading", { name: "Games", level: 1 })).toBeVisible();
-  await expect(main.getByRole("link", { name: /^Try/ })).toHaveCount(38); // B104: Find Cloudy
+  await expect(main.getByRole("link", { name: /^Try/ })).toHaveCount(39); // B104, B105: the two Cloudy games
   for (const area of ["Attention", "Memory", "Flexibility", "Reasoning", "Language", "Math", "Speed"]) await expect(main.getByRole("heading", { name: area, level: 2 })).toBeVisible();
   // Rule 1: no percentage on a parent screen.
   expect(await main.innerText()).not.toMatch(/\d\s?%/);
@@ -77,6 +77,51 @@ for (const access of ["touch", "dwell", "scan", "keyboard"] as const)
       await expect(found(page)).toBeVisible();
       expect(await page.locator("main").innerText()).not.toMatch(/wrong|✗|❌|\bX\b/i);
       const go = page.getByRole("button", { name: round < 2 ? "Next" : "Done" });
+      if (access === "dwell") await hold(page, go);
+      else await go.click();
+    }
+    await expect(page.getByRole("heading", { name: "Well done!" })).toBeVisible();
+  });
+
+// B105: Grow Cloudy plays with the same four ways; four stages end with the tiger and the rainbow.
+const drops = (page: Page) => page.getByRole("button", { name: /^Raindrop \d+$/ });
+const grew = (page: Page) => page.getByRole("heading", { name: /^Cloudy grew into a/ });
+
+for (const access of ["touch", "dwell", "scan", "keyboard"] as const)
+  test(`Grow Cloudy: four stages with ${access} (B105)`, async ({ page }, info) => {
+    test.skip(info.project.name !== "desktop", "one pointer and one keyboard are enough");
+    test.setTimeout(120_000);
+    await setup(page);
+    // Touch plays Summit 3 (numbers shown, then hidden, tapped in order); the others Seed 1 (any drop).
+    const step = access === "touch" ? 12 : 1;
+    await page.goto(`/demo/games?game=grow_cloudy&step=${step}${access === "dwell" ? "&access=dwell" : access === "scan" ? "&access=scan" : ""}`);
+    if (access === "touch") {
+      await expect(page.getByRole("heading", { name: "Look at the numbers on the raindrops" })).toBeVisible();
+      await expect(drops(page).first()).toBeDisabled(); // the numbers show first: nothing to choose yet
+    }
+    for (let stage = 0; stage < 4; stage++) {
+      await expect(page.getByRole("heading", { name: /^Tap the raindrops/ })).toBeVisible({ timeout: 15_000 });
+      for (let k = 0; k < 40 && !(await grew(page).count()); k++) {
+        if (access === "scan") {
+          await expect(page.locator("[data-scan-active]")).toHaveCount(1);
+          if (k) await page.keyboard.press(" ");
+          if (!/^Raindrop \d+$/.test((await page.locator("[data-scan-active]").getAttribute("aria-label")) ?? "")) continue;
+          await page.keyboard.press("Enter");
+        } else {
+          const open = drops(page).and(page.locator(":not([disabled])"));
+          if (!(await open.count())) break;
+          const drop = open.nth(k % (await open.count()));
+          if (access === "keyboard") {
+            await drop.focus();
+            await page.keyboard.press("Enter");
+          } else if (access === "dwell") await hold(page, drop);
+          else await drop.click();
+        }
+        await page.waitForTimeout(300);
+      }
+      await expect(grew(page)).toBeVisible();
+      const go = page.getByRole("button", { name: stage < 3 ? "Next" : "Done" });
+      if (stage === 3) await expect(page.getByRole("heading", { name: "Cloudy grew into a tiger! Look, a rainbow!" })).toBeVisible();
       if (access === "dwell") await hold(page, go);
       else await go.click();
     }

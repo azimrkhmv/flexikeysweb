@@ -357,7 +357,7 @@ export type Activity = (
 
 export type ActivityKind = Activity["kind"];
 /** Kinds that exist only as skill games (games spec 8 Nov 2026, §6); no theme-world activity uses them. */
-export type SkillOnlyKind = "odd_one_out" | "track_fish" | "which_way" | "find_cloudy" | "card_pairs" | "shopping_list" | "n_back" | "pairs_recall"
+export type SkillOnlyKind = "odd_one_out" | "track_fish" | "which_way" | "find_cloudy" | "grow_cloudy" | "card_pairs" | "shopping_list" | "n_back" | "pairs_recall"
   | "switch_sort" | "opposite" | "secret_rule" | "next_pattern" | "balance" | "pipes" | "logic_houses" | "shadow_match"
   | "more_less" | "number_line" | "bazaar" | "missing_number" | "rhyme" | "word_builder" | "do_what_i_say" | "quick_snap" | "tap_star" | "fast_sort";
 /** Every kind of game: the theme worlds' kinds and the skill-only ones. */
