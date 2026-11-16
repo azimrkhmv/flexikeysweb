@@ -57,7 +57,20 @@ const ROWS: Row[] = [
   ["sound_cards", ["Say it with the picture cards", "Rasmli kartalar bilan aytish", "Говорим по карточкам"], "mouth_face", ["communicate", "understand"], ALL, ALL_AGES, "cards", 2, []],
   ["emotion_cards", ["Show the feeling", "Hissiyotni koʻrsatish", "Покажи чувство"], "head_neck", ["communicate", "play_others"], ALL, ALL_AGES, "cards", 1, []],
   ["sequence_cards", ["What comes next? (cards)", "Keyin nima? (kartalar)", "Что дальше? (карточки)"], "hands", ["understand", "school"], ALL, OLDER, "cards", 2, []],
+  // Slots (B106, Warm Hills spec §7): the demo's place-holder exercises ("Sit to stand" is above). No video yet, so
+  // they show "Waiting for physio check" and never reach a plan. Their tags are cautious guesses; the physiotherapist
+  // decides the real list and checks the tags with each video (the review shows them).
+  ["reach_toy", ["Reach for a toy", "Oʻyinchoqqa choʻzilish", "Тянемся к игрушке"], "arms", ["hands", "sit"], ALL, ALL_AGES, null, 1, []],
+  ["open_close_hand", ["Open and close the hand", "Qoʻlni ochib-yumish", "Открываем и закрываем ладонь"], "hands", ["hands"], ALL, ALL_AGES, null, 1, []],
+  ["sitting_balance", ["Sitting balance", "Oʻtirib muvozanat saqlash", "Равновесие сидя"], "trunk", ["sit"], ALL, ALL_AGES, null, 1, []],
+  ["tummy_time_toy", ["Tummy time with a toy", "Qorinda yotib oʻyinchoq bilan", "Лёжа на животе с игрушкой"], "trunk", ["sit", "hands"], ALL, KIDS, null, 1, ["prone"]],
+  ["animal_walks", ["Animal walks", "Hayvonlardek yurish", "Ходим как зверята"], "legs", ["walk", "play_others"], UP_TO_2, ALL_AGES, null, 2, ["standing", "walking", "high_intensity", "leg_balance"]],
+  ["rolling_side", ["Rolling to the side", "Yonboshga aylanish", "Перекатываемся на бок"], "trunk", ["sit"], ALL, KIDS, null, 1, ["prone", "neck_flexion"]],
 ];
+/** The spec's seven slots, in its order: the Exercises page shows them first (after the child's plan). */
+export const SLOTS = ["reach_toy", "open_close_hand", "sit_to_stand", "sitting_balance", "tummy_time_toy", "animal_walks", "rolling_side"] as const;
+/** The new slots have no video in any language yet, in the demo too. */
+const NO_VIDEO: ReadonlySet<string> = new Set(SLOTS.filter((id) => id !== "sit_to_stand"));
 
 /** Demo statuses: most exercises approved in every language, a few waiting in the physio queue. */
 const QUEUED = new Set(["tongs_sort", "pegboard_pattern", "funny_faces", "catch_soft_ball"]);
@@ -69,6 +82,9 @@ export function exerciseLibrary(approvedBy: string, at: string): ExerciseVideo[]
       const url = `/placeholder-videos/${id}.${lang}.mp4`;
       return QUEUED.has(id) ? { url, durationS: 4, status: "generated" as const, notes: [] } : { url, durationS: 4, status: "approved" as const, approvedBy, approvedAt: at, notes: [] };
     };
-    return { id, title, bodyArea, goals, gmfcs, ages, tool, difficulty, conflicts, versions: { uz: v("uz"), ru: v("ru"), en: v("en") } };
+    return { id, title, bodyArea, goals, gmfcs, ages, tool, difficulty, conflicts, versions: NO_VIDEO.has(id) ? {} : { uz: v("uz"), ru: v("ru"), en: v("en") } };
   });
 }
+
+/** The library without any video (live mode: the server says which videos are approved, `GET /videos`). */
+export const exerciseList = (): ExerciseVideo[] => exerciseLibrary("", "").map((v) => ({ ...v, versions: {} }));

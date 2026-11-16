@@ -5749,6 +5749,32 @@
     }
    }
   },
+  "/api/v1/videos": {
+   "get": {
+    "tags": [
+     "videos"
+    ],
+    "summary": "Approved",
+    "description": "B106: which exercises have an approved video, in which languages (the Exercises page shows the others as\n\"waiting for physio check\"). No file links here; `GET /videos/{exercise_id}` gives one for a single video.",
+    "operationId": "approved_api_v1_videos_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "$ref": "#/components/schemas/ApprovedVideo"
+         },
+         "type": "array",
+         "title": "Response Approved Api V1 Videos Get"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/v1/videos/{exercise_id}": {
    "get": {
     "tags": [
@@ -5969,6 +5995,27 @@
      "answers"
     ],
     "title": "AnswersIn"
+   },
+   "ApprovedVideo": {
+    "properties": {
+     "exerciseId": {
+      "type": "string",
+      "title": "Exerciseid"
+     },
+     "langs": {
+      "items": {
+       "$ref": "#/components/schemas/VideoLang"
+      },
+      "type": "array",
+      "title": "Langs"
+     }
+    },
+    "type": "object",
+    "required": [
+     "exerciseId",
+     "langs"
+    ],
+    "title": "ApprovedVideo"
    },
    "AreaProgress": {
     "properties": {

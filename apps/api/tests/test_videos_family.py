@@ -52,3 +52,21 @@ def test_there_is_no_uzbek_cyrillic(client: TestClient) -> None:
 
 def test_signed_out_gets_nothing(client: TestClient) -> None:
     assert watch(client, {}, "walk_line", "uz").status_code == 401
+
+
+def test_the_list_names_only_approved_videos(client: TestClient) -> None:
+    """B106: the Exercises page asks which exercises have an approved video, and in which languages."""
+    family = parent(client)
+    _, physio, _ = make(client, Role.physio)
+
+    def listed() -> dict[str, list[str]]:
+        return {v["exerciseId"]: v["langs"] for v in client.get(f"{API}/videos", headers=family).json()}
+
+    video = new_video(client, "finger_walk", "uz")
+    assert "finger_walk" not in listed()  # waiting for review
+    assert decide(client, physio, video, "approved").status_code == 200
+    assert listed()["finger_walk"] == ["uz"]
+    assert "watchUrl" not in client.get(f"{API}/videos", headers=family).json()[0]  # no file links in the list
+    assert decide(client, physio, video, "rejected", "Too fast").status_code == 200
+    assert "finger_walk" not in listed()
+    assert client.get(f"{API}/videos").status_code == 401

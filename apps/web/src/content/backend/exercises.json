@@ -954,6 +954,182 @@
    "tool": "cards",
    "difficulty": 2,
    "conflicts": []
+  },
+  {
+   "id": "reach_toy",
+   "title": {
+    "en": "Reach for a toy",
+    "uz": "Oʻyinchoqqa choʻzilish",
+    "ru": "Тянемся к игрушке"
+   },
+   "body_area": "arms",
+   "goals": [
+    "hands",
+    "sit"
+   ],
+   "gmfcs": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "ages": [
+    "2-4",
+    "5-8",
+    "9-12",
+    "13-20"
+   ],
+   "tool": null,
+   "difficulty": 1,
+   "conflicts": []
+  },
+  {
+   "id": "open_close_hand",
+   "title": {
+    "en": "Open and close the hand",
+    "uz": "Qoʻlni ochib-yumish",
+    "ru": "Открываем и закрываем ладонь"
+   },
+   "body_area": "hands",
+   "goals": [
+    "hands"
+   ],
+   "gmfcs": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "ages": [
+    "2-4",
+    "5-8",
+    "9-12",
+    "13-20"
+   ],
+   "tool": null,
+   "difficulty": 1,
+   "conflicts": []
+  },
+  {
+   "id": "sitting_balance",
+   "title": {
+    "en": "Sitting balance",
+    "uz": "Oʻtirib muvozanat saqlash",
+    "ru": "Равновесие сидя"
+   },
+   "body_area": "trunk",
+   "goals": [
+    "sit"
+   ],
+   "gmfcs": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "ages": [
+    "2-4",
+    "5-8",
+    "9-12",
+    "13-20"
+   ],
+   "tool": null,
+   "difficulty": 1,
+   "conflicts": []
+  },
+  {
+   "id": "tummy_time_toy",
+   "title": {
+    "en": "Tummy time with a toy",
+    "uz": "Qorinda yotib oʻyinchoq bilan",
+    "ru": "Лёжа на животе с игрушкой"
+   },
+   "body_area": "trunk",
+   "goals": [
+    "sit",
+    "hands"
+   ],
+   "gmfcs": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "ages": [
+    "2-4",
+    "5-8",
+    "9-12"
+   ],
+   "tool": null,
+   "difficulty": 1,
+   "conflicts": [
+    "prone"
+   ]
+  },
+  {
+   "id": "animal_walks",
+   "title": {
+    "en": "Animal walks",
+    "uz": "Hayvonlardek yurish",
+    "ru": "Ходим как зверята"
+   },
+   "body_area": "legs",
+   "goals": [
+    "walk",
+    "play_others"
+   ],
+   "gmfcs": [
+    1,
+    2
+   ],
+   "ages": [
+    "2-4",
+    "5-8",
+    "9-12",
+    "13-20"
+   ],
+   "tool": null,
+   "difficulty": 2,
+   "conflicts": [
+    "standing",
+    "walking",
+    "high_intensity",
+    "leg_balance"
+   ]
+  },
+  {
+   "id": "rolling_side",
+   "title": {
+    "en": "Rolling to the side",
+    "uz": "Yonboshga aylanish",
+    "ru": "Перекатываемся на бок"
+   },
+   "body_area": "trunk",
+   "goals": [
+    "sit"
+   ],
+   "gmfcs": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "ages": [
+    "2-4",
+    "5-8",
+    "9-12"
+   ],
+   "tool": null,
+   "difficulty": 1,
+   "conflicts": [
+    "prone",
+    "neck_flexion"
+   ]
   }
  ]
 }

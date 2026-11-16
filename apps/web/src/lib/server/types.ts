@@ -15,6 +15,7 @@ export type ConsentKind = Schemas["ConsentKind"];
 export type RoundSummary = Schemas["RoundSummary"];
 export type PlanOut = Schemas["PlanOut"];
 export type ReviewItem = Schemas["ReviewItem"];
+export type ApprovedVideo = Schemas["ApprovedVideo"];
 export type RoundOut = Schemas["RoundOut"];
 export type QuestionnaireOut = Schemas["QuestionnaireOut"];
 export type PlanReasons = Schemas["PlanReasons"];

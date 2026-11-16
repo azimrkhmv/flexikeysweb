@@ -39,6 +39,7 @@ def test_every_exercise_and_language_has_a_clip() -> None:
     files = {p.name for p in PLACEHOLDER_FILES.glob("*.mp4")}
     if not files:
         pytest.skip("website files not present")
+    # 33 exercises; the six slots of B106 (Warm Hills spec §7) have no clip: they wait for a real, approved video.
     assert len(files) == 33 * 3 and "putty_squeeze.uz.mp4" in files
 
 

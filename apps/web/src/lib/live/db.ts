@@ -7,10 +7,10 @@ import { ApiError, type ChildAuth, type DB } from "@/lib/api/schema";
 import { sessionStore } from "@/lib/session";
 import { useStore } from "@/lib/store";
 import { http } from "./http";
-import type { ChatOut, ChatSummary, MessageOut, PlanReasons, FeedbackOut, AuditOut, FlagOut, Overview, KitOrderOut, BookingOut, ClinicBooking, ClinicSlot, FreeSlot, MyPlace, PlaceView, CardOut, ChildOut, ClipOut, Helpers, InviteForMe, Consents, DailyOut, FormOut, InUse, InviteOut, PlanOut, PlanStatus, ProfileOut, ProgressOut, ReviewItem, RoundOut, RoundSummary, ShareOut, SharedChild, TherapistProgressOut } from "@/lib/server/types";
+import type { ApprovedVideo, ChatOut, ChatSummary, MessageOut, PlanReasons, FeedbackOut, AuditOut, FlagOut, Overview, KitOrderOut, BookingOut, ClinicBooking, ClinicSlot, FreeSlot, MyPlace, PlaceView, CardOut, ChildOut, ClipOut, Helpers, InviteForMe, Consents, DailyOut, FormOut, InUse, InviteOut, PlanOut, PlanStatus, ProfileOut, ProgressOut, ReviewItem, RoundOut, RoundSummary, ShareOut, SharedChild, TherapistProgressOut } from "@/lib/server/types";
 import {
   kitOrderFrom, bookingFrom, clinicBookingFrom, myPlaceFrom, placeFrom, slotFrom,
-  answersFrom, chatFrom, clipsFrom, dailyFrom, doneFrom, familyChildFrom, familyConsentsFrom, familyPlanFrom, inUseFrom, pausedFrom, planFrom, planVideosFrom, reviewVideosFrom, shareFrom, sharedChildFrom, voiceCardFrom,
+  answersFrom, chatFrom, clipsFrom, dailyFrom, doneFrom, familyChildFrom, familyConsentsFrom, familyPlanFrom, inUseFrom, pausedFrom, planFrom, planVideosFrom, reviewVideosFrom, shelfFrom, shareFrom, sharedChildFrom, voiceCardFrom,
   aacCardFrom, auditFrom, childFrom, notificationFrom, levelsFrom, profileFrom,
   taskFrom, userFrom,
   type BAacCard, type BNotification, type BChild, type BLevel,
@@ -145,6 +145,9 @@ export function useLiveDb(): DB {
   });
 
 
+  // ---- B106: which exercises have an approved video, in which languages (the Exercises page, the admin's list)
+  const shelf = useQuery({ queryKey: ["videos-approved"], enabled: role === "parent" || role === "admin", queryFn: () => http<ApprovedVideo[]>("GET", "/videos") });
+
   // ---- physiotherapist: the review queue, every status (the page counts each)
   const review = useQueries({
     queries: (role === "physio" ? REVIEW_STATUSES : []).map((st) => ({
@@ -209,7 +212,7 @@ export function useLiveDb(): DB {
     if (signedIn !== undefined && sessionStore.get().role !== signedIn) sessionStore.set({ role: signedIn });
   }, [signedIn]);
 
-  const all = [me, kids, linked, invites, tprofile, family, familyPlan, helpInvites, places, kitOrders, clinicPlaces, notifications, flags, playing, ...own, ...per, ...answers, ...review, ...views, ...admin, ...freeTimes, ...clinicViews];
+  const all = [me, kids, linked, invites, tprofile, family, familyPlan, helpInvites, places, kitOrders, clinicPlaces, notifications, flags, playing, shelf, ...own, ...per, ...answers, ...review, ...views, ...admin, ...freeTimes, ...clinicViews];
   const stamp = all.map((q) => q.dataUpdatedAt).join();
   const loading =
     me.isPending ||
@@ -330,6 +333,7 @@ export function useLiveDb(): DB {
     }
 
     if (role === "physio") db.videos = reviewVideosFrom(review.flatMap((q) => q.data ?? []));
+    if ((role === "parent" || role === "admin") && shelf.data) db.videos = shelfFrom(shelf.data, db.videos);
 
     if (role === "admin" && user && admin.some((q) => q.data)) {
       const at = (k: (typeof ADMIN)[number]) => admin[ADMIN.indexOf(k)]?.data;

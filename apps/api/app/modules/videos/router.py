@@ -257,6 +257,22 @@ async def decide(
     return VideoOut.model_validate(video, from_attributes=True)
 
 
+class ApprovedVideo(ApiModel):
+    exercise_id: str
+    langs: list[VideoLang]
+
+
+@family_router.get("")
+async def approved(_: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]) -> list[ApprovedVideo]:
+    """B106: which exercises have an approved video, in which languages (the Exercises page shows the others as
+    "waiting for physio check"). No file links here; `GET /videos/{exercise_id}` gives one for a single video."""
+    langs: dict[str, list[VideoLang]] = {}
+    rows = await db.execute(select(Video.exercise_id, Video.lang).where(servable()).order_by(Video.exercise_id))
+    for exercise_id, lang in rows:
+        langs.setdefault(exercise_id, []).append(lang)
+    return [ApprovedVideo(exercise_id=e, langs=sorted(ls, key=lambda x: x.value)) for e, ls in langs.items()]
+
+
 class FamilyVideo(ApiModel):
     exercise_id: str
     lang: VideoLang

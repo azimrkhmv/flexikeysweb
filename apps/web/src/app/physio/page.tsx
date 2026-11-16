@@ -1,19 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Card, Chip, Empty, Field, Input, PageHeader, Select, Textarea, useAction } from "@/components/ui";
-import { FormError, FormNote } from "@/features/auth/parts";
-import { exerciseLibrary } from "@/content/exercises";
+import { Button, Card, Chip, Empty, Field, PageHeader, Select, Textarea, useAction } from "@/components/ui";
+import { FormError } from "@/features/auth/parts";
+import { VideoRegister } from "@/features/pro/VideoRegister";
 import { api, sel, useDb } from "@/lib/api";
-import { LANG_NAMES, LANGS, useLang, useT, type Lang } from "@/lib/i18n";
+import { LANG_NAMES, useLang, useT, type Lang } from "@/lib/i18n";
 import type { ExerciseVideo, VideoStatus } from "@/lib/types";
 
 // Spec §8: generated → physio review (approve / reject / request changes with a note) → published.
 // Only approved language versions can enter a roadmap (sel.usableVideos).
 
 const STATUSES: VideoStatus[] = ["generated", "changes_requested", "rejected", "approved"];
-/** The exercise list (the same ids as the server's exercises.json). */
-const EXERCISES = exerciseLibrary("", "");
 
 export default function PhysioReview() {
   const t = useT();
@@ -40,7 +38,7 @@ export default function PhysioReview() {
           {items.map(({ video, lang }) => <Item key={`${video.id}/${lang}`} video={video} lang={lang} />)}
         </ul>
       )}
-      {me.role === "admin" && <Register />}
+      {me.role === "admin" && <VideoRegister />}
     </>
   );
 }
@@ -94,55 +92,6 @@ function Item({ video, lang }: { video: ExerciseVideo; lang: Lang }) {
         <Button variant="outline" disabled={review.pending} onClick={() => decide("changes_requested")}>{t("review.changes")}</Button>
         <Button variant="ghost" disabled={review.pending} onClick={() => decide("rejected")}>{t("review.reject")}</Button>
       </div>
-    </Card>
-  );
-}
-
-/** Admin: a finished video file for one exercise and language goes into the review queue. */
-function Register() {
-  const t = useT();
-  const [uiLang] = useLang();
-  const [videoId, setVideoId] = useState(EXERCISES[0].id);
-  const [lang, setLang] = useState<Lang>("uz");
-  const [file, setFile] = useState<File | null>(null);
-  const [done, setDone] = useState(false);
-  const upload = useAction(api.uploadVideo);
-  return (
-    <Card as="section" className="mt-8 max-w-2xl space-y-4 p-5">
-      <h2 className="text-lg font-extrabold text-ink">{t("review.register.title")}</h2>
-      <form
-        className="grid gap-4 sm:grid-cols-2"
-        onSubmit={async (e) => {
-          e.preventDefault();
-          setDone(false);
-          if (file && (await upload.run(videoId, lang, file)) !== undefined) {
-            setFile(null);
-            (e.target as HTMLFormElement).reset();
-            setDone(true);
-          }
-        }}
-      >
-        <Field label={t("review.register.exercise")}>
-          <Select value={videoId} onChange={(e) => setVideoId(e.target.value)}>
-            {EXERCISES.map((v) => <option key={v.id} value={v.id}>{v.title[uiLang]}</option>)}
-          </Select>
-        </Field>
-        <Field label={t("review.register.lang")}>
-          <Select value={lang} onChange={(e) => setLang(e.target.value as Lang)}>
-            {LANGS.map((l) => <option key={l} value={l}>{LANG_NAMES[l]}</option>)}
-          </Select>
-        </Field>
-        <div className="sm:col-span-2">
-          <Field label={t("review.register.file")}>
-            <Input required type="file" accept="video/*" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
-          </Field>
-        </div>
-        <div className="space-y-2 sm:col-span-2">
-          <FormError>{upload.error}</FormError>
-          {done && <FormNote>{t("review.done")}</FormNote>}
-          <Button type="submit" pending={upload.pending}>{t("review.register.submit")}</Button>
-        </div>
-      </form>
     </Card>
   );
 }

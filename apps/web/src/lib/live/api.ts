@@ -119,6 +119,10 @@ export const liveApi = {
     return http<MockExport>("GET", `/children/${childId}/export`);
   },
   // ------------------------------------------------------------ video files (admin) and their review (spec §8, rule 3)
+  /** GET /videos/{id}?lang= — a short-lived link to watch an approved video (B106). */
+  async watchVideo(exerciseId: string, lang: Lang) {
+    return (await http<{ watchUrl: string }>("GET", `/videos/${exerciseId}?lang=${lang}`)).watchUrl;
+  },
   /** POST /admin/videos/upload-link, the file straight to storage, then POST /admin/videos: it waits for review. */
   async uploadVideo(exerciseId: string, lang: Lang, file: Blob) {
     const which = { exerciseId, lang };

@@ -2,9 +2,10 @@
 // where the two differ live here, so the rest of the app never sees backend field names.
 
 import { AAC_BY_ID, CUSTOM_PREFIX } from "@/content/aac";
+import { exerciseList } from "@/content/exercises";
 import { DEFAULT_PROFILE } from "@/lib/adaptive";
 import { TRIAL_DAYS } from "@/content/plans";
-import type { MessageOut, AdminUser, AuditOut, BookingOut, KitOrderOut, CardOut, ChildOut, ClinicBooking, ClinicSlot, ClipOut, ConsentKind, Consents, DailyOut, FreeSlot, InUse, Me, MyPlace, PlaceView, PlanOut, PlanStatus, ReviewItem, RoundOut, ShareOut, SharedChild, UserOut } from "@/lib/server/types";
+import type { MessageOut, AdminUser, AuditOut, BookingOut, KitOrderOut, CardOut, ChildOut, ClinicBooking, ClinicSlot, ClipOut, ConsentKind, Consents, DailyOut, FreeSlot, InUse, Me, MyPlace, PlaceView, PlanOut, PlanStatus, ReviewItem, ApprovedVideo, RoundOut, ShareOut, SharedChild, UserOut } from "@/lib/server/types";
 import type { DB } from "@/lib/api/schema";
 import type { Lang } from "@/lib/translate";
 import type { ChildSupport, AgeBand, GameKind, BodyArea, DailyAnswer, ExerciseVideo, FnLevel, GoalKey, IntakeAnswer, IntakeValue, L10n, PausedDay, Restriction, Roadmap, TaskDone,
@@ -126,6 +127,20 @@ export function planVideosFrom(p: PlanOut): ExerciseVideo[] {
     if (!seen.has(e.exerciseId))
       seen.set(e.exerciseId, { id: e.exerciseId, title: e.title as L10n, tool: e.tool ?? null, bodyArea: "hands", goals: [], gmfcs: [], ages: [], difficulty: 1, conflicts: [], versions: {} });
   return [...seen.values()];
+}
+
+/** B106: the whole library (the website's copy of exercises.json), each exercise with the languages its video is
+ *  approved in (`GET /videos`). No file link here: the Exercises page asks for one when a video is played. An exercise
+ *  only an old plan still has (it left the library) stays as the plan gave it. */
+export function shelfFrom(approved: ApprovedVideo[], before: ExerciseVideo[]): ExerciseVideo[] {
+  const langs = new Map(approved.map((v) => [v.exerciseId, v.langs]));
+  const library = exerciseList().map((v) => ({
+    ...v,
+    versions: Object.fromEntries(
+      (langs.get(v.id) ?? []).filter((l): l is Lang => l === "uz" || l === "ru" || l === "en").map((l) => [l, { url: "", durationS: 0, status: "approved" as const, notes: [] }]),
+    ),
+  }));
+  return [...library, ...before.filter((v) => !library.some((x) => x.id === v.id))];
 }
 
 /** The physiotherapist's review queue: one ExerciseVideo per exercise, one version per language file. */

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { exerciseLibrary } from "@/content/exercises";
+import { exerciseLibrary, SLOTS } from "@/content/exercises";
 import type { Answers } from "@/content/intake";
 import { buildRoadmap, levelAfter, ROADMAP_DAYS, type PlanInput } from "./roadmap";
 import type { ExerciseVideo, Restriction, TherapistInput } from "./types";
@@ -83,6 +83,37 @@ describe("roadmap engine", () => {
     const ids = chosen(buildRoadmap(input(base), lib)).map((v) => v.id);
     expect(ids).not.toContain("putty_squeeze");
     for (const id of ["tongs_sort", "pegboard_pattern", "funny_faces", "catch_soft_ball"]) expect(ids).not.toContain(id); // seeded as waiting for review
+  });
+
+  // B106 (Warm Hills spec §7): the plan never holds an exercise unless it is approved — whatever the answers, the
+  // language, or a therapist's choice. The new slots have no video yet, so they never come in.
+  it("an exercise enters a plan only when its video is approved in the child's language (B106)", { timeout: 30_000 }, () => {
+    const slots = SLOTS.filter((id) => id !== "sit_to_stand");
+    for (const id of slots) expect(BY_ID.get(id)!.versions, id).toEqual({});
+    const waiting = ["generated", "changes_requested", "rejected"] as const;
+    let plans = 0;
+    for (const lang of ["uz", "ru", "en"] as const)
+      for (let turn = 0; turn < 3; turn++) {
+        // Every third exercise, in turn, is not approved in this language (or has no file at all).
+        const lib: ExerciseVideo[] = LIB.map((v, k) => {
+          if (k % 3 !== turn || !v.versions[lang]) return v;
+          const versions = { ...v.versions };
+          if (k % 2) versions[lang] = { ...versions[lang]!, status: waiting[k % 3], approvedBy: undefined, approvedAt: undefined };
+          else delete versions[lang];
+          return { ...v, versions };
+        });
+        const off = lib.filter((v) => v.versions[lang]?.status !== "approved").map((v) => v.id);
+        for (const p12 of ["walks", "walker", "wheelchair", null])
+          for (const goals of [["walk", "hands", "communicate"], ["sit"], ["hands", "eat"]])
+            for (const th of [undefined, { restrictions: [], goals: [], assign: [...slots, ...off.slice(0, 3)], exclude: [], legBalanceApproved: true }] as (TherapistInput | undefined)[]) {
+              const r = buildRoadmap(input({ ...base, P12: p12, P33: goals, P34: "30" }, { lang, therapist: th }), lib);
+              const ids = [...new Set(r.days.flatMap((d) => d.exercises.map((e) => e.videoId)))];
+              expect(ids.length).toBeGreaterThan(0);
+              for (const id of ids) expect(lib.find((v) => v.id === id)!.versions[lang]?.status, `${lang} ${id}`).toBe("approved");
+              plans++;
+            }
+      }
+    expect(plans).toBe(3 * 3 * 4 * 3 * 2);
   });
 
   it("has no exercises without health consent, games only", () => {

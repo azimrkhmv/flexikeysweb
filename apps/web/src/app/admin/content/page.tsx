@@ -3,11 +3,12 @@
 import { AAC_CARDS } from "@/content/aac";
 import { LEVELS } from "@/content/levels";
 import { VOCAB } from "@/content/vocab";
-import { Card, Chip, Meter, PageHeader, Toggle, useAction } from "@/components/ui";
+import { Card, Chip, LinkButton, Meter, PageHeader, Toggle, useAction } from "@/components/ui";
+import { VideoRegister } from "@/features/pro/VideoRegister";
 import { SectionTitle, Table, td, th, useMe } from "@/features/pro/shared";
-import { api, sel } from "@/lib/api";
+import { api, sel, useDb } from "@/lib/api";
 import { LANGS, useLang, useT } from "@/lib/i18n";
-import type { L10n } from "@/lib/types";
+import type { ExerciseVideo, L10n } from "@/lib/types";
 
 // Every spoken string needs audio in every language (FR-AUD-2). Here: text presence per language.
 const SPOKEN: L10n[] = [...Object.values(VOCAB).map((v) => v.word), ...LEVELS.map((l) => l.title), ...AAC_CARDS.map((c) => c.label)];
@@ -85,6 +86,8 @@ export default function AdminContent() {
           <p className="mt-3 text-sm text-muted">{t("admin.content.aac", { n: AAC_CARDS.length })}</p>
         </Card>
 
+        <ExerciseVideos />
+
         <Card className="lg:col-span-2">
           <SectionTitle>{t("admin.flags.title")}</SectionTitle>
           <p className="mb-3 text-sm text-muted">{t("admin.audited")}</p>
@@ -103,5 +106,60 @@ export default function AdminContent() {
         </Card>
       </div>
     </>
+  );
+}
+
+/**
+ * B106 (Warm Hills spec §7): the library's exercises and the state of each language's video. An admin uploads a file
+ * here (the same form as on the Video reviewer page); the physiotherapist approves it there. The spec asked for an
+ * "approved" tick by the admin with the physio's name; product rule 3 and the server let only a physiotherapist's own
+ * account approve a video, so this page links to that review instead.
+ */
+function ExerciseVideos() {
+  const t = useT();
+  const [lang] = useLang();
+  const db = useDb();
+  const state = (v: ExerciseVideo, l: (typeof LANGS)[number]) => {
+    const s = v.versions[l]?.status;
+    return s === "approved" ? (["teal", t("admin.videos.approved")] as const) : s ? (["sun", t("admin.videos.waiting")] as const) : (["gray", t("admin.videos.none")] as const);
+  };
+  return (
+    <Card className="lg:col-span-2">
+      <SectionTitle>{t("admin.videos.title")}</SectionTitle>
+      <p className="mb-3 max-w-[70ch] text-sm text-muted">{t("admin.videos.lead")}</p>
+      <LinkButton href="/physio" variant="soft" size="sm" className="mb-4">
+        {t("admin.videos.review")}
+      </LinkButton>
+      <Table>
+        <thead>
+          <tr>
+            <th className={th}>{t("admin.videos.exercise")}</th>
+            {LANGS.map((l) => (
+              <th key={l} className={th}>
+                {t(`lang.${l}`)}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {sel.videos(db).map((v) => (
+            <tr key={v.id}>
+              <td className={`${td} font-bold`}>
+                {v.title[lang]} <span className="font-normal text-muted">· {t(`area.${v.bodyArea}`)}</span>
+              </td>
+              {LANGS.map((l) => {
+                const [tone, label] = state(v, l);
+                return (
+                  <td key={l} className={td}>
+                    <Chip tone={tone}>{label}</Chip>
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+      <VideoRegister />
+    </Card>
   );
 }

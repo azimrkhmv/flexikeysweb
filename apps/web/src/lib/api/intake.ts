@@ -252,6 +252,13 @@ export const intakeApi = {
   },
   /** POST /admin/videos — a finished file for one exercise and language; it waits for physio review again.
    *  Demo: the file plays from this browser only, until the page is closed. */
+  /** GET /videos/{id}?lang= — a link to watch an approved video (B106); anything else is "not found" (rule 3). */
+  async watchVideo(exerciseId: string, lang: Lang) {
+    requireUser();
+    const ver = read().videos.find((v) => v.id === exerciseId)?.versions[lang];
+    if (ver?.status !== "approved" || !ver.url) throw new ApiError("not_found");
+    return net(ver.url);
+  },
   async uploadVideo(exerciseId: string, lang: Lang, file: Blob) {
     const u = requireUser(["admin"]);
     const url = URL.createObjectURL(file);

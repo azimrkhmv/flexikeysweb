@@ -2183,6 +2183,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/videos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Approved
+         * @description B106: which exercises have an approved video, in which languages (the Exercises page shows the others as
+         *     "waiting for physio check"). No file links here; `GET /videos/{exercise_id}` gives one for a single video.
+         */
+        get: operations["approved_api_v1_videos_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/videos/{exercise_id}": {
         parameters: {
             query?: never;
@@ -2267,6 +2288,13 @@ export interface components {
             answers: {
                 [key: string]: unknown;
             };
+        };
+        /** ApprovedVideo */
+        ApprovedVideo: {
+            /** Exerciseid */
+            exerciseId: string;
+            /** Langs */
+            langs: components["schemas"]["VideoLang"][];
         };
         /** AreaProgress */
         AreaProgress: {
@@ -8212,6 +8240,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    approved_api_v1_videos_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApprovedVideo"][];
                 };
             };
         };
