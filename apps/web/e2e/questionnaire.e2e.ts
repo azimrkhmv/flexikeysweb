@@ -251,8 +251,8 @@ test("quick start: one question a screen, a first plan, then \"Answer more\" ope
   await next();
   await pick(page, "Any metal plates, pumps or devices under the skin?", "No");
   await next();
-  const [n, total] = (await counter.innerText()).match(/\d+/g)!.map(Number);
-  expect(n).toBe(total); // the goals are the last screen
+  await expect(counter).toHaveText(/^Question (\d+) of \1$/); // the goals are the last screen (waits for the screen)
+  const total = Number((await counter.innerText()).match(/\d+$/)![0]);
   expect(total).toBeLessThanOrEqual(23); // 22 questions at most, and the health consent screen
   await pick(page, /^Your top 3 goals/, "Communicate needs");
   await next();

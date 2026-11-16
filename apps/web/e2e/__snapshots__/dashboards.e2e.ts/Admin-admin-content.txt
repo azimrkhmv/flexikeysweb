@@ -111,6 +111,98 @@ story
 
 My Voice (AAC) vocabulary: 40 cards.
 
+Exercise videos
+
+Every exercise of the library and its video in each language. Upload a finished file below; it waits for the physiotherapist, who approves it on the Video reviewer page (only a physiotherapist approves a video).
+
+Open the Video reviewer page
+EXERCISE	UZBEK	RUSSIAN	ENGLISH
+Squeeze the putty · Hands	Approved	Approved	Approved
+Pinch little balls · Hands	Approved	Approved	Approved
+Pom-poms with tongs · Hands	Approved	Approved	Approved
+Sort by colour with tongs · Hands	Waiting for physio check	Waiting for physio check	Waiting for physio check
+Big pegs in, big pegs out · Hands	Approved	Approved	Approved
+Copy a peg pattern · Hands	Waiting for physio check	Waiting for physio check	Waiting for physio check
+Lacing card · Hands	Approved	Approved	Approved
+Finger walk · Hands	Approved	Approved	Approved
+Scoop with a spoon · Hands	Approved	Approved	Approved
+Roll the ball while sitting · Arms	Approved	Approved	Approved
+Bean bag to the target · Arms	Approved	Approved	Approved
+Reach for the sky (sitting) · Arms	Approved	Approved	Approved
+Catch the soft ball · Arms	Waiting for physio check	Waiting for physio check	Waiting for physio check
+Sit and reach to the sides · Back and sitting	Approved	Approved	Approved
+Pass the ball around you · Back and sitting	Approved	Approved	Approved
+Tummy time reach · Back and sitting	Approved	Approved	Approved
+Little bridge · Back and sitting	Approved	Approved	Approved
+Side-sitting play · Back and sitting	Approved	Approved	Approved
+Look left, look right · Head and neck	Approved	Approved	Approved
+Chin to chest, slowly · Head and neck	Approved	Approved	Approved
+Sit to stand · Legs	Approved	Approved	Approved
+Steps on the touch discs · Legs	Approved	Approved	Approved
+Walk along the line · Legs	Approved	Approved	Approved
+Stand on one leg · Legs	Approved	Approved	Approved
+Bunny hops · Legs	Approved	Approved	Approved
+Kick the soft ball · Legs	Approved	Approved	Approved
+Leg lifts while sitting · Legs	Approved	Approved	Approved
+Feel the discs with your feet · Legs	Approved	Approved	Approved
+Blow like the wind · Mouth and face	Approved	Approved	Approved
+Funny faces in the mirror · Mouth and face	Waiting for physio check	Waiting for physio check	Waiting for physio check
+Say it with the picture cards · Mouth and face	Approved	Approved	Approved
+Show the feeling · Head and neck	Approved	Approved	Approved
+What comes next? (cards) · Hands	Approved	Approved	Approved
+Reach for a toy · Arms	No video	No video	No video
+Open and close the hand · Hands	No video	No video	No video
+Sitting balance · Back and sitting	No video	No video	No video
+Tummy time with a toy · Back and sitting	No video	No video	No video
+Animal walks · Legs	No video	No video	No video
+Rolling to the side · Back and sitting	No video	No video	No video
+Add a generated video file
+Exercise
+Squeeze the putty
+Pinch little balls
+Pom-poms with tongs
+Sort by colour with tongs
+Big pegs in, big pegs out
+Copy a peg pattern
+Lacing card
+Finger walk
+Scoop with a spoon
+Roll the ball while sitting
+Bean bag to the target
+Reach for the sky (sitting)
+Catch the soft ball
+Sit and reach to the sides
+Pass the ball around you
+Tummy time reach
+Little bridge
+Side-sitting play
+Look left, look right
+Chin to chest, slowly
+Sit to stand
+Steps on the touch discs
+Walk along the line
+Stand on one leg
+Bunny hops
+Kick the soft ball
+Leg lifts while sitting
+Feel the discs with your feet
+Blow like the wind
+Funny faces in the mirror
+Say it with the picture cards
+Show the feeling
+What comes next? (cards)
+Reach for a toy
+Open and close the hand
+Sitting balance
+Tummy time with a toy
+Animal walks
+Rolling to the side
+Language
+Oʻzbekcha
+Русский
+English
+Video file
+Send to review
 Feature flags
 
 Every admin action is recorded in the audit log.

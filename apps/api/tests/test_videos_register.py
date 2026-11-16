@@ -71,11 +71,11 @@ def test_library_loads_and_keeps_exercises_that_left_it(client: TestClient) -> N
         await db.commit()
 
     run(client, old_one)
-    assert run(client, load_exercises) == 33
-    assert run(client, load_exercises) == 33  # running it again changes nothing
+    assert run(client, load_exercises) == 39  # 33 + the six slots of B106
+    assert run(client, load_exercises) == 39  # running it again changes nothing
     rows = run(client, lambda db: db.execute(select(Exercise.id, Exercise.active, Exercise.difficulty)))
     active = {i: (a, d) for i, a, d in rows}
-    assert len([i for i, (a, _) in active.items() if a]) == 33
+    assert len([i for i, (a, _) in active.items() if a]) == 39
     assert active["old_one"] == (False, 1)  # old plans can still show it
     assert active["putty_squeeze"] == (True, 1)
 

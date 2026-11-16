@@ -16,6 +16,9 @@ from tests.test_children import API, parent
 from tests.test_storage import bucket  # noqa: F401 (makes the test bucket)
 from tests.test_videos_register import run, title
 
+# The six exercise slots of B106 (Warm Hills spec §7) have no clip: they wait for a real, approved video.
+NEW_SLOTS = 6
+
 
 @pytest.fixture
 def client() -> Iterator[TestClient]:
@@ -39,8 +42,7 @@ def test_every_exercise_and_language_has_a_clip() -> None:
     files = {p.name for p in PLACEHOLDER_FILES.glob("*.mp4")}
     if not files:
         pytest.skip("website files not present")
-    # 33 exercises; the six slots of B106 (Warm Hills spec §7) have no clip: they wait for a real, approved video.
-    assert len(files) == 33 * 3 and "putty_squeeze.uz.mp4" in files
+    assert len(files) == (39 - NEW_SLOTS) * 3 and "putty_squeeze.uz.mp4" in files
 
 
 def test_a_family_watches_the_placeholder_on_a_test_server(client: TestClient, placeholders: None) -> None:
@@ -49,7 +51,7 @@ def test_a_family_watches_the_placeholder_on_a_test_server(client: TestClient, p
         return exercises, await db.scalar(select(func.count()).select_from(Video))
 
     exercises, videos = run(client, counts)
-    assert videos >= exercises * 3  # every exercise in every language
+    assert videos >= (exercises - NEW_SLOTS) * 3  # every exercise with a clip, in every language
     assert run(client, load_placeholders) == 0  # nothing twice, and a real video is never replaced
     got = client.get(f"{API}/videos/finger_walk", headers=parent(client), params={"lang": "ru"})
     assert got.status_code == 200 and "placeholders/finger_walk/ru.mp4" in got.json()["watchUrl"]
