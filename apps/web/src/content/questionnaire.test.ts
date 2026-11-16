@@ -2,18 +2,13 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import mine from "./backend/questionnaire.json";
 import { intake } from "@/messages/intake";
-import { bodyPattern, cmFromFtIn, cpType, effectiveAnswers, ftInFromCm, homeLanguage, inLang, kgFromLb, ladderTicks, ladderToggle, ladderValue, lbFromKg, offersNotSure, Q_BY_ID, QUESTIONNAIRE, quickCheckDefaults, quickCheckOn, shownOptions, toggleOption, typedProblem, typicalFilled, upgrade, visible, type QAnswer, type QAnswers } from "./questionnaire";
+import { bodyPattern, cmFromFtIn, cpType, effectiveAnswers, ftInFromCm, homeLanguage, inLang, kgFromLb, ladderTicks, ladderToggle, ladderValue, lbFromKg, offersNotSure, Q_BY_ID, QUESTIONNAIRE, quickCheckDefaults, quickCheckOn, quickMissing, quickVisible, QUICK_MAX, shownOptions, toggleOption, typedProblem, typicalFilled, upgrade, visible, type QAnswer, type QAnswers } from "./questionnaire";
 
 // IQ1: the questionnaire file is the server's, and the cases below fix which questions each sample child is shown.
 // questionnaire_cases.json (here and a copy in apps/api/tests) makes the server prove the same. Regenerate with
 // UPDATE_BACKEND=1 npm test, then copy it to apps/api/tests/.
 const TODAY = "2026-10-22";
-const QC_IDS = ["QC_move", "QC_hands", "QC_body", "QC_senses", "QC_talk", "QC_daily"];
-const QC_ALL = (v: string): QAnswers => Object.fromEntries(QC_IDS.map((id) => [id, v]));
-// The personas of the 5 Nov review: only what is needed to place each child; the rest of the answers do not change what shows.
-const M: QAnswers = { ...QC_ALL("none"), QC_body: "some", QC_talk: "some", A2: "2016-05-01", A3: "girl", B1: ["developmental_delay"], B3_parts: ["face_mouth"], B7: ["intellectual"], B6: "no", B8: "no", DD3: "no", E1: "normal", E3: "never", E6_now: "no", E7: "no", E13: "no", I1: ["none"], J9: ["memory", "speech"], G1: ["single_words"] };
-const W: QAnswers = { ...QC_ALL("none"), QC_talk: "a_lot", A2: "2011-05-01", A3: "boy", B1: ["developmental_delay"], B3_parts: ["none"], B6: "no", B8: "no", DD3: "no", E7: "no", E13: "no", I1: ["none"], G1: ["sentences"] };
-const S: QAnswers = { ...QC_ALL("a_lot"), A2: "2023-05-01", B1: ["cp"], B3_parts: ["left_arm", "right_arm", "left_leg", "right_leg", "trunk"], CP1_types: ["spastic", "dyskinetic"], C10: "v", C3: "cant_sit", C5: "cant", C6: "doesnt_step", G1: ["face_crying"], B6: "no", B8: "no", CP3: "no", E1: "stiff", E3: "sometimes", E7: "no", E13: "no", I1: ["physio"] };
+import { M, QC_ALL, QC_IDS, S, W } from "./personas";
 
 const CASES: { name: string; answers: QAnswers }[] = [
   { name: "no answers yet", answers: {} },
@@ -76,6 +71,8 @@ const CASES: { name: string; answers: QAnswers }[] = [
   { name: "qc: persona M", answers: M },
   { name: "qc: persona W", answers: W },
   { name: "qc: persona S", answers: S },
+  // B103: the most quick questions a child can get: CP and Down syndrome, pain, a broken bone, every area "A lot".
+  { name: "quick: the most questions", answers: { ...QC_ALL("a_lot"), A2: "2019-05-01", B1: ["cp", "down_syndrome"], B3_parts: ["left_leg"], B6: "still", B7: ["heart"], B8: "yes", C12: "yes", CP3: "yes", E3: "often", E7: "yes", E13: "yes" } },
   { name: "qc: walks alone, short version", answers: { ...QC_ALL("some"), A2: "2011-03-01", B1: ["dcd"], C6: "alone_7m" } },
   { name: "qc: stands alone, a lot", answers: { ...QC_ALL("a_lot"), A2: "2016-03-01", B1: ["developmental_delay"], C5: "alone_10_60s" } },
   { name: "qc: walks with a walker, a lot", answers: { ...QC_ALL("a_lot"), A2: "2016-03-01", B1: ["developmental_delay"], C6: "walker_two_hands" } },
@@ -209,6 +206,7 @@ describe("questionnaire (IQ1)", () => {
       visible: visible(answers, TODAY),
       home: Object.fromEntries(["uz", "ru", "en"].map((ui) => [ui, homeLanguage(answers, ui)])),
       upgraded: Object.fromEntries(["A7_langs", "C22", "C24", "I8_place", "I8_lang"].flatMap((id) => { const v = upgrade(answers)[id]; return v === undefined ? [] : [[id, v]]; })),
+      quick: quickVisible(answers, TODAY), // B103
       effective: effectiveAnswers(answers, TODAY),
       filled: typicalFilled(answers, TODAY),
       options: Object.fromEntries(
@@ -222,6 +220,41 @@ describe("questionnaire (IQ1)", () => {
     }
     expect(readFileSync(new URL("questionnaire_cases.json", BACKEND), "utf8")).toBe(json);
     expect(readFileSync(API_COPY, "utf8")).toBe(json);
+  });
+
+  it("quick start: at most 22 questions, every safety question kept (B103)", () => {
+    const count = (a: QAnswers) => quickVisible(a, TODAY).length;
+    for (const [name, a] of [["M", M], ["W", W], ["S", S]] as const) expect(count(a), name).toBeLessThanOrEqual(QUICK_MAX);
+    // Written in the task note: M 20, W 19, S 22 (S, with CP, gets C10 and has no room left for C6, D7 and the goals).
+    expect([count(M), count(W), count(S)]).toEqual([20, 19, 22]);
+    expect(quickVisible(S, TODAY).filter((id) => ["J9", "C6", "D7", "C3"].includes(id))).toEqual([]);
+    // Above 22 only with CP, pain and a broken bone: safety wins (spec 4.1), with none of the room questions. 23 with
+    // CP, 24 with CP and Down syndrome; written in the task note.
+    const most = CASES.find((c) => c.name === "quick: the most questions")!.answers;
+    expect(count(most)).toBe(24);
+    expect(quickVisible(most, TODAY).filter((id) => ["J9", "C6", "D7", "C3"].includes(id))).toEqual([]);
+    expect(count({ ...most, B1: ["cp"] })).toBe(23);
+    expect(count({ ...most, B1: ["cp"], E7: "no" })).toBe(QUICK_MAX);
+    expect(count({ ...most, B1: ["down_syndrome"] })).toBe(QUICK_MAX);
+    // Every question a safety rule of the bridge reads is a quick one, and asked whenever the full questionnaire asks it.
+    const SAFETY = ["B1", "B6", "B7", "B8", "C10", "C12", "CP3", "DS2", "E3", "E4", "E7", "E7_where", "E13"];
+    for (const id of SAFETY) expect(Q_BY_ID[id].quick, id).toBe(true);
+    for (const c of CASES) {
+      const full = visible(c.answers, TODAY);
+      for (const id of SAFETY) if (full.includes(id)) expect(quickVisible(c.answers, TODAY), `${c.name}: ${id}`).toContain(id);
+    }
+    // Height and weight are not asked (spec 4.1); the quick start never asks what the full questionnaire would not.
+    for (const c of CASES) {
+      expect(quickVisible(c.answers, TODAY)).not.toContain("A4");
+      for (const id of quickVisible(c.answers, TODAY)) expect(visible(c.answers, TODAY)).toContain(id);
+    }
+    // Room for the pain question is kept until the pain answer is in: the room questions never shrink later.
+    const before = quickVisible({ ...M, E3: undefined, QC_body: "a_lot" }, TODAY);
+    expect(before.filter((id) => ["J9", "C6", "D7", "C3"].includes(id)).every((id) => quickVisible({ ...M, QC_body: "a_lot", E3: "often" }, TODAY).includes(id))).toBe(true);
+    // Done: the required ones answered ("Not sure" counts); health questions wait for the health consent.
+    expect(quickMissing({ ...M, J9: ["memory"] }, TODAY, true)).toEqual(["A1", "A7_langs", "C12"]);
+    expect(quickMissing({ ...M, A1: "Mira", A7_langs: ["uzbek"], C12: "no", J9: null }, TODAY, true)).toEqual([]);
+    expect(quickMissing({}, TODAY, false)).toEqual(["A1", "A2", "A3", "A7_langs", "C10", "C12"]); // no room for J9 until the diagnosis is known
   });
 
   it("refuses the dates and numbers the server refuses (B60)", () => {

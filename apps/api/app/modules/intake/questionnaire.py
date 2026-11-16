@@ -361,3 +361,31 @@ def missing_answers(answers: Answers, health_consent: bool, today: date) -> list
         for qid in visible(answers, today)
         if QUESTIONS[qid]["required"] and (health_consent or not QUESTIONS[qid]["health"]) and qid not in answers
     ]
+
+
+# Quick start (B103, spec 4 of 15 Nov 2026): the questions marked "quick" that this child's full questionnaire asks
+# too. Every question a safety rule reads (bridge.py) is always in it; QUICK_ROOM fills the room left under QUICK_MAX,
+# in that order. A question left out reads as not answered: the cautious answer. Same as the website's quickVisible.
+QUICK_MAX = 22
+QUICK_ROOM = ("J9", "C6", "D7", "C3")  # how the child walks and sits, the screen question, the goals: goals first
+QUICK_FOLLOW_UPS = {"E4": "E3", "E7_where": "E7"}  # room is kept for these until the question before is answered
+
+
+def quick_visible(answers: Answers, today: date) -> list[str]:
+    """The quick start's questions for this child now: the safety questions in questionnaire order, then the room
+    ones."""
+    shown = [i for i in visible(answers, today) if QUESTIONS[i].get("quick")]
+    safety = [i for i in shown if i not in QUICK_ROOM]
+    kept = sum(1 for f, q in QUICK_FOLLOW_UPS.items() if f not in shown and q in shown and q not in answers)
+    room = [i for i in QUICK_ROOM if i in shown][: max(0, QUICK_MAX - len(safety) - kept)]
+    return safety + [i for i in shown if i in room]
+
+
+def quick_missing(answers: Answers, health_consent: bool, today: date) -> list[str]:
+    """Required quick questions without an answer ("Not sure" counts); health ones only with the health consent."""
+    answers = upgrade(answers)
+    return [
+        qid
+        for qid in quick_visible(answers, today)
+        if QUESTIONS[qid]["required"] and (health_consent or not QUESTIONS[qid]["health"]) and qid not in answers
+    ]

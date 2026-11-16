@@ -27,6 +27,9 @@ class Plan(IdTimeMixin, Base):
     engine_version: Mapped[str] = mapped_column(String(16))
     # False when nothing is safe enough without a therapist: the plan has games only (roadmap.ts exercisesAllowed).
     exercises_allowed: Mapped[bool]
+    # True for a first plan from the quick start's answers (B103): the round is still open, and finishing the full
+    # questionnaire builds a new plan without it. Null for every other plan.
+    quick: Mapped[bool | None]
 
 
 class ItemKind(StrEnum):

@@ -292,7 +292,8 @@ export function useLiveDb(): DB {
         const daily = perChild(i, "daily") as DailyOut | null | undefined;
         if (daily) db.dailyAnswers.push(...dailyFrom(id, daily));
         db.intakeRounds.push(...rounds.map((r) => ({ childId: id, round: r.number, questionnaire: r.questionnaire, startedAt: r.startedAt, completedAt: r.completedAt ?? undefined })));
-        const finished = rounds.filter((r) => r.completedAt).at(-1);
+        // A quick plan (B103) comes before any finished round: it belongs to the open one.
+        const finished = rounds.filter((r) => r.completedAt).at(-1) ?? (plan?.quick ? rounds.at(-1) : undefined);
         if (plan && finished) {
           db.roadmaps.push(planFrom(id, finished.number, plan));
           db.tasksDone.push(...doneFrom(id, plan));

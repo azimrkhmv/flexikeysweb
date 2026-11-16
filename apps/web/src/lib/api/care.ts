@@ -81,9 +81,11 @@ export const careApi = {
       audit(db, user.id, "therapist.form_saved", childId);
     });
     // Same as the server: a sent T2, T5, T6, T7 or T8 builds a new plan from the last finished round.
-    const done = read().intakeRounds.filter((r) => r.childId === childId && r.completedAt).sort((a, b) => b.round - a.round)[0];
+    // Before the first finished round: the round of a quick plan, and the new plan stays quick (B103).
+    const done = sel.planRound(read(), childId);
     if (!done || !REBUILDS.some((k) => k in answers)) return net({ planRebuilt: false });
-    const plan = { ...buildRoadmap(planInput(read(), childId, done.round), read().videos), id: id(), createdAt: iso() };
+    const quick = !done.completedAt || undefined;
+    const plan = { ...buildRoadmap(planInput(read(), childId, done.round), read().videos), quick, id: id(), createdAt: iso() };
     write((db) => {
       db.roadmaps.push(plan);
       audit(db, user.id, "roadmap.build", childId, "therapist");

@@ -306,20 +306,26 @@ REBUILDS = {"T2", "T5", "T6", "T7", "T8"}  # restrictions, movement level, goals
 
 
 async def rebuild_plan(db: AsyncSession, child_id: uuid.UUID, ai: Ai | None = None) -> bool:
-    """A new plan from the last finished round and what the therapists set now. False when there is no finished
-    round yet (the plan then comes when the parent finishes the questions)."""
+    """A new plan from the last finished round and what the therapists set now; before that, from the round of a
+    quick plan (B103), and the new plan is quick too. False when there is neither (the plan then comes when the
+    parent finishes the questions)."""
     last = await db.scalar(
         select(IntakeRound)
         .where(IntakeRound.child_id == child_id, IntakeRound.completed_at.is_not(None))
         .order_by(IntakeRound.number.desc())
         .limit(1)
     )
+    quick = False
+    if last is None:
+        plan = await db.scalar(select(Plan).where(Plan.child_id == child_id).order_by(Plan.created_at.desc()).limit(1))
+        if plan is not None and plan.quick and plan.round_id is not None:
+            last, quick = await db.get(IntakeRound, plan.round_id), True
     child = await db.get(Child, child_id)
     if last is None or child is None:
         return False
     health = await has_consent(db, child_id, ConsentKind.health)
     used, _ = await answers_in_use(db, child_id, await _round_answers(db, last.id), health)
-    await create_plan(db, child, last.id, used, health, await therapist_input(db, child_id, health), ai)
+    await create_plan(db, child, last.id, used, health, await therapist_input(db, child_id, health), ai, quick=quick)
     return True
 
 
@@ -476,6 +482,7 @@ async def save_form(
 
 class PlanReasons(ApiModel):
     exercises_allowed: bool
+    quick: bool  # B103: a quick plan, the full questionnaire is not finished yet
     by_ai: bool  # the AI chose the items, inside the rules (A4.6); each reason then names its research
     reasons: list[ReasonOut]  # why each exercise and game is in the plan; source None = the rules' own pick
 
@@ -493,6 +500,7 @@ async def plan_reasons(
     rows = await db.scalars(select(PlanReason).where(PlanReason.plan_id == plan.id).order_by(PlanReason.position))
     return PlanReasons(
         exercises_allowed=plan.exercises_allowed,
+        quick=bool(plan.quick),
         by_ai=plan.engine_version.endswith("+ai"),
         reasons=[ReasonOut(slot=r.slot, goal=r.goal, ref=r.ref, level=r.level, source=r.source) for r in rows],
     )

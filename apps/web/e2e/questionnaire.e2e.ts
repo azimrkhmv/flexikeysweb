@@ -203,3 +203,66 @@ test("a parent answers the new questionnaire and gets a plan", async ({ page }, 
   });
   expect(saved).toEqual({ questionnaire: "2026-10-16", sex: "girl", B1: ["cp"], P: [] });
 });
+
+test("quick start: one question a screen, a first plan, then \"Answer more\" opens the full questionnaire (B103)", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop", "one journey is enough");
+  await setup(page);
+  await page.goto("/signup");
+  await page.getByLabel("Phone number").fill("+998 93 555 40 18");
+  await page.getByRole("button", { name: "Send the code" }).click();
+  const code = (await page.getByText(/Your code is \d{6}/).innerText()).match(/\d{6}/)![0];
+  await page.getByLabel("Code from the SMS").fill(code);
+  await page.getByRole("button", { name: "Continue" }).click();
+  await page.getByLabel("District").selectOption("Yunusobod");
+  await page.getByText("I agree to FlexiKeys storing").click();
+  await page.getByRole("button", { name: "Continue" }).click();
+  await expect(page).toHaveURL(/\/parent\/children\/new/);
+  await page.goto("/parent/children/new?quick=1&q=2026-10-16");
+
+  await expect(page.getByRole("heading", { name: "Quick start" })).toBeVisible();
+  const counter = page.getByText(/^Question \d+ of \d+$/);
+  const next = () => page.getByRole("button", { name: /^(Next|Build the first plan)$/ }).click();
+  await expect(counter).toHaveText(/^Question 1 of/);
+  await page.getByLabel(/What is your child's name/).fill("Malika");
+  await next();
+  await birthDate(page, "2019-05-01");
+  await next();
+  await pick(page, "Boy or girl?", "Girl");
+  await next();
+  await pick(page, /^Languages you speak with your child at home/, "Uzbek");
+  await next();
+  await page.getByRole("button", { name: "I agree — continue" }).click();
+  await pick(page, "Has a doctor given your child a diagnosis?", "Developmental delay");
+  await next();
+  await pick(page, /^Which parts of the body are affected/, "None, my child moves like other children");
+  await next();
+  await pick(page, "Does your child have seizures (epilepsy)?", "No");
+  await next();
+  await next(); // other conditions: optional
+  await pick(page, "Has your child had surgery?", "No");
+  await next();
+  // The Quick check is one screen; moving starts at "No difficulty" (no body part is affected).
+  for (const area of ["Using the hands: holding, picking up, drawing", /^Body: pain/, "Seeing, hearing, paying attention", "Everyday care: eating, dressing, toilet"]) await pick(page, area, "No difficulty");
+  await pick(page, "Talking and understanding", "A little");
+  await next();
+  await pick(page, "Has your child stopped doing something they could do before?", "No");
+  await next();
+  await pick(page, /^Has your child ever broken a bone/, "No");
+  await next();
+  await pick(page, "Any metal plates, pumps or devices under the skin?", "No");
+  await next();
+  const [n, total] = (await counter.innerText()).match(/\d+/g)!.map(Number);
+  expect(n).toBe(total); // the goals are the last screen
+  expect(total).toBeLessThanOrEqual(23); // 22 questions at most, and the health consent screen
+  await pick(page, /^Your top 3 goals/, "Communicate needs");
+  await next();
+
+  await expect(page.getByRole("heading", { name: "Malika's plan is ready" })).toBeVisible();
+  await page.getByRole("link", { name: "See the plan" }).click();
+  await expect(page.getByText("This is a first plan from your short answers. Answer a few more questions about Talking and understanding and Everyday life and it gets more exact.")).toBeVisible();
+  await expect(page.getByRole("button", { name: /new round|questions again/i })).toHaveCount(0); // no repeat while the round is open
+  await page.getByRole("link", { name: "Answer more" }).click();
+  await expect(page).toHaveURL(/\/parent\/children\/new\?child=/);
+  await expect(page.getByRole("heading", { level: 1, name: "About your child and family" })).toBeVisible();
+  await expect(page.getByLabel(/What is your child's name/)).toHaveValue("Malika"); // the quick answers are filled in
+});

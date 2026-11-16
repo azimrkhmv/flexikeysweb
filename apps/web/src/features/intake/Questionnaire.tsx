@@ -236,7 +236,7 @@ function SectionBanner({ number, title, intro, phase }: { number?: string; title
 type SetAnswer = (id: string, v: QAnswer) => void;
 
 /** The Quick check (B76): one compact table, a row per area and three answers per row. */
-function QuickCheck({ questions, answers, set, marked }: { questions: QQuestion[]; answers: QAnswers; set: SetAnswer; marked: Set<string> }) {
+export function QuickCheck({ questions, answers, set, marked }: { questions: QQuestion[]; answers: QAnswers; set: SetAnswer; marked: Set<string> }) {
   const t = useT();
   const [uiLang] = useLang();
   return (

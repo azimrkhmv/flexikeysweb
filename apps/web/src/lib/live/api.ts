@@ -231,8 +231,8 @@ export const liveApi = {
     return (await http<{ url: string }>("GET", `/children/${childId}/intake/${round}/voice`)).url;
   },
   /** POST /children/{id}/intake/{round}/finish — the server closes the round and builds the plan. */
-  async finishIntake(childId: string, round: number): Promise<Roadmap> {
-    await http("POST", `/children/${childId}/intake/${round}/finish`, {});
+  async finishIntake(childId: string, round: number, quick = false): Promise<Roadmap> {
+    await http("POST", `/children/${childId}/intake/${round}/finish${quick ? "?quick=true" : ""}`, {});
     const plan = await http<PlanOut>("GET", `/children/${childId}/plan`);
     await refetch();
     return planFrom(childId, round, plan);

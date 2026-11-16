@@ -1,4 +1,4 @@
-"""A4.3: the server's plan is exactly the website's plan, for all 284 cases in roadmap_cases.json.
+"""A4.3: the server's plan is exactly the website's plan, for all 291 cases in roadmap_cases.json.
 
 roadmap_cases.json is a copy of apps/web/src/content/backend/roadmap_cases.json (made by backend-content.test.ts):
 the library the website used, each input, and the sha256 of the plan the website built from it.
@@ -72,7 +72,7 @@ def plan_json(i: dict[str, Any]) -> str:
 
 
 def test_all_cases_are_here() -> None:
-    assert len(DATA["cases"]) == 286
+    assert len(DATA["cases"]) == 291  # B103: five quick-start plans
 
 
 @pytest.mark.parametrize("case", DATA["cases"], ids=lambda c: hashlib.sha256(str(c["input"]).encode()).hexdigest()[:8])

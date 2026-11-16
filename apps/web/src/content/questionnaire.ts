@@ -71,7 +71,8 @@ export interface QQuestion {
   /** Below this age in months `typical` stays empty: a skill a child only gains later (B76). */
   typical_from_age?: number;
   /** Behind the section's "Add more details" link until opened or answered (decision of 6 Nov 2026). */
-  fold?: boolean;
+  fold?: boolean;  /** Asked in the quick start (B103), when the full questionnaire would ask it too. */
+  quick?: boolean;
 }
 
 export const QUESTIONNAIRE = data as unknown as {
@@ -393,3 +394,30 @@ export function visible(a: QAnswers, today: string, audience: "parent" | "therap
     .filter((q) => q.audience === audience && !q.signup && holds(q.show, e, f) && (on ? !skipped(q, a, saved, months) : !q.controls))
     .map((q) => q.id);
 }
+
+// Quick start (B103, spec 4 of 15 Nov 2026): "Start, 2 minutes" asks the questions marked `quick` that this child's
+// full questionnaire asks too, one per screen, and builds a first plan from them. Every question a safety rule reads
+// (questionnaireBridge: seizures, surgery, Botox, heart and shunt, a lost skill, pain, broken bones, devices under the
+// skin, and for CP the movement picture C10, which decides on standing and walking exercises) is always in it, even
+// above QUICK_MAX: a child with CP, pain and a broken bone gets 23, with Down syndrome too 24.
+// The questions in QUICK_ROOM fill the room left under QUICK_MAX, in that order. A question
+// left out reads as not answered, which the rules take as the cautious answer (product rule 2). Same as the server's
+// quick_visible.
+export const QUICK_MAX = 22;
+/** How the child walks and sits, the screen question and the goals: asked while there is room, goals first. */
+export const QUICK_ROOM = ["J9", "C6", "D7", "C3"];
+/** Follow-ups of a safety question: room is kept for them until that question is answered. */
+const QUICK_FOLLOW_UPS: Record<string, string> = { E4: "E3", E7_where: "E7" };
+
+/** The quick start's questions for this child now: the safety questions in questionnaire order, then the room ones. */
+export function quickVisible(a: QAnswers, today: string): string[] {
+  const all = visible(a, today).filter((id) => Q_BY_ID[id].quick);
+  const safety = all.filter((id) => !QUICK_ROOM.includes(id));
+  const kept = Object.entries(QUICK_FOLLOW_UPS).filter(([f, q]) => !all.includes(f) && all.includes(q) && a[q] === undefined).length;
+  const room = QUICK_ROOM.filter((id) => all.includes(id)).slice(0, Math.max(0, QUICK_MAX - safety.length - kept));
+  return [...safety, ...all.filter((id) => room.includes(id))];
+}
+
+/** Required quick questions still without an answer ("Not sure" counts); health ones only with the health consent. */
+export const quickMissing = (a: QAnswers, today: string, health: boolean) =>
+  quickVisible(a, today).filter((id) => Q_BY_ID[id].required && (health || !Q_BY_ID[id].health) && a[id] === undefined);

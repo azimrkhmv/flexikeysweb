@@ -165,9 +165,12 @@ async def finish_round(
     user: CurrentUser,
     db: Annotated[AsyncSession, Depends(get_session)],
     ai: Annotated[Ai, Depends(get_ai)],
+    quick: bool = False,
 ) -> RoundOut:
     """Close the round once every required question has an answer ("Not sure" counts), and build the plan (A4.4).
-    A round of the CEO's questionnaire also needs the health consent: 403 child_consent_required (B67)."""
+    A round of the CEO's questionnaire also needs the health consent: 403 child_consent_required (B67).
+    ?quick=true (B103): a first plan from the quick start's questions (questionnaire.quick_visible). The round stays
+    open for the rest of the questions and the plan is marked quick; 409 quick_not_offered for a P1-P41 round."""
     child = await get_visible_child(db, user, child_id)
     r = await _round(db, child_id, number)
     if r.completed_at is not None:
@@ -177,18 +180,23 @@ async def finish_round(
         await require_consent(db, child_id, ConsentKind.health)
     health = await has_consent(db, child_id, ConsentKind.health)
     today = datetime.now(TASHKENT).date()
-    if r.questionnaire == "p41":
+    if quick and r.questionnaire == "p41":
+        raise AppError(409, "quick_not_offered")
+    if quick:
+        missing = questionnaire.quick_missing(answers, health, today)
+    elif r.questionnaire == "p41":
         missing = missing_answers(answers, health)
     else:
         missing = questionnaire.missing_answers(answers, health, today)
     if missing:
         raise AppError(422, "round_incomplete", missing=missing)
-    r.completed_at = datetime.now(UTC)
+    if not quick:
+        r.completed_at = datetime.now(UTC)
     rules = rules_view(r.questionnaire, answers, today)  # the CEO's questionnaire read as P answers (IQ3)
     used, _ = await answers_in_use(db, child_id, rules, health)  # a therapist's answer wins (A8.2)
     therapist = await therapist_input(db, child_id, health)
     await create_plan(
-        db, child, r.id, used, health, therapist, ai
+        db, child, r.id, used, health, therapist, ai, quick=quick
     )  # in the same transaction: always a plan with a round
     await db.commit()
     return await _out(db, r)

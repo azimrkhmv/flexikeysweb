@@ -226,8 +226,10 @@ export function CloudyRoam() {
     const draw = () => {
       clouds.forEach((k) => k.e && (k.e.style.transform = `translate(${k.x}px, ${k.yy}px)`));
       c.style.transform = `translate(${x}px, ${y}px)`;
-      // Behind his cloud (and all content) when hiding; in front of content otherwise.
-      c.style.zIndex = L.on && !L.touring && (mode === "hide" || mode === "peek") ? "0" : "25";
+      // Behind his cloud (and all content) when hiding, and parked on a phone, where the corner has cards in it (he
+      // peeks out between them and never covers an answer); in front of content otherwise.
+      const behind = L.on ? !L.touring && (mode === "hide" || mode === "peek") : innerWidth < 640;
+      c.style.zIndex = behind ? "0" : "25";
     };
     const trail = () => {
       const s = document.createElement("span");

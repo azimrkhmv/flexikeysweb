@@ -1234,6 +1234,8 @@ export interface paths {
          * Finish Round
          * @description Close the round once every required question has an answer ("Not sure" counts), and build the plan (A4.4).
          *     A round of the CEO's questionnaire also needs the health consent: 403 child_consent_required (B67).
+         *     ?quick=true (B103): a first plan from the quick start's questions (questionnaire.quick_visible). The round stays
+         *     open for the rest of the questions and the plan is marked quick; 409 quick_not_offered for a P1-P41 round.
          */
         post: operations["finish_round_api_v1_children__child_id__intake__number__finish_post"];
         delete?: never;
@@ -3490,6 +3492,8 @@ export interface components {
             engineVersion: string;
             /** Exercisesallowed */
             exercisesAllowed: boolean;
+            /** Quick */
+            quick: boolean;
             /** Days */
             days: components["schemas"]["DayOut"][];
             /** Reasons */
@@ -3503,6 +3507,8 @@ export interface components {
         PlanReasons: {
             /** Exercisesallowed */
             exercisesAllowed: boolean;
+            /** Quick */
+            quick: boolean;
             /** Byai */
             byAi: boolean;
             /** Reasons */
@@ -6446,7 +6452,9 @@ export interface operations {
     };
     finish_round_api_v1_children__child_id__intake__number__finish_post: {
         parameters: {
-            query?: never;
+            query?: {
+                quick?: boolean;
+            };
             header?: never;
             path: {
                 child_id: string;

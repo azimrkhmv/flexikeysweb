@@ -25,6 +25,13 @@ function distanceKm(a: { lat: number; lng: number }, b: { lat: number; lng: numb
 }
 
 export const sel = {
+  /** The round the plans are built from: the last finished one; before that, the open round of a quick plan (B103). */
+  planRound(db: DB, childId: string) {
+    const done = db.intakeRounds.filter((r) => r.childId === childId && r.completedAt).sort((a, b) => b.round - a.round)[0];
+    if (done) return done;
+    const plan = sel.roadmap(db, childId);
+    return plan?.quick ? db.intakeRounds.find((r) => r.childId === childId && r.round === plan.round) : undefined;
+  },
   // ---- intake, roadmap, video library (product spec 2026-10-06)
   /** Latest intake round of a child. */
   intakeRound: (db: DB, childId: string) => db.intakeRounds.filter((r) => r.childId === childId).sort((a, b) => b.round - a.round)[0] ?? null,
@@ -69,7 +76,7 @@ export const sel = {
   },
   /** θ of every skill area: what clean tries made of it, or the first guess from the latest finished intake. */
   skills: (db: DB, childId: string): Record<Area, { theta: number; n: number }> => {
-    const round = db.intakeRounds.filter((r) => r.childId === childId && r.completedAt).sort((a, b) => b.round - a.round)[0];
+    const round = sel.planRound(db, childId);
     const answers = round ? rulesView(round.questionnaire, sel.intakeAnswers(db, childId, round.round), localDate()) : {};
     const out = {} as Record<Area, { theta: number; n: number }>;
     // Areas with a question first: reasoning and speed start at the current θ of flexibility and attention.
@@ -284,7 +291,7 @@ export const sel = {
   /** The answers the plan is built from: the parent's, with the therapists' answers put in. */
   /** Why the last finished round gives games only (IQ3, A4.8): "autism_only", or answers that need a doctor first. */
   holds: (db: DB, childId: string): string[] => {
-    const round = db.intakeRounds.filter((r) => r.childId === childId && r.completedAt).sort((a, b) => b.round - a.round)[0];
+    const round = sel.planRound(db, childId);
     const hold = round ? rulesView(round.questionnaire, sel.intakeAnswers(db, childId, round.round), localDate())._hold : undefined;
     return Array.isArray(hold) ? (hold as string[]) : [];
   },
@@ -423,7 +430,7 @@ export const sel = {
   planReasons(db: DB, childId: string): NonNullable<DB["planReasons"]>[string] | null {
     if (db.planReasons?.[childId]) return db.planReasons[childId];
     const plan = sel.roadmap(db, childId);
-    return plan && { exercisesAllowed: plan.exercisesAllowed, byAi: plan.reasons.some((r) => r.source), reasons: plan.reasons };
+    return plan && { exercisesAllowed: plan.exercisesAllowed, quick: !!plan.quick, byAi: plan.reasons.some((r) => r.source), reasons: plan.reasons };
   },
   /** The therapist's summary of the family's assistant chats: topics and warnings, never the chat (spec §12, B31).
    *  The server's GET /therapist/children/{id}/assistant-summary. */

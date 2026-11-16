@@ -11,6 +11,8 @@ import { DAILY_QUESTIONS } from "./daily";
 import { districtsWithoutLabel, REGIONS } from "./districts";
 import { exerciseLibrary, KIT_TOOLS } from "./exercises";
 import { STEPS, type Answers } from "./intake";
+import { QUICK_CHILDREN, quickOf } from "./personas";
+import { pView } from "./questionnaireBridge";
 
 // Files for the Python backend (TASKS.md, tasks A1.6, A2.3, A3.3, A4.3, A5.5, A6.6), kept next to the code they come from, like
 // levels.manifest.json: the backend validates intake answers with intake.json, seeds the exercise library from
@@ -127,6 +129,11 @@ function roadmapCases() {
     input({ ...base, P33: ["memory", "attention", "literacy"], P34: "30" }), // B75
     input({ ...base, P33: ["numeracy"] }),
   ];
+  // B103: the quick start's sample children (lib/quickPlan.test.ts proves no fuller answer forbids what is in them).
+  for (const [, full] of QUICK_CHILDREN) {
+    const quick = quickOf(full, "2026-10-12");
+    inputs.push(input(pView(quick, "2026-10-12") as Answers, { birthDate: String(quick.A2) }));
+  }
   // Every 7th of the safety combinations in lib/roadmap.test.ts.
   const p12 = ["walks", "walks_help", "walker", "wheelchair", "needs_help_sit", null];
   const p13 = ["last_year", "earlier", "never", null];

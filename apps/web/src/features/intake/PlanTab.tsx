@@ -5,6 +5,7 @@ import { ProLock } from "@/features/parent/ProLock";
 import { TherapistUpdates } from "@/features/parent/TherapistUpdates";
 import { useState } from "react";
 import { Button, Card, Chip, Empty, LinkButton, useAction } from "@/components/ui";
+import { inLang, Q_BY_ID, QUESTIONNAIRE, quickCheckDefaults, upgrade, visible } from "@/content/questionnaire";
 import { api, sel, useDb } from "@/lib/api";
 import { localDate, type DB } from "@/lib/api/schema";
 import { useLang, useT } from "@/lib/i18n";
@@ -37,6 +38,7 @@ export function PlanTab({ child }: { child: Child }) {
   return (
     <div className="space-y-6">
       <TherapistUpdates child={child} />
+      {plan.quick && <MoreExact child={child} />}
       <Why plan={plan} />
       <Weeks plan={plan} />
       <Card className="flex flex-wrap items-center justify-between gap-3 p-5">
@@ -45,6 +47,7 @@ export function PlanTab({ child }: { child: Child }) {
           {t("plan.check")}
         </LinkButton>
       </Card>
+      {!plan.quick && (
       <Card className="flex flex-wrap items-center justify-between gap-3 p-5">
         <p className="text-sm text-ink-2">{t("plan.reintake.d")}</p>
         <Button
@@ -57,6 +60,7 @@ export function PlanTab({ child }: { child: Child }) {
           {t("plan.reintake")}
         </Button>
       </Card>
+      )}
     </div>
   );
 }
@@ -161,5 +165,29 @@ function Weeks({ plan }: { plan: Roadmap }) {
         </ul>
       )}
     </section>
+  );
+}
+
+/** B103, spec 4.3: a plan from the quick start. One calm card names the sections still open; "Answer more" opens the
+ * full questionnaire at the first of them, with the quick answers filled in. Finishing it builds the plan again. */
+function MoreExact({ child }: { child: Child }) {
+  const t = useT();
+  const db = useDb();
+  const [lang] = useLang();
+  const round = sel.intakeRound(db, child.id);
+  const health = sel.hasConsent(db, child.id, "health");
+  const answers = round ? quickCheckDefaults(upgrade(sel.intakeAnswers(db, child.id, round.round))) : {};
+  const open = visible(answers, localDate()).filter((id) => Q_BY_ID[id].required && (health || !Q_BY_ID[id].health) && answers[id] === undefined);
+  // The areas of the Quick check still to answer ("A little" or "A lot"); more than three: the general line.
+  const areas = QUESTIONNAIRE.questions.filter((q) => q.controls && open.some((id) => Q_BY_ID[id].step === q.controls)).map((q) => inLang(QUESTIONNAIRE.step_text, lang, q.controls!));
+  const names = areas.length && areas.length <= 3 ? new Intl.ListFormat(lang, { type: "conjunction" }).format(areas) : "";
+  return (
+    <Card className="flex flex-wrap items-center justify-between gap-3 p-5">
+      <div className="min-w-0 flex-1">
+        <p className="font-bold text-ink">{t("quick.card.title")}</p>
+        <p className="mt-1 text-sm text-ink-2">{names ? t("quick.card.text", { areas: names }) : t("quick.card.textAll")}</p>
+      </div>
+      <LinkButton href={`/parent/children/new?child=${child.id}`}>{t("quick.card.button")}</LinkButton>
+    </Card>
   );
 }

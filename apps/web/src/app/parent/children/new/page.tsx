@@ -3,6 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { QuestionnaireWizard } from "@/features/intake/Questionnaire";
+import { QuickStart } from "@/features/intake/QuickStart";
 import { IntakeWizard } from "@/features/intake/Wizard";
 import { api, LIVE, sel, useDb } from "@/lib/api";
 
@@ -25,7 +26,11 @@ function WithChild() {
   useEffect(() => {
     if (active === null) api.intakeQuestionnaire().then(setActive).catch(() => setActive("p41"));
   }, [active]);
+  // "Start, 2 minutes" (B103): the quick start, unless the child has a plan already; decided on opening, so its
+  // "plan ready" screen stays when the plan arrives. "Answer more" opens the full questionnaire (no ?quick).
+  const [quick] = useState(() => params.get("quick") === "1" && !(child && sel.roadmap(db, child)));
   const set = round ? round.questionnaire ?? "p41" : active;
   if (set === null) return null;
-  return set === "p41" ? <IntakeWizard childId={child} /> : <QuestionnaireWizard childId={child} version={set} />;
+  if (set === "p41") return <IntakeWizard childId={child} />;
+  return quick ? <QuickStart childId={child} version={set} /> : <QuestionnaireWizard childId={child} version={set} />;
 }

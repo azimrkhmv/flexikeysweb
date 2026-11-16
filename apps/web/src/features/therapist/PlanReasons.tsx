@@ -20,6 +20,7 @@ export function PlanReasons({ childId }: { childId: string }) {
         <p className="text-sm text-muted">{t("tplan.none")}</p>
       ) : (
         <>
+          {why.quick && <p className="mb-3 rounded-xl bg-sun-soft px-3 py-2 text-sm font-bold text-ink">{t("tplan.quick")}</p>}
           <p className="mb-3 text-sm text-ink-2">{t(why.byAi ? "tplan.ai" : "tplan.rulesOnly")}</p>
           {!why.exercisesAllowed && <p className="mb-3 text-sm font-semibold text-ink">{t("tplan.gamesOnly")}</p>}
           <ul className="divide-y divide-line">

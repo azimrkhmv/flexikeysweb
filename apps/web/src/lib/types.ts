@@ -525,6 +525,8 @@ export interface Roadmap {
   reasons: RoadmapReason[];
   /** false when health consent was declined: games and Find help only. */
   exercisesAllowed: boolean;
+  /** B103: a first plan from the quick start's answers; the round stays open until the full questionnaire is done. */
+  quick?: boolean;
   createdAt: string;
 }
 

@@ -15,6 +15,8 @@ from app.modules.intake.questionnaire import (
     effective_answers,
     home_language,
     missing_answers,
+    quick_missing,
+    quick_visible,
     shown_options,
     typical_filled,
     upgrade,
@@ -36,6 +38,7 @@ def test_the_server_shows_what_the_website_shows(case: dict[str, Any]) -> None:
         assert upgrade(case["answers"])[qid] == value, qid
     assert effective_answers(case["answers"], today) == case["effective"]
     assert typical_filled(case["answers"], today) == case["filled"]
+    assert quick_visible(case["answers"], today) == case["quick"]  # B103
 
 
 def test_every_numbered_question_of_the_questionnaire_is_there() -> None:
@@ -88,3 +91,14 @@ def test_an_old_home_language_answer_still_finishes_a_round() -> None:
 def test_the_cp_type_is_worked_out_from_the_types_ticked(answers: dict[str, Any], expected: str | None) -> None:
     """B69: the same as the website's cpType (content/questionnaire.ts)."""
     assert cp_type(answers) == expected
+
+
+def test_the_quick_start_needs_its_required_questions() -> None:
+    """B103: the quick plan waits for the required quick questions ("Not sure" counts); health ones need the consent."""
+    today = date(2026, 10, 22)
+    assert quick_missing({}, False, today) == ["A1", "A2", "A3", "A7_langs", "C10", "C12"]
+    m = next(c["answers"] for c in CASES if c["name"] == "qc: persona M")
+    assert quick_missing(m, True, today) == ["A1", "A7_langs", "C12"]  # M already has her goals
+    done = {**m, "A1": "Mira", "A7_langs": ["uzbek"], "C12": "no", "J9": None}
+    assert quick_missing(done, True, today) == []
+    assert "A4" not in quick_visible(done, today)  # no height and weight in the quick start (spec 4.1)

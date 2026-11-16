@@ -96,6 +96,7 @@ export function planFrom(childId: string, round: number, p: PlanOut): Roadmap {
   const made = new Map(p.reasons.filter((r) => r.slot === "exercise").map((r) => [r.ref, r.level]));
   return {
     id: p.id, childId, round, startDate: p.startDate, exercisesAllowed: p.exercisesAllowed, createdAt: "",
+    ...(p.quick ? { quick: true } : {}), // B103
     days: p.days.map((d) => ({
       date: d.date,
       exercises: d.exercises.map((e) => ({ videoId: e.exerciseId, level: Math.min(3, Math.max(1, made.get(e.exerciseId) ?? e.level)) as 1 | 2 | 3 })),

@@ -447,6 +447,7 @@
   {
    "id": "A1",
    "step": "A",
+   "quick": true,
    "kind": "text",
    "required": true,
    "health": false,
@@ -474,6 +475,7 @@
   {
    "id": "A2",
    "step": "A",
+   "quick": true,
    "kind": "date",
    "required": true,
    "health": false,
@@ -506,6 +508,7 @@
   {
    "id": "A3",
    "step": "A",
+   "quick": true,
    "kind": "single",
    "required": true,
    "health": false,
@@ -723,6 +726,7 @@
   {
    "id": "A7_langs",
    "step": "A",
+   "quick": true,
    "kind": "multi",
    "required": true,
    "health": false,
@@ -910,6 +914,7 @@
   {
    "id": "B1",
    "step": "B",
+   "quick": true,
    "kind": "multi",
    "required": true,
    "health": true,
@@ -976,6 +981,7 @@
   {
    "id": "B3_parts",
    "step": "B",
+   "quick": true,
    "kind": "multi",
    "required": true,
    "health": true,
@@ -1129,6 +1135,7 @@
   {
    "id": "B6",
    "step": "B",
+   "quick": true,
    "kind": "single",
    "required": true,
    "health": true,
@@ -1299,6 +1306,7 @@
   {
    "id": "B7",
    "step": "B",
+   "quick": true,
    "kind": "multi",
    "required": false,
    "health": true,
@@ -1375,6 +1383,7 @@
   {
    "id": "B8",
    "step": "B",
+   "quick": true,
    "kind": "single",
    "required": true,
    "health": true,
@@ -1807,6 +1816,7 @@
   {
    "id": "QC_move",
    "step": "QC",
+   "quick": true,
    "kind": "single",
    "required": true,
    "health": true,
@@ -1856,6 +1866,7 @@
   {
    "id": "QC_hands",
    "step": "QC",
+   "quick": true,
    "kind": "single",
    "required": true,
    "health": true,
@@ -1905,6 +1916,7 @@
   {
    "id": "QC_body",
    "step": "QC",
+   "quick": true,
    "kind": "single",
    "required": true,
    "health": true,
@@ -1951,6 +1963,7 @@
   {
    "id": "QC_senses",
    "step": "QC",
+   "quick": true,
    "kind": "single",
    "required": true,
    "health": true,
@@ -1997,6 +2010,7 @@
   {
    "id": "QC_talk",
    "step": "QC",
+   "quick": true,
    "kind": "single",
    "required": true,
    "health": true,
@@ -2043,6 +2057,7 @@
   {
    "id": "QC_daily",
    "step": "QC",
+   "quick": true,
    "kind": "single",
    "required": true,
    "health": true,
@@ -2202,6 +2217,7 @@
   {
    "id": "CP3",
    "step": "CP",
+   "quick": true,
    "kind": "single",
    "required": true,
    "health": true,
@@ -4828,6 +4844,7 @@
   {
    "id": "DS2",
    "step": "DS",
+   "quick": true,
    "kind": "single",
    "required": true,
    "health": true,
@@ -5880,6 +5897,7 @@
   {
    "id": "C6",
    "step": "C",
+   "quick": true,
    "kind": "single",
    "required": true,
    "health": false,
@@ -6385,6 +6403,7 @@
   {
    "id": "C3",
    "step": "C",
+   "quick": true,
    "kind": "single",
    "required": true,
    "health": false,
@@ -8069,6 +8088,7 @@
   {
    "id": "C10",
    "step": "C",
+   "quick": true,
    "kind": "single",
    "required": true,
    "health": false,
@@ -8290,6 +8310,7 @@
   {
    "id": "C12",
    "step": "C",
+   "quick": true,
    "kind": "single",
    "required": true,
    "health": false,
@@ -8754,6 +8775,7 @@
   {
    "id": "D7",
    "step": "D",
+   "quick": true,
    "kind": "single",
    "required": true,
    "health": false,
@@ -9568,6 +9590,7 @@
   {
    "id": "E3",
    "step": "E",
+   "quick": true,
    "kind": "single",
    "required": true,
    "health": true,
@@ -9623,6 +9646,7 @@
   {
    "id": "E4",
    "step": "E",
+   "quick": true,
    "kind": "multi",
    "required": false,
    "health": true,
@@ -9974,6 +9998,7 @@
   {
    "id": "E7",
    "step": "E",
+   "quick": true,
    "kind": "single",
    "required": true,
    "health": true,
@@ -10051,6 +10076,7 @@
   {
    "id": "E7_where",
    "step": "E",
+   "quick": true,
    "kind": "multi",
    "required": false,
    "health": true,
@@ -10395,6 +10421,7 @@
   {
    "id": "E13",
    "step": "E",
+   "quick": true,
    "kind": "single",
    "required": false,
    "health": true,
@@ -13336,6 +13363,7 @@
   {
    "id": "J9",
    "step": "J",
+   "quick": true,
    "kind": "multi",
    "required": true,
    "health": false,

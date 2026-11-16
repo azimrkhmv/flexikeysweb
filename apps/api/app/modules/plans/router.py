@@ -59,6 +59,8 @@ async def create_plan(
     health_consent: bool,
     therapist: Therapist | None = None,
     ai: Ai | None = None,
+    *,
+    quick: bool = False,
 ) -> Plan:
     """Build the 4-week plan from the round's answers (and what the child's therapists set) and add it, with its
     items and reasons, to the session. Starts today in Tashkent. Older plans stay as the child's history; the newest
@@ -87,6 +89,7 @@ async def create_plan(
         start_date=start,
         engine_version=engine.ENGINE_VERSION + ("+ai" if built.ai else ""),
         exercises_allowed=built.exercises_allowed,
+        quick=True if quick else None,  # B103: from the quick start's answers
     )
     db.add(plan)
     await db.flush()
@@ -156,6 +159,7 @@ class PlanOut(ApiModel):
     start_date: date
     engine_version: str
     exercises_allowed: bool
+    quick: bool  # B103: a first plan from the quick start; finishing the full questionnaire makes a new one
     days: list[DayOut]
     reasons: list[ReasonOut]
     paused: list[date]  # the paused days; with `days` and their `done` marks this is the week view
@@ -259,6 +263,7 @@ async def current_plan(
         start_date=plan.start_date,
         engine_version=plan.engine_version,
         exercises_allowed=plan.exercises_allowed,
+        quick=bool(plan.quick),
         days=[d for d in await plan_days(db, plan) if limit is None or d.day < limit],
         reasons=[ReasonOut(slot=r.slot, goal=r.goal, ref=r.ref, level=r.level, source=r.source) for r in reasons],
         paused=await paused_dates(db, plan),

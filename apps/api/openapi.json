@@ -3128,7 +3128,7 @@
      "intake"
     ],
     "summary": "Finish Round",
-    "description": "Close the round once every required question has an answer (\"Not sure\" counts), and build the plan (A4.4).\nA round of the CEO's questionnaire also needs the health consent: 403 child_consent_required (B67).",
+    "description": "Close the round once every required question has an answer (\"Not sure\" counts), and build the plan (A4.4).\nA round of the CEO's questionnaire also needs the health consent: 403 child_consent_required (B67).\n?quick=true (B103): a first plan from the quick start's questions (questionnaire.quick_visible). The round stays\nopen for the rest of the questions and the plan is marked quick; 409 quick_not_offered for a P1-P41 round.",
     "operationId": "finish_round_api_v1_children__child_id__intake__number__finish_post",
     "parameters": [
      {
@@ -3148,6 +3148,16 @@
       "schema": {
        "type": "integer",
        "title": "Number"
+      }
+     },
+     {
+      "name": "quick",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "boolean",
+       "default": false,
+       "title": "Quick"
       }
      }
     ],
@@ -9521,6 +9531,10 @@
       "type": "boolean",
       "title": "Exercisesallowed"
      },
+     "quick": {
+      "type": "boolean",
+      "title": "Quick"
+     },
      "days": {
       "items": {
        "$ref": "#/components/schemas/DayOut"
@@ -9561,6 +9575,7 @@
      "startDate",
      "engineVersion",
      "exercisesAllowed",
+     "quick",
      "days",
      "reasons",
      "paused",
@@ -9573,6 +9588,10 @@
      "exercisesAllowed": {
       "type": "boolean",
       "title": "Exercisesallowed"
+     },
+     "quick": {
+      "type": "boolean",
+      "title": "Quick"
      },
      "byAi": {
       "type": "boolean",
@@ -9589,6 +9608,7 @@
     "type": "object",
     "required": [
      "exercisesAllowed",
+     "quick",
      "byAi",
      "reasons"
     ],

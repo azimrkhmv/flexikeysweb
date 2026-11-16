@@ -5,7 +5,7 @@
 import { dailyQuestionOn } from "@/content/daily";
 import { FREE } from "@/content/plans";
 import type { Answers } from "@/content/intake";
-import { Q_BY_ID, upgrade } from "@/content/questionnaire";
+import { Q_BY_ID, quickMissing, upgrade } from "@/content/questionnaire";
 import { rulesView } from "@/content/questionnaireBridge";
 import { type Lang } from "../i18n";
 import { buildRoadmap } from "../roadmap";
@@ -137,19 +137,22 @@ export const intakeApi = {
     return blob ? URL.createObjectURL(blob) : null;
   },
 
-  /** POST /children/{id}/intake/{round}/complete — builds the 4-week roadmap from the answers. */
-  async finishIntake(childId: string, round: number) {
+  /** POST /children/{id}/intake/{round}/finish — builds the 4-week roadmap from the answers. `quick` (B103): a first
+   *  plan from the quick start's questions; the round stays open and the plan is marked quick. */
+  async finishIntake(childId: string, round: number, quick = false) {
     const { user } = requireChildAccess(childId, FAMILY);
     const db = read();
     // The CEO's questionnaire needs the health consent, as on the server (B67, TASKS.md section 3, 1 Nov 2026).
     const questionnaire = db.intakeRounds.find((x) => x.childId === childId && x.round === round)?.questionnaire ?? "p41";
+    if (quick && questionnaire === "p41") throw new ApiError("quick_not_offered");
     if (questionnaire !== "p41" && !sel.hasConsent(db, childId, "health")) throw new ApiError("consent_required");
-    const plan = { ...buildRoadmap(planInput(db, childId, round), db.videos), id: id(), createdAt: iso() };
+    if (quick && quickMissing(upgrade(sel.intakeAnswers(db, childId, round)), today(), true).length) throw new ApiError("round_incomplete");
+    const plan = { ...buildRoadmap(planInput(db, childId, round), db.videos), ...(quick ? { quick: true } : {}), id: id(), createdAt: iso() };
     write((d) => {
       d.roadmaps.push(plan);
       const r = d.intakeRounds.find((x) => x.childId === childId && x.round === round);
-      if (r) r.completedAt = iso();
-      audit(d, user.id, "roadmap.build", childId, `round ${round}`);
+      if (r && !quick) r.completedAt = iso();
+      audit(d, user.id, "roadmap.build", childId, `round ${round}${quick ? " (quick)" : ""}`);
     });
     return net(plan);
   },
