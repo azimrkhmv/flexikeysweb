@@ -4,6 +4,7 @@ import { COLOR_HEX, isGlyph, parseGlyph, type Glyph } from "@/lib/games/glyph";
 import { baseId, numOf, wordEmoji } from "@/lib/games/pools";
 import type { Lang } from "@/lib/i18n";
 import { TOOTHBRUSH } from "@/content/pictureColors";
+import { ringStyle, shade as tint } from "@/content/taskColors";
 
 /**
  * Renders one content item: emoji picture, color swatch, shape or big glyph. Skill games add drawn shapes
@@ -27,8 +28,8 @@ export function ItemArt({ id: given, size = 72 }: { id: string; size?: Size }) {
     return (
       <span
         aria-hidden
-        className="block rounded-[30%] shadow-inner"
-        style={{ width: size, height: size, background: item.color, border: "3px solid color-mix(in srgb, var(--ink) 10%, transparent)" }}
+        className="fk-task-ring block rounded-[30%] shadow-inner"
+        style={{ ...ringStyle(`word-${id.replace(/^c_/, "")}`), width: size, height: size, background: item.color, border: "3px solid color-mix(in srgb, var(--ink) 10%, transparent)" }}
       />
     );
   if (item.shape) return <Shape shape={item.shape} size={size} />;
@@ -101,19 +102,12 @@ function Shape({ shape, size }: { shape: string; size: Size }) {
   );
 }
 
-/** Mixes a hex colour with white (amount > 0) or black (amount < 0). */
-function tint(hex: string, amount: number) {
-  const n = parseInt(hex.slice(1), 16);
-  const ch = [n >> 16, (n >> 8) & 255, n & 255].map((c) => Math.round(amount > 0 ? c + (255 - c) * amount : c * (1 + amount)));
-  return `#${ch.map((c) => c.toString(16).padStart(2, "0")).join("")}`;
-}
-
 function GlyphArt({ g, size }: { g: Glyph; size: Size }) {
   const [fill, stroke] = COLOR_HEX[g.color];
   const shade = g.shade === 1 ? 0.45 : g.shade === 2 ? -0.3 : 0;
   const scale = [0.62, 0.82, 1][g.size];
   return (
-    <svg viewBox="0 0 100 100" width={size} height={size} aria-hidden>
+    <svg viewBox="0 0 100 100" width={size} height={size} aria-hidden className="fk-task-ring" style={ringStyle(`glyph-${g.color}`)}>
       <g transform={`rotate(${g.rot} 50 50) translate(50 50) scale(${g.flip ? -scale : scale} ${scale}) translate(-50 -50)`}>
         {g.shape === "circle" ? (
           <circle cx="50" cy="50" r="40" fill={tint(fill, shade)} stroke={tint(stroke, shade)} strokeWidth="5" />
@@ -132,7 +126,7 @@ function CardArt({ c, size }: { c: Card; size: Size }) {
   const [fill, stroke] = COLOR_HEX[c.color];
   const s = CARD_SCALE[c.size] * (c.count === 1 ? 1.6 : 1);
   return (
-    <svg viewBox="0 0 100 100" width={size} height={size} aria-hidden>
+    <svg viewBox="0 0 100 100" width={size} height={size} aria-hidden className="fk-task-ring" style={ringStyle(`glyph-${c.color}`)}>
       {CARD_SPOTS[c.count].map(([x, y], k) => (
         <g key={k} transform={`translate(${x} ${y}) scale(${s}) translate(-50 -50)`}>
           {c.shape === "circle" ? (

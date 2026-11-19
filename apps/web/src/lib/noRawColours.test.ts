@@ -30,7 +30,8 @@ const TW = "slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|eme
 const UTIL = "bg|text|border(?:-[trblxyse])?|from|to|via|ring|ring-offset|fill|stroke|outline|shadow|divide|accent|caret|decoration|placeholder";
 
 const RULES: [what: string, re: RegExp][] = [
-  ["a hex colour", /(?<![\w&/$-])#(?:[0-9a-fA-F]{8}|[0-9a-fA-F]{6}|[0-9a-fA-F]{3,4})(?![\w-])/g],
+  // Tailwind writes spaces as `_` in arbitrary values (`bg-[linear-gradient(#eaf3fc_0%,…)]`), so `_` may follow.
+  ["a hex colour", /(?<![\w&/$-])#(?:[0-9a-fA-F]{8}|[0-9a-fA-F]{6}|[0-9a-fA-F]{3,4})(?![0-9a-zA-Z-])/g],
   ["a colour function (rgba(var(--shadow), a) is the one allowed form)", /\b(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch)\(\s*(?!var\()/g],
   ["a Tailwind palette colour", new RegExp(`(?<![\\w-])(?:${UTIL})-(?:white|black|(?:${TW})-\\d{2,3})(?![\\w-])`, "g")],
 ];
@@ -54,7 +55,7 @@ describe("no colour outside the tokens", () => {
   });
   it("the rules catch raw colours and let tokens through", () => {
     const hits = (line: string, css = false) => [...RULES, ["", css ? NAMED_CSS : NAMED_TS] as [string, RegExp]].some(([, re]) => [...line.matchAll(re)].length > 0);
-    for (const bad of [`fill="#fff"`, `className="text-[#8f3a2c]"`, `background: "rgb(1 2 3)"`, `className="text-white"`, `className="bg-sky-200"`, `stroke="red"`, `color: hsl(1 2% 3%)`])
+    for (const bad of [`fill="#fff"`, `className="bg-[linear-gradient(180deg,#eaf3fc_0%,#f5f9f0_100%)]"`,`className="text-[#8f3a2c]"`, `background: "rgb(1 2 3)"`, `className="text-white"`, `className="bg-sky-200"`, `stroke="red"`, `color: hsl(1 2% 3%)`])
       expect(hits(bad), bad).toBe(true);
     expect(hits("a { color: white; }", true)).toBe(true);
     for (const ok of [`fill="var(--accent)"`, `boxShadow: "0 4px 8px rgba(var(--shadow), .1)"`, `href="#main"`, `color: "yellow"`, `fill={GOOGLE_LOGO.red}`, `id="fk-gate-title"`, `className="bg-surface text-ink"`])

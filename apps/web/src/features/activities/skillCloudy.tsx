@@ -377,9 +377,11 @@ function GrowRound({ r, index, total, next, last }: { r: GrowCloudyRound; index:
               style={{ zIndex: 2, transform: `translate(${x - cell / 2}px, ${y - cell / 2 - (away ? H * 0.4 : 0)}px) rotate(${away ? 40 : 0}deg)`, opacity: away ? 0 : 1, transition: reduce ? "none" : "transform 900ms ease-in, opacity 900ms" }}
             >
               <Target label={t("act.skill.leaf", { n: k + 1 })} onSelect={() => tapLeaf(k)} disabled={!picking || away} scanSkip={!picking || away} className="grid place-items-center rounded-full bg-transparent disabled:opacity-100" style={{ width: cell, height: cell, minWidth: 60, minHeight: 60 }}>
-                <span className="fk-float block leading-none" style={{ fontSize: cell * 0.55, animationDelay: `${-k * 0.7}s` }} aria-hidden>
-                  🍃
-                </span>
+                {/* A leaf in the scheme's tree colour (spec 6), with a clear game edge. */}
+                <svg className="fk-float block" viewBox="0 0 40 40" width={cell * 0.6} height={cell * 0.6} style={{ animationDelay: `${-k * 0.7}s` }} aria-hidden>
+                  <path d="M6 34C6 16 18 6 34 6C34 22 24 34 6 34Z" fill="var(--tree1)" stroke="var(--gameEdge)" strokeWidth="2.4" strokeLinejoin="round" />
+                  <path d="M8 32L26 14" stroke="var(--tree2)" strokeWidth="2.2" strokeLinecap="round" />
+                </svg>
               </Target>
             </span>
           );

@@ -25,7 +25,7 @@ import { BalancePlayer, LogicHousesPlayer, NextPatternPlayer, PipesPlayer, Shado
 import { BazaarPlayer, MissingNumberPlayer, MoreLessPlayer, NumberLinePlayer } from "./skillMath";
 import { DoWhatISayPlayer, RhymePlayer, WordBuilderPlayer } from "./skillLang";
 import { FastSortPlayer, QuickSnapPlayer, TapStarPlayer } from "./skillSpeed";
-import { GROUP_DOT_COLOURS } from "@/content/taskColors";
+import { GROUP_DOT_COLOURS, ringStyle } from "@/content/taskColors";
 
 // Skill games (games spec 8 Nov 2026, §2.3, §5, §6): the 12 kinds of the theme worlds and the new skill-only kinds, 12\n// steps each. The rounds
 // come from the kind's generator (lib/games) with the day's seed; the players below show them with the engines' own
@@ -126,7 +126,7 @@ function CountStage({ groups, by, item }: { groups: number[]; by: number | "mixe
     <div className="flex max-w-2xl flex-wrap justify-center gap-2 rounded-fk-lg bg-sun-soft/60 p-3">
       {groups.map((g, k) => (
         <span key={k} className="grid gap-1 rounded-xl bg-surface p-2 shadow-soft" style={{ gridTemplateColumns: `repeat(${Math.min(5, g)}, 12px)` }} aria-hidden>
-          {Array.from({ length: g }, (_, d) => <span key={d} className="size-3 rounded-full" style={{ background: DOT[g] ?? GROUP_DOT_COLOURS.other }} />)}
+          {Array.from({ length: g }, (_, d) => <span key={d} className="fk-task-ring size-3 rounded-full" style={{ ...ringStyle(`dot-${g in DOT ? g : "other"}`), background: DOT[g] ?? GROUP_DOT_COLOURS.other }} />)}
         </span>
       ))}
     </div>

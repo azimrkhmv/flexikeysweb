@@ -3,6 +3,7 @@
 import { motion } from "motion/react";
 import { useState } from "react";
 import { ItemArt, itemLabel, times } from "@/components/ItemArt";
+import { ringStyle, SORT_BY_COLOUR_FRAME } from "@/content/taskColors";
 import { VOCAB } from "@/content/vocab";
 import { usePlay } from "@/features/play/context";
 import { colorWord, parseCard, sortBox, type SortRule } from "@/lib/games/flexibility";
@@ -39,8 +40,8 @@ function RuleFrame({ card, rule }: { card: string; rule: SortRule }) {
   const s = `min(${sizeFor(ctx, 130)}px, 17dvh)`;
   return (
     <div
-      className={`relative grid place-items-center rounded-fk-lg bg-surface-2 shadow-inner ${rule === "color" ? "border-[10px] border-sun" : "border-[10px] border-dotted border-hill2"}`}
-      style={{ width: s, height: s }}
+      className={`relative grid place-items-center rounded-fk-lg bg-surface-2 shadow-inner ${rule === "color" ? "fk-task-ring border-[10px]" : "border-[10px] border-dotted border-hill2"}`}
+      style={{ width: s, height: s, ...(rule === "color" ? { ...ringStyle("frame-colour"), borderColor: SORT_BY_COLOUR_FRAME } : {}) }}
       role="img"
       aria-label={`${itemLabel(card, ctx.learnLang, t)}. ${t(`act.skill.switch.${rule}`)}`}
     >
@@ -68,7 +69,7 @@ export function OppositePlayer({ rounds, onDone }: PlayerProps<"opposite">) {
           options: r.options,
           prompt: t("act.skill.opposite.ink"),
           size,
-          stage: <InkWord word={colorWord(r.prompt, ctx.learnLang)} ink={VOCAB[r.ink].color!} />,
+          stage: <InkWord word={colorWord(r.prompt, ctx.learnLang)} ink={VOCAB[r.ink].color!} ring={`word-${r.ink.replace(/^c_/, "")}`} />,
         };
       return { answer: r.answer, options: r.options, prompt: t("act.skill.opposite"), size, stage: <PromptCard id={r.prompt} size={`min(${sizeFor(ctx, 150)}px, 18dvh)`} /> };
     }),
@@ -77,13 +78,15 @@ export function OppositePlayer({ rounds, onDone }: PlayerProps<"opposite">) {
 }
 
 /** A colour word written in another colour (a thin outline keeps light inks readable). */
-function InkWord({ word, ink }: { word: string; ink: string }) {
+function InkWord({ word, ink, ring }: { word: string; ink: string; ring: string }) {
   return (
     <p
       className="rounded-fk-lg bg-surface-2 px-8 py-4 text-center font-extrabold uppercase leading-none shadow-inner"
       style={{ color: ink, fontSize: "clamp(2.5rem, 9vw, 4.5rem)", WebkitTextStroke: "1.5px color-mix(in srgb, var(--ink) 35%, transparent)" }}
     >
-      {word}
+      <span className="fk-task-ring" style={ringStyle(ring)}>
+        {word}
+      </span>
     </p>
   );
 }

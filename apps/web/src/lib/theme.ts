@@ -11,7 +11,7 @@
  * `THEME_CSS` turns every set into CSS variables on `[data-scheme][data-mode]` (lib/appearance.ts sets the
  * attributes on <html>; the Cloudy test page sets them on sections).
  */
-import { VISION_COLOURS } from "@/content/taskColors";
+import { TASK_COLOURS, VISION_COLOURS } from "@/content/taskColors";
 
 export const SCHEMES = ["warm", "sky", "mint", "lilac", "peach", "night"] as const;
 export type Scheme = (typeof SCHEMES)[number];
@@ -137,6 +137,17 @@ export const tokensOf = (scheme: Scheme, mode: Mode) => {
   return { ...t, ...derived(t), ...cloudyTones(t) };
 };
 
+/** The surfaces game items sit on: cards and targets (`paperSolid`) and the `surface-2` wells (`sky1`). */
+export const TASK_SURFACES = ["paperSolid", "sky1"] as const;
+/** Does a task colour need its 2 px ring in this set? Yes when one of its looks is below 3:1 on a game surface. */
+export const taskRingOn = (name: string, scheme: Scheme, mode: Mode) => {
+  const t = tokensOf(scheme, mode);
+  return TASK_COLOURS[name].some((look) => TASK_SURFACES.some((s) => Math.max(...look.map((c) => contrast(c, t[s]))) < 3));
+};
+/** `--ring-<name>` of every task colour in one set: the set's `ink` where a ring is needed, else transparent. */
+export const ringsOf = (scheme: Scheme, mode: Mode) =>
+  Object.fromEntries(Object.keys(TASK_COLOURS).map((n) => [`ring-${n}`, taskRingOn(n, scheme, mode) ? tokensOf(scheme, mode).ink : "transparent"]));
+
 /** The light shine on Cloudy, buttons and drops. Not a scheme colour: a highlight, the same in every set. */
 const SHINE = "255,255,255";
 
@@ -146,7 +157,7 @@ const block = (sel: string, vars: Record<string, string>) => `${sel}{${Object.en
 export const THEME_CSS = [
   block(":root", { shine: SHINE, "cvi-screen": VISION_COLOURS.screen }),
   ...SCHEMES.flatMap((s) =>
-    MODES.map((m) => block(`${s === "warm" && m === "light" ? ":root," : ""}[data-scheme="${s}"][data-mode="${m}"]`, tokensOf(s, m))),
+    MODES.map((m) => block(`${s === "warm" && m === "light" ? ":root," : ""}[data-scheme="${s}"][data-mode="${m}"]`, { ...tokensOf(s, m), ...ringsOf(s, m), stars: modeFor(s, m) === "dark" ? "1" : "0" })),
   ),
   // Vision mode (CVI): the child's one strong colour around every target (globals.css `[data-cvi]`).
   ...(["yellow", "red", "green", "blue"] as const).map((c) => block(`[data-cvi${c === "yellow" ? "" : `="${c}"`}]`, { "fk-cvi": VISION_COLOURS[c] })),

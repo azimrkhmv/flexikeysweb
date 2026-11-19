@@ -3,6 +3,7 @@
 import { motion, useReducedMotionConfig } from "motion/react";
 import { useEffect, useState } from "react";
 import { ItemArt, itemLabel } from "@/components/ItemArt";
+import { ringStyle, WHICH_WAY_BLUE } from "@/content/taskColors";
 import { usePlay } from "@/features/play/context";
 import { Target, type SelectInfo } from "@/features/play/Target";
 import { dirOf, dirRot, FISH_MS, fishGrid, type OddOneOutRound, type TrackFishRound, type WhichWayRound } from "@/lib/games/attention";
@@ -272,7 +273,7 @@ function Arrows({ r }: { r: WhichWayRound }) {
   return (
     <div className="flex items-center justify-center gap-1 rounded-fk-lg bg-surface-2 px-3 py-4 shadow-inner" role="img" aria-label={itemLabel(r.answer, "en", t)}>
       {Array.from({ length: n }, (_, k) => (
-        <span key={k} className={k === r.flank ? `rounded-xl ${r.blue ? "ring-4 ring-hill1" : ""}` : ""}>
+        <span key={k} className={k === r.flank ? `rounded-xl ${r.blue ? "fk-task-ring" : ""}` : ""} style={k === r.flank && r.blue ? { ...ringStyle("arrow-blue"), boxShadow: `0 0 0 4px ${WHICH_WAY_BLUE}` } : undefined}>
           {arrow(k)}
         </span>
       ))}

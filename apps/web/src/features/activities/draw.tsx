@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent as RPointerEvent, type ReactNode } from "react";
 import { itemName, loadColoring, loadTrace, PALETTE, pathD, traceItems, type ColoringItem, type Pt, type TraceItem } from "@/content/drawing";
+import { ringStyle } from "@/content/taskColors";
 import { vocab } from "@/content/vocab";
 import { markAccept, usePlay } from "@/features/play/context";
 import { pressDecision } from "@/lib/adaptive";
@@ -238,8 +239,8 @@ function Palette({ color, onPick }: { color: string; onPick: (hex: string) => vo
           label={vocab(p.id).word[ctx.uiLang]}
           onSelect={() => onPick(p.hex)}
           selected={color === p.hex}
-          className={`rounded-full border-4 shadow-soft ${color === p.hex ? "border-ink" : "border-surface"}`}
-          style={{ width: size, height: size, background: p.hex }}
+          className={`fk-task-ring rounded-full border-4 ${color === p.hex ? "border-ink" : "border-surface"}`}
+          style={{ ...ringStyle(`pen-${p.id.slice(2)}`), width: size, height: size, background: p.hex }}
         >
           <span className="sr-only">{vocab(p.id).word[ctx.uiLang]}</span>
         </Target>

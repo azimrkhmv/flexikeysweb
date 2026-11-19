@@ -171,7 +171,7 @@ export function PlayCheck({ child }: { child: Child }) {
   const [x, y] = SPOTS[n % SPOTS.length];
   const hold = phase.p === "holds" || phase.mode === "dwell";
   return (
-    <div className="flex min-h-dvh flex-col bg-[linear-gradient(180deg,#eaf3fc_0%,#f5f9f0_100%)]">
+    <div className="flex min-h-dvh flex-col bg-[linear-gradient(180deg,var(--sky1),var(--sky2))]">
       <p className="p-6 text-center text-2xl font-extrabold text-ink" aria-live="polite">
         {t(phase.p === "holds" ? "check.holdLong" : hold ? "check.hold" : "check.touch")}
       </p>
@@ -200,7 +200,7 @@ export function PlayCheck({ child }: { child: Child }) {
 }
 
 function Panel({ children }: { children: React.ReactNode }) {
-  return <div className="flex min-h-dvh flex-col items-center justify-center gap-5 bg-[linear-gradient(180deg,#eaf3fc_0%,#f7f6f1_70%)] p-6 text-center">{children}</div>;
+  return <div className="flex min-h-dvh flex-col items-center justify-center gap-5 bg-[linear-gradient(180deg,var(--sky1),var(--sky2))] p-6 text-center">{children}</div>;
 }
 
 /** For the parent: what the check found, in plain words, never as a score. Saved with one tap. */

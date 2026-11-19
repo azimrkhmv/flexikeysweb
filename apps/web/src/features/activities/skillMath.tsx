@@ -9,7 +9,7 @@ import { lineText, moreLessAnswer, payWith, type BazaarRound, type Dot, type Mis
 import { ChoiceEngine, type ChoiceSpec } from "./choice";
 import { ActionButton, answer, Frame, OptionCard, fitSize, useActT, useClock, useHint, useLater } from "./kit";
 import { Series, type PlayerProps } from "./skillKit";
-import { NOTE_COLOURS } from "@/content/taskColors";
+import { NOTE_COLOURS, NOTE_INK, ringStyle } from "@/content/taskColors";
 
 // Players of the new Math games (games spec 8 Nov 2026, §6.5).
 
@@ -115,8 +115,8 @@ function Note({ v, w }: { v: number; w: Size }) {
   const coin = v === 500;
   return (
     <span
-      className={`grid place-items-center border-2 border-ink/20 font-extrabold text-ink shadow-inner ${coin ? "rounded-full" : "rounded-xl"}`}
-      style={{ width: coin ? times(w, 0.5) : times(w, 0.92), height: times(w, 0.5), background: NOTE_LOOK[v] ?? NOTE_COLOURS.coin }}
+      className={`fk-task-ring grid place-items-center border-2 border-ink/20 font-extrabold shadow-inner ${coin ? "rounded-full" : "rounded-xl"}`}
+      style={{ ...ringStyle(`note-${v in NOTE_LOOK ? v : "coin"}`), color: NOTE_INK, width: coin ? times(w, 0.5) : times(w, 0.92), height: times(w, 0.5), background: NOTE_LOOK[v] ?? NOTE_COLOURS.coin }}
       aria-hidden
     >
       <span className="text-center leading-tight">

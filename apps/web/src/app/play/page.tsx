@@ -29,7 +29,7 @@ function PlayPage() {
   const kids = me?.role === "parent" ? sel.childrenOf(db, me.id) : [];
 
   return (
-    <div className="min-h-dvh bg-[linear-gradient(180deg,#eaf3fc_0%,#f7f6f1_70%)]">
+    <div className="min-h-dvh bg-[linear-gradient(180deg,var(--sky1),var(--sky2))]">
       <header className="mx-auto flex max-w-5xl items-center justify-between gap-3 p-4">
         <Logo />
         <div className="flex items-center gap-2">

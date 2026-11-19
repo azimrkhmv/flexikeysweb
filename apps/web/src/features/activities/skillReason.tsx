@@ -8,7 +8,7 @@ import { CIRCLE, E, N, S, turn, W, watered, wet, type BalanceRound, type Clue, t
 import { ChoiceEngine, PromptCard, type ChoiceSpec } from "./choice";
 import { ActionButton, answer, denseSize, Frame, sizeFor, useActT, useClock, useHint } from "./kit";
 import { Series, useBox, type PlayerProps } from "./skillKit";
-import { WATER_COLOURS } from "@/content/taskColors";
+import { ringStyle, WATER_COLOURS } from "@/content/taskColors";
 
 // Players of the new Reasoning games (games spec 8 Nov 2026, §6.4).
 
@@ -237,7 +237,7 @@ function PipeArt({ mask, wet: isWet }: { mask: number; wet: boolean }) {
     [W, "M50 50H0"],
   ];
   return (
-    <svg viewBox="0 0 100 100" className="size-full" aria-hidden>
+    <svg viewBox="0 0 100 100" className="fk-task-ring size-full" style={ringStyle(isWet ? "water-wet" : "water-dry")} aria-hidden>
       {arms.map(([d, path]) => (mask & d ? <path key={d} d={path} stroke={color} strokeWidth="26" strokeLinecap="butt" /> : null))}
       <circle cx="50" cy="50" r="13" fill={color} />
     </svg>

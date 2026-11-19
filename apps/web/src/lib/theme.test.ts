@@ -1,6 +1,10 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { CLOUDY_TONE_FORMS, contrast, PALETTES, SETS, THEME_CSS, TOKEN_NAMES, tokensOf } from "./theme";
+import { readdirSync, readFileSync as readSrc, statSync } from "node:fs";
+import { join } from "node:path";
+import { NOTE_COLOURS, NOTE_INK, TASK_COLOURS } from "@/content/taskColors";
+import { ringsOf, TASK_SURFACES, taskRingOn } from "./theme";
 
 // B107, Update 3 spec 2.3: the contrast of the spec's pairs in all 11 sets (WCAG 2.2 AA: 4.5:1 for text, 3:1 for a
 // game target's edge), and our own pairs for the pale tints derived in lib/theme.ts.
@@ -62,4 +66,35 @@ describe("contrast in all 11 sets (WCAG 2.2 AA)", () => {
     for (const [what, fg, bg, min] of [...SPEC_PAIRS, ...OUR_PAIRS])
       it(`${s} ${m}: ${what} ≥ ${min}:1`, () => expect(contrast(t[fg], t[bg])).toBeGreaterThanOrEqual(min));
   }
+});
+// B109, Update 3 spec 5: every task colour stands out 3:1 from the game surfaces in all 11 sets, or it is drawn with
+// a 2 px ring in the set's ink (which is at least 4.5:1 on those surfaces, above).
+describe("task colours: 3:1 on the game surfaces, or a ring", () => {
+  for (const [name, looks] of Object.entries(TASK_COLOURS))
+    it(name, () => {
+      for (const [s, m] of SETS) {
+        const t = tokensOf(s, m) as Record<string, string>;
+        const ring = ringsOf(s, m)[`ring-${name}`];
+        for (const look of looks)
+          for (const surface of TASK_SURFACES) {
+            const best = Math.max(...look.map((c) => contrast(c, t[surface])));
+            if (best >= 3) continue;
+            expect(ring, `${name} in ${s} ${m} on ${surface}: ${best.toFixed(2)}:1 needs a ring`).toBe(t.ink);
+            expect(contrast(ring, t[surface])).toBeGreaterThanOrEqual(3);
+          }
+        if (!taskRingOn(name, s, m)) expect(ring).toBe("transparent");
+        expect(THEME_CSS).toContain(`--ring-${name}:${ring};`);
+      }
+    });
+
+  it("the print on every note and coin is readable (4.5:1)", () => {
+    for (const [v, c] of Object.entries(NOTE_COLOURS)) expect(contrast(NOTE_INK, c), v).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it("every kind of task colour is drawn with its ring", () => {
+    const SRC = join(new URL("..", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1"));
+    const walk = (d: string): string[] => readdirSync(d).flatMap((n) => (statSync(join(d, n)).isDirectory() ? walk(join(d, n)) : /\.tsx$/.test(n) ? [join(d, n)] : []));
+    const code = walk(SRC).map((p) => readSrc(p, "utf8")).join("\n");
+    for (const kind of new Set(Object.keys(TASK_COLOURS).map((n) => n.split("-")[0]))) expect(code, kind).toMatch(new RegExp(`ringStyle\\([^)]*[\`"]${kind}-`));
+  });
 });

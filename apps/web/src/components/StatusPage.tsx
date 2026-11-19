@@ -8,7 +8,7 @@ import { Mascot } from "./Mascot";
 /** Full-page state (404, crash) in the brand voice: mascot, one heading, one sentence, clear next steps. */
 export function StatusPage({ mood, title, body, children }: { mood: MascotMood; title: string; body?: string; children?: ReactNode }) {
   return (
-    <div className="flex min-h-dvh flex-col bg-[linear-gradient(180deg,#eef5fc_0%,#f7f6f1_60%)]">
+    <div className="flex min-h-dvh flex-col bg-[linear-gradient(180deg,var(--sky1),var(--sky2))]">
       <header className="mx-auto w-full max-w-5xl p-4">
         <Logo />
       </header>

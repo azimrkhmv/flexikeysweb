@@ -7,7 +7,7 @@ import { describe, expect, it } from "vitest";
 
 const SRC = new URL("..", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1");
 const css = readFileSync(join(SRC, "app/globals.css"), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
-const BLUR_ALLOWED = [".fk-header", ".fk-skycloud", ".fk-hill"];
+const BLUR_ALLOWED = [".fk-header", ".fk-skycloud", ".fk-hill", ".fk-vcloud"];
 
 function files(dir: string): string[] {
   return readdirSync(dir).flatMap((n) => {

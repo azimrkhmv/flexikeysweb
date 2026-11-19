@@ -11,7 +11,7 @@ export default function PlayError({ error, retry }: { error: Error & { digest?: 
   const t = useT();
   useEffect(() => console.error("[child-mode]", error.digest ?? error), [error]);
   return (
-    <main className="flex min-h-dvh flex-col items-center justify-center gap-6 bg-[linear-gradient(180deg,#eaf3fc_0%,#f5f9f0_60%,#e3f0dc_100%)] p-4">
+    <main className="flex min-h-dvh flex-col items-center justify-center gap-6 bg-[linear-gradient(180deg,var(--sky1),var(--sky2))] p-4">
       <Mascot mood="calm" size={200} />
       <Target label={t("play.oops")} onSelect={() => retry()} className="rounded-full bg-btn px-8 text-xl font-extrabold text-btn-text shadow-soft">
         🗺️ {t("play.oops")}

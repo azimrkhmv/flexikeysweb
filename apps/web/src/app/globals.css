@@ -216,6 +216,10 @@ h1, h2, h3 {
 .fk-pop { animation: fk-pop 420ms ease-out both; }
 .fk-glow { animation: fk-glow 1.2s ease-in-out infinite; }
 
+/* A task colour that is below 3:1 on the game surface in this set gets a 2 px ring around its shape (B109, spec 5):
+   `--task-ring` is `var(--ring-<name>)` (content/taskColors.ts `ringStyle`), the set's ink or transparent. No blur. */
+.fk-task-ring { filter: drop-shadow(2px 0 0 var(--task-ring)) drop-shadow(-2px 0 0 var(--task-ring)) drop-shadow(0 2px 0 var(--task-ring)) drop-shadow(0 -2px 0 var(--task-ring)); }
+
 /* Vision mode (CVI): one strong, preferred colour around every target, nothing else competing. The colours are the
    child's own (content/taskColors.ts VISION_COLOURS, as --fk-cvi). */
 [data-cvi] [data-fk-target]:not([disabled]) { box-shadow: 0 0 0 6px var(--fk-cvi); }
@@ -230,11 +234,21 @@ h1, h2, h3 {
 [data-style="soft"] .fk-hill { filter: blur(1.3px); }
 /* A soft sun spot behind the landing page's first picture: a gradient, so it needs no blur. */
 .fk-sunspot { background: radial-gradient(circle, color-mix(in srgb, var(--sun) 45%, transparent), transparent 70%); }
+.fk-hill-far { left: 18%; bottom: -150px; width: 100%; height: 300px; background: var(--hillFar); }
+.fk-ground .fk-hill-far { bottom: -170px; left: 25%; width: 80%; }
 .fk-hill-a { left: -22%; bottom: -170px; width: 92%; height: 300px; background: var(--hill1); }
 .fk-hill-b { right: -28%; bottom: -215px; width: 105%; height: 330px; background: var(--hill2); }
 .fk-tree { position: absolute; width: 7px; height: 30px; background: var(--trunk); border-radius: 4px; }
 .fk-tree::before { content: ""; position: absolute; left: -15px; bottom: 14px; width: 37px; height: 48px; border-radius: 50% 50% 45% 45%; background: var(--tree1); border: calc(1.5px * var(--sharp)) solid var(--edge); }
+.fk-tree::after { content: ""; position: absolute; left: -6px; bottom: 40px; width: 12px; height: 14px; border-radius: 50%; background: var(--tree2); }
 .fk-tree-s { transform: scale(0.7); transform-origin: 50% 100%; }
+/* Drifting clouds (blurred in Soft) and the stars of dark sets. */
+.fk-vcloud { position: absolute; left: 0; height: auto; overflow: visible; animation: fk-drift 60s linear infinite; }
+.fk-vcloud path { fill: var(--cloud); stroke: var(--edge); stroke-width: calc(2.5px * var(--sharp)); }
+[data-style="soft"] .fk-vcloud { filter: blur(2px); opacity: 0.9; }
+@keyframes fk-drift { from { transform: translateX(-140px); } to { transform: translateX(110vw); } }
+.fk-star { position: absolute; width: 5px; height: 5px; border-radius: 50%; background: var(--sun); opacity: var(--stars, 0); }
+@media (prefers-reduced-motion: reduce) { .fk-vcloud { animation: none; transform: translateX(30vw); } }
 .fk-toy { position: absolute; transform: translate(calc(var(--px, 0) * var(--d) * 1px), calc(var(--py, 0) * var(--d) * 1px)); transition: transform 0.4s ease-out; z-index: 2; }
 .fk-toy i { display: block; animation: fk-toy 5s ease-in-out infinite; }
 @keyframes fk-toy { 50% { transform: translateY(-10px) rotate(5deg); } }

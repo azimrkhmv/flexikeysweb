@@ -2,15 +2,36 @@
 
 import { useEffect } from "react";
 
+/** Two drifting clouds and a few stars (stars only in dark sets: `--stars`, lib/theme.ts). */
+function Sky({ stars }: { stars: [number, number][] }) {
+  return (
+    <>
+      {stars.map(([l, t], k) => (
+        <i key={k} className="fk-star" style={{ left: `${l}%`, top: `${t}%` }} />
+      ))}
+      {[
+        ["6%", 0, 1],
+        ["30%", -14, 0.7],
+      ].map(([top, delay, s], k) => (
+        <svg key={k} className="fk-vcloud" viewBox="0 0 120 70" style={{ top: top as string, animationDelay: `${delay}s`, width: 120 * (s as number) }}>
+          <path d="M26 64C8 64 2 50 10 40C7 25 22 16 34 23C40 6 65 5 73 21C87 13 106 24 101 40C116 43 115 64 98 64Z" />
+        </svg>
+      ))}
+    </>
+  );
+}
+
 /**
- * Warm Hills scenery (B100, spec 2.2): a pale sun, two round hills and small trees, drawn in CSS (globals.css) as
- * in the approved demo. Decoration only. Used on the parent's first screen and as the foot of parent pages; never
- * on a child's game screen.
+ * Scenery (B100, B109, spec 6): the sun (the moon in dark sets: the same tokens), a far hill, two round hills, small
+ * trees, drifting clouds and, in dark sets, a few stars; every colour from the scheme. Drawn in CSS (globals.css).
+ * Decoration only. Used on the parent's first screen and as the foot of parent pages; never on a child's game screen.
  */
 export function Vista() {
   return (
     <div className="fk-vista" data-fk-vista aria-hidden>
+      <Sky stars={[[34, 10], [52, 22], [70, 8], [86, 26], [62, 34]]} />
       <div className="fk-sunny" />
+      <div className="fk-hill fk-hill-far" />
       <div className="fk-hill fk-hill-a" />
       <div className="fk-hill fk-hill-b" />
       <div className="fk-tree" style={{ left: "16%", bottom: 86 }} />
@@ -37,6 +58,7 @@ export function Vista() {
 export function Ground() {
   return (
     <div className="fk-ground print:hidden" aria-hidden>
+      <div className="fk-hill fk-hill-far" />
       <div className="fk-hill fk-hill-a" />
       <div className="fk-hill fk-hill-b" />
       <div className="fk-tree" style={{ left: "12%", bottom: 96 }} />
