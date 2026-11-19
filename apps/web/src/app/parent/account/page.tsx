@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { LogOut, Trash } from "lucide-react";
-import { SchemePicker } from "@/components/SchemePicker";
+import { AppearanceSettings } from "@/components/AppearanceSettings";
 import { Button, Card, Field, Input, Modal, PageHeader, Select, useAction } from "@/components/ui";
 import { CloudySwitch } from "@/features/parent/CloudyRoam";
 import { askForTour } from "@/features/parent/cloudyStore";
@@ -75,7 +75,7 @@ export default function Account() {
       <Card className="space-y-3">
         <h2 className="text-lg font-extrabold">{t("look.appearance")}</h2>
         <p className="text-sm text-muted">{t("look.appearance.hint")}</p>
-        <SchemePicker />
+        <AppearanceSettings />
       </Card>
 
       <Card className="space-y-3">

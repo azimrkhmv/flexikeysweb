@@ -11,6 +11,7 @@ import { api, sel, useDb, type DB } from "@/lib/api";
 import { sfx, speak, unlockAudio } from "@/lib/audio";
 import { useT, type Lang } from "@/lib/i18n";
 import { useFocusTrap } from "@/lib/useFocusTrap";
+import { usePlayLook } from "@/lib/appearance";
 import { createOutbox, retryable, type OutboxItem } from "@/lib/outbox";
 import { createTryLog, type TryRecord } from "@/lib/tries";
 import { GAME_LIMIT_MIN } from "@/lib/roadmap";
@@ -25,6 +26,7 @@ import { localDate } from "@/lib/api/schema";
 import { SkillGames } from "./SkillGames";
 import { Trees } from "./Trees";
 import { Aac } from "./Aac";
+import { MyColoursButton, MyColoursSheet } from "./MyColours";
 import { ParentGate } from "./ParentGate";
 import { Shop } from "./Shop";
 import { SCAN_DEFAULT, Target, useScanning, type SelectInfo } from "./Target";
@@ -111,7 +113,9 @@ export function ChildMode({ child }: { child: Child }) {
   const t = useT(lang);
   const [view, setView] = useState<View>({ v: "start" });
   const [mood, setMood] = useState<MascotMood>("wave");
-  const [overlay, setOverlay] = useState<null | "menu" | "gate" | "break" | "aac">(null);
+  const [overlay, setOverlay] = useState<null | "menu" | "gate" | "break" | "aac" | "look">(null);
+  // The child's own colours and style on the play pages (B110); the parent's come back when child mode closes.
+  usePlayLook(child.id);
   const [breakDue, setBreakDue] = useState(false);
   const [input, setInput] = useState<InputProfile>("touch");
   const online = useOnline();
@@ -382,7 +386,7 @@ export function ChildMode({ child }: { child: Child }) {
   const offlineBlock = !online && view.v !== "aac" && overlay !== "aac";
   // Switch scanning covers the whole shell (nav included), or only the open overlay.
   const scan = child.support?.scan ?? SCAN_DEFAULT;
-  useScanning(child.access === "scan" && overlay !== "gate", overlay === "menu" || overlay === "aac" || showBreak || restDay || offlineBlock ? overlayRef : shellRef, {
+  useScanning(child.access === "scan" && overlay !== "gate", overlay === "menu" || overlay === "aac" || overlay === "look" || showBreak || restDay || offlineBlock ? overlayRef : shellRef, {
     stepMs: scan.stepMs,
     mode: scan.mode,
     speak: scan.speak,
@@ -402,7 +406,7 @@ export function ChildMode({ child }: { child: Child }) {
     };
   }, [calm, cvi]);
   // Escape = "Continue" on the pause menu, My Voice and the break screen (never exits child mode).
-  useFocusTrap(overlayRef, overlay === "menu" || overlay === "aac" ? overlay : showBreak ? "break" : null, () => {
+  useFocusTrap(overlayRef, overlay === "menu" || overlay === "aac" || overlay === "look" ? overlay : showBreak ? "break" : null, () => {
     if (showBreak) {
       breakStart.current = Date.now();
       setBreakDue(false);
@@ -563,6 +567,7 @@ export function ChildMode({ child }: { child: Child }) {
             <span aria-hidden>{child.avatar}</span> {child.name}
           </span>
           <div className="ml-auto flex items-center gap-2">
+            {(view.v === "map" || view.v === "skills") && <MyColoursButton child={child} onOpen={() => setOverlay("look")} />}
             {["activity", "skill", "celebrate", "skillDone", "warmup"].includes(view.v) && (
               <Target label={t("play.nav.aac")} onSelect={() => setOverlay("aac")} className="grid place-items-center rounded-full bg-surface/90 px-3 text-3xl shadow-soft">
                 <span aria-hidden>💬</span>
@@ -648,6 +653,7 @@ export function ChildMode({ child }: { child: Child }) {
           </div>
         </div>
       )}
+      {overlay === "look" && <MyColoursSheet child={child} onDone={() => setOverlay(null)} sheetRef={overlayRef} />}
       {overlay === "gate" && <ParentGate lang={lang} onPass={exit} onCancel={() => setOverlay(null)} />}
       {showBreak && (
         <div className="fixed inset-0 z-40 grid place-items-center bg-bg-2/95 p-4" role="dialog" aria-modal="true" aria-label={t("play.break.title")}>

@@ -104,7 +104,7 @@ export function derived(t: Tokens): Record<DerivedName, string> {
     /** A pale wash of the near hill: soft chips, hover of a second button. */
     tint: mix(t.hill1, t.paperSolid, 0.4),
     /** A pale wash of the far hill: a second chip tone. */
-    tint2: mix(t.hill2, t.paperSolid, 0.32),
+    tint2: mix(t.hill2, t.paperSolid, 0.28), // 0.32 left accent text at 4.47:1 in Warm Hills light (axe, 19 Nov)
     /** A pale wash of the accent, behind accent text (menu, soft buttons, chosen rows). */
     accentSoft: mix(t.accent, t.paperSolid, 0.2),
     /** A pale wash of the sun: notes, highlights. */

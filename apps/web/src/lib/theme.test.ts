@@ -22,11 +22,14 @@ const SPEC_PAIRS: [what: string, fg: string, bg: string, min: number][] = [
 ];
 // Ours: every text colour on every surface it is used on.
 const OUR_PAIRS: [string, string, string, number][] = [
+  ["text on the Light / Dark and Soft / Sharp pills", "ink", "line", 4.5],
   ...["sky1", "sky2", "tint", "tint2", "accentSoft", "sunSoft"].flatMap((bg): [string, string, string, number][] => [
     [`body text on ${bg}`, "ink", bg, 4.5],
     [`soft text on ${bg}`, "muted", bg, 4.5],
   ]),
   ["accent text on the page", "accentText", "sky1", 4.5],
+  ["accent text on a pale chip (tint)", "accentText", "tint", 4.5],
+  ["accent text on a pale chip (tint2)", "accentText", "tint2", 4.5],
   ["accent text on its pale wash (menu, soft buttons)", "accentText", "accentSoft", 4.5],
   ["a card colour on the text colour (inverted emergency button)", "paperSolid", "ink", 4.5],
   ["the focus ring (accent text) on the page", "accentText", "sky2", 3],

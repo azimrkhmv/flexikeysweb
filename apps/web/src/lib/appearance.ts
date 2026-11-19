@@ -136,6 +136,8 @@ function repaint(fade: boolean) {
 export function setParentLook(patch: Partial<Look>) {
   const p = { ...readParent(), ...patch };
   if (p.scheme !== "night") p.lastDay = p.scheme;
+  // Night is dark only: store it as dark, so the children's pages (which take the parent's light or dark) are dark too.
+  else p.mode = "dark";
   parent = p;
   save(KEY, p);
   repaint(true);
