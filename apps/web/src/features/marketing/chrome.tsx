@@ -58,7 +58,7 @@ export function Header() {
         <Logo href={lp("/")} />
         <nav aria-label={t("nav.menu")} className="ml-4 hidden items-center gap-1 lg:flex">
           {LINKS.map((l) => (
-            <Link key={l.href} href={lp(l.href)} className="rounded-full px-3 py-2 text-sm font-bold text-ink-2 hover:bg-surface">
+            <Link key={l.href} href={lp(l.href)} className="rounded-full px-3 py-2 text-sm font-bold text-muted hover:bg-surface">
               {t(l.key)}
             </Link>
           ))}
@@ -75,7 +75,7 @@ export function Header() {
             </summary>
             <div onClick={closeMenu} className="absolute right-0 top-12 flex w-64 flex-col gap-1 rounded-fk border border-line bg-surface p-3 shadow-lift">
               {LINKS.map((l) => (
-                <Link key={l.href} href={lp(l.href)} className="rounded-xl px-3 py-2.5 font-bold text-ink-2 hover:bg-surface-2">
+                <Link key={l.href} href={lp(l.href)} className="rounded-xl px-3 py-2.5 font-bold text-muted hover:bg-surface-2">
                   {t(l.key)}
                 </Link>
               ))}
@@ -91,13 +91,13 @@ export function Header() {
 export function Footer() {
   const t = useT();
   const lp = useLocalePath();
-  const col = "space-y-2 text-sm [&_a]:font-semibold [&_a]:text-ink-2 [&_a:hover]:text-primary";
+  const col = "space-y-2 text-sm [&_a]:font-semibold [&_a]:text-muted [&_a:hover]:text-primary";
   return (
     <footer className="mt-24 border-t border-line bg-surface">
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr]">
         <div className="space-y-3">
           <Logo href={lp("/")} />
-          <p className="max-w-sm text-sm text-ink-2">{t("mkt.footer.about")}</p>
+          <p className="max-w-sm text-sm text-muted">{t("mkt.footer.about")}</p>
           <p className="text-sm font-semibold text-muted">{t("brand.tagline")}</p>
         </div>
         <div className={col}>
@@ -131,7 +131,7 @@ export function SectionTitle({ id, title, lead, center }: { id?: string; title: 
   return (
     <div className={`mb-10 max-w-2xl ${center ? "mx-auto text-center" : ""}`}>
       <h2 id={id} className="text-3xl font-extrabold text-ink sm:text-4xl">{title}</h2>
-      {lead && <p className="mt-3 text-lg text-ink-2">{lead}</p>}
+      {lead && <p className="mt-3 text-lg text-muted">{lead}</p>}
     </div>
   );
 }
@@ -143,12 +143,12 @@ export function LegalPage({ prefix, sections }: { prefix: string; sections: numb
     <article className="mx-auto max-w-3xl px-4 pt-12">
       <h1 className="text-3xl font-extrabold text-ink sm:text-4xl">{t(`${prefix}.title`)}</h1>
       <p className="mt-2 text-sm text-muted">{t("mkt.legal.updated")}</p>
-      <p className="mt-6 text-lg text-ink-2">{t(`${prefix}.intro`)}</p>
+      <p className="mt-6 text-lg text-muted">{t(`${prefix}.intro`)}</p>
       <div className="mt-10 space-y-4">
         {Array.from({ length: sections }, (_, i) => (
           <section key={i} className="rounded-fk border border-line bg-surface p-6 shadow-soft">
             <h2 className="text-lg font-extrabold text-ink">{t(`${prefix}.s${i + 1}.t`)}</h2>
-            <p className="mt-2 leading-relaxed text-ink-2">{t(`${prefix}.s${i + 1}.d`)}</p>
+            <p className="mt-2 leading-relaxed text-muted">{t(`${prefix}.s${i + 1}.d`)}</p>
           </section>
         ))}
       </div>

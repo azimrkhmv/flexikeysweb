@@ -59,11 +59,11 @@ export function SectionIntro({ number, title, intro, onMove, onDone }: { number:
 
   return (
     <div ref={root} aria-hidden className="fixed inset-0 z-[60] grid place-items-center overflow-hidden px-4">
-      <div className="absolute inset-0 bg-teal-soft" />
+      <div className="absolute inset-0 bg-primary-soft" />
       <div className="relative flex flex-col items-center gap-3 text-center">
-        <p data-to="section-number" className="origin-top-left text-xl font-bold text-ink-2">{number}</p>
+        <p data-to="section-number" className="origin-top-left text-xl font-bold text-muted">{number}</p>
         <p data-to="section-title" className="origin-top-left text-[clamp(2.25rem,11vw,4.5rem)] font-extrabold leading-tight text-ink [overflow-wrap:anywhere]">{title}</p>
-        {intro && <p data-to="section-intro" className="origin-top-left text-xl text-ink-2">{intro}</p>}
+        {intro && <p data-to="section-intro" className="origin-top-left text-xl text-muted">{intro}</p>}
       </div>
     </div>
   );

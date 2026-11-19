@@ -81,7 +81,7 @@ export function Clips({ childId }: { childId: string }) {
           ))}
         </ul>
       )}
-      {reply.error && <p className="mt-2 text-sm font-semibold text-[#8f3a2c]">{reply.error}</p>}
+      {reply.error && <p className="mt-2 text-sm font-semibold text-primary">{reply.error}</p>}
     </Card>
   );
 }

@@ -12,8 +12,8 @@ export function AccessPicker({ value, onChange }: { value: AccessMode; onChange:
     <fieldset className="space-y-2">
       <legend className="mb-1 text-sm font-bold">{t("parent.field.access")}</legend>
       {ACCESS.map((a) => (
-        <label key={a} className={`flex cursor-pointer gap-3 rounded-2xl border p-3 ${value === a ? "border-teal bg-teal-soft/50" : "border-line hover:bg-surface-2"}`}>
-          <input type="radio" name="access" className="mt-1 size-4 accent-teal" checked={value === a} onChange={() => onChange(a)} />
+        <label key={a} className={`flex cursor-pointer gap-3 rounded-2xl border p-3 ${value === a ? "border-primary bg-primary-soft/50" : "border-line hover:bg-surface-2"}`}>
+          <input type="radio" name="access" className="mt-1 size-4 accent-primary" checked={value === a} onChange={() => onChange(a)} />
           <span>
             <span className="block font-bold">{t(`parent.access.${a}`)}</span>
             <span className="block text-sm text-muted">{t(`parent.access.${a}Hint`)}</span>
@@ -35,7 +35,7 @@ export function AvatarGrid({ value, onChange }: { value: string; onChange: (v: s
           aria-pressed={value === a}
           aria-label={a}
           onClick={() => onChange(a)}
-          className={`grid aspect-square place-items-center rounded-2xl text-3xl transition ${value === a ? "bg-lavender-soft ring-4 ring-teal" : "bg-surface-2 hover:bg-lavender-soft"}`}
+          className={`grid aspect-square place-items-center rounded-2xl text-3xl transition ${value === a ? "bg-tint-2 ring-4 ring-primary" : "bg-surface-2 hover:bg-tint-2"}`}
         >
           {a}
         </button>

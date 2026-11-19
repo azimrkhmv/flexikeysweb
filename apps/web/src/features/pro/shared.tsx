@@ -9,6 +9,7 @@ import { Bars, Card, Chip, Empty, Meter } from "@/components/ui";
 import { sel, useDb, type DB } from "@/lib/api";
 import { fmtDate } from "@/lib/format";
 import { useLang, useT } from "@/lib/i18n";
+import { QR_CODE } from "@/content/pictureColors";
 
 // Shared read-only building blocks for therapist / physio / admin views.
 
@@ -33,17 +34,17 @@ export const pct = (x: number) => `${Math.round(x * 100)}%`;
 
 /** Pastel mastery scale — no red anywhere. */
 export const HEAT: { min: number; bg: string; key: string }[] = [
-  { min: 0.8, bg: "var(--fk-leaf)", key: "pro.heat.strong" },
-  { min: 0.6, bg: "var(--fk-leaf-soft)", key: "pro.heat.confident" },
-  { min: 0.4, bg: "var(--fk-sky-soft)", key: "pro.heat.growing" },
-  { min: 0, bg: "var(--fk-sun-soft)", key: "pro.heat.starting" },
+  { min: 0.8, bg: "var(--accent)", key: "pro.heat.strong" },
+  { min: 0.6, bg: "var(--accentSoft)", key: "pro.heat.confident" },
+  { min: 0.4, bg: "var(--tint)", key: "pro.heat.growing" },
+  { min: 0, bg: "var(--sunSoft)", key: "pro.heat.starting" },
 ];
-export const heatBg = (p: number, attempts: number) => (attempts ? HEAT.find((h) => p >= h.min)!.bg : "var(--fk-surface-2)");
+export const heatBg = (p: number, attempts: number) => (attempts ? HEAT.find((h) => p >= h.min)!.bg : "var(--sky1)");
 
 export function HeatLegend() {
   const t = useT();
   return (
-    <div className="flex flex-wrap gap-3 text-xs text-ink-2">
+    <div className="flex flex-wrap gap-3 text-xs text-muted">
       {[...HEAT].reverse().map((h) => (
         <span key={h.key} className="inline-flex items-center gap-1.5">
           <span className="size-3.5 rounded" style={{ background: h.bg }} />
@@ -51,7 +52,7 @@ export function HeatLegend() {
         </span>
       ))}
       <span className="inline-flex items-center gap-1.5">
-        <span className="size-3.5 rounded border border-line" style={{ background: "var(--fk-surface-2)" }} />
+        <span className="size-3.5 rounded border border-line" style={{ background: "var(--sky1)" }} />
         {t("pro.heat.none")}
       </span>
     </div>
@@ -128,7 +129,7 @@ export function AdaptationLog({ childId, limit = 8 }: { childId: string; limit?:
                   {c.from} → {c.to} · {fmtDate(c.at, lang, "dayMonth")}
                 </span>
               </div>
-              <p className="text-sm text-ink-2">{t(c.reasonKey)}</p>
+              <p className="text-sm text-muted">{t(c.reasonKey)}</p>
             </li>
           ))}
         </ul>
@@ -253,7 +254,7 @@ export function NotFound({ back }: { back: string }) {
   const t = useT();
   return (
     <Card className="mx-auto max-w-md text-center">
-      <p className="mb-4 text-ink-2">{t("err.not_found")}</p>
+      <p className="mb-4 text-muted">{t("err.not_found")}</p>
       <Link href={back} className="font-bold text-primary">
         {t("common.back")}
       </Link>
@@ -265,7 +266,7 @@ export function QrCode({ text, label, className = "" }: { text: string; label: s
   const [src, setSrc] = useState("");
   useEffect(() => {
     let live = true;
-    QRCode.toDataURL(text, { width: 600, margin: 1, color: { dark: "#27406b", light: "#ffffff" } }).then((s) => live && setSrc(s));
+    QRCode.toDataURL(text, { width: 600, margin: 1, color: QR_CODE }).then((s) => live && setSrc(s));
     return () => {
       live = false;
     };

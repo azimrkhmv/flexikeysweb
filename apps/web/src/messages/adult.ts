@@ -3,9 +3,10 @@ import { registerMessages } from "@/lib/translate";
 import { auth } from "./auth";
 import { hills } from "./hills";
 import { intake } from "./intake";
+import { look } from "./look";
 import { parent } from "./parent";
 import { planGames } from "./planGames";
 import { pro } from "./pro";
 import { progress } from "./progress";
 
-registerMessages(auth, parent, pro, intake, planGames, progress, hills);
+registerMessages(auth, parent, pro, intake, planGames, progress, hills, look);

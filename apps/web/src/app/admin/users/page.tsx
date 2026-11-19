@@ -45,7 +45,7 @@ export default function AdminUsers() {
             ))}
           </Select>
         </div>
-        {(status.error || comp.error) && <p className="mb-3 text-sm font-semibold text-[#8f3a2c]">{status.error || comp.error}</p>}
+        {(status.error || comp.error) && <p className="mb-3 text-sm font-semibold text-primary">{status.error || comp.error}</p>}
         {users.length === 0 ? (
           <Empty />
         ) : (

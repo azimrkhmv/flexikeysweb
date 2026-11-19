@@ -160,7 +160,7 @@ export function PhoneFlow({ showDemos }: { showDemos?: boolean }) {
             if (r) await go(r.user);
           }}
         >
-          <p className="text-sm text-ink-2">{t("auth.phone.sentTo", { phone })}</p>
+          <p className="text-sm text-muted">{t("auth.phone.sentTo", { phone })}</p>
           {demoCode && <FormNote>{t("auth.phone.demoCode", { code: demoCode })}</FormNote>}
           <Field label={t("auth.phone.code")}>
             <Input

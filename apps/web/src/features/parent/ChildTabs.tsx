@@ -99,10 +99,10 @@ export function ChangesTab({ childId }: { childId: string }) {
             <Chip tone="teal" className="mb-2">
               {t(`parent.input.${p.input}`)}
             </Chip>
-            <ul className="space-y-1.5 text-sm text-ink-2">
+            <ul className="space-y-1.5 text-sm text-muted">
               {profileLines(p.params, t).map((line) => (
                 <li key={line} className="flex gap-2">
-                  <Check className="mt-0.5 size-4 shrink-0 text-teal" aria-hidden /> {line}
+                  <Check className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden /> {line}
                 </li>
               ))}
             </ul>
@@ -117,7 +117,7 @@ export function ChangesTab({ childId }: { childId: string }) {
           <ol className="relative space-y-5 border-l-2 border-line pl-5">
             {changes.map((c) => (
               <li key={c.id} className="relative">
-                <span className="absolute -left-[27px] top-1 size-3 rounded-full bg-teal ring-4 ring-surface" aria-hidden />
+                <span className="absolute -left-[27px] top-1 size-3 rounded-full bg-primary ring-4 ring-surface" aria-hidden />
                 <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
                   <span>{fmtDate(c.at, lang)}</span>
                   <Chip tone="gray">{t(`adapt.param.${c.param}`)}</Chip>
@@ -208,9 +208,9 @@ export function AacTab({ childId }: { childId: string }) {
                   {c.emoji}
                 </span>
               )}
-              {c.audio && <Mic className="size-4 shrink-0 text-teal" aria-label={t("parent.aac.recorded")} />}
+              {c.audio && <Mic className="size-4 shrink-0 text-primary" aria-label={t("parent.aac.recorded")} />}
               <span className="min-w-0 flex-1 truncate text-sm font-bold">{c.label}</span>
-              <button type="button" onClick={() => del.run(c.id)} className="grid size-8 place-items-center rounded-full text-muted hover:bg-peach-soft hover:text-[#8f3a2c]" aria-label={`${t("common.delete")} ${c.label}`}>
+              <button type="button" onClick={() => del.run(c.id)} className="grid size-8 place-items-center rounded-full text-muted hover:bg-tint-2 hover:text-primary" aria-label={`${t("common.delete")} ${c.label}`}>
                 <Trash className="size-4" />
               </button>
             </li>
@@ -248,7 +248,7 @@ export function AacTab({ childId }: { childId: string }) {
             <legend className="mb-2 text-sm font-bold">{t("parent.aac.picture")}</legend>
             <div className="grid grid-cols-8 gap-2">
               {CARD_EMOJI.map((e) => (
-                <button key={e} type="button" aria-pressed={emoji === e} aria-label={e} onClick={() => setEmoji(e)} className={`grid aspect-square place-items-center rounded-xl text-xl ${emoji === e ? "bg-teal-soft ring-2 ring-teal" : "bg-surface-2"}`}>
+                <button key={e} type="button" aria-pressed={emoji === e} aria-label={e} onClick={() => setEmoji(e)} className={`grid aspect-square place-items-center rounded-xl text-xl ${emoji === e ? "bg-primary-soft ring-2 ring-primary" : "bg-surface-2"}`}>
                   {e}
                 </button>
               ))}
@@ -260,12 +260,12 @@ export function AacTab({ childId }: { childId: string }) {
               type="file"
               accept="image/jpeg,image/png"
               onChange={(e) => setPhoto(e.target.files?.[0] ?? null)}
-              className="block w-full text-sm file:mr-3 file:rounded-full file:border-0 file:bg-sky-soft file:px-4 file:py-2 file:font-bold file:text-ink"
+              className="block w-full text-sm file:mr-3 file:rounded-full file:border-0 file:bg-tint file:px-4 file:py-2 file:font-bold file:text-ink"
             />
           </Field>
           {canRecord ? <VoiceRecorder key={formKey} onChange={setVoice} /> : <p className="text-xs text-muted">{t("parent.aac.needVoice")}</p>}
           {(add.error || del.error) && (
-            <p role="alert" className="text-sm font-semibold text-[#8f3a2c]">
+            <p role="alert" className="text-sm font-semibold text-primary">
               {add.error ?? del.error}
             </p>
           )}
@@ -339,7 +339,7 @@ function VoiceRecorder({ onChange }: { onChange: (b: Blob | null) => void }) {
           </Button>
         </>
       )}
-      {error && <p role="alert" className="w-full text-sm font-semibold text-[#8f3a2c]">{t("err.generic")}</p>}
+      {error && <p role="alert" className="w-full text-sm font-semibold text-primary">{t("err.generic")}</p>}
     </div>
   );
 }
@@ -365,7 +365,7 @@ export function SharingTab({ childId, goTab }: { childId: string; goTab: (t: Tab
   const user = (id: string) => sel.user(db, id)?.name ?? "";
 
   const consentHint = (
-    <p className="rounded-2xl bg-sun-soft p-3 text-sm text-[#7a5a0c]">
+    <p className="rounded-2xl bg-sun-soft p-3 text-sm text-ink">
       {t("parent.sharing.needConsent")}{" "}
       <button type="button" className="font-extrabold underline" onClick={() => goTab("privacy")}>
         {t("parent.tab.privacy")}
@@ -423,10 +423,10 @@ export function SharingTab({ childId, goTab }: { childId: string; goTab: (t: Tab
             </Button>
           </form>
         )}
-        {invite.error && <p role="alert" className="text-sm font-semibold text-[#8f3a2c]">{invite.error}</p>}
+        {invite.error && <p role="alert" className="text-sm font-semibold text-primary">{invite.error}</p>}
         {newCode && (
-          <div role="status" className="flex flex-wrap items-center gap-3 rounded-2xl border border-teal bg-teal-soft/60 p-4">
-            <p className="flex-1 text-sm text-ink-2">{t("parent.sharing.codeHint")}</p>
+          <div role="status" className="flex flex-wrap items-center gap-3 rounded-2xl border border-primary bg-primary-soft/60 p-4">
+            <p className="flex-1 text-sm text-muted">{t("parent.sharing.codeHint")}</p>
             <span className="font-mono text-2xl font-extrabold tracking-widest break-all">{newCode}</span>
             <Button
               size="sm"
@@ -457,7 +457,7 @@ export function SharingTab({ childId, goTab }: { childId: string; goTab: (t: Tab
         ) : (
           <ul className="space-y-3">
             {notes.map((n) => (
-              <li key={n.id} className="rounded-2xl bg-lavender-soft/60 p-3">
+              <li key={n.id} className="rounded-2xl bg-tint-2/60 p-3">
                 <p className="text-sm">{n.text}</p>
                 <p className="mt-1 text-xs text-muted">
                   {user(n.authorId)} · {fmtDate(n.createdAt, lang)}
@@ -475,7 +475,7 @@ export function SharingTab({ childId, goTab }: { childId: string; goTab: (t: Tab
           <ul className="space-y-2">
             {goals.map((g) => (
               <li key={g.id} className="flex items-center gap-3 rounded-2xl bg-surface-2 p-3 text-sm">
-                <span className={`grid size-6 shrink-0 place-items-center rounded-full ${g.done ? "bg-teal text-white" : "border-2 border-line"}`} aria-label={t(g.done ? "parent.sharing.goalDone" : "parent.sharing.goalOpen")}>
+                <span className={`grid size-6 shrink-0 place-items-center rounded-full ${g.done ? "bg-btn text-btn-text" : "border-2 border-line"}`} aria-label={t(g.done ? "parent.sharing.goalDone" : "parent.sharing.goalOpen")}>
                   {g.done && <Check className="size-4" />}
                 </span>
                 <span className={g.done ? "text-muted" : "font-semibold"}>{g.text}</span>
@@ -486,8 +486,8 @@ export function SharingTab({ childId, goTab }: { childId: string; goTab: (t: Tab
       </Card>
 
       <Modal open={!!revoking} onClose={() => setRevoking(null)} title={t("parent.sharing.revokeTitle")}>
-        <p className="mb-5 text-ink-2">{t("parent.sharing.revokeText")}</p>
-        {revoke.error && <p role="alert" className="mb-3 text-sm font-semibold text-[#8f3a2c]">{revoke.error}</p>}
+        <p className="mb-5 text-muted">{t("parent.sharing.revokeText")}</p>
+        {revoke.error && <p role="alert" className="mb-3 text-sm font-semibold text-primary">{revoke.error}</p>}
         <div className="flex justify-end gap-2">
           <Button variant="ghost" onClick={() => setRevoking(null)}>
             {t("common.cancel")}
@@ -568,13 +568,13 @@ export function SettingsTab({ child }: { child: Child }) {
             <legend className="mb-3 text-sm font-bold">{t("parent.field.avatar")}</legend>
             <AvatarGrid value={avatar} onChange={setAvatar} />
           </fieldset>
-          {save.error && <p role="alert" className="text-sm font-semibold text-[#8f3a2c]">{save.error}</p>}
+          {save.error && <p role="alert" className="text-sm font-semibold text-primary">{save.error}</p>}
           <div className="flex items-center gap-3">
             <Button type="submit" pending={save.pending}>
               {t("common.save")}
             </Button>
             {saved && (
-              <span role="status" className="text-sm font-bold text-teal">
+              <span role="status" className="text-sm font-bold text-primary">
                 {t("parent.saved")}
               </span>
             )}
@@ -634,7 +634,7 @@ function StoredCard({ child }: { child: Child }) {
   return (
     <Card className="space-y-3">
       <H2>{t("parent.stored.title", { name: child.name })}</H2>
-      <ul className="list-disc space-y-1 pl-5 text-sm text-ink-2">
+      <ul className="list-disc space-y-1 pl-5 text-sm text-muted">
         <li>{t("parent.stored.profile")}</li>
         {sel.stored(db, child.id).map(([kind, n]) => (
           <li key={kind}>{t(`parent.stored.${kind}`, { n })}</li>
@@ -657,7 +657,7 @@ function StoredCard({ child }: { child: Child }) {
           />
         ))}
       </ul>
-      {error && <p role="alert" className="text-sm font-semibold text-[#8f3a2c]">{error}</p>}
+      {error && <p role="alert" className="text-sm font-semibold text-primary">{error}</p>}
     </Card>
   );
 }
@@ -708,7 +708,7 @@ export function PrivacyTab({ child }: { child: Child }) {
             </div>
           );
         })}
-        {set.error && <p role="alert" className="text-sm font-semibold text-[#8f3a2c]">{set.error}</p>}
+        {set.error && <p role="alert" className="text-sm font-semibold text-primary">{set.error}</p>}
         <p className="text-xs text-muted">{t("parent.privacy.withdrawHint")}</p>
       </Card>
 
@@ -745,11 +745,11 @@ export function PrivacyTab({ child }: { child: Child }) {
         }}
         title={t("parent.privacy.deleteTitle", { name: child.name })}
       >
-        <p className="mb-4 text-ink-2">{t("parent.privacy.deleteConfirm", { name: child.name })}</p>
+        <p className="mb-4 text-muted">{t("parent.privacy.deleteConfirm", { name: child.name })}</p>
         <Field label={t("parent.privacy.typeName", { name: child.name })}>
           <Input value={typed} onChange={(e) => setTyped(e.target.value)} autoFocus />
         </Field>
-        {del.error && <p role="alert" className="mt-3 text-sm font-semibold text-[#8f3a2c]">{del.error}</p>}
+        {del.error && <p role="alert" className="mt-3 text-sm font-semibold text-primary">{del.error}</p>}
         <div className="mt-5 flex justify-end gap-2">
           <Button variant="ghost" onClick={() => setConfirm(false)}>
             {t("common.cancel")}

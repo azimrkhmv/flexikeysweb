@@ -105,7 +105,7 @@ function Notes({ childId }: { childId: string }) {
             {t("common.save")}
           </Button>
         </div>
-        {error && <p className="text-sm font-semibold text-[#8f3a2c]">{error}</p>}
+        {error && <p className="text-sm font-semibold text-primary">{error}</p>}
       </form>
       {notes.length === 0 ? (
         <Empty />
@@ -144,7 +144,7 @@ function Goals({ childId }: { childId: string }) {
           {goals.map((g) => (
             <li key={g.id}>
               <label className="flex cursor-pointer items-center gap-3 rounded-2xl p-2 hover:bg-surface-2">
-                <input type="checkbox" className="size-5 accent-teal" checked={g.done} onChange={() => toggle.run(g.id)} />
+                <input type="checkbox" className="size-5 accent-primary" checked={g.done} onChange={() => toggle.run(g.id)} />
                 <span className={`text-sm ${g.done ? "text-muted line-through" : "font-semibold text-ink"}`}>{g.text}</span>
               </label>
             </li>
@@ -163,7 +163,7 @@ function Goals({ childId }: { childId: string }) {
           {t("common.add")}
         </Button>
       </form>
-      {(add.error || toggle.error) && <p className="mt-2 text-sm font-semibold text-[#8f3a2c]">{add.error || toggle.error}</p>}
+      {(add.error || toggle.error) && <p className="mt-2 text-sm font-semibold text-primary">{add.error || toggle.error}</p>}
     </Card>
   );
 }
@@ -201,7 +201,7 @@ function Recommend({ childId }: { childId: string }) {
         <Button type="submit" size="sm" pending={add.pending}>
           {t("therapist.rec.add")}
         </Button>
-        {add.error && <p className="text-sm font-semibold text-[#8f3a2c]">{add.error}</p>}
+        {add.error && <p className="text-sm font-semibold text-primary">{add.error}</p>}
       </form>
       {list.length === 0 ? (
         <Empty />
@@ -244,13 +244,13 @@ function AacUsage({ childId }: { childId: string }) {
     <Card>
       <SectionTitle>{t("therapist.aac.title")}</SectionTitle>
       <div className="mb-4 grid grid-cols-2 gap-3">
-        <div className="rounded-2xl bg-sky-soft p-3">
+        <div className="rounded-2xl bg-tint p-3">
           <div className="text-2xl font-extrabold text-ink">{s.sentences}</div>
-          <div className="text-xs text-ink-2">{t("therapist.aac.sentences")}</div>
+          <div className="text-xs text-muted">{t("therapist.aac.sentences")}</div>
         </div>
-        <div className="rounded-2xl bg-leaf-soft p-3">
+        <div className="rounded-2xl bg-primary-soft p-3">
           <div className="text-2xl font-extrabold text-ink">{s.avgLen}</div>
-          <div className="text-xs text-ink-2">{t("therapist.aac.avgLen")}</div>
+          <div className="text-xs text-muted">{t("therapist.aac.avgLen")}</div>
         </div>
       </div>
       {s.sentences === 0 ? (

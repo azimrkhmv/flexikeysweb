@@ -42,14 +42,14 @@ export function PlanTab({ child }: { child: Child }) {
       <Why plan={plan} />
       <Weeks plan={plan} />
       <Card className="flex flex-wrap items-center justify-between gap-3 p-5">
-        <p className="text-sm text-ink-2">{t("plan.check.d", { name: child.name })}</p>
+        <p className="text-sm text-muted">{t("plan.check.d", { name: child.name })}</p>
         <LinkButton href={`/play/check?child=${child.id}`} variant="soft">
           {t("plan.check")}
         </LinkButton>
       </Card>
       {!plan.quick && (
       <Card className="flex flex-wrap items-center justify-between gap-3 p-5">
-        <p className="text-sm text-ink-2">{t("plan.reintake.d")}</p>
+        <p className="text-sm text-muted">{t("plan.reintake.d")}</p>
         <Button
           variant="outline"
           pending={reintake.pending}
@@ -76,15 +76,15 @@ function Why({ plan }: { plan: Roadmap }) {
   return (
     <Card className="space-y-2 p-5">
       <h2 className="text-lg font-extrabold text-ink">{t("plan.why")}</h2>
-      <p className="text-ink-2">{t("plan.why.goals", { goals: goals.map((g) => t(`intake.P33.${g}`).toLowerCase()).join(", ") })}</p>
+      <p className="text-muted">{t("plan.why.goals", { goals: goals.map((g) => t(`intake.P33.${g}`).toLowerCase()).join(", ") })}</p>
       {plan.exercisesAllowed ? (
         <>
-          <p className="text-ink-2">{t("plan.why.safe")}</p>
-          <p className="text-ink-2">{t("plan.why.time", { min: minutes })}</p>
-          {plan.reasons.some((r) => r.source) && <p className="text-ink-2">{t("plan.why.research")}</p>}
+          <p className="text-muted">{t("plan.why.safe")}</p>
+          <p className="text-muted">{t("plan.why.time", { min: minutes })}</p>
+          {plan.reasons.some((r) => r.source) && <p className="text-muted">{t("plan.why.research")}</p>}
         </>
       ) : (
-        <p className="text-ink-2">{t(why)}</p>
+        <p className="text-muted">{t(why)}</p>
       )}
     </Card>
   );
@@ -116,7 +116,7 @@ function Weeks({ plan }: { plan: Roadmap }) {
             type="button"
             aria-pressed={week === w}
             onClick={() => setWeek(w)}
-            className={`h-10 shrink-0 rounded-full px-4 text-sm font-bold ${week === w ? "bg-surface text-primary shadow-soft" : "text-ink-2"}`}
+            className={`h-10 shrink-0 rounded-full px-4 text-sm font-bold ${week === w ? "bg-surface text-primary shadow-soft" : "text-muted"}`}
           >
             {t("plan.week", { n: w + 1 })}
           </button>
@@ -129,7 +129,7 @@ function Weeks({ plan }: { plan: Roadmap }) {
           {plan.days.slice(week * 7, week * 7 + 7).map((d, n) => {
             const date = dates[week * 7 + n];
             return (
-              <Card as="li" key={date} className={`space-y-3 p-4 ${date === today ? "ring-2 ring-teal" : ""}`}>
+              <Card as="li" key={date} className={`space-y-3 p-4 ${date === today ? "ring-2 ring-primary" : ""}`}>
                 <p className="flex items-center gap-2 font-extrabold text-ink">
                   {fmt(date)} {date === today && <Chip tone="teal">{t("plan.today")}</Chip>}
                 </p>
@@ -185,7 +185,7 @@ function MoreExact({ child }: { child: Child }) {
     <Card className="flex flex-wrap items-center justify-between gap-3 p-5">
       <div className="min-w-0 flex-1">
         <p className="font-bold text-ink">{t("quick.card.title")}</p>
-        <p className="mt-1 text-sm text-ink-2">{names ? t("quick.card.text", { areas: names }) : t("quick.card.textAll")}</p>
+        <p className="mt-1 text-sm text-muted">{names ? t("quick.card.text", { areas: names }) : t("quick.card.textAll")}</p>
       </div>
       <LinkButton href={`/parent/children/new?child=${child.id}`}>{t("quick.card.button")}</LinkButton>
     </Card>

@@ -46,7 +46,7 @@ export default function AdminOverview() {
                 <span className="font-semibold text-ink">{t(`admin.health.${s}`)}</span>
                 {health ? (
                   <Chip tone={health[s] ? "leaf" : "peach"}>
-                    <span className={`size-2 rounded-full ${health[s] ? "bg-teal" : "bg-[#c0573f]"}`} aria-hidden /> {t(health[s] ? "admin.health.up" : "admin.health.down")}
+                    <span className={`size-2 rounded-full ${health[s] ? "bg-primary" : "bg-muted"}`} aria-hidden /> {t(health[s] ? "admin.health.up" : "admin.health.down")}
                   </Chip>
                 ) : (
                   <Chip tone="gray">
@@ -62,7 +62,7 @@ export default function AdminOverview() {
           <SectionTitle>
             <Bot className="mr-1 inline size-5" aria-hidden /> {t("admin.ai.title")}
           </SectionTitle>
-          <Bars data={days.map((d, i) => ({ label: d.slice(8), value: ai.byDay[i] }))} height={110} tone="#b3a8e8" />
+          <Bars data={days.map((d, i) => ({ label: d.slice(8), value: ai.byDay[i] }))} height={110} tone="var(--hill2)" />
           <div className="mt-3 flex flex-wrap gap-2">
             {(["parent", "therapist"] as const).map((r) => (
               <Chip key={r} tone="gray">
@@ -77,7 +77,7 @@ export default function AdminOverview() {
         <Card className="lg:col-span-2">
           <SectionTitle>{t("admin.support.title")}</SectionTitle>
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <p className="max-w-xl text-sm text-ink-2">{t("admin.support.resetHint")}</p>
+            <p className="max-w-xl text-sm text-muted">{t("admin.support.resetHint")}</p>
             <Button variant="danger" onClick={() => setConfirm(true)}>
               <RotateCcw className="size-4" aria-hidden /> {t("admin.support.reset")}
             </Button>
@@ -87,7 +87,7 @@ export default function AdminOverview() {
       </div>
 
       <Modal open={confirm} onClose={() => setConfirm(false)} title={t("admin.support.reset")}>
-        <p className="mb-5 text-ink-2">{t("admin.support.confirm")}</p>
+        <p className="mb-5 text-muted">{t("admin.support.confirm")}</p>
         <div className="flex justify-end gap-2">
           <Button variant="ghost" onClick={() => setConfirm(false)}>
             {t("common.cancel")}

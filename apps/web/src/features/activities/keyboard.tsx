@@ -141,7 +141,7 @@ export function AdaptiveKeyboard({
                 onSelect={(info) => onKey(k, info)}
                 pulse={isHint}
                 className={`grid place-items-center rounded-2xl border-b-4 text-3xl font-extrabold transition-[width,height] duration-300 ease-out ${
-                  isHint ? "border-[#e8b930] bg-sun text-ink" : "border-line bg-surface text-ink hover:bg-sky-soft"
+                  isHint ? "border-edge bg-sun text-ink" : "border-line bg-surface text-ink hover:bg-tint"
                 } ${rest ? "opacity-25" : ""}`}
                 style={{ width: key, height: key }}
               >
@@ -251,7 +251,7 @@ export function TypeRound({
         </span>
       )}
       {mode === "letter" ? (
-        <span className={`grid size-40 place-items-center rounded-fk-lg text-8xl font-extrabold text-ink shadow-soft short:size-28 short:text-7xl ${solved ? "bg-teal-soft" : "bg-sun-soft"}`}>{word}</span>
+        <span className={`grid size-40 place-items-center rounded-fk-lg text-8xl font-extrabold text-ink shadow-soft short:size-28 short:text-7xl ${solved ? "bg-primary-soft" : "bg-sun-soft"}`}>{word}</span>
       ) : (
         <div className={`flex flex-wrap justify-center ${small ? "gap-1" : "gap-2"}`} aria-label={word}>
           {tokens.map((ch, k) =>
@@ -262,7 +262,7 @@ export function TypeRound({
                 key={k}
                 className={`grid place-items-center rounded-2xl border-b-4 font-extrabold ${
                   small ? "h-14 min-w-11 px-1 text-4xl short:h-12 short:min-w-9 short:text-3xl" : "h-24 min-w-20 px-3 text-6xl short:h-20 short:min-w-16 short:text-5xl"
-                } ${k < pos ? "fk-pop border-teal bg-teal-soft text-ink" : k === pos ? "border-sky bg-surface text-ink/25" : "border-line bg-surface-2 text-ink/20"}`}
+                } ${k < pos ? "fk-pop border-primary bg-primary-soft text-ink" : k === pos ? "border-hill1 bg-surface text-ink/25" : "border-line bg-surface-2 text-ink/20"}`}
               >
                 {k < pos || ghost ? ch : " "}
               </span>

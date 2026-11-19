@@ -206,10 +206,10 @@ function LightRound({ seq, index, next, last }: { seq: string[]; index: number; 
       <div className="flex min-h-[180px] w-full flex-1 items-center justify-center [container-type:size]">
         <div
           className="relative aspect-[16/9] max-w-3xl overflow-hidden rounded-fk-lg shadow-inner"
-          style={{ width: "min(100cqw, 100cqh * 16 / 9)", background: "linear-gradient(180deg,#34497a 0%,#4a5f93 60%,#62709e 100%)" }}
+          style={{ width: "min(100cqw, 100cqh * 16 / 9)", background: "linear-gradient(180deg, var(--sky2) 0%, var(--hillFar) 100%)" }}
         >
           <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 size-full" aria-hidden>
-            <polyline points={done.map((id) => at(id).join(",")).join(" ")} fill="none" stroke="#f5d272" strokeWidth="0.8" strokeDasharray="2 1.5" opacity="0.8" />
+            <polyline points={done.map((id) => at(id).join(",")).join(" ")} fill="none" stroke="var(--accentText)" strokeWidth="0.8" strokeDasharray="2 1.5" opacity="0.8" />
           </svg>
           {STARS.map(([x, y], k) => {
             const id = `star${k}`;
@@ -226,8 +226,8 @@ function LightRound({ seq, index, next, last }: { seq: string[]; index: number; 
                 style={{ left: `${x}%`, top: `${y}%`, width: size, height: size }}
               >
                 <span
-                  className={`block rounded-full transition-all duration-300 ${on ? "fk-glow bg-sun" : "bg-[#8d9cc4]"}`}
-                  style={{ width: size * (on ? 0.55 : 0.32), height: size * (on ? 0.55 : 0.32), boxShadow: on ? "0 0 30px 10px rgb(245 210 114 / .55)" : undefined }}
+                  className={`block rounded-full transition-all duration-300 ${on ? "fk-glow bg-accent ring-2 ring-game-edge" : "bg-game ring-2 ring-game-edge"}`}
+                  style={{ width: size * (on ? 0.55 : 0.32), height: size * (on ? 0.55 : 0.32), boxShadow: on ? "0 0 30px 10px color-mix(in srgb, var(--sunGlow) 70%, transparent)" : undefined }}
                 />
               </Target>
             );

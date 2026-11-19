@@ -9,7 +9,7 @@ import { useT } from "@/lib/i18n";
 export default function AuthLayout({ children }: { children: ReactNode }) {
   const t = useT();
   return (
-    <div className="min-h-dvh" style={{ background: "linear-gradient(180deg,#eef5fc 0%,#f7f6f1 45%,#eef6ea 100%)" }}>
+    <div className="min-h-dvh" style={{ background: "linear-gradient(180deg, var(--sky1) 0%, var(--sky2) 100%)" }}>
       <header className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4">
         <Logo />
         <LangSwitch compact />

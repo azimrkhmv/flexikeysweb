@@ -1,4 +1,5 @@
 import type { VocabItem } from "@/lib/types";
+import { WORD_COLOURS as W } from "./taskColors";
 
 // Uzbek Latin uses U+02BB (ʻ) for oʻ/gʻ and U+02BC (ʼ) for tutuq belgisi (PRD §9.19).
 const v = (id: string, emoji: string, en: string, uz: string, ru: string): VocabItem => ({ id, emoji, word: { en, uz, ru } });
@@ -106,14 +107,14 @@ const LIST: VocabItem[] = [
 ];
 
 const COLORS: VocabItem[] = [
-  { id: "c_red", color: "#e8837a", word: { en: "red", uz: "qizil", ru: "красный" } },
-  { id: "c_blue", color: "#7fa9e0", word: { en: "blue", uz: "koʻk", ru: "синий" } },
-  { id: "c_green", color: "#8cc98f", word: { en: "green", uz: "yashil", ru: "зелёный" } },
-  { id: "c_yellow", color: "#f5d272", word: { en: "yellow", uz: "sariq", ru: "жёлтый" } },
-  { id: "c_purple", color: "#b3a8e8", word: { en: "purple", uz: "binafsha", ru: "фиолетовый" } },
-  { id: "c_orange", color: "#f4b183", word: { en: "orange", uz: "toʻq sariq", ru: "оранжевый" } },
-  { id: "c_pink", color: "#f3b6c8", word: { en: "pink", uz: "pushti", ru: "розовый" } },
-  { id: "c_white", color: "#fbfbf8", word: { en: "white", uz: "oq", ru: "белый" } },
+  { id: "c_red", color: W.c_red, word: { en: "red", uz: "qizil", ru: "красный" } },
+  { id: "c_blue", color: W.c_blue, word: { en: "blue", uz: "koʻk", ru: "синий" } },
+  { id: "c_green", color: W.c_green, word: { en: "green", uz: "yashil", ru: "зелёный" } },
+  { id: "c_yellow", color: W.c_yellow, word: { en: "yellow", uz: "sariq", ru: "жёлтый" } },
+  { id: "c_purple", color: W.c_purple, word: { en: "purple", uz: "binafsha", ru: "фиолетовый" } },
+  { id: "c_orange", color: W.c_orange, word: { en: "orange", uz: "toʻq sariq", ru: "оранжевый" } },
+  { id: "c_pink", color: W.c_pink, word: { en: "pink", uz: "pushti", ru: "розовый" } },
+  { id: "c_white", color: W.c_white, word: { en: "white", uz: "oq", ru: "белый" } },
 ];
 
 const SHAPES: VocabItem[] = [

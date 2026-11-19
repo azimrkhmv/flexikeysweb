@@ -101,7 +101,7 @@ export function QuickStart({ childId: initialChild, version }: { childId?: strin
     return (
       <div>
         <Ready name={child.name} plan={plan} minutes={p34 === "30" ? 30 : p34 === "20" ? 20 : 10} childId={child.id} />
-        <p className="mx-auto mt-4 max-w-2xl text-center text-sm text-ink-2">{t("quick.ready")}</p>
+        <p className="mx-auto mt-4 max-w-2xl text-center text-sm text-muted">{t("quick.ready")}</p>
       </div>
     );
   }
@@ -111,19 +111,19 @@ export function QuickStart({ childId: initialChild, version }: { childId?: strin
       <h1 ref={top} tabIndex={-1} className="font-display text-3xl font-bold text-ink outline-none">
         {t("quick.title")}
       </h1>
-      <p className="mt-1 text-ink-2">{t("quick.lead")}</p>
+      <p className="mt-1 text-muted">{t("quick.lead")}</p>
       <div className="mt-4 flex gap-1" aria-hidden>
         {screens.map((s, i) => (
           <span key={key(s)} className={`h-1.5 flex-1 rounded-full ${i <= pos ? "bg-primary" : "bg-line"}`} />
         ))}
       </div>
-      <p className="mt-2 text-sm font-bold text-ink-2">{t("quick.step", { n: pos + 1, total: screens.length })}</p>
+      <p className="mt-2 text-sm font-bold text-muted">{t("quick.step", { n: pos + 1, total: screens.length })}</p>
 
       {screen[0] === CONSENT ? (
         <Card className="fk-slide mt-4 space-y-4 p-5" key={CONSENT}>
-          <ShieldCheck className="size-8 text-teal" aria-hidden />
+          <ShieldCheck className="size-8 text-primary" aria-hidden />
           <p className="text-ink">{t("intake.health.lead")}</p>
-          <p className="text-sm text-ink-2">{t("intake.health.points")}</p>
+          <p className="text-sm text-muted">{t("intake.health.points")}</p>
           <FormError>{act.error}</FormError>
           <div className="flex flex-wrap items-center gap-3">
             <Button variant="ghost" onClick={() => go(screens[pos - 1])}>{t("intake.back")}</Button>

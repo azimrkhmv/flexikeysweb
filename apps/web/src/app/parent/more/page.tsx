@@ -17,7 +17,7 @@ export default function More() {
         {items.map(({ href, label, icon: Icon }) => (
           <li key={href}>
             <Link href={href} className="group block rounded-fk focus-visible:outline-none">
-              <Card className="fk-tilt flex items-center gap-4 transition group-hover:shadow-lift group-focus-visible:ring-4 group-focus-visible:ring-teal">
+              <Card className="fk-tilt flex items-center gap-4 transition group-hover:shadow-lift group-focus-visible:ring-4 group-focus-visible:ring-primary">
                 <span className="grid size-12 shrink-0 place-items-center rounded-2xl border-[1.5px] border-line bg-surface-2 text-ink">
                   <Icon className="size-6" aria-hidden />
                 </span>

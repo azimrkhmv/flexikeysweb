@@ -1,5 +1,6 @@
 import type { Lang } from "@/lib/i18n";
 import type { ColoringSet, L10n, TraceSet } from "@/lib/types";
+import { PEN_COLOURS } from "./taskColors";
 
 // Drawing content (PRD §9.6–9.7): the Flutter app's own trace strokes and coloring pictures, imported by
 // scripts/import-flutter-drawing.py into ./drawing/*.json. Loaded on demand — only drawing activities
@@ -79,12 +80,4 @@ export function pathD(pts: readonly Pt[], closed: boolean, smooth = true, scale 
 }
 
 /** Flutter's playful pen palette, named by the colors vocabulary (aria labels in the UI language). */
-export const PALETTE: { id: string; hex: string }[] = [
-  { id: "c_red", hex: "#ef6f6c" },
-  { id: "c_orange", hex: "#f59e5b" },
-  { id: "c_yellow", hex: "#f7cf4a" },
-  { id: "c_green", hex: "#6cc082" },
-  { id: "c_blue", hex: "#5b9be0" },
-  { id: "c_purple", hex: "#a08be0" },
-  { id: "c_pink", hex: "#f29bbd" },
-];
+export const PALETTE: { id: string; hex: string }[] = Object.entries(PEN_COLOURS).map(([id, hex]) => ({ id, hex }));

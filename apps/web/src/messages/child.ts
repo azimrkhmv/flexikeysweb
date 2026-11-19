@@ -3,8 +3,9 @@
 import { registerMessages } from "@/lib/translate";
 import { aac } from "./aac";
 import { activities } from "./activities";
+import { look } from "./look";
 import { play } from "./play";
 import { progress } from "./progress";
 import { skills } from "./skills";
 
-registerMessages(play, activities, aac, skills, progress);
+registerMessages(play, activities, aac, skills, progress, look);

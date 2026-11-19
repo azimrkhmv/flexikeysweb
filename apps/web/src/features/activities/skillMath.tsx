@@ -9,6 +9,7 @@ import { lineText, moreLessAnswer, payWith, type BazaarRound, type Dot, type Mis
 import { ChoiceEngine, type ChoiceSpec } from "./choice";
 import { ActionButton, answer, Frame, OptionCard, fitSize, useActT, useClock, useHint, useLater } from "./kit";
 import { Series, type PlayerProps } from "./skillKit";
+import { NOTE_COLOURS } from "@/content/taskColors";
 
 // Players of the new Math games (games spec 8 Nov 2026, §6.5).
 
@@ -45,7 +46,7 @@ function Dots({ dots, cover, size }: { dots: Dot[]; cover: number; size: Size })
     <span className="relative grid place-items-center" style={{ width: times(size, 0.9), height: times(size, 0.9) }} aria-hidden>
       <svg viewBox="0 0 100 100" className="size-full">
         {dots.map((d, k) => (
-          <circle key={k} cx={d.x * 100} cy={d.y * 100} r={[4.5, 6.5, 8.5][d.s]} fill="#7fa9e0" stroke="#4c78b8" strokeWidth="1.5" />
+          <circle key={k} cx={d.x * 100} cy={d.y * 100} r={[4.5, 6.5, 8.5][d.s]} fill="var(--accent)" stroke="var(--gameEdge)" strokeWidth="1.5" />
         ))}
       </svg>
       <span className={`absolute inset-0 grid place-items-center rounded-fk-lg bg-surface-2 transition-opacity duration-700 ${hidden ? "opacity-100" : "opacity-0"}`} style={{ fontSize: times(size, 0.4) }}>
@@ -107,7 +108,7 @@ function Line({ r, card }: { r: NumberLineRound; card: (id: string) => ReactNode
 }
 
 // ---------------------------------------------------------------- bazaar
-const NOTE_LOOK: Record<number, string> = { 500: "#e6d29a", 1000: "#bfe3c0", 2000: "#bcd6f2", 5000: "#f3c6d3", 10000: "#d4ccf2", 20000: "#f6cfa9", 50000: "#a9dcd5", 100000: "#9fc0ea" };
+const NOTE_LOOK: Record<number, string> = NOTE_COLOURS;
 /** A so'm note as a simple coloured card with its number (the 500 coin is round); never a copy of a real note. */
 function Note({ v, w }: { v: number; w: Size }) {
   const t = useActT();
@@ -115,7 +116,7 @@ function Note({ v, w }: { v: number; w: Size }) {
   return (
     <span
       className={`grid place-items-center border-2 border-ink/20 font-extrabold text-ink shadow-inner ${coin ? "rounded-full" : "rounded-xl"}`}
-      style={{ width: coin ? times(w, 0.5) : times(w, 0.92), height: times(w, 0.5), background: NOTE_LOOK[v] ?? "#e9eef6" }}
+      style={{ width: coin ? times(w, 0.5) : times(w, 0.92), height: times(w, 0.5), background: NOTE_LOOK[v] ?? NOTE_COLOURS.coin }}
       aria-hidden
     >
       <span className="text-center leading-tight">
@@ -206,7 +207,7 @@ function PayRound({ r, index, total, next, last }: { r: BazaarRound; index: numb
     >
       <div className="flex flex-wrap items-center justify-center gap-3">
         <PriceTag r={r} />
-        <span className="rounded-full bg-teal-soft px-4 py-2 text-xl font-extrabold text-ink" aria-live="polite">
+        <span className="rounded-full bg-primary-soft px-4 py-2 text-xl font-extrabold text-ink" aria-live="polite">
           {t("act.skill.bazaar.wallet", { n: som(paid) })}
         </span>
       </div>
@@ -256,7 +257,7 @@ function Sum({ r }: { r: MissingNumberRound }) {
       {r.parts.map((p, k) => (
         <span key={k} className="flex flex-col items-center gap-1">
           <span
-            className={`grid min-w-8 place-items-center rounded-xl px-0.5 text-3xl font-extrabold leading-[3rem] text-ink sm:min-w-14 sm:px-2 sm:text-5xl sm:leading-[4rem] ${p === "?" ? "border-4 border-dashed border-sky bg-surface" : ""}`}
+            className={`grid min-w-8 place-items-center rounded-xl px-0.5 text-3xl font-extrabold leading-[3rem] text-ink sm:min-w-14 sm:px-2 sm:text-5xl sm:leading-[4rem] ${p === "?" ? "border-4 border-dashed border-hill1 bg-surface" : ""}`}
           >
             {show(p)}
           </span>

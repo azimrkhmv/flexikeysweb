@@ -28,7 +28,7 @@ function Reports() {
 
   return (
     <>
-      <style>{`@media print { header, nav { display: none !important; } body { background: #fff; } }`}</style>
+      <style>{`@media print { header, nav { display: none !important; } body { background: transparent; } }`}</style>
       <div className="print:hidden">
         <PageHeader title={t("parent.reports.title")} subtitle={t("parent.reports.subtitle")} />
       </div>
@@ -97,7 +97,7 @@ function WeeklyReport({ db, child, onPrint }: { db: DB; child: Child; onPrint: (
           {played.length === 0 ? (
             <p className="text-sm text-muted">{t("common.none")}</p>
           ) : (
-            <ul className="space-y-1.5 text-sm font-semibold text-ink-2">
+            <ul className="space-y-1.5 text-sm font-semibold text-muted">
               {played.map((m) => (
                 <li key={m.skill}>• {LEVEL_BY_ID[m.skill]?.title[lang] ?? m.skill}</li>
               ))}
@@ -109,7 +109,7 @@ function WeeklyReport({ db, child, onPrint }: { db: DB; child: Child; onPrint: (
           {changes.length === 0 ? (
             <p className="text-sm text-muted">{t("parent.reports.noChanges")}</p>
           ) : (
-            <ul className="space-y-1.5 text-sm text-ink-2">
+            <ul className="space-y-1.5 text-sm text-muted">
               {changes.map((c) => (
                 <li key={c.id}>• {t(c.reasonKey)}</li>
               ))}
@@ -119,12 +119,12 @@ function WeeklyReport({ db, child, onPrint }: { db: DB; child: Child; onPrint: (
       </div>
 
       {ai && (
-        <section className="rounded-2xl bg-lavender-soft/60 p-4">
+        <section className="rounded-2xl bg-tint-2/60 p-4">
           <h3 className="mb-2 flex items-center gap-2 font-extrabold">
             <Sparkles className="size-4" aria-hidden /> {t("parent.reports.ai")}
             <Chip tone="lavender">AI</Chip>
           </h3>
-          <p className="whitespace-pre-line text-sm text-ink-2">{summary(t, lang, minutes, mastery.map((m) => m.skill))}</p>
+          <p className="whitespace-pre-line text-sm text-muted">{summary(t, lang, minutes, mastery.map((m) => m.skill))}</p>
           <p className="mt-2 text-xs text-muted">{t("ai.disclaimer")}</p>
         </section>
       )}

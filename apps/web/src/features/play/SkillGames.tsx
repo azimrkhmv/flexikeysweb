@@ -11,7 +11,7 @@ import { KIND_EMOJI, MapTabs, type MapTab } from "./WorldMap";
 
 /** The four tiers as the child sees them: a picture and a name, never a number (rule 1). */
 export const TIER_ICON = ["", "🌰", "🌱", "🌳", "⛰️"] as const;
-const TIER_TONE = ["", "var(--fk-sun-soft)", "var(--fk-leaf-soft)", "var(--fk-teal-soft)", "var(--fk-lavender-soft)"];
+const TIER_TONE = ["", "var(--sunSoft)", "var(--accentSoft)", "var(--tint)", "var(--tint2)"];
 export const AREA_ICON: Partial<Record<Area, string>> = { attention: "👀", memory: "🧠", flexibility: "🔀", reasoning: "💡", literacy: "🔤", numeracy: "🔢", speed: "⚡" };
 
 /** A tier the child may play now: open by success in its area (games spec §3.2), and above Seed only with Pro. */
@@ -40,7 +40,7 @@ export function SkillGames({ child, onPlay, onTab }: { child: Child; onPlay: (ga
       <MapTabs child={child} tab="skills" onTab={onTab} />
       <div className="flex flex-col gap-4">
         {areas.map((area) => (
-          <section key={area} className="rounded-fk-lg border-4 border-white bg-surface/90 p-2 shadow-soft sm:p-4">
+          <section key={area} className="rounded-fk-lg border-4 border-surface bg-surface/90 p-2 shadow-soft sm:p-4">
             <h2 className="mb-3 flex items-center gap-2 text-xl font-extrabold text-ink">
               <span aria-hidden>{AREA_ICON[area]}</span> {t(`skill.area.${area}`)}
             </h2>
@@ -48,7 +48,7 @@ export function SkillGames({ child, onPlay, onTab }: { child: Child; onPlay: (ga
               {games.filter((g) => g.area === area).map((g) => {
                 const big = CLOUDY_KINDS.includes(g.kind); // the Cloudy games: first in the list and larger (spec §6)
                 return (
-                <div key={g.id} className={`flex min-w-0 flex-col gap-2 rounded-3xl p-2 sm:flex-row sm:items-center ${big ? "border-4 border-white bg-sun-soft py-3" : "bg-surface-2/60"}`}>
+                <div key={g.id} className={`flex min-w-0 flex-col gap-2 rounded-3xl p-2 sm:flex-row sm:items-center ${big ? "border-4 border-surface bg-sun-soft py-3" : "bg-surface-2/60"}`}>
                   <p className="flex min-w-0 items-center gap-2 px-1 font-extrabold text-ink sm:w-36 sm:flex-col sm:text-center">
                     {big ? (
                       <Cloudy size={64} />
@@ -69,7 +69,7 @@ export function SkillGames({ child, onPlay, onTab }: { child: Child; onPlay: (ga
                           label={open ? `${t(`skill.game.${g.kind}`)}, ${name}` : `${name}. ${t("play.skills.sleeping")}`}
                           onSelect={() => onPlay(g, tier, open)}
                           scanSkip={!open}
-                          className={`flex flex-1 basis-[76px] flex-col ${big ? "min-h-24" : ""} items-center justify-center gap-0.5 rounded-2xl border-2 px-1 font-bold shadow-soft ${open ? "border-white text-ink" : "border-white/70 bg-[#eef2f8] text-muted"}`}
+                          className={`flex flex-1 basis-[76px] flex-col ${big ? "min-h-24" : ""} items-center justify-center gap-0.5 rounded-2xl border-2 px-1 font-bold shadow-soft ${open ? "border-surface text-ink" : "border-surface/70 bg-surface-2 text-muted"}`}
                           style={{ background: open ? TIER_TONE[tier] : undefined }}
                         >
                           <span className="text-2xl leading-none" aria-hidden>

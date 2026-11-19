@@ -87,7 +87,7 @@ function OddRows({ r, index, total, next }: { r: OddOneOutRound; index: number; 
                 pulse={hint.show && k === oddRow}
                 disabled={rest}
                 scanSkip={rest}
-                className={`flex w-full items-center justify-around rounded-2xl border-4 border-transparent bg-surface-2 px-2 shadow-soft hover:bg-sky-soft ${rest ? "opacity-25" : ""}`}
+                className={`flex w-full items-center justify-around rounded-2xl border-4 border-transparent bg-surface-2 px-2 shadow-soft hover:bg-tint ${rest ? "opacity-25" : ""}`}
                 style={{ height: rowH }}
               >
                 {items.map((id) => (
@@ -173,7 +173,7 @@ function FishRound({ r, index, total, next, last }: { r: TrackFishRound; index: 
         className="relative aspect-[4/3] overflow-hidden rounded-fk-lg border border-line shadow-inner [container-type:size]"
         style={{
           width: "min(100%, 34rem, calc(46dvh * 4 / 3))",
-          background: "linear-gradient(180deg,#cfe6fb 0%,#a9d2f2 70%,#e9dcb8 100%)",
+          background: "linear-gradient(180deg, var(--sky1) 0%, var(--sky2) 70%, var(--hillFar) 100%)",
         }}
       >
         {r.paths.map((path, f) => {
@@ -206,8 +206,8 @@ function FishRound({ r, index, total, next, last }: { r: TrackFishRound; index: 
                   height: `min(84px, ${78 / cols}cqw, ${78 / rows}cqh)`,
                   minWidth: 60,
                   minHeight: 60,
-                  background: glowing ? "rgb(245 210 114 / .85)" : "transparent",
-                  boxShadow: glowing ? "0 0 22px 8px rgb(245 210 114 / .6)" : undefined,
+                  background: glowing ? "color-mix(in srgb, var(--sunGlow) 85%, transparent)" : "transparent",
+                  boxShadow: glowing ? "0 0 22px 8px color-mix(in srgb, var(--sunGlow) 60%, transparent)" : undefined,
                 }}
               >
                 <span
@@ -272,7 +272,7 @@ function Arrows({ r }: { r: WhichWayRound }) {
   return (
     <div className="flex items-center justify-center gap-1 rounded-fk-lg bg-surface-2 px-3 py-4 shadow-inner" role="img" aria-label={itemLabel(r.answer, "en", t)}>
       {Array.from({ length: n }, (_, k) => (
-        <span key={k} className={k === r.flank ? `rounded-xl ${r.blue ? "ring-4 ring-sky" : ""}` : ""}>
+        <span key={k} className={k === r.flank ? `rounded-xl ${r.blue ? "ring-4 ring-hill1" : ""}` : ""}>
           {arrow(k)}
         </span>
       ))}

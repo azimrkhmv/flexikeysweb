@@ -46,7 +46,7 @@ export default function SkillGamesDemo() {
   if (LIVE && me?.role !== "admin" && me?.role !== "parent")
     return (
       <div className="grid min-h-dvh place-items-center bg-bg p-6 text-center">
-        <p className="max-w-md text-lg font-bold text-ink-2">{t("skill.demo.admins")}</p>
+        <p className="max-w-md text-lg font-bold text-muted">{t("skill.demo.admins")}</p>
       </div>
     );
   const asParent = options.fromParent || (LIVE && me?.role === "parent");
@@ -103,7 +103,7 @@ function Player({ back, maxTier }: { back: boolean; maxTier: number }) {
           </Link>
         )}
         <h1 className="sr-only">{t("skill.demo.title")}</h1>
-        <label className="flex min-w-0 items-center gap-1 text-sm font-bold text-ink-2 sm:ml-auto">
+        <label className="flex min-w-0 items-center gap-1 text-sm font-bold text-muted sm:ml-auto">
           <span className="hidden sm:inline">{t("skill.demo.games")}</span>
           <select className="h-11 min-w-0 max-w-[36vw] rounded-fk border border-line bg-surface px-2 text-sm font-bold text-ink sm:max-w-none sm:text-base" value={gi} onChange={(e) => go(Number(e.target.value), 0)}>
             {SKILL_GAMES.map((g, k) => (
@@ -113,7 +113,7 @@ function Player({ back, maxTier }: { back: boolean; maxTier: number }) {
             ))}
           </select>
         </label>
-        <label className="flex min-w-0 items-center gap-1 text-sm font-bold text-ink-2">
+        <label className="flex min-w-0 items-center gap-1 text-sm font-bold text-muted">
           <span className="hidden sm:inline">{t("skill.demo.steps")}</span>
           <select className="h-11 min-w-0 rounded-fk border border-line bg-surface px-2 text-sm font-bold text-ink sm:text-base" value={stepIndex} onChange={(e) => go(gi, Number(e.target.value))}>
             {game.steps.map((s, k) =>
@@ -138,11 +138,11 @@ function Player({ back, maxTier }: { back: boolean; maxTier: number }) {
                 <Mascot mood="celebrate" size={160} />
                 <h2 className="text-3xl font-extrabold text-ink">{t("skill.demo.finished")}</h2>
                 <div className="flex flex-wrap justify-center gap-3">
-                  <button type="button" onClick={() => go(gi, stepIndex)} className="h-14 rounded-full bg-sky-soft px-8 text-lg font-extrabold text-ink hover:bg-[#d6e6f8]">
+                  <button type="button" onClick={() => go(gi, stepIndex)} className="h-14 rounded-full bg-tint px-8 text-lg font-extrabold text-ink hover:bg-tint-2">
                     {t("skill.demo.again")}
                   </button>
                   {stepIndex < 11 && game.steps[stepIndex + 1].tier <= maxTier && (
-                    <button type="button" onClick={() => go(gi, stepIndex + 1)} className="h-14 rounded-full bg-teal px-8 text-lg font-extrabold text-white">
+                    <button type="button" onClick={() => go(gi, stepIndex + 1)} className="h-14 rounded-full bg-btn px-8 text-lg font-extrabold text-btn-text">
                       {t("skill.demo.next")} · {tierStep(stepIndex + 1)}
                     </button>
                   )}

@@ -12,8 +12,9 @@ import { useState, type CSSProperties, type ReactNode } from "react";
  * tiger pops out. Other drawn forms go into `DRAWN` (a dragon later, Q16: add its drawing there and its name to
  * `DRAWN_FORMS`; nothing else changes).
  *
- * Colours follow the colour scheme: every tone is a CSS mix of the scheme's tokens (the demo's `tones()`), so a
- * form repaints by itself when the scheme changes and never shows a colour from outside the scheme.
+ * Colours follow the colour scheme (B107): each form's body and shade are scheme tokens (`--cl-<form>`, worked out in
+ * lib/theme.ts `cloudyTones`), so a form repaints by itself when the scheme changes. His face is always --cloudyFace:
+ * his body stays light in dark mode, so the scheme's light `ink` would vanish on it.
  */
 export const CLOUDY_FORMS = ["cloud", "bunny", "cat", "fox", "bear", "tiger"] as const;
 export type CloudyForm = (typeof CLOUDY_FORMS)[number];
@@ -34,27 +35,21 @@ const FORMS: Record<CloudyForm, { face: [number, number]; blobs: Blob[] }> = {
 /** Forms that are a full drawing, not the 12 puffs. */
 const DRAWN_FORMS: readonly CloudyForm[] = ["tiger"];
 
-const mix = (colour: string, share: number) => `color-mix(in srgb, ${colour} ${Math.round(share * 100)}%, #fff)`;
-/** [body, shade] of each form, from the scheme's tokens: the demo's `tones()` table. */
-const TONES: Record<CloudyForm, [string, string]> = {
-  cloud: ["#fff", mix("var(--sky-deep)", 0.75)],
-  bunny: ["#fff", mix("var(--accent)", 0.35)],
-  cat: [mix("var(--sky-deep)", 0.3), "var(--sky-deep)"],
-  fox: [mix("var(--accent)", 0.5), "var(--accent)"],
-  bear: [mix("var(--hill2)", 0.4), "var(--hill2)"],
-  tiger: [mix("var(--accent-text)", 0.3), mix("var(--accent-text)", 0.62)],
-};
+/** [body, shade] of each form: the scheme tokens of lib/theme.ts `cloudyTones`. */
+const TONES = Object.fromEntries(CLOUDY_FORMS.map((f) => [f, [`var(--cl-${f})`, `var(--cl-${f}-s)`]])) as Record<CloudyForm, [string, string]>;
 // The small details (inner ears, cheeks, nose, muzzle) also come from the scheme.
-const BLUSH = mix("var(--accent)", 0.45);
-const MUZZLE = "var(--paper)";
+const BLUSH = "var(--cheek)";
+const MUZZLE = "var(--cloudyBody)";
+const SHINE = "rgb(var(--shine))";
 
 const pct = (line: number, y: number, ry: number) => Math.round(((line - (y - ry)) / (2 * ry)) * 100);
-const ST = { stroke: "currentColor", strokeWidth: 2.6, strokeLinejoin: "round", strokeLinecap: "round" } as const;
+/** The outline of a drawn form: Cloudy's outline colour (--cl, globals.css), not his face colour. */
+const ST = { stroke: "var(--cl)", strokeWidth: 2.6, strokeLinejoin: "round", strokeLinecap: "round" } as const;
 
 function Deco() {
   return (
     <g className="fk-puff-deco">
-      <ellipse cx="50" cy="66" rx="9" ry="5" fill="#fff" opacity=".6" transform="rotate(-28 50 66)" />
+      <ellipse cx="50" cy="66" rx="9" ry="5" fill={SHINE} opacity=".6" transform="rotate(-28 50 66)" />
       <g className="d d-bunny">
         <ellipse cx="54" cy="40" rx="4.5" ry="17" fill={BLUSH} transform="rotate(-8 54 40)" />
         <ellipse cx="86" cy="40" rx="4.5" ry="17" fill={BLUSH} transform="rotate(8 86 40)" />
@@ -99,7 +94,7 @@ const DRAWN: Partial<Record<CloudyForm, ReactNode>> = {
       <ellipse cx="70" cy="74" rx="17" ry="12" fill={MUZZLE} />
       <path d="M70 31v11M60 33l2 9M80 33l-2 9M35 54l10 3M34 63l10 1M105 54l-10 3M106 63l-10 1" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" />
       <path d="M66 67h8l-4 5z" fill="var(--accent)" {...ST} />
-      <ellipse cx="50" cy="40" rx="9" ry="5" fill="#fff" opacity=".6" transform="rotate(-28 50 40)" />
+      <ellipse cx="50" cy="40" rx="9" ry="5" fill={SHINE} opacity=".6" transform="rotate(-28 50 40)" />
     </g>
   ),
 };
@@ -117,14 +112,14 @@ function Face({ at }: { at: [number, number] }) {
       <g className="fc f-wow">
         <circle cx="-11" cy="-2" r="5" fill="currentColor" />
         <circle cx="11" cy="-2" r="5" fill="currentColor" />
-        <circle cx="-12.5" cy="-3.5" r="1.7" fill="#fff" />
-        <circle cx="9.5" cy="-3.5" r="1.7" fill="#fff" />
+        <circle cx="-12.5" cy="-3.5" r="1.7" fill={SHINE} />
+        <circle cx="9.5" cy="-3.5" r="1.7" fill={SHINE} />
         <ellipse cx="0" cy="8" rx="3.2" ry="4.2" fill="currentColor" />
       </g>
       <g className="fc f-wink">
         <path d="M-16 1q5-8 10 0" {...line} strokeWidth="3" />
         <circle cx="11" cy="-2" r="5" fill="currentColor" />
-        <circle cx="9.5" cy="-3.5" r="1.7" fill="#fff" />
+        <circle cx="9.5" cy="-3.5" r="1.7" fill={SHINE} />
         <path d="M-5 5q5 6 10 0" {...line} strokeWidth="2.6" />
       </g>
       <g className="fc f-laugh">
@@ -162,7 +157,7 @@ export function Cloudy({
   if (burst.form !== form) setBurst({ form, n: burst.n + 1 });
   const { face: at, blobs } = FORMS[form];
   const [base, shade] = TONES[form];
-  const light = `color-mix(in srgb, #fff 55%, ${base})`;
+  const light = `color-mix(in srgb, ${SHINE} 55%, ${base})`;
   const vars = { "--z": size / 140, "--h": light, "--b": base, "--s": shade, "--foot": shade } as CSSProperties;
 
   return (
@@ -215,12 +210,15 @@ export function Cloudy({
   );
 }
 
-/** An outlined cloud (the drifting page clouds and the clouds of Find Cloudy). */
-export function CloudShape({ className = "" }: { className?: string }) {
+/**
+ * An outlined cloud: the drifting page clouds (--cloud) and, with `game`, the clouds of Find Cloudy (spec 6: targets
+ * use --gameCloud with a --gameEdge outline, which stands out 3:1 from the sky in every set).
+ */
+export function CloudShape({ className = "", game }: { className?: string; game?: boolean }) {
   return (
     <svg viewBox="-4 0 128 72" aria-hidden className={className} style={{ display: "block", width: "100%", height: "auto", overflow: "visible" }}>
-      <path d="M26 64C8 64 2 50 10 40C7 25 22 16 34 23C40 6 65 5 73 21C87 13 106 24 101 40C116 43 115 64 98 64Z" fill="#fff" stroke="var(--edge)" strokeWidth="2.6" strokeLinejoin="round" />
-      <path d="M22 55C44 61 80 61 102 54" fill="none" stroke="var(--sky-deep)" strokeWidth="5" strokeLinecap="round" />
+      <path d="M26 64C8 64 2 50 10 40C7 25 22 16 34 23C40 6 65 5 73 21C87 13 106 24 101 40C116 43 115 64 98 64Z" fill={game ? "var(--gameCloud)" : "var(--cloud)"} stroke={game ? "var(--gameEdge)" : "var(--edge)"} strokeWidth="2.6" strokeLinejoin="round" />
+      <path d="M22 55C44 61 80 61 102 54" fill="none" stroke={game ? "var(--cloudyShade)" : "var(--line)"} strokeWidth="5" strokeLinecap="round" />
     </svg>
   );
 }

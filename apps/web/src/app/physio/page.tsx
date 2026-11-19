@@ -74,11 +74,11 @@ function Item({ video, lang }: { video: ExerciseVideo; lang: Lang }) {
         {video.tool && <Chip tone="teal">{t(`tool.${video.tool}`)}</Chip>}
         {video.conflicts.length > 0 && <Chip tone="peach">{t("review.conflicts", { list: video.conflicts.map((c) => t(`restr.${c}`)).join(", ") })}</Chip>}
       </div>
-      {ver.status === "approved" && ver.approvedAt && <p className="text-sm text-ink-2">{t("review.approvedBy", { name: name(ver.approvedBy), date: new Date(ver.approvedAt).toLocaleDateString() })}</p>}
+      {ver.status === "approved" && ver.approvedAt && <p className="text-sm text-muted">{t("review.approvedBy", { name: name(ver.approvedBy), date: new Date(ver.approvedAt).toLocaleDateString() })}</p>}
       {ver.notes.length > 0 && (
         <div>
           <p className="text-sm font-bold text-ink">{t("review.history")}</p>
-          <ul className="mt-1 space-y-1 text-sm text-ink-2">
+          <ul className="mt-1 space-y-1 text-sm text-muted">
             {ver.notes.map((n) => <li key={n.at}>{name(n.by)}: {n.text}</li>)}
           </ul>
         </div>

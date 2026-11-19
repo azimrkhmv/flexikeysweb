@@ -91,7 +91,7 @@ export default function AdminContent() {
         <Card className="lg:col-span-2">
           <SectionTitle>{t("admin.flags.title")}</SectionTitle>
           <p className="mb-3 text-sm text-muted">{t("admin.audited")}</p>
-          {flag.error && <p className="mb-3 text-sm font-semibold text-[#8f3a2c]">{flag.error}</p>}
+          {flag.error && <p className="mb-3 text-sm font-semibold text-primary">{flag.error}</p>}
           <ul className="divide-y divide-line">
             {sel.admin.flags(db).map((f) => (
               <li key={f.key} className="flex items-center justify-between gap-4 py-3">

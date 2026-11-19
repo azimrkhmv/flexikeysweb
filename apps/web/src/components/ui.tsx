@@ -11,9 +11,9 @@ type Variant = "primary" | "soft" | "ghost" | "outline" | "danger";
 const VARIANTS: Record<Variant, string> = {
   primary: "fk-btn",
   soft: "bg-primary-soft text-primary hover:brightness-95",
-  ghost: "text-ink-2 hover:bg-surface-2",
+  ghost: "text-muted hover:bg-surface-2",
   outline: "fk-btn-2",
-  danger: "bg-peach-soft text-[#8f3a2c] hover:bg-[#fbdcd0]",
+  danger: "bg-tint-2 text-primary hover:brightness-95",
 };
 const SIZES = { sm: "h-9 px-3 text-sm", md: "h-11 px-5 text-[15px]", lg: "h-14 px-7 text-lg" };
 
@@ -56,7 +56,7 @@ export function Field({ label, hint, error, children }: { label: string; hint?: 
       {children}
       {hint && !error && <span className="block text-xs text-muted">{hint}</span>}
       {error && (
-        <span role="alert" className="block text-sm font-semibold text-[#8f3a2c]">
+        <span role="alert" className="block text-sm font-semibold text-primary">
           {error}
         </span>
       )}
@@ -80,8 +80,8 @@ export function Select(props: SelectHTMLAttributes<HTMLSelectElement>) {
 
 export function Checkbox({ checked, onChange, label, description, disabled }: { checked: boolean; onChange: (v: boolean) => void; label: ReactNode; description?: ReactNode; disabled?: boolean }) {
   return (
-    <label className={`flex cursor-pointer gap-3 rounded-2xl border p-4 transition ${checked ? "border-teal bg-teal-soft/50" : "border-line bg-surface hover:bg-surface-2"} ${disabled ? "opacity-60" : ""}`}>
-      <input type="checkbox" className="mt-0.5 size-5 shrink-0 accent-teal" checked={checked} disabled={disabled} onChange={(e) => onChange(e.target.checked)} />
+    <label className={`flex cursor-pointer gap-3 rounded-2xl border p-4 transition ${checked ? "border-primary bg-primary-soft/50" : "border-line bg-surface hover:bg-surface-2"} ${disabled ? "opacity-60" : ""}`}>
+      <input type="checkbox" className="mt-0.5 size-5 shrink-0 accent-primary" checked={checked} disabled={disabled} onChange={(e) => onChange(e.target.checked)} />
       <span className="space-y-0.5">
         <span className="block text-[15px] font-semibold text-ink">{label}</span>
         {description && <span className="block text-sm text-muted">{description}</span>}
@@ -98,22 +98,22 @@ export function Toggle({ checked, onChange, label }: { checked: boolean; onChang
       aria-checked={checked}
       aria-label={label}
       onClick={() => onChange(!checked)}
-      className={`relative h-7 w-12 shrink-0 rounded-full transition ${checked ? "bg-teal" : "bg-line"}`}
+      className={`relative h-7 w-12 shrink-0 rounded-full transition ${checked ? "bg-primary" : "bg-line"}`}
     >
-      <span className={`absolute top-1 size-5 rounded-full bg-white shadow transition-all ${checked ? "left-6" : "left-1"}`} />
+      <span className={`absolute top-1 size-5 rounded-full bg-surface shadow transition-all ${checked ? "left-6" : "left-1"}`} />
     </button>
   );
 }
 
 /** Soft background + readable text for each brand tone (chips, icons, feature tiles). */
 export const TONES = {
-  sky: "bg-sky-soft text-[#2f5d93]",
-  leaf: "bg-leaf-soft text-[#2f6a37]",
-  sun: "bg-sun-soft text-[#7a5a0c]",
-  lavender: "bg-lavender-soft text-[#4f43a0]",
-  teal: "bg-teal-soft text-[#1f6b63]",
-  peach: "bg-peach-soft text-[#8f3a2c]",
-  gray: "bg-surface-2 text-ink-2",
+  sky: "bg-tint text-ink",
+  leaf: "bg-primary-soft text-primary",
+  sun: "bg-sun-soft text-ink",
+  lavender: "bg-tint-2 text-primary",
+  teal: "bg-primary-soft text-primary",
+  peach: "bg-tint-2 text-primary",
+  gray: "bg-surface-2 text-muted",
 };
 export type Tone = keyof typeof TONES;
 
@@ -134,7 +134,7 @@ export function PageHeader({ title, subtitle, actions }: { title: string; subtit
     <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
       <div>
         <h1 className="text-2xl font-extrabold text-ink sm:text-3xl">{title}</h1>
-        {subtitle && <p className="mt-1 text-ink-2">{subtitle}</p>}
+        {subtitle && <p className="mt-1 text-muted">{subtitle}</p>}
       </div>
       {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
     </div>
@@ -224,14 +224,14 @@ export function Spinner({ label }: { label?: string }) {
   );
 }
 
-export function Bars({ data, max, unit, tone = "#a9c8ec", height = 140 }: { data: { label: string; value: number }[]; max?: number; unit?: string; tone?: string; height?: number }) {
+export function Bars({ data, max, unit, tone = "var(--hill2)", height = 140 }: { data: { label: string; value: number }[]; max?: number; unit?: string; tone?: string; height?: number }) {
   const m = max ?? Math.max(1, ...data.map((d) => d.value));
   return (
     <div className="flex items-end gap-1.5" style={{ height }} role="img" aria-label={data.map((d) => `${d.label}: ${d.value}${unit ?? ""}`).join(", ")}>
       {data.map((d, i) => (
         <div key={i} className="group flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-1">
           <span className="text-[10px] font-bold text-muted opacity-0 group-hover:opacity-100">{d.value}</span>
-          <div className="w-full rounded-t-lg transition-all" style={{ height: `${(d.value / m) * 100}%`, minHeight: d.value ? 4 : 2, background: d.value ? tone : "var(--fk-line)" }} />
+          <div className="w-full rounded-t-lg transition-all" style={{ height: `${(d.value / m) * 100}%`, minHeight: d.value ? 4 : 2, background: d.value ? tone : "var(--line)" }} />
           <span className="w-full truncate text-center text-[10px] text-muted">{d.label}</span>
         </div>
       ))}
@@ -240,7 +240,7 @@ export function Bars({ data, max, unit, tone = "#a9c8ec", height = 140 }: { data
 }
 
 /** `label` names the meter for screen readers (e.g. the skill or child it measures). */
-export function Meter({ value, label, tone = "var(--fk-leaf)" }: { value: number; label: string; tone?: string }) {
+export function Meter({ value, label, tone = "var(--accent)" }: { value: number; label: string; tone?: string }) {
   return (
     <div className="h-2.5 w-full overflow-hidden rounded-full bg-surface-2" role="meter" aria-label={label} aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(value * 100)}>
       <div className="h-full rounded-full transition-all" style={{ width: `${Math.round(value * 100)}%`, background: tone }} />

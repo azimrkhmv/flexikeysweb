@@ -65,7 +65,7 @@ function AddSlot({ placeId }: { placeId: string }) {
           <Plus className="size-4" aria-hidden /> {t("clinic.add")}
         </Button>
       </div>
-      {add.error && <p role="alert" className="text-sm font-semibold text-[#8f3a2c] sm:col-span-full">{add.error}</p>}
+      {add.error && <p role="alert" className="text-sm font-semibold text-primary sm:col-span-full">{add.error}</p>}
     </form>
   );
 }
@@ -121,7 +121,7 @@ function Bookings({ placeId }: { placeId: string }) {
           </li>
         ))}
       </ul>
-      {(confirm.error ?? cancel.error) && <p role="alert" className="mt-2 text-sm font-semibold text-[#8f3a2c]">{confirm.error ?? cancel.error}</p>}
+      {(confirm.error ?? cancel.error) && <p role="alert" className="mt-2 text-sm font-semibold text-primary">{confirm.error ?? cancel.error}</p>}
     </>
   );
 }
@@ -188,7 +188,7 @@ export default function ClinicDashboard() {
               ))}
             </ul>
           )}
-          {remove.error && <p role="alert" className="mt-2 text-sm font-semibold text-[#8f3a2c]">{remove.error}</p>}
+          {remove.error && <p role="alert" className="mt-2 text-sm font-semibold text-primary">{remove.error}</p>}
         </Card>
       </div>
     </>

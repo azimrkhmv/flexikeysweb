@@ -15,7 +15,7 @@ export function StatusPage({ mood, title, body, children }: { mood: MascotMood; 
       <main id="main" className="mx-auto flex max-w-lg flex-1 flex-col items-center justify-center gap-5 px-4 pb-16 text-center">
         <Mascot mood={mood} size={180} />
         <h1 className="text-3xl font-extrabold text-ink">{title}</h1>
-        {body && <p className="text-lg text-ink-2">{body}</p>}
+        {body && <p className="text-lg text-muted">{body}</p>}
         <div className="flex flex-wrap justify-center gap-3">{children}</div>
       </main>
     </div>

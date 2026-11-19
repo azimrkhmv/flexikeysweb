@@ -101,7 +101,7 @@ function ChoiceRound({ spec, index, total, last, onNext }: { spec: ChoiceSpec; i
           {spec.options.map((id) => (
             <div key={id} className="flex flex-col items-center gap-2">
               {card(id)}
-              {spec.labels && <span className="text-lg font-bold text-ink-2 short:text-base">{label(id)}</span>}
+              {spec.labels && <span className="text-lg font-bold text-muted short:text-base">{label(id)}</span>}
             </div>
           ))}
         </div>
@@ -190,7 +190,7 @@ export function ScenePanel({ scene, size }: { scene: string; size: number }) {
   return (
     <div
       className="grid w-full max-w-2xl place-items-center rounded-fk-lg border border-line shadow-inner"
-      style={{ minHeight: size, background: "linear-gradient(180deg,#e4effb 0%,#f4fbef 60%,#e1f1de 100%)" }}
+      style={{ minHeight: size, background: "linear-gradient(180deg, var(--sky1) 0%, var(--sky2) 100%)" }}
       aria-hidden
     >
       <span className="leading-none tracking-widest" style={{ fontSize: size * 0.55 }}>

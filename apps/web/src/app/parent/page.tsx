@@ -47,7 +47,7 @@ export default function ParentHome() {
       />
 
       {trialEnds && (
-        <div role="status" className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-lavender bg-lavender-soft/60 p-4 text-sm font-semibold text-ink">
+        <div role="status" className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-hill2 bg-tint-2/60 p-4 text-sm font-semibold text-ink">
           {t("plans.trialEnds", { date: fmtDate(trialEnds, lang) })}
           <Link href="/parent/billing" className="font-extrabold underline">
             {t("plans.lock.see")}
@@ -79,7 +79,7 @@ export default function ParentHome() {
                   const now = sel.currentLevel(db, c.id);
                   return (
                     <Link key={c.id} href={`/parent/child/${c.id}`} className="group rounded-fk focus-visible:outline-none">
-                      <Card className="fk-tilt flex h-full flex-col gap-4 transition group-hover:shadow-lift group-focus-visible:ring-4 group-focus-visible:ring-teal">
+                      <Card className="fk-tilt flex h-full flex-col gap-4 transition group-hover:shadow-lift group-focus-visible:ring-4 group-focus-visible:ring-primary">
                         <div className="flex items-center gap-4">
                           <Avatar emoji={c.avatar} size={56} tone="lavender" />
                           <div className="min-w-0 flex-1">
@@ -106,7 +106,7 @@ export default function ParentHome() {
                               <Meter value={now.total ? now.done / now.total : 0} label={t("parent.home.level", { n: now.level.n, title: now.level.title[lang] })} />
                             </>
                           ) : (
-                            <p className="text-sm font-bold text-ink-2">{t("parent.home.allDone")}</p>
+                            <p className="text-sm font-bold text-muted">{t("parent.home.allDone")}</p>
                           )}
                         </div>
                         <div className="flex flex-wrap gap-2">
@@ -117,7 +117,7 @@ export default function ParentHome() {
                             <Clock className="size-3.5" aria-hidden /> {t("parent.home.week", { n: minutes })}
                           </Chip>
                         </div>
-                        <p className="mt-auto text-sm text-ink-2">
+                        <p className="mt-auto text-sm text-muted">
                           <span className="block text-xs font-bold text-muted">{t("parent.home.lastChange")}</span>
                           {change ? t(change.reasonKey) : t("parent.home.noChanges")}
                         </p>
@@ -141,7 +141,7 @@ export default function ParentHome() {
                       const by = sel.user(db, a.byUserId);
                       return (
                         <li key={a.id} className="flex gap-3 py-3 first:pt-0 last:pb-0">
-                          <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-teal-soft text-xl" aria-hidden>
+                          <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary-soft text-xl" aria-hidden>
                             {level?.emoji}
                           </span>
                           <div className="min-w-0 space-y-1">
@@ -153,7 +153,7 @@ export default function ParentHome() {
                               </Chip>
                               <Chip tone="gray">{child.name}</Chip>
                             </div>
-                            {a.note && <p className="text-sm text-ink-2">{a.note}</p>}
+                            {a.note && <p className="text-sm text-muted">{a.note}</p>}
                             <LockNote childId={child.id} levelId={a.levelId} />
                             <p className="text-xs text-muted">
                               {by?.name}

@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { CLOUDY_FACES, CLOUDY_FORMS, Cloudy, CloudShape, type CloudyFace, type CloudyForm } from "@/components/Cloudy";
-import { SCHEMES } from "@/lib/scheme";
+import { SETS } from "@/lib/theme";
 
-// Test page for Cloudy (B101): every form in every colour scheme, the four faces, and a change of form with its
-// sparkles. Labels are English on purpose: it is a page for checking the drawing, like /dev/design.
+// Test page for Cloudy (B101, B107): every form in all 11 colour sets (six schemes, light and dark), the four faces,
+// and a change of form with its sparkles. Labels are English on purpose: it is a page for checking the drawing, like
+// /dev/design.
 
 const NEXT = (f: CloudyForm) => CLOUDY_FORMS[(CLOUDY_FORMS.indexOf(f) + 1) % CLOUDY_FORMS.length];
 
@@ -14,20 +15,26 @@ export default function CloudyTest() {
   const [face, setFace] = useState<CloudyFace>("happy");
   return (
     <main className="mx-auto max-w-5xl space-y-8 p-6">
-      <h1 className="text-3xl font-semibold text-ink">Cloudy: every form in every colour scheme</h1>
-      {SCHEMES.map((s) => (
-        <section key={s} data-pal={s === "hills" ? undefined : s} className="rounded-[24px] border-[1.5px] p-5" style={{ background: "var(--sky)", borderColor: "var(--edge)", color: "var(--ink)" }}>
-          <h2 className="mb-3 text-xl font-semibold capitalize">{s}</h2>
+      <h1 className="text-3xl font-semibold text-ink">Cloudy: every form in all 11 colour sets</h1>
+      {SETS.map(([s, m]) => (
+        <section key={`${s}-${m}`} data-scheme={s} data-mode={m} className="rounded-[24px] border-[1.5px] border-edge bg-bg p-5 text-ink">
+          <h2 className="mb-3 text-xl font-semibold capitalize">
+            {s}, {m}
+          </h2>
           <ul className="flex flex-wrap items-end gap-6">
             {CLOUDY_FORMS.map((f) => (
               <li key={f} className="text-center text-sm font-bold">
-                <Cloudy size={112} form={f} label={`Cloudy as a ${f}, ${s}`} />
+                <Cloudy size={112} form={f} label={`Cloudy as a ${f}, ${s} ${m}`} />
                 <span className="mt-3 block">{f}</span>
               </li>
             ))}
             <li className="w-28 text-center text-sm font-bold">
               <CloudShape />
               <span className="mt-3 block">page cloud</span>
+            </li>
+            <li className="w-28 text-center text-sm font-bold">
+              <CloudShape game />
+              <span className="mt-3 block">game cloud</span>
             </li>
           </ul>
         </section>

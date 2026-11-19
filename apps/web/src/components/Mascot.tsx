@@ -4,7 +4,8 @@ import { useId } from "react";
 import type { MascotMood } from "@/lib/types";
 
 // The cloud hero: no name, doesn't talk down, doesn't teach — just supports (design board).
-// Pure SVG + CSS (server-rendered HTML, respects prefers-reduced-motion).
+// Pure SVG + CSS (server-rendered HTML, respects prefers-reduced-motion). Colours: Cloudy's tokens of the colour
+// scheme (lib/theme.ts); his face is always --cloudyFace, because his body stays light in dark mode too.
 
 const PUFFS: [number, number, number][] = [
   [58, 100, 40], [100, 72, 50], [146, 96, 40], [100, 110, 44], [72, 120, 30], [130, 120, 32],
@@ -28,7 +29,7 @@ export function Mascot({
   label?: string;
 }) {
   const gradId = `fk-cloud-${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`; // unique per mascot: same-mood mascots with different tints must not share a fill
-  const ink = "#2b3f66";
+  const ink = "var(--cloudyFace)";
   const closed = mood === "sleepy";
   const arcs = mood === "happy" || mood === "celebrate" || mood === "wave";
   return (
@@ -36,8 +37,8 @@ export function Mascot({
       <svg viewBox="0 0 200 164" width={size} height={size * 0.82} {...(label === "" ? { "aria-hidden": true } : { role: "img", "aria-label": label ?? "FlexiKeys cloud" })}>
         <defs>
           <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#ffffff" />
-            <stop offset="100%" stopColor={tint ?? "#dbe8f8"} />
+            <stop offset="0%" stopColor="var(--cloudyBody)" />
+            <stop offset="100%" stopColor={tint ?? "var(--cloudyShade)"} />
           </linearGradient>
         </defs>
         {mood === "celebrate" && (
@@ -50,14 +51,14 @@ export function Mascot({
         )}
         <g transform={mood === "curious" ? "rotate(-6 100 100)" : undefined}>
           {PUFFS.map(([cx, cy, r], i) => (
-            <circle key={`o${i}`} cx={cx} cy={cy} r={r + 3} fill="#c9d9ef" />
+            <circle key={`o${i}`} cx={cx} cy={cy} r={r + 3} fill="var(--cloudyLine)" />
           ))}
           {PUFFS.map(([cx, cy, r], i) => (
             <circle key={`f${i}`} cx={cx} cy={cy} r={r} fill={`url(#${gradId})`} />
           ))}
           {/* cheeks */}
-          <ellipse cx="66" cy="112" rx="11" ry="7" fill="#f6b9c6" opacity="0.75" />
-          <ellipse cx="134" cy="112" rx="11" ry="7" fill="#f6b9c6" opacity="0.75" />
+          <ellipse cx="66" cy="112" rx="11" ry="7" fill="var(--cheek)" opacity="0.75" />
+          <ellipse cx="134" cy="112" rx="11" ry="7" fill="var(--cheek)" opacity="0.75" />
           {/* eyes */}
           {closed ? (
             <g stroke={ink} strokeWidth="4" strokeLinecap="round" fill="none">
@@ -73,8 +74,8 @@ export function Mascot({
             <g style={{ transformBox: "fill-box", transformOrigin: "center", animation: "fk-blink 5s infinite" }}>
               <ellipse cx="84" cy={mood === "thinking" ? 93 : 97} rx={mood === "curious" ? 8 : 7} ry={mood === "curious" ? 10 : 9} fill={ink} />
               <ellipse cx="116" cy={mood === "thinking" ? 93 : 97} rx={mood === "curious" ? 8 : 7} ry={mood === "curious" ? 10 : 9} fill={ink} />
-              <circle cx={mood === "thinking" ? 87 : 86} cy={mood === "thinking" ? 89 : 93} r="2.6" fill="#fff" />
-              <circle cx={mood === "thinking" ? 119 : 118} cy={mood === "thinking" ? 89 : 93} r="2.6" fill="#fff" />
+              <circle cx={mood === "thinking" ? 87 : 86} cy={mood === "thinking" ? 89 : 93} r="2.6" fill="rgb(var(--shine))" />
+              <circle cx={mood === "thinking" ? 119 : 118} cy={mood === "thinking" ? 89 : 93} r="2.6" fill="rgb(var(--shine))" />
             </g>
           )}
           {/* mouth */}
@@ -92,12 +93,12 @@ export function Mascot({
         </g>
         {mood === "wave" && (
           <g className="origin-center" style={{ transformBox: "fill-box", transformOrigin: "20% 80%", animation: "fk-float 1.2s ease-in-out infinite" }}>
-            <circle cx="182" cy="70" r="14" fill="#c9d9ef" />
-            <circle cx="182" cy="70" r="11.5" fill="#fff" />
+            <circle cx="182" cy="70" r="14" fill="var(--cloudyLine)" />
+            <circle cx="182" cy="70" r="11.5" fill="var(--cloudyBody)" />
           </g>
         )}
         {mood === "sleepy" && (
-          <g fill="#8ea3c7" fontWeight="800">
+          <g fill="var(--muted)" fontWeight="800">
             <text x="150" y="40" fontSize="18">z</text>
             <text x="164" y="24" fontSize="14">z</text>
           </g>

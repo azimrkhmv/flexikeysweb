@@ -41,10 +41,10 @@ export default function Book() {
       <PageHeader title={t("book.title", { name: place.name })} subtitle={t("book.subtitle")} />
       {booked ? (
         <Card className="space-y-3">
-          <p role="status" className="flex items-center gap-2 text-lg font-extrabold text-teal">
+          <p role="status" className="flex items-center gap-2 text-lg font-extrabold text-primary">
             <CalendarCheck className="size-5" aria-hidden /> {t("book.done")}
           </p>
-          <p className="text-ink-2">{t("book.doneHint")}</p>
+          <p className="text-muted">{t("book.doneHint")}</p>
         </Card>
       ) : slots.length === 0 ? (
         <Empty>{t("book.none")}</Empty>
@@ -66,7 +66,7 @@ export default function Book() {
             <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
               {slots.map((s) => (
                 <li key={s.id}>
-                  <label className="flex cursor-pointer items-center gap-2 rounded-2xl border border-line p-3 has-checked:border-teal has-checked:bg-teal-soft/50">
+                  <label className="flex cursor-pointer items-center gap-2 rounded-2xl border border-line p-3 has-checked:border-primary has-checked:bg-primary-soft/50">
                     <input
                       type="radio"
                       name="slot"
@@ -110,7 +110,7 @@ export default function Book() {
           >
             {t("book.submit")}
           </Button>
-          {book.error && <p role="alert" className="text-sm font-semibold text-[#8f3a2c]">{book.error}</p>}
+          {book.error && <p role="alert" className="text-sm font-semibold text-primary">{book.error}</p>}
         </Card>
       )}
     </>

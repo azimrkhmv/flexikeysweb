@@ -40,17 +40,17 @@ function Hero() {
       <div>
         <Chip tone="teal" className="text-sm">{t("mkt.hero.eyebrow")}</Chip>
         <h1 className="mt-5 text-4xl font-extrabold leading-[1.08] tracking-tight text-ink sm:text-5xl lg:text-6xl">{t("mkt.hero.title")}</h1>
-        <p className="mt-5 max-w-xl text-lg leading-relaxed text-ink-2">{t("mkt.hero.lead")}</p>
+        <p className="mt-5 max-w-xl text-lg leading-relaxed text-muted">{t("mkt.hero.lead")}</p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
           <LinkButton href="/signup" size="lg">{t("nav.signup")}</LinkButton>
           <LinkButton href="/demo" variant="soft" size="lg">
             <CirclePlay className="size-5" aria-hidden /> {t("mkt.hero.demo")}
           </LinkButton>
         </div>
-        <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold text-ink-2">
+        <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold text-muted">
           {["mkt.hero.note1", "mkt.hero.note2", "mkt.hero.note3"].map((k) => (
             <li key={k} className="flex items-center gap-1.5">
-              <Check className="size-4 text-teal" aria-hidden /> {t(k)}
+              <Check className="size-4 text-primary" aria-hidden /> {t(k)}
             </li>
           ))}
         </ul>
@@ -59,12 +59,12 @@ function Hero() {
       <div className="relative mx-auto w-full max-w-[520px]">
         <div
           className="relative aspect-[5/4] overflow-hidden rounded-fk-lg border border-line shadow-lift"
-          style={{ background: "linear-gradient(160deg,#fdf6e3 0%,#eaf3fb 48%,#e3f2df 100%)" }}
+          style={{ background: "linear-gradient(160deg, var(--sky1) 0%, var(--sky2) 100%)" }}
         >
           <div className="absolute -right-10 -top-10 size-44 rounded-full bg-sun/40 blur-2xl" />
           <svg className="absolute inset-x-0 bottom-0 h-1/3 w-full" viewBox="0 0 500 140" preserveAspectRatio="none" aria-hidden>
-            <path d="M0 90 Q120 40 250 80 T500 70 V140 H0Z" fill="#d8edd2" />
-            <path d="M0 112 Q150 82 300 110 T500 100 V140 H0Z" fill="#c6e3be" />
+            <path d="M0 90 Q120 40 250 80 T500 70 V140 H0Z" fill="var(--hill1)" />
+            <path d="M0 112 Q150 82 300 110 T500 100 V140 H0Z" fill="var(--hill2)" />
           </svg>
           <span aria-hidden className="absolute bottom-6 left-6 text-3xl">🌿</span>
           <span aria-hidden className="absolute bottom-10 right-8 text-2xl">🌷</span>
@@ -79,7 +79,7 @@ function Hero() {
           </p>
         </div>
         <div className="absolute -bottom-5 left-3 flex items-center gap-2 rounded-2xl bg-surface px-3 py-2.5 text-sm font-bold text-ink shadow-lift sm:left-6">
-          <span aria-hidden className="grid size-8 place-items-center rounded-full bg-sky-soft">⌨️</span>
+          <span aria-hidden className="grid size-8 place-items-center rounded-full bg-tint">⌨️</span>
           {t("mkt.hero.chip")}
         </div>
         <div className="absolute -right-2 top-[42%] hidden items-center gap-2 rounded-2xl bg-surface px-3 py-2.5 text-sm font-bold text-ink shadow-lift sm:flex">
@@ -100,7 +100,7 @@ function OurHero() {
       <div className="grid gap-8 rounded-fk-lg border border-line bg-surface p-6 shadow-soft sm:p-10 lg:grid-cols-[1fr_1.5fr] lg:items-center">
         <div>
           <h2 id="hero-title" className="text-3xl font-extrabold text-ink sm:text-4xl">{t("mkt.mascot.title")}</h2>
-          <p className="mt-3 text-lg leading-relaxed text-ink-2">{t("mkt.mascot.lead")}</p>
+          <p className="mt-3 text-lg leading-relaxed text-muted">{t("mkt.mascot.lead")}</p>
         </div>
         <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {MOODS.map((m) => (
@@ -138,7 +138,7 @@ function Principles() {
               <Icon className="size-6" aria-hidden />
             </span>
             <h3 className="mt-4 font-extrabold text-ink">{t(`mkt.p.${key}.t`)}</h3>
-            <p className="mt-1.5 text-sm leading-relaxed text-ink-2">{t(`mkt.p.${key}.d`)}</p>
+            <p className="mt-1.5 text-sm leading-relaxed text-muted">{t(`mkt.p.${key}.d`)}</p>
           </li>
         ))}
       </ul>
@@ -171,19 +171,19 @@ function HowItWorks() {
             </li>
           ))}
         </ol>
-        <p className="mx-auto mt-10 flex max-w-xl items-center justify-center gap-2 text-center font-bold text-ink-2">
-          <Sparkles className="size-5 shrink-0 text-teal" aria-hidden /> {t("mkt.how.adaptive")}
+        <p className="mx-auto mt-10 flex max-w-xl items-center justify-center gap-2 text-center font-bold text-muted">
+          <Sparkles className="size-5 shrink-0 text-primary" aria-hidden /> {t("mkt.how.adaptive")}
         </p>
 
         <div className="mt-12 grid gap-6 lg:grid-cols-2">
           <div className="rounded-fk-lg border border-line bg-surface p-6 shadow-soft sm:p-8">
             <h3 className="text-2xl font-extrabold text-ink">{t("mkt.how.inv.title")}</h3>
-            <p className="mt-3 leading-relaxed text-ink-2">{t("mkt.how.inv.lead")}</p>
+            <p className="mt-3 leading-relaxed text-muted">{t("mkt.how.inv.lead")}</p>
             <ul className="mt-5 space-y-3">
               {["a1", "a2", "a3", "a4"].map((k) => (
                 <li key={k} className="flex gap-3 font-semibold text-ink">
-                  <span className="grid size-6 shrink-0 place-items-center rounded-full bg-leaf-soft">
-                    <Check className="size-4 text-[#2f6a37]" aria-hidden />
+                  <span className="grid size-6 shrink-0 place-items-center rounded-full bg-primary-soft">
+                    <Check className="size-4 text-primary" aria-hidden />
                   </span>
                   {t(`mkt.how.${k}`)}
                 </li>
@@ -192,7 +192,7 @@ function HowItWorks() {
             <p className="mt-5 text-sm text-muted">{t("mkt.how.parents")}</p>
           </div>
 
-          <div className="relative overflow-hidden rounded-fk-lg border border-line p-6 shadow-soft sm:p-8" style={{ background: "linear-gradient(160deg,#ffffff 0%,#eef4fb 100%)" }}>
+          <div className="relative overflow-hidden rounded-fk-lg border border-line p-6 shadow-soft sm:p-8" style={{ background: "linear-gradient(160deg, var(--paperSolid) 0%, var(--sky1) 100%)" }}>
             <div className="flex flex-wrap items-center justify-between gap-2">
               <h3 className="text-xl font-extrabold text-ink">{t("mkt.how.feed")}</h3>
               <Chip tone="lavender">{t("mkt.how.feedFor")}</Chip>
@@ -247,11 +247,11 @@ function Audiences() {
               <Icon className="size-7" aria-hidden />
             </span>
             <h3 className="mt-5 text-2xl font-extrabold text-ink">{t(`mkt.${id}.title`)}</h3>
-            <p className="mt-2 text-ink-2">{t(`mkt.${id}.lead`)}</p>
+            <p className="mt-2 text-muted">{t(`mkt.${id}.lead`)}</p>
             <ul className="mt-5 flex-1 space-y-3">
               {["b1", "b2", "b3", "b4"].map((b) => (
                 <li key={b} className="flex gap-3 text-sm font-semibold text-ink">
-                  <Check className="mt-0.5 size-4 shrink-0 text-teal" aria-hidden />
+                  <Check className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
                   {t(`mkt.${id}.${b}`)}
                 </li>
               ))}
@@ -272,14 +272,14 @@ function Trust() {
   const t = useT();
   return (
     <section className={section} aria-labelledby="trust-title">
-      <div className="rounded-fk-lg bg-teal-soft/60 p-6 sm:p-10">
+      <div className="rounded-fk-lg bg-primary-soft/60 p-6 sm:p-10">
         <SectionTitle id="trust-title" title={t("mkt.trust.title")} lead={t("mkt.trust.lead")} />
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {TRUST.map((Icon, i) => (
             <li key={i} className="rounded-fk bg-surface p-5 shadow-soft">
-              <Icon className="size-6 text-teal" aria-hidden />
+              <Icon className="size-6 text-primary" aria-hidden />
               <h3 className="mt-3 font-extrabold text-ink">{t(`mkt.trust.t${i + 1}`)}</h3>
-              <p className="mt-1.5 text-sm leading-relaxed text-ink-2">{t(`mkt.trust.d${i + 1}`)}</p>
+              <p className="mt-1.5 text-sm leading-relaxed text-muted">{t(`mkt.trust.d${i + 1}`)}</p>
             </li>
           ))}
         </ul>
@@ -294,15 +294,15 @@ function Closing() {
     <section className="mx-auto grid max-w-6xl gap-6 px-4 pt-4 lg:grid-cols-2">
       <div className="flex flex-col rounded-fk-lg border border-line bg-sun-soft p-6 sm:p-10">
         <h2 className="text-2xl font-extrabold text-ink sm:text-3xl">{t("mkt.teaser.title")}</h2>
-        <p className="mt-3 flex-1 text-ink-2">{t("mkt.teaser.lead")}</p>
+        <p className="mt-3 flex-1 text-muted">{t("mkt.teaser.lead")}</p>
         <LinkButton href="/pricing" variant="outline" className="mt-6 self-start">
           {t("mkt.teaser.cta")}
         </LinkButton>
       </div>
-      <div className="relative overflow-hidden rounded-fk-lg border border-line bg-lavender-soft p-6 sm:p-10">
+      <div className="relative overflow-hidden rounded-fk-lg border border-line bg-tint-2 p-6 sm:p-10">
         <div className="relative z-10 max-w-sm">
           <h2 className="text-2xl font-extrabold text-ink sm:text-3xl">{t("mkt.cta.title")}</h2>
-          <p className="mt-3 text-ink-2">{t("mkt.cta.lead")}</p>
+          <p className="mt-3 text-muted">{t("mkt.cta.lead")}</p>
           <div className="mt-6 flex flex-wrap gap-3">
             <LinkButton href="/signup">{t("nav.signup")}</LinkButton>
             <LinkButton href="/demo" variant="outline">{t("mkt.hero.demo")}</LinkButton>

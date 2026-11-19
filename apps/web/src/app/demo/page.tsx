@@ -110,7 +110,7 @@ export default function DemoPage() {
       <main className="mx-auto max-w-6xl px-4 pb-16">
         <div className="mb-5 text-center">
           <h1 className="text-3xl font-extrabold text-ink sm:text-4xl">{t("act.demo.title")}</h1>
-          <p className="mt-2 text-ink-2">{t("act.demo.subtitle")}</p>
+          <p className="mt-2 text-muted">{t("act.demo.subtitle")}</p>
         </div>
 
         <nav aria-label={t("act.demo.pick")} className="mb-5 flex gap-3 overflow-x-auto pb-2">
@@ -121,7 +121,7 @@ export default function DemoPage() {
               onClick={() => choose(i)}
               aria-pressed={i === game}
               className={`flex min-h-20 min-w-44 shrink-0 items-center gap-3 rounded-fk border-2 px-4 py-3 text-left transition ${
-                i === game ? "border-teal bg-surface shadow-soft" : "border-transparent bg-surface/60 hover:bg-surface"
+                i === game ? "border-primary bg-surface shadow-soft" : "border-transparent bg-surface/60 hover:bg-surface"
               }`}
             >
               <span className="text-3xl" aria-hidden>
@@ -144,9 +144,9 @@ export default function DemoPage() {
               <section className="flex min-h-[480px] flex-col items-center justify-center gap-4 rounded-fk-lg border border-line bg-surface p-8 text-center shadow-soft">
                 <Mascot mood="celebrate" size={200} />
                 <h2 className="text-3xl font-extrabold text-ink">{t("act.demo.finished")}</h2>
-                <p className="max-w-md text-ink-2">{t("act.demo.finished_sub")}</p>
+                <p className="max-w-md text-muted">{t("act.demo.finished_sub")}</p>
                 <div className="flex flex-wrap justify-center gap-3">
-                  <button type="button" onClick={() => choose((game + 1) % GAMES.length)} className="h-14 rounded-full bg-sky-soft px-8 text-lg font-extrabold text-ink hover:bg-[#d6e6f8]">
+                  <button type="button" onClick={() => choose((game + 1) % GAMES.length)} className="h-14 rounded-full bg-tint px-8 text-lg font-extrabold text-ink hover:bg-tint-2">
                     {t("act.demo.again")}
                   </button>
                   <LinkButton href="/signup" size="lg">
@@ -174,7 +174,7 @@ export default function DemoPage() {
           )}
         </div>
 
-        <div className="mt-8 flex items-center justify-center gap-2 text-center text-sm text-ink-2">
+        <div className="mt-8 flex items-center justify-center gap-2 text-center text-sm text-muted">
           <Chip tone="teal">✦</Chip>
           {t("act.demo.adapts")}
         </div>

@@ -12,7 +12,7 @@ export function Logo({ href = "/", small }: { href?: string; small?: boolean }) 
       <svg viewBox="0 0 48 36" width={small ? 32 : 40} height={small ? 24 : 30} aria-hidden>
         <path
           d="M13 32h24a9 9 0 0 0 1.5-17.9A12 12 0 0 0 15.3 11 10.5 10.5 0 0 0 13 32Z"
-          fill="#fff"
+          fill="var(--cloudyBody)"
           stroke="var(--edge)"
           strokeWidth="2.6"
           strokeLinejoin="round"
@@ -40,7 +40,7 @@ export function LangSwitch({ compact }: { compact?: boolean }) {
     if (routeLang) router.push(path.replace(/^\/(uz|ru|en)(?=\/|$)/, `/${l}`) + window.location.hash);
   };
   return (
-    <label className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-3 h-10 text-sm font-bold text-ink-2">
+    <label className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-3 h-10 text-sm font-bold text-muted">
       <Globe className="size-4" aria-hidden />
       <span className="sr-only">{t("nav.language")}</span>
       <select value={lang} onChange={(e) => choose(e.target.value as Lang)} className="bg-transparent font-bold text-ink outline-none">

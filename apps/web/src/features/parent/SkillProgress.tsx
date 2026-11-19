@@ -37,11 +37,11 @@ function WeekLine({ weeks, label }: { weeks: AreaProgress["weeks"]; label: strin
   if (run.length > 1) runs.push(run.join(" "));
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className="h-11 w-full max-w-56" role="img" aria-label={label}>
-      <line x1={6} x2={W - 6} y1={H - 3} y2={H - 3} stroke="var(--fk-line)" strokeWidth={1} />
+      <line x1={6} x2={W - 6} y1={H - 3} y2={H - 3} stroke="var(--line)" strokeWidth={1} />
       {runs.map((points) => (
-        <polyline key={points} points={points} fill="none" stroke="var(--fk-teal)" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" />
+        <polyline key={points} points={points} fill="none" stroke="var(--accentText)" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" />
       ))}
-      {weeks.map((w, k) => (w.level === null ? null : <circle key={w.weekStart} cx={x(k)} cy={y(w.level)} r={k === weeks.length - 1 ? 3.5 : 2.5} fill="var(--fk-teal)" />))}
+      {weeks.map((w, k) => (w.level === null ? null : <circle key={w.weekStart} cx={x(k)} cy={y(w.level)} r={k === weeks.length - 1 ? 3.5 : 2.5} fill="var(--accentText)" />))}
     </svg>
   );
 }
@@ -82,20 +82,20 @@ export function SkillCards({ childId, therapist = false }: { childId: string; th
                   )}
                 </div>
                 <WeekLine weeks={a.weeks} label={t("progress.weeks", { list: weeks })} />
-                {now && a.level !== null && <p className="text-sm text-ink-2">{before && before !== now ? t("progress.nowBefore", { now, before }) : t("progress.now", { now })}</p>}
+                {now && a.level !== null && <p className="text-sm text-muted">{before && before !== now ? t("progress.nowBefore", { now, before }) : t("progress.now", { now })}</p>}
                 {therapist && (
                   <dl className="mt-1 grid grid-cols-1 gap-0.5 text-xs text-muted">
                     <div>
                       <dt className="inline">{t("progress.tries")}: </dt>
-                      <dd className="inline font-semibold text-ink-2">{a.tries ?? 0}</dd>
+                      <dd className="inline font-semibold text-muted">{a.tries ?? 0}</dd>
                     </div>
                     <div>
                       <dt className="inline">{t("progress.access")}: </dt>
-                      <dd className="inline font-semibold text-ink-2">{t("progress.ofTries", { n: a.accessEvents ?? 0, total: a.tries ?? 0 })}</dd>
+                      <dd className="inline font-semibold text-muted">{t("progress.ofTries", { n: a.accessEvents ?? 0, total: a.tries ?? 0 })}</dd>
                     </div>
                     <div>
                       <dt className="inline">{t("progress.tier")}: </dt>
-                      <dd className="inline font-semibold text-ink-2">{t(`skill.tier.${a.topTier}`)}</dd>
+                      <dd className="inline font-semibold text-muted">{t(`skill.tier.${a.topTier}`)}</dd>
                     </div>
                   </dl>
                 )}

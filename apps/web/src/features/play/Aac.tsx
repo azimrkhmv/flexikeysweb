@@ -15,10 +15,10 @@ const MAX_STRIP = 10;
 const COLS = 4;
 const BORDER: Record<WordClass, string> = {
   person: "border-sun",
-  action: "border-leaf",
-  describe: "border-sky",
-  thing: "border-peach",
-  social: "border-lavender",
+  action: "border-accent",
+  describe: "border-hill1",
+  thing: "border-accent",
+  social: "border-hill2",
 };
 
 /** AAC "My Voice": picture cards → sentence strip → spoken in the child's UI language (PRD §9.11). */
@@ -98,13 +98,13 @@ export function Aac({ child }: { child: Child }) {
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-4">
       {/* sentence strip */}
-      <section className="flex flex-wrap items-center gap-3 rounded-fk-lg border-4 border-white bg-surface/95 p-3 shadow-soft">
+      <section className="flex flex-wrap items-center gap-3 rounded-fk-lg border-4 border-surface bg-surface/95 p-3 shadow-soft">
         <div className="flex min-h-24 min-w-0 flex-1 items-center gap-2 overflow-x-auto" aria-live="polite">
           {strip.length === 0 && <p className="px-3 text-lg font-bold text-muted">{t("aac.empty")}</p>}
           {strip.map((id, i) => {
             const c = card(id);
             return c ? (
-              <span key={i} className="flex shrink-0 flex-col items-center rounded-2xl bg-sky-soft px-3 py-2">
+              <span key={i} className="flex shrink-0 flex-col items-center rounded-2xl bg-tint px-3 py-2">
                 {c.photo ? (
                   // eslint-disable-next-line @next/next/no-img-element -- private, same-origin card photo
                   <img src={c.photo} alt="" className="size-9 rounded-lg object-cover" />
@@ -117,13 +117,13 @@ export function Aac({ child }: { child: Child }) {
           })}
         </div>
         <div className="flex gap-2">
-          <Target label={t("aac.backspace")} onSelect={() => setStrip((s) => s.slice(0, -1))} disabled={!strip.length} className="grid place-items-center rounded-3xl bg-surface-2 text-ink-2 disabled:opacity-40">
+          <Target label={t("aac.backspace")} onSelect={() => setStrip((s) => s.slice(0, -1))} disabled={!strip.length} className="grid place-items-center rounded-3xl bg-surface-2 text-muted disabled:opacity-40">
             <Delete className="size-8" aria-hidden />
           </Target>
-          <Target label={t("aac.clear")} onSelect={() => setStrip([])} disabled={!strip.length} className="grid place-items-center rounded-3xl bg-surface-2 text-ink-2 disabled:opacity-40">
+          <Target label={t("aac.clear")} onSelect={() => setStrip([])} disabled={!strip.length} className="grid place-items-center rounded-3xl bg-surface-2 text-muted disabled:opacity-40">
             <X className="size-8" aria-hidden />
           </Target>
-          <Target label={t("aac.speak")} onSelect={speakStrip} disabled={!strip.length} className="flex items-center gap-2 rounded-3xl bg-teal px-6 text-xl font-extrabold text-white shadow-soft disabled:opacity-40">
+          <Target label={t("aac.speak")} onSelect={speakStrip} disabled={!strip.length} className="flex items-center gap-2 rounded-3xl bg-btn px-6 text-xl font-extrabold text-btn-text shadow-soft disabled:opacity-40">
             <Volume2 className="size-8" aria-hidden /> {t("aac.speak")}
           </Target>
         </div>
@@ -135,9 +135,9 @@ export function Aac({ child }: { child: Child }) {
       </div>
 
       {confirm && confirm.lang === lang && (
-        <section className="flex flex-wrap items-center gap-3 rounded-fk-lg border-4 border-teal bg-teal-soft p-4" role="dialog" aria-label={t("aac.confirm")}>
+        <section className="flex flex-wrap items-center gap-3 rounded-fk-lg border-4 border-primary bg-primary-soft p-4" role="dialog" aria-label={t("aac.confirm")}>
           <p className="min-w-0 flex-1 text-2xl font-extrabold text-ink">“{confirm.sentence}”</p>
-          <Target label={t("aac.sayThis")} onSelect={() => say(confirm.sentence)} className="rounded-3xl bg-teal px-5 text-lg font-extrabold text-white">
+          <Target label={t("aac.sayThis")} onSelect={() => say(confirm.sentence)} className="rounded-3xl bg-btn px-5 text-lg font-extrabold text-btn-text">
             {t("aac.sayThis")}
           </Target>
           <Target label={t("aac.sayMine")} onSelect={() => say(confirm.plain, clips())} className="rounded-3xl bg-surface px-5 text-lg font-extrabold text-ink">
@@ -154,7 +154,7 @@ export function Aac({ child }: { child: Child }) {
             label={c.label[lang]}
             selected={cat === c.id}
             onSelect={() => setCat(c.id)}
-            className={`flex shrink-0 flex-col items-center justify-center rounded-3xl border-4 px-4 font-bold text-ink ${cat === c.id ? "border-teal bg-teal-soft" : "border-white bg-surface/90"}`}
+            className={`flex shrink-0 flex-col items-center justify-center rounded-3xl border-4 px-4 font-bold text-ink ${cat === c.id ? "border-primary bg-primary-soft" : "border-surface bg-surface/90"}`}
           >
             <span className="text-2xl">{c.emoji}</span>
             <span className="text-sm">{c.label[lang]}</span>

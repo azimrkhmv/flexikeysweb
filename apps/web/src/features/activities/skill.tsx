@@ -25,6 +25,7 @@ import { BalancePlayer, LogicHousesPlayer, NextPatternPlayer, PipesPlayer, Shado
 import { BazaarPlayer, MissingNumberPlayer, MoreLessPlayer, NumberLinePlayer } from "./skillMath";
 import { DoWhatISayPlayer, RhymePlayer, WordBuilderPlayer } from "./skillLang";
 import { FastSortPlayer, QuickSnapPlayer, TapStarPlayer } from "./skillSpeed";
+import { GROUP_DOT_COLOURS } from "@/content/taskColors";
 
 // Skill games (games spec 8 Nov 2026, §2.3, §5, §6): the 12 kinds of the theme worlds and the new skill-only kinds, 12\n// steps each. The rounds
 // come from the kind's generator (lib/games) with the day's seed; the players below show them with the engines' own
@@ -68,13 +69,13 @@ function SkillScene({ objects }: { objects: SceneObject[] }) {
   return (
     <div
       className="relative aspect-[16/9] overflow-hidden rounded-fk-lg border border-line shadow-inner [container-type:size]"
-      style={{ width: "min(100%, 42rem, calc(40dvh * 16 / 9))", background: "linear-gradient(180deg,#e4effb 0%,#f4fbef 60%,#e1f1de 100%)" }}
+      style={{ width: "min(100%, 42rem, calc(40dvh * 16 / 9))", background: "linear-gradient(180deg, var(--sky1) 0%, var(--sky2) 100%)" }}
       aria-hidden
     >
       {objects.map((o) => (
         <span key={o.id} className="absolute -translate-x-1/2 -translate-y-1/2 leading-none" style={{ left: `${o.x}%`, top: `${o.y}%`, fontSize: `${o.s}cqh` }}>
           {lookOf(o.id)}
-          {o.hidden && <span className="absolute -inset-x-[12%] -bottom-[8%] h-[58%] rounded-t-[60%] bg-[#8cc98f] shadow-[inset_0_6px_0_rgb(255_255_255/0.35)]" />}
+          {o.hidden && <span className="absolute -inset-x-[12%] -bottom-[8%] h-[58%] rounded-t-[60%] bg-tree1 shadow-[inset_0_6px_0_rgba(var(--shine),0.35)]" />}
         </span>
       ))}
     </div>
@@ -109,7 +110,7 @@ function CountPlayer({ rounds, onDone }: PlayerProps<"count">) {
   return <ChoiceEngine rounds={specs} onDone={onDone} />;
 }
 
-const DOT: Record<number, string> = { 2: "#f4b183", 5: "#8cc98f", 10: "#7fa9e0" };
+const DOT: Record<number, string> = GROUP_DOT_COLOURS;
 /** One by one: the pictures in rows of five. In groups: a card per group, its dots in rows of five. */
 function CountStage({ groups, by, item }: { groups: number[]; by: number | "mixed"; item: string }) {
   if (by === 1) {
@@ -125,7 +126,7 @@ function CountStage({ groups, by, item }: { groups: number[]; by: number | "mixe
     <div className="flex max-w-2xl flex-wrap justify-center gap-2 rounded-fk-lg bg-sun-soft/60 p-3">
       {groups.map((g, k) => (
         <span key={k} className="grid gap-1 rounded-xl bg-surface p-2 shadow-soft" style={{ gridTemplateColumns: `repeat(${Math.min(5, g)}, 12px)` }} aria-hidden>
-          {Array.from({ length: g }, (_, d) => <span key={d} className="size-3 rounded-full" style={{ background: DOT[g] ?? "#b3a8e8" }} />)}
+          {Array.from({ length: g }, (_, d) => <span key={d} className="size-3 rounded-full" style={{ background: DOT[g] ?? GROUP_DOT_COLOURS.other }} />)}
         </span>
       ))}
     </div>
@@ -209,7 +210,7 @@ function MissingSkillRound({ r, index, total, next, last }: { r: MissingSkillRou
   const stage = row((k) => {
     const g = r.gone.indexOf(k);
     if (g < 0 || g < q) return art(r.shown[k]);
-    return <span className={`grid size-full place-items-center rounded-2xl text-5xl font-extrabold text-muted ${g === q ? "ring-4 ring-sky" : ""}`}>?</span>;
+    return <span className={`grid size-full place-items-center rounded-2xl text-5xl font-extrabold text-muted ${g === q ? "ring-4 ring-hill1" : ""}`}>?</span>;
   });
   return (
     <ChoiceEngine
@@ -266,7 +267,7 @@ function SwapRound({ r, index, total, next, last, size }: { r: Extract<MissingSk
               pulse={!solved && hint.show && k === left[0]}
               disabled={solved || rest}
               scanSkip={rest || found.includes(k)}
-              className={`grid place-items-center rounded-2xl border-4 bg-surface shadow-soft transition ${found.includes(k) ? "border-teal bg-teal-soft" : "border-transparent"} ${rest ? "opacity-25" : ""} disabled:opacity-100`}
+              className={`grid place-items-center rounded-2xl border-4 bg-surface shadow-soft transition ${found.includes(k) ? "border-primary bg-primary-soft" : "border-transparent"} ${rest ? "opacity-25" : ""} disabled:opacity-100`}
               style={{ width: size, height: size }}
             >
               <ItemArt id={id} size={times(size, 0.66)} />
@@ -304,7 +305,7 @@ function GridLightRound({ grid, seq, reverse, index, total, next, last }: { grid
       <div className="flex w-full flex-wrap items-center justify-center gap-4">
       <div
         className="grid gap-1.5 rounded-fk-lg p-2 shadow-inner"
-        style={{ width: `min(100%, ${grid * 5.5}rem, 66dvh)`, gridTemplateColumns: `repeat(${grid}, 1fr)`, background: "linear-gradient(180deg,#34497a 0%,#4a5f93 60%,#62709e 100%)" }}
+        style={{ width: `min(100%, ${grid * 5.5}rem, 66dvh)`, gridTemplateColumns: `repeat(${grid}, 1fr)`, background: "linear-gradient(180deg, var(--sky2) 0%, var(--hillFar) 100%)" }}
       >
         {Array.from({ length: grid * grid }, (_, c) => {
           const id = `c${c}`;
@@ -322,8 +323,8 @@ function GridLightRound({ grid, seq, reverse, index, total, next, last }: { grid
               style={{ minWidth: 60, minHeight: 60 }}
             >
               <span
-                className={`block rounded-full transition-all duration-300 ${on ? "fk-glow bg-sun" : "bg-[#8d9cc4]"}`}
-                style={{ width: on ? "56%" : "30%", height: on ? "56%" : "30%", boxShadow: on ? "0 0 24px 8px rgb(245 210 114 / .55)" : undefined }}
+                className={`block rounded-full transition-all duration-300 ${on ? "fk-glow bg-accent ring-2 ring-game-edge" : "bg-game ring-2 ring-game-edge"}`}
+                style={{ width: on ? "56%" : "30%", height: on ? "56%" : "30%", boxShadow: on ? "0 0 24px 8px color-mix(in srgb, var(--sunGlow) 70%, transparent)" : undefined }}
               />
             </Target>
           );
@@ -372,7 +373,7 @@ function SortPlayer({ rounds, onDone }: PlayerProps<"sort">) {
             label={itemLabel(id, ctx.learnLang, t)}
             onSelect={() => setPicked(id)}
             selected={id === current}
-            className={`grid place-items-center rounded-fk-lg border-4 bg-surface-2 shadow-soft transition ${id === current ? "-translate-y-1 border-teal bg-teal-soft" : "border-transparent"}`}
+            className={`grid place-items-center rounded-fk-lg border-4 bg-surface-2 shadow-soft transition ${id === current ? "-translate-y-1 border-primary bg-primary-soft" : "border-transparent"}`}
             style={{ width: size, height: size }}
           >
             <ItemArt id={id} size={times(size, 0.62)} />
@@ -390,7 +391,7 @@ function SortPlayer({ rounds, onDone }: PlayerProps<"sort">) {
               pulse={!!current && hint.show && boxOf(current) === gi}
               disabled={rest}
               scanSkip={rest}
-              className={`flex w-full flex-col items-center justify-start gap-1 rounded-fk-lg border-4 border-dashed border-sky bg-sky-soft/60 p-2 transition hover:bg-sky-soft ${four ? "min-h-[110px] short:min-h-[96px]" : "min-h-[140px] short:min-h-[110px]"} ${rest ? "opacity-25" : ""}`}
+              className={`flex w-full flex-col items-center justify-start gap-1 rounded-fk-lg border-4 border-dashed border-hill1 bg-tint/60 p-2 transition hover:bg-tint ${four ? "min-h-[110px] short:min-h-[96px]" : "min-h-[140px] short:min-h-[110px]"} ${rest ? "opacity-25" : ""}`}
             >
               <span className="flex items-center gap-2">
                 <BoxIcon group={g} />
@@ -464,7 +465,7 @@ function SkillPuzzle({ r, onDone }: { r: PuzzleSkillRound; onDone: () => void })
       label={t("act.skill.turn")}
       onSelect={() => setRot((x) => x.map((v, k) => (k === current ? (v + 90) % 360 : v)))}
       pulse={hint.show && turned}
-      className="flex items-center gap-2 rounded-full bg-sun-soft px-8 text-xl font-extrabold text-ink shadow-soft hover:bg-[#fbe9b4]"
+      className="flex items-center gap-2 rounded-full bg-sun-soft px-8 text-xl font-extrabold text-ink shadow-soft hover:brightness-95"
     >
       <span className="text-3xl" aria-hidden>↻</span>
       {t("act.skill.turn")}
@@ -486,7 +487,7 @@ function SkillPuzzle({ r, onDone }: { r: PuzzleSkillRound; onDone: () => void })
                 pulse={hint.show && !turned && slot === current}
                 disabled={rest}
                 scanSkip={rest}
-                className={`rounded-lg border-4 border-dashed border-sky bg-surface/70 ${rest ? "opacity-25" : ""}`}
+                className={`rounded-lg border-4 border-dashed border-hill1 bg-surface/70 ${rest ? "opacity-25" : ""}`}
                 style={{ width: "var(--piece)", height: "var(--piece)", minWidth: 60, minHeight: 60 }}
               >
                 <span className="sr-only">{slot + 1}</span>
@@ -507,7 +508,7 @@ function SkillPuzzle({ r, onDone }: { r: PuzzleSkillRound; onDone: () => void })
               label={t("act.piece", { n: p + 1 })}
               onSelect={() => setPicked(p)}
               selected={p === current}
-              className={`overflow-hidden rounded-xl border-4 transition ${p === current ? "-translate-y-1 border-teal shadow-lift" : "border-transparent shadow-soft"}`}
+              className={`overflow-hidden rounded-xl border-4 transition ${p === current ? "-translate-y-1 border-primary shadow-lift" : "border-transparent shadow-soft"}`}
               style={{ width: "calc(var(--piece) + 8px)", height: "calc(var(--piece) + 8px)" }}
             >
               <span className="block transition-transform duration-300" style={{ transform: `rotate(${rot[p]}deg)` }}>
@@ -526,7 +527,7 @@ function Picture({ picture }: { picture: string[] }) {
   return (
     <span
       className="relative block size-full [container-type:size]"
-      style={{ background: "linear-gradient(90deg, rgb(253 214 160 / .75), rgb(160 200 245 / .75)), linear-gradient(180deg, #fff6e0, #cfe9cf)" }}
+      style={{ background: "linear-gradient(90deg, color-mix(in srgb, var(--hill1) 75%, transparent), color-mix(in srgb, var(--accent) 55%, transparent)), linear-gradient(180deg, var(--paperSolid), var(--tree1))" }}
     >
       {picture.map((e, k) => (
         <span key={k} className="absolute -translate-x-1/2 -translate-y-1/2 leading-none" style={{ left: `${spots[k][0]}%`, top: `${spots[k][1]}%`, fontSize: `${spots[k][2]}cqw` }}>

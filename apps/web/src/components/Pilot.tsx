@@ -16,7 +16,7 @@ export function TestBanner() {
   const t = useT();
   if (!TEST_VERSION) return null;
   return (
-    <div role="note" className="mb-6 rounded-2xl border border-sun bg-sun-soft p-4 text-sm font-semibold text-[#7a5a0c]">
+    <div role="note" className="mb-6 rounded-2xl border border-sun bg-sun-soft p-4 text-sm font-semibold text-ink">
       {t("pilot.banner")}
     </div>
   );
@@ -38,7 +38,7 @@ export function FeedbackBox() {
           setOpen(true);
           setSent(false);
         }}
-        className="fixed bottom-24 right-4 z-40 inline-flex items-center gap-2 rounded-full bg-primary px-4 py-3 text-sm font-bold text-white shadow-soft lg:bottom-6"
+        className="fixed bottom-24 right-4 z-40 inline-flex items-center gap-2 rounded-full bg-btn px-4 py-3 text-sm font-bold text-btn-text shadow-soft lg:bottom-6"
       >
         <MessageSquarePlus className="size-5" aria-hidden /> {t("feedback.button")}
       </button>
@@ -47,12 +47,12 @@ export function FeedbackBox() {
     <Card className="fixed bottom-24 right-4 z-40 w-[min(22rem,calc(100vw-2rem))] space-y-3 p-4 shadow-soft lg:bottom-6">
       <div className="flex items-start justify-between gap-2">
         <p className="font-extrabold text-ink">{t("feedback.title")}</p>
-        <button type="button" onClick={() => setOpen(false)} aria-label={t("feedback.close")} className="grid size-8 place-items-center rounded-full text-ink-2 hover:bg-surface-2">
+        <button type="button" onClick={() => setOpen(false)} aria-label={t("feedback.close")} className="grid size-8 place-items-center rounded-full text-muted hover:bg-surface-2">
           <X className="size-4" aria-hidden />
         </button>
       </div>
       {sent ? (
-        <p role="status" className="text-sm font-semibold text-teal">{t("feedback.sent")}</p>
+        <p role="status" className="text-sm font-semibold text-primary">{t("feedback.sent")}</p>
       ) : (
         <form
           className="space-y-3"
@@ -65,7 +65,7 @@ export function FeedbackBox() {
           }}
         >
           <Textarea aria-label={t("feedback.title")} rows={4} maxLength={2000} value={text} onChange={(e) => setText(e.target.value)} placeholder={t("feedback.hint")} />
-          {send.error && <p role="alert" className="text-sm font-semibold text-[#8f3a2c]">{send.error}</p>}
+          {send.error && <p role="alert" className="text-sm font-semibold text-primary">{send.error}</p>}
           <Button type="submit" size="sm" pending={send.pending} disabled={!text.trim()}>
             {t("feedback.send")}
           </Button>

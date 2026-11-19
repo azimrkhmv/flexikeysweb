@@ -14,7 +14,7 @@ import type { EngineProps } from "./registry";
 // child activity: tapping always works — tracing/drawing with a finger is optional, never required —
 // and nothing a child draws is ever "wrong". Content is the Flutter app's (src/content/drawing.ts).
 
-const INK = "#4a4766";
+const INK = "var(--ink)";
 
 function useLoaded<T>(load: () => Promise<T>): T | null {
   const [data, setData] = useState<T | null>(null);
@@ -29,7 +29,7 @@ function useLoaded<T>(load: () => Promise<T>): T | null {
 }
 
 function Loading() {
-  return <div className="grid min-h-[480px] place-items-center" role="status" aria-busy="true"><span className="size-10 animate-spin rounded-full border-4 border-sky-soft border-t-sky" /></div>;
+  return <div className="grid min-h-[480px] place-items-center" role="status" aria-busy="true"><span className="size-10 animate-spin rounded-full border-4 border-tint border-t-hill1" /></div>;
 }
 
 // ------------------------------------------------------------------ trace + connect-the-dots
@@ -104,16 +104,16 @@ function DotRound({ mode, item, index, total, last, next }: { mode: "trace" | "d
       <div
         ref={box}
         onPointerMove={onMove}
-        className="relative aspect-square overflow-hidden rounded-fk-lg bg-[#fbf8ef] shadow-inner"
+        className="relative aspect-square overflow-hidden rounded-fk-lg bg-surface shadow-inner"
         style={{ touchAction: "none", width: "min(92vw, 30rem, 55dvh)" }}
       >
         <svg viewBox={`0 0 ${S} ${S}`} className="absolute inset-0 size-full" aria-hidden>
           {(mode === "trace" || solved) &&
             ghost.map((d, k) => (
-              <path key={k} d={d} fill="none" stroke={solved ? "#7fbf85" : "#ece3c8"} strokeWidth={solved ? 34 : 70} strokeLinecap="round" strokeLinejoin="round" />
+              <path key={k} d={d} fill="none" stroke={solved ? "var(--accent)" : "var(--line)"} strokeWidth={solved ? 34 : 70} strokeLinecap="round" strokeLinejoin="round" />
             ))}
-          {mode === "trace" && !solved && ghost.map((d, k) => <path key={`c${k}`} d={d} fill="none" stroke="#cdbf98" strokeWidth="5" strokeDasharray="16 14" strokeLinecap="round" />)}
-          {reached > 0 && !solved && <path d={done} fill="none" stroke="#7fbf85" strokeWidth="18" strokeLinecap="round" strokeLinejoin="round" />}
+          {mode === "trace" && !solved && ghost.map((d, k) => <path key={`c${k}`} d={d} fill="none" stroke="var(--muted)" strokeWidth="5" strokeDasharray="16 14" strokeLinecap="round" />)}
+          {reached > 0 && !solved && <path d={done} fill="none" stroke="var(--accent)" strokeWidth="18" strokeLinecap="round" strokeLinejoin="round" />}
         </svg>
         {!solved &&
           pts.map(([x, y], k) => {
@@ -121,7 +121,7 @@ function DotRound({ mode, item, index, total, last, next }: { mode: "trace" | "d
             const style = { left: `${(x / S) * 100}%`, top: `${(y / S) * 100}%` };
             const dot = (
               <span
-                className={`grid place-items-center rounded-full border-4 border-white text-sm font-extrabold shadow-soft ${k <= reached ? "bg-leaf text-white" : isNext ? "bg-sky text-white" : "bg-surface text-ink-2"}`}
+                className={`grid place-items-center rounded-full border-4 border-surface text-sm font-extrabold shadow-soft ${k <= reached ? "bg-btn text-btn-text" : isNext ? "bg-hill2 text-ink" : "bg-surface text-muted"}`}
                 style={{ width: size * 0.5, height: size * 0.5 }}
               >
                 {mode === "dots" ? k + 1 : ""}
@@ -238,7 +238,7 @@ function Palette({ color, onPick }: { color: string; onPick: (hex: string) => vo
           label={vocab(p.id).word[ctx.uiLang]}
           onSelect={() => onPick(p.hex)}
           selected={color === p.hex}
-          className={`rounded-full border-4 shadow-soft ${color === p.hex ? "border-ink" : "border-white"}`}
+          className={`rounded-full border-4 shadow-soft ${color === p.hex ? "border-ink" : "border-surface"}`}
           style={{ width: size, height: size, background: p.hex }}
         >
           <span className="sr-only">{vocab(p.id).word[ctx.uiLang]}</span>
@@ -283,14 +283,14 @@ function PaintBoard({ aspect, art, prompt, speak, speakKey, onFinish }: { aspect
       {/* Picture beside the controls on wide screens, above them on phones; its width also follows the
           screen height so the palette and Done stay in view without scrolling. */}
       <div className="flex flex-col items-center gap-4 lg:flex-row lg:gap-8">
-        <div className="relative overflow-hidden rounded-fk-lg bg-white shadow-inner" style={{ aspectRatio: `${aspect}`, width: `min(92vw, 34rem, ${Math.round(55 * aspect)}dvh)` }}>
+        <div className="relative overflow-hidden rounded-fk-lg bg-surface shadow-inner" style={{ aspectRatio: `${aspect}`, width: `min(92vw, 34rem, ${Math.round(55 * aspect)}dvh)` }}>
           <PaintLayer strokes={paint.strokes} color={color} width={width} onStart={paint.add} onExtend={paint.extend} />
           {art && <div className="pointer-events-none absolute inset-0">{art}</div>}
         </div>
         <div className="flex flex-col items-center gap-4 lg:max-w-56 short:lg:max-w-80 short:gap-3">
           <Palette color={color} onPick={setColor} />
           <div className="flex flex-wrap justify-center gap-3">
-            <Target label={t("act.paint_for_me")} onSelect={forMe} className="rounded-full bg-sky-soft px-6 font-extrabold text-ink shadow-soft">
+            <Target label={t("act.paint_for_me")} onSelect={forMe} className="rounded-full bg-tint px-6 font-extrabold text-ink shadow-soft">
               ✨ {t("act.paint_for_me")}
             </Target>
             <Target label={t("act.undo")} onSelect={paint.undo} disabled={!paint.strokes.length} className="rounded-full bg-surface-2 px-6 font-extrabold text-ink shadow-soft disabled:opacity-40">
@@ -327,7 +327,7 @@ export function ColoringArt({ item }: { item: ColoringItem }) {
             <g key={k}>
               <path d={d} fill={INK} />
               {(el.holes ?? []).map((hole, j) => (
-                <path key={j} d={pathD(hole, true, smooth)} fill="#fff" />
+                <path key={j} d={pathD(hole, true, smooth)} fill="var(--paperSolid)" />
               ))}
             </g>
           );
@@ -351,7 +351,7 @@ export function Color({ activity, onDone }: EngineProps<"color">) {
       <Frame prompt={t("act.color_pick")} speakKey="pick" done={0} total={1}>
         <div className="flex flex-wrap justify-center gap-4">
           {items.map((it) => (
-            <Target key={it.id} label={it.names[ctx.learnLang]} onSelect={() => setChosen(it)} className="grid place-items-center rounded-fk-lg border-4 border-white bg-surface-2 p-3 shadow-soft hover:bg-sky-soft" style={{ width: size, height: size }}>
+            <Target key={it.id} label={it.names[ctx.learnLang]} onSelect={() => setChosen(it)} className="grid place-items-center rounded-fk-lg border-4 border-surface bg-surface-2 p-3 shadow-soft hover:bg-tint" style={{ width: size, height: size }}>
               <ColoringArt item={it} />
             </Target>
           ))}
@@ -548,11 +548,11 @@ export function MazeRound({
       action={solved && <ActionButton label={t(last ? "act.done" : "act.next")} onSelect={next} pulse />}
     >
       <div className="flex flex-wrap items-center justify-center gap-6 short:gap-4">
-      <div className="relative aspect-square rounded-fk-lg bg-[#eef7ea] shadow-inner" style={{ width: pad ? "min(86vw, 30rem, 44dvh)" : "min(92vw, 30rem, 55dvh)" }}>
+      <div className="relative aspect-square rounded-fk-lg bg-surface-2 shadow-inner" style={{ width: pad ? "min(86vw, 30rem, 44dvh)" : "min(92vw, 30rem, 55dvh)" }}>
         <svg viewBox={`-6 -6 ${n * 100 + 12} ${n * 100 + 12}`} className="absolute inset-0 size-full" aria-hidden>
-          <rect x="0" y="0" width={n * 100} height={n * 100} fill="none" stroke="#6f8f72" strokeWidth="10" rx="8" />
-          <path d={lines.join("")} stroke="#6f8f72" strokeWidth="10" strokeLinecap="round" />
-          {doorLine && <path d={doorLine} stroke="#e0a24a" strokeWidth="22" strokeLinecap="round" />}
+          <rect x="0" y="0" width={n * 100} height={n * 100} fill="none" stroke="var(--edge)" strokeWidth="10" rx="8" />
+          <path d={lines.join("")} stroke="var(--edge)" strokeWidth="10" strokeLinecap="round" />
+          {doorLine && <path d={doorLine} stroke="var(--accent)" strokeWidth="22" strokeLinecap="round" />}
         </svg>
         <span className="absolute grid place-items-center" style={{ ...pos(goal), fontSize: `min(2.25rem, ${(30 / n) * 0.6}rem)` }} aria-hidden>⭐</span>
         {keyCell !== undefined && !hasKey && (
@@ -566,7 +566,7 @@ export function MazeRound({
                 label={dirLabel(to)}
                 onSelect={(info) => move(to, info)}
                 pulse={ctx.profile.hintLevel >= 1 && way[0] === to}
-                className="absolute grid place-items-center rounded-fk-lg bg-sky-soft/70"
+                className="absolute grid place-items-center rounded-fk-lg bg-tint/70"
                 style={pos(to)}
               >
                 <span className="text-2xl text-ink" aria-hidden>
@@ -578,7 +578,7 @@ export function MazeRound({
           ☁️
         </span>
         {pad && way[0] !== undefined && ctx.profile.hintLevel >= 1 && (
-          <span className="pointer-events-none absolute rounded-fk border-4 border-dashed border-sky" style={pos(way[0])} aria-hidden />
+          <span className="pointer-events-none absolute rounded-fk border-4 border-dashed border-hill1" style={pos(way[0])} aria-hidden />
         )}
       </div>
       {pad && (
@@ -593,7 +593,7 @@ export function MazeRound({
                 scanSkip={!ok}
                 onSelect={(info) => move(to, info)}
                 pulse={ok && ctx.profile.hintLevel >= 1 && way[0] === to}
-                className={`grid size-[76px] place-items-center rounded-fk-lg bg-sky-soft text-3xl shadow-soft disabled:opacity-30 ${place}`}
+                className={`grid size-[76px] place-items-center rounded-fk-lg bg-tint text-3xl shadow-soft disabled:opacity-30 ${place}`}
               >
                 <span aria-hidden>{d === "up" ? "⬆️" : d === "down" ? "⬇️" : d === "left" ? "⬅️" : "➡️"}</span>
               </Target>

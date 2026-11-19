@@ -46,14 +46,14 @@ function PlayPage() {
         {me?.role === "parent" ? (
           <>
             <h1 className="text-3xl font-extrabold text-ink sm:text-4xl">{t("play.who")}</h1>
-            <p className="text-lg text-ink-2">{kids.length ? t("play.who.sub") : t("play.who.none")}</p>
+            <p className="text-lg text-muted">{kids.length ? t("play.who.sub") : t("play.who.none")}</p>
             <div className="flex flex-wrap justify-center gap-5">
               {kids.map((c) => (
                 <Target
                   key={c.id}
                   label={c.name}
                   onSelect={async () => setBlocked((await start.run(c.id)) === undefined ? c.id : null)}
-                  className="flex min-w-40 flex-col items-center gap-2 rounded-fk-lg border-4 border-white bg-surface p-5 shadow-soft"
+                  className="flex min-w-40 flex-col items-center gap-2 rounded-fk-lg border-4 border-surface bg-surface p-5 shadow-soft"
                 >
                   <Avatar emoji={c.avatar} size={96} />
                   <span className="text-xl font-extrabold text-ink">{c.name}</span>
@@ -61,7 +61,7 @@ function PlayPage() {
               ))}
             </div>
             {start.error && (
-              <div role="alert" className="max-w-xl space-y-3 rounded-2xl bg-sun-soft px-4 py-3 text-sm font-semibold text-[#7a5a0c]">
+              <div role="alert" className="max-w-xl space-y-3 rounded-2xl bg-sun-soft px-4 py-3 text-sm font-semibold text-ink">
                 <p>{start.error}</p>
                 {blocked && (
                   <LinkButton href={`/parent/child/${blocked}#privacy`} size="sm" variant="outline">

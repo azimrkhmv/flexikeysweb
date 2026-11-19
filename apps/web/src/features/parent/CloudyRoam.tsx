@@ -508,10 +508,10 @@ export function CloudySwitch({ className = "" }: { className?: string }) {
       className={`fk-btn-2 inline-flex size-10 shrink-0 items-center justify-center gap-1.5 rounded-full text-sm font-bold sm:w-auto sm:px-3.5 ${className}`}
     >
       <span className="sm:hidden" aria-hidden>
-        {moves ? <Cloud className="size-5 text-teal" /> : <CloudOff className="size-5 text-muted" />}
+        {moves ? <Cloud className="size-5 text-primary" /> : <CloudOff className="size-5 text-muted" />}
       </span>
       <span className="sr-only sm:not-sr-only">{t("cloudy.moves")}:</span>
-      <b className={`sr-only sm:not-sr-only ${moves ? "text-teal" : "text-muted"}`}>{t(moves ? "cloudy.on" : "cloudy.off")}</b>
+      <b className={`sr-only sm:not-sr-only ${moves ? "text-primary" : "text-muted"}`}>{t(moves ? "cloudy.on" : "cloudy.off")}</b>
     </button>
   );
 }

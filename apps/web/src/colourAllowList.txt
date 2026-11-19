@@ -1,0 +1,4 @@
+# Files in apps/web/src that may hold colours of their own (Update 3 spec 2.2, noRawColours.test.ts).
+# One path per line (relative to apps/web/src), then " — " and the reason. Keep it short: every colour of the look is a
+# token in lib/theme.ts, and every colour that is part of a task is in content/taskColors.ts.
+content/pictureColors.ts — pictures of real things drawn in code (the rainbow, the toothbrush), Google's logo and the QR code (dark on white so every camera reads it): spec 5

@@ -28,7 +28,7 @@ function Report({ place }: { place: Place }) {
   const [reason, setReason] = useState<ReportReason>("wrong_price");
   const [note, setNote] = useState("");
   const send = useAction(api.reportPlace);
-  if (me && sel.placeReported(db, place.id, me.id)) return <p role="status" className="text-sm font-semibold text-teal">{t("help.report.thanks")}</p>;
+  if (me && sel.placeReported(db, place.id, me.id)) return <p role="status" className="text-sm font-semibold text-primary">{t("help.report.thanks")}</p>;
   if (!open)
     return (
       <Button size="sm" variant="ghost" onClick={() => setOpen(true)}>
@@ -55,7 +55,7 @@ function Report({ place }: { place: Place }) {
       <Button type="submit" size="sm" pending={send.pending}>
         <Send className="size-4" aria-hidden /> {t("help.report.send")}
       </Button>
-      {send.error && <p role="alert" className="text-sm font-semibold text-[#8f3a2c]">{send.error}</p>}
+      {send.error && <p role="alert" className="text-sm font-semibold text-primary">{send.error}</p>}
     </form>
   );
 }
@@ -79,7 +79,7 @@ function PlaceCard({ place }: { place: Place & { distanceKm?: number } }) {
           <Chip tone={place.kind === "state_centre" ? "leaf" : "sky"}>{t(`help.kind.${place.kind}`)}</Chip>
         </div>
       </div>
-      <p className="text-sm text-ink-2">
+      <p className="text-sm text-muted">
         {[districtName(place.district, lang), regionName(place.region, lang), place.address].filter(Boolean).join(" · ")}
         {place.distanceKm !== undefined && ` · ${t("help.km", { n: place.distanceKm.toFixed(1) })}`}
       </p>
@@ -157,7 +157,7 @@ function Visits() {
           </li>
         ))}
       </ul>
-      {cancel.error && <p role="alert" className="text-sm font-semibold text-[#8f3a2c]">{cancel.error}</p>}
+      {cancel.error && <p role="alert" className="text-sm font-semibold text-primary">{cancel.error}</p>}
     </Card>
   );
 }
@@ -218,7 +218,7 @@ export default function FindHelp() {
         )}
       </Card>
       {pick === "unsure" && (
-        <Card className="mb-4 border-teal bg-teal-soft/50">
+        <Card className="mb-4 border-primary bg-primary-soft/50">
           <p className="font-bold text-ink">{t("help.unsure")}</p>
         </Card>
       )}

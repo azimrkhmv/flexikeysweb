@@ -48,7 +48,7 @@ function Press({ stage, onDone }: { stage: number; onDone: () => void }) {
   return (
     <Frame prompt={prompt} speakKey={`w${stage}`} done={stage} total={STAGES}>
       {stage === 0 ? (
-        <Target label={prompt} onSelect={hit} className="grid min-h-72 w-full place-items-center rounded-fk-lg bg-sky-soft text-[8rem] leading-none">
+        <Target label={prompt} onSelect={hit} className="grid min-h-72 w-full place-items-center rounded-fk-lg bg-tint text-[8rem] leading-none">
           <span aria-hidden className={hits ? "fk-pop" : ""} key={hits}>
             {["☁️", "🌈", "🎈", "⭐"][hits]}
           </span>

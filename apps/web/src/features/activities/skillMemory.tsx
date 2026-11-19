@@ -126,15 +126,15 @@ function PairsBoard({ r, next, last }: { r: CardPairsRound; next: () => void; la
                   up={faceUp}
                   size={size}
                   front={
-                    <span className={`grid size-full place-items-center rounded-fk-lg border-4 shadow-soft ${matched.includes(k) ? "border-teal bg-teal-soft" : "border-transparent bg-surface-2"}`}>
+                    <span className={`grid size-full place-items-center rounded-fk-lg border-4 shadow-soft ${matched.includes(k) ? "border-primary bg-primary-soft" : "border-transparent bg-surface-2"}`}>
                       <ItemArt id={id} size={Math.round(size * 0.62)} />
                     </span>
                   }
                   back={
                     <span
-                      className="grid size-full place-items-center rounded-fk-lg bg-sky-soft text-2xl shadow-soft"
+                      className="grid size-full place-items-center rounded-fk-lg bg-tint text-2xl shadow-soft"
                       style={{
-                        backgroundImage: "radial-gradient(circle at 30% 30%, rgb(255 255 255 / .55) 0 12%, transparent 13%)",
+                        backgroundImage: "radial-gradient(circle at 30% 30%, rgba(var(--shine), .55) 0 12%, transparent 13%)",
                       }}
                       aria-hidden
                     >
@@ -274,7 +274,7 @@ function ShopRound({ r, index, total, next, last }: { r: ShoppingRound; index: n
               ctx.say(words, ctx.learnLang);
             }}
             disabled={replayed || solved}
-            className="rounded-full bg-sky-soft px-6 text-lg font-extrabold text-ink shadow-soft disabled:opacity-40"
+            className="rounded-full bg-tint px-6 text-lg font-extrabold text-ink shadow-soft disabled:opacity-40"
           >
             🔁 {t("act.skill.shop.again")}
           </Target>
@@ -307,7 +307,7 @@ function SwimmingFish() {
       className="relative aspect-[16/9] overflow-hidden rounded-fk-lg border border-line shadow-inner"
       style={{
         width: "min(100%, 36rem, calc(40dvh * 16 / 9))",
-        background: "linear-gradient(180deg,#cfe6fb 0%,#a9d2f2 70%,#e9dcb8 100%)",
+        background: "linear-gradient(180deg, var(--sky1) 0%, var(--sky2) 70%, var(--hillFar) 100%)",
       }}
       aria-hidden
     >

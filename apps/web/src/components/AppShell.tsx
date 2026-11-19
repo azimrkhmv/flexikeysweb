@@ -79,7 +79,7 @@ function Shell({ me, nav, more, foot, backdrop, headerExtra, children }: { me: U
   const active = (href: string, match?: string[]) => (href === `/${me.role}` ? path === href : path.startsWith(href)) || !!match?.some((m) => path.startsWith(m));
   const inMore = !!more && (path.startsWith(more.item.href) || more.items.some((i) => path.startsWith(i.href)));
   const [moreOpen, setMoreOpen] = useState(false);
-  const linkCls = (on: boolean) => `flex items-center gap-3 rounded-2xl px-3 py-2.5 font-bold transition ${on ? "bg-primary-soft text-primary" : "text-ink-2 hover:bg-surface-2"}`;
+  const linkCls = (on: boolean) => `flex items-center gap-3 rounded-2xl px-3 py-2.5 font-bold transition ${on ? "bg-primary-soft text-primary" : "text-muted hover:bg-surface-2"}`;
 
   const logout = async () => {
     await api.logout();
@@ -95,7 +95,7 @@ function Shell({ me, nav, more, foot, backdrop, headerExtra, children }: { me: U
       <aside className="fixed inset-y-0 left-0 z-20 hidden w-64 flex-col border-r border-line bg-surface p-4 print:!hidden lg:flex">
           <div className="flex items-center gap-2 px-2 pb-6 pt-2">
             <Logo href={`/${me.role}`} small />
-            <span className="rounded-full bg-surface-2 px-2.5 py-0.5 text-xs font-bold text-ink-2">{t(`role.${me.role}`)}</span>
+            <span className="rounded-full bg-surface-2 px-2.5 py-0.5 text-xs font-bold text-muted">{t(`role.${me.role}`)}</span>
           </div>
           {/* A scroll container clips what's outside it: -m/p-1.5 leaves room for the 3px + 3px focus ring. */}
           <nav aria-label={t("nav.menu")} className="-m-1.5 min-h-0 flex-1 overflow-y-auto p-1.5">
@@ -132,14 +132,14 @@ function Shell({ me, nav, more, foot, backdrop, headerExtra, children }: { me: U
             )}
           </nav>
           <div className="mt-4 flex items-center gap-3 rounded-2xl bg-surface-2 p-3">
-            <span className="grid size-10 shrink-0 place-items-center rounded-full bg-primary text-sm font-extrabold text-white" aria-hidden>
+            <span className="grid size-10 shrink-0 place-items-center rounded-full bg-btn text-sm font-extrabold text-btn-text" aria-hidden>
               {initial}
             </span>
             <span className="min-w-0 flex-1">
               <span className="block truncate text-sm font-extrabold text-ink">{me.name}</span>
               <span className="block truncate text-xs text-muted">{t(`role.${me.role}`)}</span>
             </span>
-            <button type="button" onClick={logout} className="grid size-9 place-items-center rounded-full text-ink-2 hover:bg-surface" aria-label={t("nav.logout")} title={t("nav.logout")}>
+            <button type="button" onClick={logout} className="grid size-9 place-items-center rounded-full text-muted hover:bg-surface" aria-label={t("nav.logout")} title={t("nav.logout")}>
               <LogOut className="size-5" />
             </button>
           </div>
@@ -152,13 +152,13 @@ function Shell({ me, nav, more, foot, backdrop, headerExtra, children }: { me: U
           <header className="sticky top-0 z-30 -mx-4 flex h-16 items-center gap-3 bg-bg/90 px-4 backdrop-blur lg:static lg:mx-0 lg:mt-6 lg:h-12 lg:bg-transparent lg:px-0 lg:backdrop-blur-none">
             <div className="flex items-center gap-2 lg:hidden">
               <Logo href={`/${me.role}`} small />
-              <span className="hidden rounded-full bg-surface-2 px-3 py-1 text-xs font-bold text-ink-2 sm:inline">{t(`role.${me.role}`)}</span>
+              <span className="hidden rounded-full bg-surface-2 px-3 py-1 text-xs font-bold text-muted sm:inline">{t(`role.${me.role}`)}</span>
             </div>
             <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
               {headerExtra}
               <LangSwitch compact />
               <Notifications userId={me.id} />
-              <button type="button" onClick={logout} className="grid size-10 place-items-center rounded-full text-ink-2 hover:bg-surface-2 lg:hidden" aria-label={t("nav.logout")} title={t("nav.logout")}>
+              <button type="button" onClick={logout} className="grid size-10 place-items-center rounded-full text-muted hover:bg-surface-2 lg:hidden" aria-label={t("nav.logout")} title={t("nav.logout")}>
                 <LogOut className="size-5" />
               </button>
             </div>
@@ -166,7 +166,7 @@ function Shell({ me, nav, more, foot, backdrop, headerExtra, children }: { me: U
           <main className="pt-2 lg:pt-4">
             <TestBanner />
             {me.status === "pending_verification" && (
-              <div role="status" className="mb-6 rounded-2xl border border-sun bg-sun-soft p-4 text-sm font-semibold text-[#7a5a0c]">
+              <div role="status" className="mb-6 rounded-2xl border border-sun bg-sun-soft p-4 text-sm font-semibold text-ink">
                 {t("err.pending_verification")}
               </div>
             )}
@@ -214,10 +214,10 @@ function Notifications({ userId }: { userId: string }) {
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
         aria-label={`${t("nav.notifications")} (${unread})`}
-        className="relative grid size-10 place-items-center rounded-full text-ink-2 hover:bg-surface-2"
+        className="relative grid size-10 place-items-center rounded-full text-muted hover:bg-surface-2"
       >
         <Bell className="size-5" />
-        {unread > 0 && <span className="absolute right-1.5 top-1.5 grid min-w-4 place-items-center rounded-full bg-teal px-1 text-[10px] font-bold text-white">{unread}</span>}
+        {unread > 0 && <span className="absolute right-1.5 top-1.5 grid min-w-4 place-items-center rounded-full bg-btn px-1 text-[10px] font-bold text-btn-text">{unread}</span>}
       </button>
       {open && (
         <div className="absolute right-0 top-12 z-40 w-[min(340px,calc(100vw-32px))] rounded-fk border border-line bg-surface p-2 shadow-lift">
@@ -234,7 +234,7 @@ function Notifications({ userId }: { userId: string }) {
             {list.slice(0, 10).map((n) => (
               <li key={n.id}>
                 <button type="button" onClick={() => api.markRead(n.id)} className="flex w-full gap-3 rounded-xl px-3 py-2.5 text-left hover:bg-surface-2">
-                  <span className={`mt-1.5 size-2 shrink-0 rounded-full ${n.read ? "bg-line" : "bg-teal"}`} />
+                  <span className={`mt-1.5 size-2 shrink-0 rounded-full ${n.read ? "bg-line" : "bg-primary"}`} />
                   <span className="min-w-0">
                     <span className="block text-sm font-semibold text-ink">{t(n.titleKey, n.vars)}</span>
                     <span className="block text-xs text-muted">{new Date(n.at).toLocaleString()}</span>

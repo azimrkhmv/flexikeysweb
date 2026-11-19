@@ -28,7 +28,7 @@ export function Helpers() {
     <Card className="mt-6 space-y-4">
       <h2 className="text-lg font-extrabold text-ink">{t("parent.helpers.title")}</h2>
       {forMe.map((i) => (
-        <div key={i.id} className="flex flex-wrap items-center gap-3 rounded-2xl bg-teal-soft/50 p-3">
+        <div key={i.id} className="flex flex-wrap items-center gap-3 rounded-2xl bg-primary-soft/50 p-3">
           <p className="min-w-0 flex-1 text-sm text-ink">{t("parent.helpers.invitedYou", { name: i.ownerName })}</p>
           <Button size="sm" pending={accept.pending} onClick={() => accept.run(i.id)}>
             {t("parent.helpers.accept")}
@@ -80,7 +80,7 @@ export function Helpers() {
           )}
         </>
       )}
-      {[invite, remove, cancel, accept].map((a, k) => a.error && <p key={k} role="alert" className="text-sm font-semibold text-[#8f3a2c]">{a.error}</p>)}
+      {[invite, remove, cancel, accept].map((a, k) => a.error && <p key={k} role="alert" className="text-sm font-semibold text-primary">{a.error}</p>)}
     </Card>
   );
 }

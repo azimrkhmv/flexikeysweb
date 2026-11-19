@@ -57,7 +57,7 @@ export function Shop({ child }: { child: Child }) {
 
   return (
     <div className="mx-auto grid w-full max-w-5xl gap-6 lg:grid-cols-[320px_1fr]">
-      <section className="flex flex-col items-center gap-3 rounded-fk-lg border-4 border-white p-5 shadow-soft lg:sticky lg:top-4 lg:h-fit" style={{ background: SHOP_BY_ID[look.bg ?? ""]?.value ?? "var(--fk-surface)" }}>
+      <section className="flex flex-col items-center gap-3 rounded-fk-lg border-4 border-surface p-5 shadow-soft lg:sticky lg:top-4 lg:h-fit" style={{ background: SHOP_BY_ID[look.bg ?? ""]?.value ?? "var(--paperSolid)" }}>
         <div className="flex gap-3 text-lg font-extrabold text-ink">
           <span className="rounded-full bg-surface/90 px-3 py-1">🟡 {t("play.shop.coins", { n: wallet.coins })}</span>
           <span className="rounded-full bg-surface/90 px-3 py-1">⭐ {t("play.shop.stars", { n: wallet.stars })}</span>
@@ -67,12 +67,12 @@ export function Shop({ child }: { child: Child }) {
           <Target
             label={action}
             onSelect={act}
-            className={`w-full rounded-full px-6 text-lg font-extrabold shadow-soft ${owned || wallet.coins >= item.price ? "bg-teal text-white" : "bg-sun-soft text-[#7a5a0c]"}`}
+            className={`w-full rounded-full px-6 text-lg font-extrabold shadow-soft ${owned || wallet.coins >= item.price ? "bg-btn text-btn-text" : "bg-sun-soft text-ink"}`}
           >
             {action}
           </Target>
         ) : (
-          <p className="text-center font-bold text-ink-2">{t("play.shop.pick")}</p>
+          <p className="text-center font-bold text-muted">{t("play.shop.pick")}</p>
         )}
       </section>
 
@@ -90,11 +90,11 @@ export function Shop({ child }: { child: Child }) {
                     label={s.name[child.uiLang]}
                     selected={picked === s.id}
                     onSelect={() => pick(s)}
-                    className={`flex flex-col items-center justify-center gap-1 rounded-3xl border-4 bg-surface/95 p-3 font-bold text-ink shadow-soft ${picked === s.id ? "border-teal" : "border-white"}`}
+                    className={`flex flex-col items-center justify-center gap-1 rounded-3xl border-4 bg-surface/95 p-3 font-bold text-ink shadow-soft ${picked === s.id ? "border-primary" : "border-surface"}`}
                   >
                     <span className="text-4xl">{s.emoji}</span>
                     <span className="text-sm">{s.name[child.uiLang]}</span>
-                    <span className="text-xs text-ink-2">{on ? "✅" : has ? "💛" : `🟡 ${s.price}`}</span>
+                    <span className="text-xs text-muted">{on ? "✅" : has ? "💛" : `🟡 ${s.price}`}</span>
                   </Target>
                 );
               })}

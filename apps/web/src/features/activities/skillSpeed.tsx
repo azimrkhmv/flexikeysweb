@@ -146,7 +146,7 @@ export function QuickSnapPlayer({ rounds, onDone, at }: PlayerProps<"quick_snap"
             label={t(id === YES ? "act.skill.yes" : "act.skill.no")}
             onSelect={(info) => pick(id, info)}
             disabled={!asking}
-            className={`grid place-items-center rounded-fk-lg border-4 border-transparent bg-surface-2 shadow-soft transition hover:bg-sky-soft ${s.k >= 1 ? "" : "opacity-40"}`}
+            className={`grid place-items-center rounded-fk-lg border-4 border-transparent bg-surface-2 shadow-soft transition hover:bg-tint ${s.k >= 1 ? "" : "opacity-40"}`}
             style={{ width: btn, height: btn }}
           >
             <span className="flex flex-col items-center gap-1">
@@ -188,7 +188,7 @@ export function TapStarPlayer({ rounds, onDone, at }: PlayerProps<"tap_star">) {
     <Bookends prompt={t(moons ? "act.skill.star.moon" : "act.skill.star")} total={r.items.length} done={Math.max(0, Math.min(s.k, r.items.length))} started={s.started} finished={s.finished} onStart={s.start} onDone={onDone}>
       <div
         className="relative grid grid-cols-3 grid-rows-2 overflow-hidden rounded-fk-lg shadow-inner"
-        style={{ width: "min(100%, 40rem)", height: "min(44dvh, 22rem)", background: "linear-gradient(180deg,#34497a 0%,#4a5f93 60%,#62709e 100%)" }}
+        style={{ width: "min(100%, 40rem)", height: "min(44dvh, 22rem)", background: "linear-gradient(180deg, var(--sky2) 0%, var(--hillFar) 100%)" }}
       >
         {!s.started && (
           <span className="col-span-3 row-span-2 flex items-center justify-center gap-6">
@@ -262,7 +262,7 @@ export function FastSortPlayer({ rounds, onDone, at }: PlayerProps<"fast_sort">)
             label={boxName(b, t)}
             onSelect={(info) => drop(gi, info)}
             disabled={!s.live}
-            className={`flex w-full flex-col items-center justify-start gap-1 rounded-fk-lg border-4 border-dashed border-sky bg-sky-soft/60 p-2 transition hover:bg-sky-soft ${four ? "min-h-[100px] short:min-h-[84px]" : "min-h-[124px] short:min-h-[96px]"}`}
+            className={`flex w-full flex-col items-center justify-start gap-1 rounded-fk-lg border-4 border-dashed border-hill1 bg-tint/60 p-2 transition hover:bg-tint ${four ? "min-h-[100px] short:min-h-[84px]" : "min-h-[124px] short:min-h-[96px]"}`}
           >
             <span className="flex items-center gap-2">
               <BoxIcon group={b} />

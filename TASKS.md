@@ -1168,9 +1168,10 @@ shows how things look and move; the spec says what to build, and wins where they
 `docs/demo-2026-11-19/`: the demo is the reference for how things look and for every colour value; the spec says what
 to build, and wins where they disagree. Order: B107 to B110.*
 
-- [ ] **Bekzod** — `B107` Colour tokens for six schemes, and the colour tests (spec 2)
+- [x] **Bekzod** — `B107` Colour tokens for six schemes, and the colour tests (spec 2)
   - Done when: the 11 sets exist with the demo's values; old tokens are gone; the no-raw-colour test and the contrast test pass; Cloudy's face uses `cloudyFace`; nothing looks broken in any set (screenshots of Overview, Plan, a game and the questionnaire in each set, in the task note)
   - Needs: —
+  - Note (19 Nov 2026): `lib/theme.ts` is the only file with scheme colours: the demo's `P` copied exactly (a test compares it with the demo), `cloudyFace`, four pale tints mixed from the tokens (`tint`, `tint2`, `accentSoft`, `sunSoft`) and Cloudy's six form tones; the root layout puts all 11 sets on the page as CSS variables on `[data-scheme][data-mode]`. Tailwind names that were hue names became roles (`teal`→`primary`, `sky-soft`→`tint`, `ink-2`→`muted`…); white text on coloured fills became `btn`/`btn-text`. `content/taskColors.ts` holds the task colours (glyphs, colour words, pens, the sort-by-colour frame, banknotes, group dots, water, vision mode); `content/pictureColors.ts` (the only line in `colourAllowList.txt`) holds the rainbow, the toothbrush, Google's logo and the QR code. `lib/noRawColours.test.ts` and `lib/theme.test.ts` (281 contrast checks: the spec's pairs plus text on every tint and Cloudy's face on every form) pass. `lib/appearance.ts` replaces `lib/scheme.ts` (the old `fk-pal` choice is read once). Error text on parent pages is `primary` (accent text), the emergency call button is the inverted `ink` fill. Shop coats and backgrounds are now tones of the scheme. Screenshots: `Desktop\FlexiKeys\Update3_screens\B107` (outside the repo).
 - [ ] **Bekzod** — `B108` Soft and Sharp styles (spec 3)
   - Done when: `data-style` switches every part in the table; Soft is the default; blur only where allowed; the frame-rate number is in the note; game targets are never blurred
   - Needs: B107

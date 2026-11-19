@@ -40,7 +40,7 @@ export function TherapistAssistant({ childId }: { childId: string }) {
                 <h3 className="mb-2 text-sm font-bold text-ink">{t("tai.warnings")}</h3>
                 <ul className="space-y-1 text-sm">
                   {s.warnings.map((w, i) => (
-                    <li key={i} className="flex justify-between gap-2 rounded-2xl bg-peach-soft p-2">
+                    <li key={i} className="flex justify-between gap-2 rounded-2xl bg-tint-2 p-2">
                       <span className="text-ink">{t(`tai.${w.kind}`)}</span>
                       <span className="shrink-0 text-muted">{fmtDate(w.at, lang, "dayMonth")}</span>
                     </li>

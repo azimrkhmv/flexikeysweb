@@ -3,6 +3,7 @@ import { isCard, parseCard, type Card } from "@/lib/games/flexibility";
 import { COLOR_HEX, isGlyph, parseGlyph, type Glyph } from "@/lib/games/glyph";
 import { baseId, numOf, wordEmoji } from "@/lib/games/pools";
 import type { Lang } from "@/lib/i18n";
+import { TOOTHBRUSH } from "@/content/pictureColors";
 
 /**
  * Renders one content item: emoji picture, color swatch, shape or big glyph. Skill games add drawn shapes
@@ -27,7 +28,7 @@ export function ItemArt({ id: given, size = 72 }: { id: string; size?: Size }) {
       <span
         aria-hidden
         className="block rounded-[30%] shadow-inner"
-        style={{ width: size, height: size, background: item.color, border: "3px solid rgb(39 64 107 / 0.08)" }}
+        style={{ width: size, height: size, background: item.color, border: "3px solid color-mix(in srgb, var(--ink) 10%, transparent)" }}
       />
     );
   if (item.shape) return <Shape shape={item.shape} size={size} />;
@@ -92,9 +93,9 @@ function Shape({ shape, size }: { shape: string; size: Size }) {
   return (
     <svg viewBox="0 0 100 100" width={size} height={size} aria-hidden>
       {shape === "circle" ? (
-        <circle cx="50" cy="50" r="40" fill="#a9c8ec" stroke="#5b86c4" strokeWidth="4" />
+        <circle cx="50" cy="50" r="40" fill="var(--hill1)" stroke="var(--gameEdge)" strokeWidth="4" />
       ) : (
-        <path d={SHAPE_PATHS[shape]} fill="#b3a8e8" stroke="#7d6fcf" strokeWidth="4" strokeLinejoin="round" />
+        <path d={SHAPE_PATHS[shape]} fill="var(--hill2)" stroke="var(--gameEdge)" strokeWidth="4" strokeLinejoin="round" />
       )}
     </svg>
   );
@@ -149,10 +150,10 @@ function Toothbrush({ size }: { size: Size }) {
   return (
     <svg viewBox="0 0 100 100" width={size} height={size} aria-hidden>
       <g transform="rotate(-25 50 50)">
-        <rect x="6" y="54" width="64" height="12" rx="6" fill="#a9c8ec" stroke="#5b86c4" strokeWidth="3" />
-        <rect x="64" y="50" width="28" height="18" rx="6" fill="#dfe8f8" stroke="#5b86c4" strokeWidth="3" />
+        <rect x="6" y="54" width="64" height="12" rx="6" fill={TOOTHBRUSH.handle} stroke={TOOTHBRUSH.line} strokeWidth="3" />
+        <rect x="64" y="50" width="28" height="18" rx="6" fill={TOOTHBRUSH.head} stroke={TOOTHBRUSH.line} strokeWidth="3" />
         {[68, 75, 82, 89].map((x) => (
-          <rect key={x} x={x - 2} y="32" width="5" height="18" rx="2" fill="#ffffff" stroke="#7fbf85" strokeWidth="2.5" />
+          <rect key={x} x={x - 2} y="32" width="5" height="18" rx="2" fill={TOOTHBRUSH.bristle} stroke={TOOTHBRUSH.bristleLine} strokeWidth="2.5" />
         ))}
       </g>
     </svg>

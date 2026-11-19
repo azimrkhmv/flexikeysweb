@@ -46,7 +46,7 @@ type View =
   | { v: "skillDone"; gameId: string; tier: number; run: number }
   | { v: "celebrate"; levelId: string; activityId: string; coins: number; stars: number; levelDone: boolean };
 
-const DEFAULT_BG = "linear-gradient(180deg,#eaf3fc 0%,#f5f9f0 60%,#e3f0dc 100%)";
+const DEFAULT_BG = "linear-gradient(180deg, var(--sky1) 0%, var(--sky2) 100%)";
 const FLUSH_EVERY = 10;
 const FLUSH_MS = 5000;
 
@@ -429,7 +429,7 @@ export function ChildMode({ child }: { child: Child }) {
         <div className="flex flex-1 flex-col items-center justify-center gap-6 text-center">
           <Mascot mood={view.v === "bye" ? "sleepy" : starting ? "happy" : "wave"} size={230} hat={hat} tint={tint} />
           <h1 className="text-3xl font-extrabold text-ink sm:text-4xl">{view.v === "bye" ? t("play.bye") : t("play.hello", { name: child.name })}</h1>
-          <Target label={view.v === "bye" ? t("play.again") : t("play.start")} onSelect={begin} disabled={starting} className={`${bigBtn} min-h-24 min-w-56 bg-teal text-3xl text-white`}>
+          <Target label={view.v === "bye" ? t("play.again") : t("play.start")} onSelect={begin} disabled={starting} className={`${bigBtn} min-h-24 min-w-56 bg-btn text-3xl text-btn-text`}>
             ▶ {view.v === "bye" ? t("play.again") : t("play.start")}
           </Target>
         </div>
@@ -446,7 +446,7 @@ export function ChildMode({ child }: { child: Child }) {
       const Engine = a ? (ENGINES[a.kind] as ComponentType<EngineProps>) : null;
       const { levelId: lvl, activityId: act } = view;
       body = (
-        <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col rounded-fk-lg border-4 border-white bg-surface/90 p-4 shadow-soft sm:p-6 short:border-0 short:bg-transparent short:p-0 short:shadow-none">
+        <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col rounded-fk-lg border-4 border-surface bg-surface/90 p-4 shadow-soft sm:p-6 short:border-0 short:bg-transparent short:p-0 short:shadow-none">
           {a && Engine ? <Engine key={a.id} activity={a} onDone={() => finishActivity(lvl, act)} /> : null}
         </div>
       );
@@ -466,7 +466,7 @@ export function ChildMode({ child }: { child: Child }) {
             <Target label={t("play.nav.map")} onSelect={() => setView({ v: "map" })} className={`${bigBtn} bg-surface text-ink`}>
               🗺️ {t("play.nav.map")}
             </Target>
-            <Target label={t("play.next")} onSelect={() => goNext(lvl, act)} className={`${bigBtn} bg-teal text-white`}>
+            <Target label={t("play.next")} onSelect={() => goNext(lvl, act)} className={`${bigBtn} bg-btn text-btn-text`}>
               {t("play.next")} ▶
             </Target>
           </div>
@@ -486,7 +486,7 @@ export function ChildMode({ child }: { child: Child }) {
       const { gameId, tier, run } = view;
       const seed = daySeed(child.id, localDate(), run ? `${gameId}#${run}` : gameId);
       body = (
-        <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col rounded-fk-lg border-4 border-white bg-surface/90 p-4 shadow-soft sm:p-6 short:border-0 short:bg-transparent short:p-0 short:shadow-none">
+        <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col rounded-fk-lg border-4 border-surface bg-surface/90 p-4 shadow-soft sm:p-6 short:border-0 short:bg-transparent short:p-0 short:shadow-none">
           {g && step ? <SkillPlay key={`${gameId}-${tier}-${run}`} game={g} step={step} seed={seed} onDone={() => finishSkill(gameId, tier, run)} /> : null}
         </div>
       );
@@ -504,7 +504,7 @@ export function ChildMode({ child }: { child: Child }) {
               🎯 {t("play.nav.skills")}
             </Target>
             {g && (
-              <Target label={t("play.skills.again")} onSelect={() => playSkill(g, tier, true, run + 1)} className={`${bigBtn} bg-teal text-white`}>
+              <Target label={t("play.skills.again")} onSelect={() => playSkill(g, tier, true, run + 1)} className={`${bigBtn} bg-btn text-btn-text`}>
                 {t("play.skills.again")} ▶
               </Target>
             )}
@@ -518,7 +518,7 @@ export function ChildMode({ child }: { child: Child }) {
       break;
     case "warmup":
       body = (
-        <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col rounded-fk-lg border-4 border-white bg-surface/90 p-4 shadow-soft sm:p-6 short:border-0 short:bg-transparent short:p-0 short:shadow-none">
+        <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col rounded-fk-lg border-4 border-surface bg-surface/90 p-4 shadow-soft sm:p-6 short:border-0 short:bg-transparent short:p-0 short:shadow-none">
           <WarmUp
             onDone={() => {
               sfx("chime");
@@ -537,7 +537,7 @@ export function ChildMode({ child }: { child: Child }) {
   const fallback = (
     <div className="flex flex-1 flex-col items-center justify-center gap-6">
       <Mascot mood="calm" size={200} hat={hat} tint={tint} />
-      <Target label={t("play.oops")} onSelect={() => setView({ v: "map" })} className={`${bigBtn} bg-teal text-white`}>
+      <Target label={t("play.oops")} onSelect={() => setView({ v: "map" })} className={`${bigBtn} bg-btn text-btn-text`}>
         🗺️ {t("play.oops")}
       </Target>
     </div>
@@ -549,7 +549,7 @@ export function ChildMode({ child }: { child: Child }) {
       <div
         ref={shellRef}
         className="flex h-dvh flex-col overflow-hidden pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] pt-[env(safe-area-inset-top)] text-ink"
-        style={{ background: cvi ? "#111827" : (SHOP_BY_ID[child.equipped.bg ?? ""]?.value ?? DEFAULT_BG) }}
+        style={{ background: cvi ? "var(--cvi-screen)" : (SHOP_BY_ID[child.equipped.bg ?? ""]?.value ?? DEFAULT_BG) }}
       >
         {/* top bar */}
         <header className="flex items-center gap-2 px-3 py-2">
@@ -572,7 +572,7 @@ export function ChildMode({ child }: { child: Child }) {
               scanSkip
               label={t("play.fullscreen")}
               onSelect={() => void (document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.())?.catch?.(() => {})}
-              className="grid place-items-center rounded-full bg-surface/70 text-ink-2"
+              className="grid place-items-center rounded-full bg-surface/70 text-muted"
             >
               <Maximize className="size-7" aria-hidden />
             </Target>
@@ -598,7 +598,7 @@ export function ChildMode({ child }: { child: Child }) {
 
         {/* child nav */}
         {withNav && (
-          <nav className="flex justify-center gap-3 border-t border-white/60 bg-surface/80 px-3 pb-[max(8px,env(safe-area-inset-bottom))] pt-2 backdrop-blur">
+          <nav className="flex justify-center gap-3 border-t border-surface/60 bg-surface/80 px-3 pb-[max(8px,env(safe-area-inset-bottom))] pt-2 backdrop-blur">
             {(
               [
                 ["map", "🗺️", "play.nav.map"],
@@ -612,7 +612,7 @@ export function ChildMode({ child }: { child: Child }) {
                 label={t(key)}
                 selected={view.v === v || (v === "map" && (view.v === "level" || view.v === "skills" || view.v === "trees"))}
                 onSelect={() => setView({ v })}
-                className={`flex min-w-24 flex-col items-center justify-center rounded-3xl px-4 font-extrabold ${view.v === v || (v === "map" && (view.v === "level" || view.v === "skills" || view.v === "trees")) ? "bg-teal-soft text-ink" : "text-ink-2"}`}
+                className={`flex min-w-24 flex-col items-center justify-center rounded-3xl px-4 font-extrabold ${view.v === v || (v === "map" && (view.v === "level" || view.v === "skills" || view.v === "trees")) ? "bg-primary-soft text-ink" : "text-muted"}`}
               >
                 <span className="text-3xl">{icon}</span>
                 <span className="text-sm">{t(key)}</span>
@@ -624,24 +624,24 @@ export function ChildMode({ child }: { child: Child }) {
 
       {/* overlays */}
       {overlay === "menu" && (
-        <div className="fixed inset-0 z-40 grid place-items-center bg-[#27406b]/30 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label={t("play.pause")}>
+        <div className="fixed inset-0 z-40 grid place-items-center bg-ink/30 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label={t("play.pause")}>
           <div ref={overlayRef} className="flex w-full max-w-sm flex-col gap-3 rounded-fk-lg bg-surface p-6 shadow-lift">
-            <Target label={t("play.menu.continue")} onSelect={() => setOverlay(null)} className={`${bigBtn} bg-teal text-white`}>
+            <Target label={t("play.menu.continue")} onSelect={() => setOverlay(null)} className={`${bigBtn} bg-btn text-btn-text`}>
               ▶ {t("play.menu.continue")}
             </Target>
-            <Target label={t("play.menu.break")} onSelect={() => setOverlay("break")} className={`${bigBtn} bg-sky-soft text-ink`}>
+            <Target label={t("play.menu.break")} onSelect={() => setOverlay("break")} className={`${bigBtn} bg-tint text-ink`}>
               😴 {t("play.menu.break")}
             </Target>
-            <Target label={t("play.menu.exit")} onSelect={() => setOverlay("gate")} className={`${bigBtn} bg-surface-2 text-ink-2`}>
+            <Target label={t("play.menu.exit")} onSelect={() => setOverlay("gate")} className={`${bigBtn} bg-surface-2 text-muted`}>
               🔒 {t("play.menu.exit")}
             </Target>
           </div>
         </div>
       )}
       {overlay === "aac" && (
-        <div className="fixed inset-0 z-40 overflow-y-auto bg-[#eaf3fc]/95 p-3 backdrop-blur sm:p-6" role="dialog" aria-modal="true" aria-label={t("play.nav.aac")}>
+        <div className="fixed inset-0 z-40 overflow-y-auto bg-bg/95 p-3 backdrop-blur sm:p-6" role="dialog" aria-modal="true" aria-label={t("play.nav.aac")}>
           <div ref={overlayRef} className="flex flex-col gap-3">
-            <Target label={t("play.menu.continue")} onSelect={() => setOverlay(null)} className={`${bigBtn} self-start bg-teal text-white`}>
+            <Target label={t("play.menu.continue")} onSelect={() => setOverlay(null)} className={`${bigBtn} self-start bg-btn text-btn-text`}>
               ▶ {t("play.menu.continue")}
             </Target>
             <Aac child={child} />
@@ -650,11 +650,11 @@ export function ChildMode({ child }: { child: Child }) {
       )}
       {overlay === "gate" && <ParentGate lang={lang} onPass={exit} onCancel={() => setOverlay(null)} />}
       {showBreak && (
-        <div className="fixed inset-0 z-40 grid place-items-center bg-[#dfe8f8]/85 p-4 backdrop-blur" role="dialog" aria-modal="true" aria-label={t("play.break.title")}>
+        <div className="fixed inset-0 z-40 grid place-items-center bg-bg-2/85 p-4 backdrop-blur" role="dialog" aria-modal="true" aria-label={t("play.break.title")}>
           <div ref={overlayRef} className="flex flex-col items-center gap-5 text-center">
             <Mascot mood="sleepy" size={220} hat={hat} tint={tint} />
             <h2 className="text-3xl font-extrabold text-ink">{t("play.break.title")}</h2>
-            <p className="text-xl text-ink-2">{t("play.break.body")}</p>
+            <p className="text-xl text-muted">{t("play.break.body")}</p>
             <div className="flex flex-wrap justify-center gap-4">
               <Target
                 label={t("play.menu.continue")}
@@ -663,7 +663,7 @@ export function ChildMode({ child }: { child: Child }) {
                   setBreakDue(false);
                   setOverlay(null);
                 }}
-                className={`${bigBtn} bg-teal text-white`}
+                className={`${bigBtn} bg-btn text-btn-text`}
               >
                 ▶ {t("play.menu.continue")}
               </Target>
@@ -675,16 +675,16 @@ export function ChildMode({ child }: { child: Child }) {
         </div>
       )}
       {restDay && !offlineBlock && (
-        <div className="fixed inset-0 z-40 grid place-items-center bg-[#dfe8f8]/90 p-4 backdrop-blur" role="dialog" aria-modal="true" aria-label={t("play.rest.title")}>
+        <div className="fixed inset-0 z-40 grid place-items-center bg-bg-2/90 p-4 backdrop-blur" role="dialog" aria-modal="true" aria-label={t("play.rest.title")}>
           <div ref={overlayRef} className="flex flex-col items-center gap-5 text-center">
             <span className="text-8xl" aria-hidden>
               ☁️
             </span>
             <Mascot mood="sleepy" size={180} hat={hat} tint={tint} />
             <h2 className="text-3xl font-extrabold text-ink">{t("play.rest.title")}</h2>
-            <p className="text-xl text-ink-2">{t("play.rest.body")}</p>
+            <p className="text-xl text-muted">{t("play.rest.body")}</p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Target label={t("play.nav.aac")} onSelect={() => setOverlay("aac")} className={`${bigBtn} bg-teal text-white`}>
+              <Target label={t("play.nav.aac")} onSelect={() => setOverlay("aac")} className={`${bigBtn} bg-btn text-btn-text`}>
                 💬 {t("play.nav.aac")}
               </Target>
               <Target label={t("play.break.finish")} onSelect={finishForToday} className={`${bigBtn} bg-surface text-ink`}>
@@ -695,14 +695,14 @@ export function ChildMode({ child }: { child: Child }) {
         </div>
       )}
       {offlineBlock && (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-[#eef2f8]/90 p-4 backdrop-blur" role="status">
+        <div className="fixed inset-0 z-50 grid place-items-center bg-bg/90 p-4 backdrop-blur" role="status">
           <div ref={overlayRef} className="flex flex-col items-center gap-4 text-center">
             <Mascot mood="sleepy" size={200} hat={hat} tint={tint} />
             <h2 className="text-3xl font-extrabold text-ink">{t("play.offline")}</h2>
-            <p className="text-lg text-ink-2">{t("play.offline.sub")}</p>
+            <p className="text-lg text-muted">{t("play.offline.sub")}</p>
             {/* Cards and voice are on the device, so My Voice keeps working without internet. */}
             {!["start", "bye"].includes(view.v) && (
-              <Target label={t("play.nav.aac")} onSelect={() => setOverlay("aac")} className={`${bigBtn} bg-teal text-white`}>
+              <Target label={t("play.nav.aac")} onSelect={() => setOverlay("aac")} className={`${bigBtn} bg-btn text-btn-text`}>
                 💬 {t("play.nav.aac")}
               </Target>
             )}

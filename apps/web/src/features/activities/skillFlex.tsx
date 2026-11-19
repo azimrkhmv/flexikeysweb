@@ -39,7 +39,7 @@ function RuleFrame({ card, rule }: { card: string; rule: SortRule }) {
   const s = `min(${sizeFor(ctx, 130)}px, 17dvh)`;
   return (
     <div
-      className={`relative grid place-items-center rounded-fk-lg bg-surface-2 shadow-inner ${rule === "color" ? "border-[10px] border-sun" : "border-[10px] border-dotted border-[#b3a8e8]"}`}
+      className={`relative grid place-items-center rounded-fk-lg bg-surface-2 shadow-inner ${rule === "color" ? "border-[10px] border-sun" : "border-[10px] border-dotted border-hill2"}`}
       style={{ width: s, height: s }}
       role="img"
       aria-label={`${itemLabel(card, ctx.learnLang, t)}. ${t(`act.skill.switch.${rule}`)}`}
@@ -81,7 +81,7 @@ function InkWord({ word, ink }: { word: string; ink: string }) {
   return (
     <p
       className="rounded-fk-lg bg-surface-2 px-8 py-4 text-center font-extrabold uppercase leading-none shadow-inner"
-      style={{ color: ink, fontSize: "clamp(2.5rem, 9vw, 4.5rem)", WebkitTextStroke: "1.5px rgb(39 64 107 / .35)" }}
+      style={{ color: ink, fontSize: "clamp(2.5rem, 9vw, 4.5rem)", WebkitTextStroke: "1.5px color-mix(in srgb, var(--ink) 35%, transparent)" }}
     >
       {word}
     </p>
@@ -120,7 +120,7 @@ function SlideBack({ id, misses }: { id: string; misses: number }) {
   return (
     <motion.div
       key={misses}
-      className="grid place-items-center rounded-fk-lg border-4 border-white bg-surface-2 shadow-soft"
+      className="grid place-items-center rounded-fk-lg border-4 border-surface bg-surface-2 shadow-soft"
       style={{ width: s, height: s }}
       initial={{ y: 0 }}
       animate={{ y: misses ? [0, 26, 0] : 0 }}

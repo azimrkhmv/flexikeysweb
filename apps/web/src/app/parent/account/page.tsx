@@ -58,13 +58,13 @@ export default function Account() {
               ))}
             </Select>
           </Field>
-          {save.error && <p role="alert" className="text-sm font-semibold text-[#8f3a2c]">{save.error}</p>}
+          {save.error && <p role="alert" className="text-sm font-semibold text-primary">{save.error}</p>}
           <div className="flex items-center gap-3">
             <Button type="submit" pending={save.pending}>
               {t("common.save")}
             </Button>
             {saved && (
-              <span role="status" className="text-sm font-bold text-teal">
+              <span role="status" className="text-sm font-bold text-primary">
                 {t("parent.saved")}
               </span>
             )}
@@ -73,8 +73,8 @@ export default function Account() {
       </Card>
 
       <Card className="space-y-3">
-        <h2 className="text-lg font-extrabold">{t("scheme.title")}</h2>
-        <p className="text-sm text-muted">{t("scheme.hint")}</p>
+        <h2 className="text-lg font-extrabold">{t("look.appearance")}</h2>
+        <p className="text-sm text-muted">{t("look.appearance.hint")}</p>
         <SchemePicker />
       </Card>
 
@@ -119,11 +119,11 @@ export default function Account() {
         }}
         title={t("parent.account.deleteTitle")}
       >
-        <p className="mb-4 text-ink-2">{t("parent.account.deleteConfirm")}</p>
+        <p className="mb-4 text-muted">{t("parent.account.deleteConfirm")}</p>
         <Field label={t("parent.account.typePhone")}>
           <Input value={typed} onChange={(e) => setTyped(e.target.value)} autoFocus />
         </Field>
-        {del.error && <p role="alert" className="mt-3 text-sm font-semibold text-[#8f3a2c]">{del.error}</p>}
+        {del.error && <p role="alert" className="mt-3 text-sm font-semibold text-primary">{del.error}</p>}
         <div className="mt-5 flex justify-end gap-2">
           <Button variant="ghost" onClick={() => setConfirm(false)}>
             {t("common.cancel")}

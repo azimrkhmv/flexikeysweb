@@ -25,7 +25,7 @@ export default function PlanPage() {
       <PageHeader title={t("planpage.title")} subtitle={t("planpage.subtitle")} />
       {kids.length === 0 ? (
         <Card className="flex flex-col items-start gap-4">
-          <p className="max-w-xl text-ink-2">{t("planpage.none")}</p>
+          <p className="max-w-xl text-muted">{t("planpage.none")}</p>
           <LinkButton href={QUICK_START}>{t("first.start")}</LinkButton>
         </Card>
       ) : (

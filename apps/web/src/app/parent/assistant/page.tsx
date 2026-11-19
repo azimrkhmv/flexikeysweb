@@ -31,7 +31,7 @@ function Assistant() {
                 role="radio"
                 aria-checked={c.id === childId}
                 onClick={() => setPicked(c.id)}
-                className={`flex shrink-0 items-center gap-3 rounded-2xl p-3 text-left font-bold transition ${c.id === childId ? "bg-surface shadow-soft ring-2 ring-teal" : "hover:bg-surface/70"}`}
+                className={`flex shrink-0 items-center gap-3 rounded-2xl p-3 text-left font-bold transition ${c.id === childId ? "bg-surface shadow-soft ring-2 ring-primary" : "hover:bg-surface/70"}`}
               >
                 <Avatar emoji={c.avatar} size={40} tone="lavender" /> {c.name}
               </button>

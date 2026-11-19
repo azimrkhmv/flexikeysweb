@@ -95,15 +95,15 @@ function PathRound({ shape, mirror, stones, index, last, next }: { shape: Shape;
           ref={box}
           onPointerMove={onMove}
           className="relative max-w-4xl overflow-hidden rounded-fk-lg shadow-inner"
-          style={{ width: `min(100cqw, 100cqh * ${W} / ${H})`, aspectRatio: `${W} / ${H}`, touchAction: "none", background: "linear-gradient(180deg,#eef7ea 0%,#e1f1de 100%)" }}
+          style={{ width: `min(100cqw, 100cqh * ${W} / ${H})`, aspectRatio: `${W} / ${H}`, touchAction: "none", background: "linear-gradient(180deg, var(--sky1) 0%, var(--sky2) 100%)" }}
         >
           <svg viewBox={`0 0 ${W} ${H}`} className="absolute inset-0 size-full" aria-hidden>
             <text x="60" y="520" fontSize="40">🌼</text>
             <text x="880" y="80" fontSize="38">🌿</text>
             <text x="470" y="540" fontSize="34">🌸</text>
-            <path d={d} fill="none" stroke="#f7f2e2" strokeWidth={Math.max(40, ctx.profile.traceTolerance * 1.2)} strokeLinecap="round" strokeLinejoin="round" />
-            <path d={d} fill="none" stroke="#cdbf98" strokeWidth="5" strokeDasharray="16 14" strokeLinecap="round" />
-            {reached > 0 && <path d={dDone} fill="none" stroke="#7fbf85" strokeWidth="12" strokeLinecap="round" strokeLinejoin="round" />}
+            <path d={d} fill="none" stroke="var(--paperSolid)" strokeWidth={Math.max(40, ctx.profile.traceTolerance * 1.2)} strokeLinecap="round" strokeLinejoin="round" />
+            <path d={d} fill="none" stroke="var(--muted)" strokeWidth="5" strokeDasharray="16 14" strokeLinecap="round" />
+            {reached > 0 && <path d={dDone} fill="none" stroke="var(--accent)" strokeWidth="12" strokeLinecap="round" strokeLinejoin="round" />}
           </svg>
           {pts.map(([x, y], k) => {
             const isNext = k === reached + 1;
@@ -111,7 +111,7 @@ function PathRound({ shape, mirror, stones, index, last, next }: { shape: Shape;
             const style = { left: `${(x / W) * 100}%`, top: `${(y / H) * 100}%` };
             const dot = (
               <span
-                className={`block rounded-full border-4 border-white shadow-soft ${k <= reached ? "bg-leaf" : isEnd ? "bg-sun" : isNext ? "bg-sky" : "bg-surface"}`}
+                className={`block rounded-full border-4 border-surface shadow-soft ${k <= reached ? "bg-accent" : isEnd ? "bg-sun" : isNext ? "bg-hill1" : "bg-surface"}`}
                 style={{ width: size * 0.5, height: size * 0.5 }}
               />
             );

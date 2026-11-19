@@ -55,7 +55,7 @@ function ChildToday({ child }: { child: Child }) {
         <Avatar emoji={child.avatar} size={40} tone="lavender" /> {child.name}
       </h3>
       {on === "paused" ? (
-        <div className="space-y-3 rounded-2xl bg-sky-soft p-4">
+        <div className="space-y-3 rounded-2xl bg-tint p-4">
           <p className="font-bold text-ink">{t("today.paused")}</p>
           <Button variant="outline" size="sm" pending={resume.pending} onClick={() => resume.run(child.id)}>
             {t("today.resume")}
@@ -64,7 +64,7 @@ function ChildToday({ child }: { child: Child }) {
       ) : locked ? (
         <ProLock text={t("plans.lock.today")} />
       ) : !day ? (
-        <p className="text-ink-2">
+        <p className="text-muted">
           {today < plan.startDate ? t("today.notYet", { date: fmtDate(plan.startDate, lang) }) : t("today.finished")}
         </p>
       ) : (
@@ -103,7 +103,7 @@ function ChildToday({ child }: { child: Child }) {
           </div>
         </>
       )}
-      {(pause.error ?? resume.error) && <p role="alert" className="text-sm font-semibold text-[#8f3a2c]">{pause.error ?? resume.error}</p>}
+      {(pause.error ?? resume.error) && <p role="alert" className="text-sm font-semibold text-primary">{pause.error ?? resume.error}</p>}
       {on !== null && <DailyQuestion child={child} today={today} />}
       <Week child={child} today={today} />
     </Card>
@@ -130,8 +130,8 @@ function DailyQuestion({ child, today }: { child: Child; today: string }) {
           </Button>
         ))}
       </div>
-      {answer && <p className="text-sm text-ink-2">{t("daily.thanks")}</p>}
-      {save.error && <p role="alert" className="text-sm font-semibold text-[#8f3a2c]">{save.error}</p>}
+      {answer && <p className="text-sm text-muted">{t("daily.thanks")}</p>}
+      {save.error && <p role="alert" className="text-sm font-semibold text-primary">{save.error}</p>}
     </div>
   );
 }
@@ -154,7 +154,7 @@ function Week({ child, today }: { child: Child; today: string }) {
         return (
           <li
             key={date}
-            className={`flex flex-col items-center gap-1 rounded-xl border p-2 text-center text-xs ${date === today ? "border-teal ring-2 ring-teal" : "border-line"} ${status === "done" ? "bg-leaf-soft" : status === "paused" ? "bg-sky-soft" : ""}`}
+            className={`flex flex-col items-center gap-1 rounded-xl border p-2 text-center text-xs ${date === today ? "border-primary ring-2 ring-primary" : "border-line"} ${status === "done" ? "bg-primary-soft" : status === "paused" ? "bg-tint" : ""}`}
           >
             <span className="font-bold text-ink">{fmt(date)}</span>
             <span className="text-muted">
@@ -193,7 +193,7 @@ function FeedbackClip({ child, exerciseId }: { child: Child; exerciseId: string 
         </span>
       ))}
       {mine.length === 0 && (
-        <label className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-full border border-line px-3 text-sm font-bold text-ink-2 hover:bg-surface-2">
+        <label className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-full border border-line px-3 text-sm font-bold text-muted hover:bg-surface-2">
           <input
             type="file"
             accept="video/*"
@@ -209,7 +209,7 @@ function FeedbackClip({ child, exerciseId }: { child: Child; exerciseId: string 
           <Video className="size-4" aria-hidden /> {t("today.clip.add")}
         </label>
       )}
-      {(add.error ?? remove.error) && <p role="alert" className="w-full text-sm font-semibold text-[#8f3a2c]">{add.error ?? remove.error}</p>}
+      {(add.error ?? remove.error) && <p role="alert" className="w-full text-sm font-semibold text-primary">{add.error ?? remove.error}</p>}
     </div>
   );
 }
@@ -250,18 +250,18 @@ function ExerciseItem({ child, day, video }: { child: Child; day: number; video:
               <Check className="size-3.5" aria-hidden /> {t("today.isDone")}
             </Chip>
             <div role="group" aria-label={t("today.howWasIt")} className="flex flex-wrap items-center gap-2">
-              <span className="text-sm text-ink-2">{t("today.howWasIt")}</span>
+              <span className="text-sm text-muted">{t("today.howWasIt")}</span>
               {FEELINGS.map((f) => (
                 <Button key={f} size="sm" variant={done.feeling === f ? "soft" : "outline"} aria-pressed={done.feeling === f} onClick={() => rate.run(child.id, done.id, f)}>
                   {t(`today.feeling.${f}`)}
                 </Button>
               ))}
             </div>
-            {level !== planned && <p className="text-sm text-ink-2">{t(level < planned ? "today.easierNext" : "today.harderNext")}</p>}
+            {level !== planned && <p className="text-sm text-muted">{t(level < planned ? "today.easierNext" : "today.harderNext")}</p>}
             <FeedbackClip child={child} exerciseId={video.id} />
           </div>
         )}
-        {(markDone.error ?? rate.error) && <p role="alert" className="text-sm font-semibold text-[#8f3a2c]">{markDone.error ?? rate.error}</p>}
+        {(markDone.error ?? rate.error) && <p role="alert" className="text-sm font-semibold text-primary">{markDone.error ?? rate.error}</p>}
       </div>
     </li>
   );

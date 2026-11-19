@@ -146,7 +146,7 @@ export function QuestionnaireWizard({ childId: initialChild, version }: { childI
   return (
     <div className="mx-auto max-w-2xl">
       <div className="mb-4 h-2 overflow-hidden rounded-full bg-surface-2" aria-hidden>
-        <div className="h-full rounded-full bg-teal transition-all" style={{ width: `${((i + 1) / steps.length) * 100}%` }} />
+        <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${((i + 1) / steps.length) * 100}%` }} />
       </div>
       {step === "health_consent" ? (
         <SectionBanner title={t("intake.step.health_consent")} />
@@ -154,14 +154,14 @@ export function QuestionnaireWizard({ childId: initialChild, version }: { childI
         <SectionBanner {...sectionTexts} phase={intro} />
       )}
       {intro && step !== "health_consent" && <SectionIntro {...sectionTexts} onMove={startMove} onDone={endIntro} />}
-      {step === "A" && <p className="mt-3 text-ink-2">{t("auth.details.ages")}</p>}
+      {step === "A" && <p className="mt-3 text-muted">{t("auth.details.ages")}</p>}
 
       <div className={intro === "hold" && step !== "health_consent" ? "opacity-0" : "opacity-100 transition-opacity duration-500"}>
       {step === "health_consent" ? (
         <Card className="mt-6 space-y-4 p-5">
-          <ShieldCheck className="size-8 text-teal" aria-hidden />
+          <ShieldCheck className="size-8 text-primary" aria-hidden />
           <p className="text-ink">{t("intake.health.lead")}</p>
-          <p className="text-sm text-ink-2">{t("intake.health.points")}</p>
+          <p className="text-sm text-muted">{t("intake.health.points")}</p>
           <FormError>{act.error}</FormError>
           <div className="flex flex-wrap items-center gap-3">
             <Button variant="ghost" onClick={() => setI(i - 1)}>{t("intake.back")}</Button>
@@ -185,7 +185,7 @@ export function QuestionnaireWizard({ childId: initialChild, version }: { childI
             const mark = markedStep === step && open.has(q.id);
             const note = q.ladder ? questions.find((n) => n.id === `${q.id}_note`) : undefined;
             return (
-              <div key={q.id} id={`q-${q.id}`} className={`scroll-mt-24 ${q.follow_up ? "-mt-3 ml-4 border-l-2 border-teal pl-3" : ""}`}>
+              <div key={q.id} id={`q-${q.id}`} className={`scroll-mt-24 ${q.follow_up ? "-mt-3 ml-4 border-l-2 border-primary pl-3" : ""}`}>
                 <Card className={`p-5 ${mark ? "ring-4 ring-sun" : ""}`}>
                   <Question q={q} answers={answers} set={set} childId={childId} />
                   {note && <OwnWords q={note} answers={answers} set={set} />}
@@ -220,15 +220,15 @@ export function QuestionnaireWizard({ childId: initialChild, version }: { childI
 }
 
 /** The start of each section (B67): "Section 3 of 9", the title in large bold type (about twice the question text)
- * and one line on what the section asks about, on a soft brand colour (text ≥ 4.5:1, lib/contrast.test.ts).
+ * and one line on what the section asks about, on a soft brand colour (text ≥ 4.5:1, lib/theme.test.ts).
  * `phase`: the intro screen is playing; its texts are on their way here and these fade in as they arrive (B73). */
 function SectionBanner({ number, title, intro, phase }: { number?: string; title: string; intro?: string; phase?: "hold" | "move" | null }) {
   const texts = phase === "hold" ? "[&>*]:opacity-0" : phase === "move" ? "[&>*]:transition-opacity [&>*]:delay-300 [&>*]:duration-200" : "";
   return (
-    <header className={`rounded-fk-lg bg-teal-soft px-5 py-5 sm:px-7 ${texts}`}>
-      {number && <p id="section-number" className="text-sm font-bold text-ink-2">{number}</p>}
+    <header className={`rounded-fk-lg bg-primary-soft px-5 py-5 sm:px-7 ${texts}`}>
+      {number && <p id="section-number" className="text-sm font-bold text-muted">{number}</p>}
       <h1 id="section-title" tabIndex={-1} className="mt-1 text-3xl font-extrabold leading-tight text-ink outline-none sm:text-4xl">{title}</h1>
-      {intro && <p id="section-intro" className="mt-2 text-base text-ink-2">{intro}</p>}
+      {intro && <p id="section-intro" className="mt-2 text-base text-muted">{intro}</p>}
     </header>
   );
 }
@@ -271,7 +271,7 @@ export function Question({ q, answers, set, childId }: { q: QQuestion; answers: 
   const problem = typedProblem(q, v, answers, today());
   const own = `intake.problem.${q.id}.${problem}`; // a question's own message, else the general one
   const error = problem && (t(own) !== own ? t(own) : t(`intake.problem.${problem}`, { min: q.range?.[0] ?? "", max: q.range?.[1] ?? "", n: ageInMonths(answers.A2, today()) ?? "" }));
-  const alert = error && <p role="alert" className="mt-2 text-sm font-semibold text-[#8f3a2c]">{error}</p>;
+  const alert = error && <p role="alert" className="mt-2 text-sm font-semibold text-primary">{error}</p>;
   const options = shownOptions(q.id, answers, today()) ?? [];
   const opt = (o: string) => (q.option_text ? inLang(q.option_text, uiLang, o) : o);
   const clear = q.required ? undefined : () => set(q.id, undefined); // undefined: not answered, unlike null ("Not sure")
@@ -321,7 +321,7 @@ export function Question({ q, answers, set, childId }: { q: QQuestion; answers: 
               inputMode="numeric" min={0} max={240} step={1} aria-label={`${text} (${t("intake.months")})`}
               value={typeof v === "number" ? v : ""} onChange={(e) => set(q.id, number(e.target.value))}
             />
-            <span className="text-sm font-semibold text-ink-2">{t("intake.months")}</span>
+            <span className="text-sm font-semibold text-muted">{t("intake.months")}</span>
           </div>
           {alert}
           <div className="mt-2 flex flex-wrap gap-2">
@@ -389,7 +389,7 @@ export function Question({ q, answers, set, childId }: { q: QQuestion; answers: 
             const mine = g.options.filter((o) => options.includes(o));
             return mine.length > 0 && (
               <div key={n}>
-                {g.text && <p className="mb-2 text-sm font-bold text-ink-2">{inLang(g.text, uiLang)}</p>}
+                {g.text && <p className="mb-2 text-sm font-bold text-muted">{inLang(g.text, uiLang)}</p>}
                 {list(mine)}
               </div>
             );
@@ -441,7 +441,7 @@ function Measure({ q, v, set, problem, hint }: { q: QQuestion; v: QAnswer; set: 
   const box = (label: string, value: string, change: (s: string) => void, mode: "numeric" | "decimal") => (
     <div className="grid grid-cols-[minmax(0,6rem)_auto] items-center justify-start gap-2">
       <NumberInput inputMode={mode} aria-label={`${inLang(q.text, uiLang)} (${label})`} value={value} onChange={(e) => change(e.target.value)} />
-      <span className="text-sm font-semibold text-ink-2">{label}</span>
+      <span className="text-sm font-semibold text-muted">{label}</span>
     </div>
   );
   const units = height ? ["cm", "ftin"] : ["kg", "lb"];
@@ -453,7 +453,7 @@ function Measure({ q, v, set, problem, hint }: { q: QQuestion; v: QAnswer; set: 
           {units.map((u) => (
             <button
               key={u} type="button" aria-pressed={unit === u} onClick={() => pick(u)}
-              className={`min-h-9 rounded-full px-3 text-sm font-bold ${unit === u ? "bg-teal text-white" : "text-ink-2"}`}
+              className={`min-h-9 rounded-full px-3 text-sm font-bold ${unit === u ? "bg-btn text-btn-text" : "text-muted"}`}
             >
               {t(`intake.unit.${u}`)}
             </button>
@@ -466,7 +466,7 @@ function Measure({ q, v, set, problem, hint }: { q: QQuestion; v: QAnswer; set: 
         {us && box(t(`intake.unit.${height ? "ft" : "lb"}`), shown.a, (a) => type({ ...shown, a }), height ? "numeric" : "decimal")}
         {us && height && box(t("intake.unit.in"), shown.b, (b) => type({ ...shown, b }), "numeric")}
       </div>
-      {problem && <p role="alert" className="mt-2 text-sm font-semibold text-[#8f3a2c]">{t(`intake.problem.${q.id}.out_of_range${us ? ".us" : ""}`)}</p>}
+      {problem && <p role="alert" className="mt-2 text-sm font-semibold text-primary">{t(`intake.problem.${q.id}.out_of_range${us ? ".us" : ""}`)}</p>}
     </div>
   );
 }
@@ -559,8 +559,8 @@ function Files({ q, label, answers, set, childId }: { q: QQuestion; label: strin
           <FileUp className="mr-2 size-4" aria-hidden /> {t("intake.files.add")}
         </label>
       )}
-      {tooBig && <p role="status" className="text-sm font-semibold text-ink-2">{t("intake.files.tooBig", { mb: FILE_MAX_MB })}</p>}
-      {add.error && <p role="alert" className="text-sm font-semibold text-[#8f3a2c]">{add.error}</p>}
+      {tooBig && <p role="status" className="text-sm font-semibold text-muted">{t("intake.files.tooBig", { mb: FILE_MAX_MB })}</p>}
+      {add.error && <p role="alert" className="text-sm font-semibold text-primary">{add.error}</p>}
     </div>
   );
 }

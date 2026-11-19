@@ -45,14 +45,14 @@ export default function ChildPage() {
 
   return (
     <>
-      <Link href="/parent" className="mb-4 inline-flex items-center gap-1 text-sm font-bold text-ink-2 hover:text-ink">
+      <Link href="/parent" className="mb-4 inline-flex items-center gap-1 text-sm font-bold text-muted hover:text-ink">
         <ArrowLeft className="size-4" aria-hidden /> {t("parent.nav.overview")}
       </Link>
       <div className="mb-6 flex flex-wrap items-center gap-4">
         <Avatar emoji={child.avatar} size={72} tone="lavender" />
         <div className="min-w-0 flex-1">
           <h1 className="text-2xl font-extrabold sm:text-3xl">{child.name}</h1>
-          <p className="text-ink-2">
+          <p className="text-muted">
             {t("common.years", { n: age(child.birthYear) })} · {t("parent.home.learns", { lang: t(`lang.${child.learningLang}`) })}
           </p>
         </div>
@@ -67,14 +67,14 @@ export default function ChildPage() {
         </Button>
       </div>
       {start.error && (
-        <p role="alert" className="mb-4 text-sm font-semibold text-[#8f3a2c]">
+        <p role="alert" className="mb-4 text-sm font-semibold text-primary">
           {start.error}
         </p>
       )}
       {!sel.hasConsent(db, child.id, "core") && (
         // No consent recorded (e.g. a profile from the mobile app): nothing is saved until the parent gives it.
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-sun-soft px-4 py-3">
-          <p className="text-sm font-semibold text-[#7a5a0c]">{t("parent.privacy.coreMissing")}</p>
+          <p className="text-sm font-semibold text-ink">{t("parent.privacy.coreMissing")}</p>
           {tab !== "privacy" && rel === "owner" && (
             <Button size="sm" variant="outline" onClick={() => go("privacy")}>
               {t("common.openPrivacy")}
@@ -108,7 +108,7 @@ export default function ChildPage() {
             aria-controls="child-tabpanel"
             tabIndex={tab === k ? 0 : -1}
             onClick={() => go(k)}
-            className={`h-10 shrink-0 rounded-full px-4 text-sm font-bold transition ${tab === k ? "bg-surface text-primary shadow-soft" : "text-ink-2 hover:text-ink"}`}
+            className={`h-10 shrink-0 rounded-full px-4 text-sm font-bold transition ${tab === k ? "bg-surface text-primary shadow-soft" : "text-muted hover:text-ink"}`}
           >
             {t(`parent.tab.${k}`)}
           </button>

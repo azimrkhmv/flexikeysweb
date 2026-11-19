@@ -152,13 +152,13 @@ export function SupportCard({ child }: { child: Child }) {
         )}
 
         {save.error && (
-          <p role="alert" className="text-sm font-semibold text-[#8f3a2c]">
+          <p role="alert" className="text-sm font-semibold text-primary">
             {save.error}
           </p>
         )}
         <div className="flex items-center justify-end gap-3">
           {saved && (
-            <span role="status" className="text-sm font-semibold text-teal">
+            <span role="status" className="text-sm font-semibold text-primary">
               {t("parent.saved")}
             </span>
           )}

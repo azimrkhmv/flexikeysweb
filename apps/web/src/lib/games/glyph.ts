@@ -1,5 +1,6 @@
 // Simple drawn shapes ("glyphs") for the skill games: a shape, a colour, a turn, a mirror, a shade and a size, all in
 // one item id ("g:star:red:30:0:1:1"), so every engine can show them with ItemArt and every generator can compare them.
+import { GLYPH_HEX } from "@/content/taskColors";
 
 export const GLYPH_SHAPES = ["circle", "square", "triangle", "star", "heart", "rectangle", "arrow", "flag", "drop", "corner", "moon", "house"] as const;
 /** Two more shapes for Shadow Match (B85), kept out of GLYPH_SHAPES so the older games draw from the same list. */
@@ -42,13 +43,5 @@ export function parseGlyph(id: string): Glyph {
 /** The look of a glyph without its tag: two items look the same exactly when these are equal. */
 export const looks = (id: string) => (isGlyph(id) ? id.split("#")[0] : id);
 
-export const COLOR_HEX: Record<GlyphColor | "shadow", [fill: string, stroke: string]> = {
-  red: ["#e8837a", "#b9544b"],
-  blue: ["#7fa9e0", "#4c78b8"],
-  green: ["#8cc98f", "#4f9a55"],
-  yellow: ["#f5d272", "#c49a2c"],
-  purple: ["#b3a8e8", "#7d6fcf"],
-  orange: ["#f4b183", "#c97a43"],
-  pink: ["#f3b6c8", "#c87892"],
-  shadow: ["#3b4560", "#27304a"],
-};
+/** The task colours of the glyphs (content/taskColors.ts): the same in every colour scheme. */
+export const COLOR_HEX: Record<GlyphColor | "shadow", readonly [fill: string, stroke: string]> = GLYPH_HEX;

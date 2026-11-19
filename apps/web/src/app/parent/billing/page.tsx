@@ -13,7 +13,7 @@ import { useLang, useT } from "@/lib/i18n";
 
 const Cell = ({ v }: { v: string }) => {
   const t = useT();
-  if (v === "yes") return <Check className="mx-auto size-5 text-teal" aria-label={t("plans.yes")} />;
+  if (v === "yes") return <Check className="mx-auto size-5 text-primary" aria-label={t("plans.yes")} />;
   if (v === "no") return <Minus className="mx-auto size-5 text-muted" aria-label={t("plans.no")} />;
   return <span className="text-sm">{t(v)}</span>;
 };
@@ -41,7 +41,7 @@ export default function Billing() {
       <PageHeader title={t("plans.title")} subtitle={t("plans.subtitle")} />
 
       <Card className="mb-6 flex flex-wrap items-center gap-4">
-        <span className="grid size-12 place-items-center rounded-2xl bg-lavender-soft text-[#4f43a0]">
+        <span className="grid size-12 place-items-center rounded-2xl bg-tint-2 text-primary">
           <Sparkles className="size-6" aria-hidden />
         </span>
         <div className="min-w-0 flex-1">
@@ -50,7 +50,7 @@ export default function Billing() {
               ? t("plans.current.trial", { date: fmtDate(plan.trialEndsAt, lang) })
               : t(plan.plan === "pro" ? "plans.current.pro" : "plans.current.free")}
           </p>
-          {plan.plan === "pro" && !plan.trial && plan.paidUntil && <p className="text-sm text-ink-2">{t("plans.paidUntil", { date: fmtDate(plan.paidUntil, lang) })}</p>}
+          {plan.plan === "pro" && !plan.trial && plan.paidUntil && <p className="text-sm text-muted">{t("plans.paidUntil", { date: fmtDate(plan.paidUntil, lang) })}</p>}
         </div>
         <Chip tone={plan.plan === "pro" ? "leaf" : "gray"}>{t(plan.plan === "pro" ? "plans.col.pro" : "plans.col.free")}</Chip>
       </Card>
@@ -76,7 +76,7 @@ export default function Billing() {
                 <th scope="row" className="py-3 pr-3 text-sm font-semibold text-ink">
                   {t(`plans.row.${key}`)}
                 </th>
-                <td className="py-3 text-center text-ink-2">
+                <td className="py-3 text-center text-muted">
                   <Cell v={free} />
                 </td>
                 <td className="py-3 text-center text-ink">
@@ -91,7 +91,7 @@ export default function Billing() {
 
       <Card className="space-y-4">
         {!owner ? (
-          <p className="text-ink-2">{t("plans.ownerOnly")}</p>
+          <p className="text-muted">{t("plans.ownerOnly")}</p>
         ) : (
           <>
             <div className="flex flex-wrap gap-3">
@@ -109,14 +109,14 @@ export default function Billing() {
             </div>
             <p className="text-xs text-muted">{t("plans.payNote")}</p>
             {paid && (
-              <p role="status" className="font-bold text-teal">
+              <p role="status" className="font-bold text-primary">
                 {t("plans.paid")}
               </p>
             )}
           </>
         )}
         {error && (
-          <p role="alert" className="text-sm font-semibold text-[#8f3a2c]">
+          <p role="alert" className="text-sm font-semibold text-primary">
             {error}
           </p>
         )}

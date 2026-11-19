@@ -14,12 +14,12 @@ const NODE = 104;
 const xOf = (i: number) => 50 + 30 * Math.sin(i * 0.85); // % across the map
 
 const TONE: Record<Level["color"], string> = {
-  sky: "var(--fk-sky-soft)",
-  leaf: "var(--fk-leaf-soft)",
-  sun: "var(--fk-sun-soft)",
-  lavender: "var(--fk-lavender-soft)",
-  teal: "var(--fk-teal-soft)",
-  peach: "var(--fk-peach-soft)",
+  sky: "var(--tint)",
+  leaf: "var(--accentSoft)",
+  sun: "var(--sunSoft)",
+  lavender: "var(--tint2)",
+  teal: "var(--accentSoft)",
+  peach: "var(--tint2)",
 };
 
 export const KIND_EMOJI: Record<GameKind, string> = {
@@ -51,7 +51,7 @@ export function MapTabs({ child, tab, onTab }: { child: Child; tab: MapTab; onTa
           label={t(key)}
           selected={tab === id}
           onSelect={() => onTab(id)}
-          className={`flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-3xl px-2 py-1 text-center text-sm font-extrabold leading-tight shadow-soft sm:flex-none sm:flex-row sm:gap-2 sm:rounded-full sm:px-6 sm:text-lg ${tab === id ? "bg-teal-soft text-ink" : "bg-surface/80 text-ink-2"}`}
+          className={`flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-3xl px-2 py-1 text-center text-sm font-extrabold leading-tight shadow-soft sm:flex-none sm:flex-row sm:gap-2 sm:rounded-full sm:px-6 sm:text-lg ${tab === id ? "bg-primary-soft text-ink" : "bg-surface/80 text-muted"}`}
         >
           <span className="text-2xl" aria-hidden>
             {icon}
@@ -93,7 +93,7 @@ export function WorldMap({ child, onOpen, onTab }: { child: Child; onOpen: (leve
           <Mascot mood="happy" size={72} float={false} />
           <div className="min-w-0 flex-1">
             <p className="text-lg font-extrabold text-ink">{t("play.tasks.title")}</p>
-            <p className="text-ink-2">
+            <p className="text-muted">
               {t(`play.tasks.from.${tasks[0].kind}`)} · {t("play.tasks.count", { n: taskLevels.length })}
             </p>
           </div>
@@ -108,7 +108,7 @@ export function WorldMap({ child, onOpen, onTab }: { child: Child; onOpen: (leve
                   key={id}
                   label={LEVEL_BY_ID[id].title[child.uiLang]}
                   onSelect={() => onOpen(id)}
-                  className={`flex flex-col items-center justify-center gap-1 rounded-3xl px-4 font-bold text-ink shadow-soft ${asleep ? "bg-[#eef2f8]" : "bg-sun-soft"}`}
+                  className={`flex flex-col items-center justify-center gap-1 rounded-3xl px-4 font-bold text-ink shadow-soft ${asleep ? "bg-surface-2" : "bg-sun-soft"}`}
                 >
                   {asleep ? <Mascot mood="sleepy" size={44} float={false} label="" /> : <span className="text-3xl">{LEVEL_BY_ID[id].emoji}</span>}
                   <span className="text-sm">{LEVEL_BY_ID[id].title[child.uiLang]}</span>
@@ -121,8 +121,8 @@ export function WorldMap({ child, onOpen, onTab }: { child: Child; onOpen: (leve
 
       <div className="relative" style={{ height }}>
         <svg className="absolute inset-0 h-full w-full" viewBox={`0 0 100 ${height}`} preserveAspectRatio="none" aria-hidden>
-          <path d={d} fill="none" stroke="#ffffff" strokeWidth="14" strokeLinecap="round" vectorEffect="non-scaling-stroke" opacity="0.9" />
-          <path d={d} fill="none" stroke="#c9d9ef" strokeWidth="4" strokeDasharray="2 14" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+          <path d={d} fill="none" stroke="var(--paperSolid)" strokeWidth="14" strokeLinecap="round" vectorEffect="non-scaling-stroke" opacity="0.9" />
+          <path d={d} fill="none" stroke="var(--line)" strokeWidth="4" strokeDasharray="2 14" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
         </svg>
         {LEVELS.map((level, i) => {
           const state = states[i];
@@ -140,7 +140,7 @@ export function WorldMap({ child, onOpen, onTab }: { child: Child; onOpen: (leve
                 onSelect={() => onOpen(level.id)}
                 scanSkip={asleep}
                 pulse={state === "open" && profile.hintLevel >= 2}
-                className={`grid place-items-center rounded-full border-4 shadow-lift transition ${asleep ? "border-white/70 bg-[#eef2f8]" : "border-white"}`}
+                className={`grid place-items-center rounded-full border-4 shadow-lift transition ${asleep ? "border-surface/70 bg-surface-2" : "border-surface"}`}
                 style={{ width: size, height: size, background: asleep ? undefined : TONE[level.color] }}
               >
                 {asleep ? (
@@ -151,11 +151,11 @@ export function WorldMap({ child, onOpen, onTab }: { child: Child; onOpen: (leve
                   </span>
                 )}
                 {state === "done" && <span className="absolute -right-1 -top-1 grid size-9 place-items-center rounded-full bg-sun text-lg shadow-soft">⭐</span>}
-                <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 rounded-full bg-surface px-2 text-xs font-extrabold text-ink-2 shadow-soft">{level.n}</span>
+                <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 rounded-full bg-surface px-2 text-xs font-extrabold text-muted shadow-soft">{level.n}</span>
               </Target>
               <span className={`mt-3 max-w-36 rounded-full px-3 py-0.5 text-center text-sm font-extrabold ${asleep ? "text-muted" : "bg-surface/90 text-ink"}`}>
                 {level.title[child.uiLang]}
-                {stars > 0 && <span className="ml-1 text-xs text-[#7a5a0c]">⭐{stars}</span>}
+                {stars > 0 && <span className="ml-1 text-xs text-ink">⭐{stars}</span>}
               </span>
             </div>
           );
@@ -183,7 +183,7 @@ export function LevelView({ child, levelId, onPlay }: { child: Child; levelId: s
             key={a.id}
             label={t(`play.kind.${a.kind}`)}
             onSelect={() => onPlay(a.id)}
-            className="flex min-h-40 flex-col items-center justify-center gap-2 rounded-fk-lg border-4 border-white p-4 font-extrabold text-ink shadow-soft"
+            className="flex min-h-40 flex-col items-center justify-center gap-2 rounded-fk-lg border-4 border-surface p-4 font-extrabold text-ink shadow-soft"
             style={{ background: TONE[level.color] }}
           >
             <span className="text-5xl">{KIND_EMOJI[a.kind]}</span>

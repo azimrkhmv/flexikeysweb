@@ -158,7 +158,7 @@ export function PlayCheck({ child }: { child: Child }) {
       <Panel>
         <Mascot mood="wave" size={160} />
         <h1 className="text-2xl font-extrabold text-ink">{t("check.intro.title", { name: child.name })}</h1>
-        <p className="max-w-md text-ink-2">{t("check.intro.text", { name: child.name })}</p>
+        <p className="max-w-md text-muted">{t("check.intro.text", { name: child.name })}</p>
         <Button size="lg" onClick={() => setPhase({ p: "taps", mode: "touch", touches: [] })}>
           {t("check.start")}
         </Button>
@@ -180,13 +180,13 @@ export function PlayCheck({ child }: { child: Child }) {
           data-ball=""
           role="img"
           aria-label={t("check.ball")}
-          className="absolute grid place-items-center rounded-full bg-sky shadow-soft"
+          className="absolute grid place-items-center rounded-full bg-hill1 shadow-soft"
           style={{ left: `${x}%`, top: `${y}%`, width: mmToPx(mm), height: mmToPx(mm), transform: "translate(-50%, -50%)" }}
         >
           {hold && (
             <span
               aria-hidden
-              className="block size-full rounded-full bg-leaf"
+              className="block size-full rounded-full bg-accent"
               style={{ transform: `scale(${holding ? 1 : 0})`, transition: holding ? `transform ${DWELL_TRY_MS}ms linear` : "none" }}
             />
           )}
@@ -213,7 +213,7 @@ function Done({ child, settings }: { child: Child; settings: AccessSettings }) {
     <Panel>
       <Mascot mood="celebrate" size={160} />
       <h1 className="text-2xl font-extrabold text-ink">{t("check.done.title", { name: child.name })}</h1>
-      <ul className="max-w-md space-y-1 text-left text-ink-2">
+      <ul className="max-w-md space-y-1 text-left text-muted">
         <li>{t(`check.mode.${settings.inputMode}`)}</li>
         {(settings.inputMode === "touch" || settings.inputMode === "dwell") && <li>{t("check.size", { mm: settings.minTargetMm })}</li>}
         {settings.inputMode === "dwell" && <li>{t("check.dwell", { s: (settings.dwellMs / 1000).toFixed(1) })}</li>}
@@ -230,7 +230,7 @@ function Done({ child, settings }: { child: Child; settings: AccessSettings }) {
           <Button size="lg" pending={save.pending} onClick={async () => setSaved((await save.run(child.id, settings, helped)) !== undefined)}>
             {t("check.save")}
           </Button>
-          {save.error && <p role="alert" className="text-sm font-semibold text-[#8f3a2c]">{save.error}</p>}
+          {save.error && <p role="alert" className="text-sm font-semibold text-primary">{save.error}</p>}
         </>
       )}
     </Panel>

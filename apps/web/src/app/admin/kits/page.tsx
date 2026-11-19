@@ -70,7 +70,7 @@ export default function AdminKits() {
             </tbody>
           </Table>
         )}
-        {move.error && <p role="alert" className="mt-2 text-sm font-semibold text-[#8f3a2c]">{move.error}</p>}
+        {move.error && <p role="alert" className="mt-2 text-sm font-semibold text-primary">{move.error}</p>}
       </Card>
     </>
   );

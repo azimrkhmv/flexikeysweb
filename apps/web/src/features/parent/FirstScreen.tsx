@@ -19,7 +19,7 @@ export function FirstScreen() {
     <section className="grid items-center gap-8 lg:grid-cols-[1.1fr_0.9fr]" data-tour="start">
       <div>
         <h2 className="text-[clamp(2rem,4.4vw,3.2rem)] font-semibold leading-[1.15] text-ink [text-wrap:balance]">{t("first.title")}</h2>
-        <p className="mt-3 max-w-[58ch] text-ink-2">{t("first.text")}</p>
+        <p className="mt-3 max-w-[58ch] text-muted">{t("first.text")}</p>
         <div className="mt-6 flex flex-wrap gap-3">
           <LinkButton href={QUICK_START} size="lg">
             {t("first.start")}

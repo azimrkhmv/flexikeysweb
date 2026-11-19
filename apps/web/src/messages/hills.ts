@@ -2,12 +2,6 @@
 // uz text drafted 15 Nov 2026 — native-speaker check (B44). ru text drafted the same day.
 export const hills = {
   en: {
-    "scheme.title": "Colours",
-    "scheme.hint": "The colours of FlexiKeys on this device.",
-    "scheme.hills": "Warm hills",
-    "scheme.sky": "Sky blue",
-    "scheme.mint": "Mint",
-    "scheme.lilac": "Lilac",
     "first.title": "A calm daily plan for your child, from a few short answers.",
     "first.text": "FlexiKeys gives children aged 2 to 18 with movement or learning difficulties a few minutes of games and exercises each day. You answer, we build the plan, your child plays with Cloudy.",
     "first.start": "Start, 2 minutes",
@@ -73,12 +67,6 @@ export const hills = {
     "tplan.quick": "Quick plan — full questionnaire not finished",
   },
   uz: {
-    "scheme.title": "Ranglar",
-    "scheme.hint": "FlexiKeys ranglari shu qurilmada.",
-    "scheme.hills": "Iliq qirlar",
-    "scheme.sky": "Osmon rang",
-    "scheme.mint": "Yalpiz",
-    "scheme.lilac": "Nastarin",
     "first.title": "Bir nechta qisqa javobdan farzandingiz uchun xotirjam kunlik reja.",
     "first.text": "FlexiKeys harakat yoki oʻrganishda qiynaladigan 2 yoshdan 18 yoshgacha bolalarga har kuni bir necha daqiqa oʻyin va mashq beradi. Siz javob berasiz, biz reja tuzamiz, farzandingiz Cloudy bilan oʻynaydi.",
     "first.start": "Boshlash, 2 daqiqa",
@@ -144,12 +132,6 @@ export const hills = {
     "tplan.quick": "Tez reja — toʻliq soʻrovnoma tugallanmagan",
   },
   ru: {
-    "scheme.title": "Цвета",
-    "scheme.hint": "Цвета FlexiKeys на этом устройстве.",
-    "scheme.hills": "Тёплые холмы",
-    "scheme.sky": "Небесный",
-    "scheme.mint": "Мятный",
-    "scheme.lilac": "Сиреневый",
     "first.title": "Спокойный план на каждый день для вашего ребёнка — из нескольких коротких ответов.",
     "first.text": "FlexiKeys даёт детям от 2 до 18 лет с трудностями в движении или обучении несколько минут игр и упражнений каждый день. Вы отвечаете, мы составляем план, ребёнок играет с Клауди.",
     "first.start": "Начать, 2 минуты",

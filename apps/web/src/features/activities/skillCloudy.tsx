@@ -8,6 +8,7 @@ import { Target, type SelectInfo } from "@/features/play/Target";
 import { afterMoves, cloudPlaces, cloudRows, GROW_FORMS, type FindCloudyRound, type GrowCloudyRound } from "@/lib/games/cloudy";
 import { ActionButton, answer, Frame, useActT, useClock, useHint, useLater } from "./kit";
 import { Series, useBox, type PlayerProps } from "./skillKit";
+import { RAINBOW } from "@/content/pictureColors";
 
 // Players of the Cloudy games (Warm Hills spec 15 Nov 2026, §6).
 
@@ -135,7 +136,7 @@ function CloudRound({ r, index, total, next, last }: { r: FindCloudyRound; index
         ) : (
           r.peek === "once" &&
           picking && (
-            <Target label={t("act.skill.cloudy.again")} onSelect={again} className="rounded-full bg-sky-soft px-8 text-lg font-extrabold text-ink shadow-soft">
+            <Target label={t("act.skill.cloudy.again")} onSelect={again} className="rounded-full bg-tint px-8 text-lg font-extrabold text-ink shadow-soft">
               🔁 {t("act.skill.cloudy.again")}
             </Target>
           )
@@ -145,7 +146,7 @@ function CloudRound({ r, index, total, next, last }: { r: FindCloudyRound; index
       <div
         ref={attach}
         className="relative aspect-[3/4] w-[min(100%,calc(54dvh*3/4))] overflow-hidden rounded-fk-lg border-[1.5px] border-edge sm:aspect-[4/3] sm:w-[min(100%,46rem,calc(56dvh*4/3))]"
-        style={{ background: "linear-gradient(180deg, var(--paper), var(--sky))" }}
+        style={{ background: "linear-gradient(180deg, var(--sky1), var(--sky2))" }}
       >
         {/* Cloudy, behind his cloud: half out, peeking, or out for the jump; found, he is an animal and moves. */}
         <span
@@ -209,8 +210,8 @@ export function GrowCloudyPlayer({ rounds, onDone }: PlayerProps<"grow_cloudy">)
 function Drop({ size, n }: { size: number; n?: number }) {
   return (
     <svg viewBox="0 0 40 52" width={size} height={size * 1.3} aria-hidden style={{ display: "block", overflow: "visible" }}>
-      <path d="M20 2C20 2 4 22 4 33a16 16 0 0 0 32 0C36 22 20 2 20 2Z" fill="#8fd3f0" stroke="var(--edge)" strokeWidth="2.4" strokeLinejoin="round" />
-      <ellipse cx="13" cy="31" rx="3.5" ry="6" fill="#fff" opacity=".7" transform="rotate(20 13 31)" />
+      <path d="M20 2C20 2 4 22 4 33a16 16 0 0 0 32 0C36 22 20 2 20 2Z" fill="var(--accent)" stroke="var(--gameEdge)" strokeWidth="2.4" strokeLinejoin="round" />
+      <ellipse cx="13" cy="31" rx="3.5" ry="6" fill="var(--paperSolid)" opacity=".7" transform="rotate(20 13 31)" />
       {n !== undefined && (
         <text x="20" y="40" textAnchor="middle" fontSize="20" fontWeight="800" fill="var(--ink)" fontFamily="var(--font-display)">
           {n}
@@ -331,7 +332,7 @@ function GrowRound({ r, index, total, next, last }: { r: GrowCloudyRound; index:
       <div
         ref={attach}
         className={`relative aspect-[3/4] w-[min(100%,calc(54dvh*3/4))] overflow-hidden rounded-fk-lg border-[1.5px] border-edge sm:aspect-[4/3] sm:w-[min(100%,46rem,calc(56dvh*4/3))] ${ending && !reduce ? "fk-shake" : ""}`}
-        style={{ background: "linear-gradient(180deg, var(--paper), var(--sky))" }}
+        style={{ background: "linear-gradient(180deg, var(--sky1), var(--sky2))" }}
       >
         {/* The end: an evening sky with stars (not with reduced motion), and a rainbow. */}
         {ending && !reduce && (
@@ -346,7 +347,7 @@ function GrowRound({ r, index, total, next, last }: { r: GrowCloudyRound; index:
         {ending && (
           <div ref={rainbow} className="pointer-events-none absolute inset-x-0 top-[6%] flex justify-center" style={{ opacity: 0 }} aria-hidden>
             <svg viewBox="0 0 200 100" width="78%" style={{ overflow: "visible" }}>
-              {["#f6b26b", "#ffd966", "#a8d5a2", "#8fd3f0", "#b4a7d6"].map((c, k) => (
+              {RAINBOW.map((c, k) => (
                 <path key={c} d={`M${20 + k * 9} 100a${80 - k * 9} ${80 - k * 9} 0 0 1 ${160 - k * 18} 0`} fill="none" stroke={c} strokeWidth="9" />
               ))}
             </svg>

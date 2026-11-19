@@ -49,7 +49,7 @@ export function TherapistUpdates({ child }: { child: Child }) {
         </ul>
       )}
       {messages.map((m) => (
-        <blockquote key={m.at} className="rounded-2xl bg-teal-soft/50 p-3">
+        <blockquote key={m.at} className="rounded-2xl bg-primary-soft/50 p-3">
           <p className="whitespace-pre-line text-ink">{m.text}</p>
           <footer className="mt-1 text-xs text-muted">
             {by(m.name, m.profession)} · {fmtDate(m.at, lang, "date")}

@@ -1,8 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Fredoka, Nunito } from "next/font/google";
 import { LiveProvider } from "@/lib/live/client";
-import { SCHEME_SCRIPT } from "@/lib/scheme";
+import { APPEARANCE_SCRIPT } from "@/lib/appearanceScript";
 import { SITE_URL } from "@/lib/site";
+import { THEME_COLOR, THEME_CSS } from "@/lib/theme";
 import "./globals.css";
 
 const nunito = Nunito({ variable: "--font-nunito", subsets: ["latin", "cyrillic"], display: "swap" });
@@ -16,14 +17,18 @@ export const metadata: Metadata = {
     "FlexiKeys teaches children 3–10 letters, words, numbers and communication through calm games that quietly adapt to each child's hands, pace and needs.",
 };
 
-export const viewport: Viewport = { themeColor: "#fff1d6", width: "device-width", initialScale: 1, viewportFit: "cover" };
+export const viewport: Viewport = { themeColor: THEME_COLOR, width: "device-width", initialScale: 1, viewportFit: "cover" };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="uz" className={`${nunito.variable} ${fredoka.variable} h-full antialiased`} suppressHydrationWarning>
+    <html lang="uz" data-scheme="warm" data-mode="light" data-style="soft" className={`${nunito.variable} ${fredoka.variable} h-full antialiased`} suppressHydrationWarning>
+      <head>
+        {/* The colours of every scheme and mode (B107, lib/theme.ts). */}
+        <style dangerouslySetInnerHTML={{ __html: THEME_CSS }} />
+      </head>
       <body className="min-h-full">
-        {/* The colour scheme saved on this device, set before the first paint (B99). */}
-        <script dangerouslySetInnerHTML={{ __html: SCHEME_SCRIPT }} />
+        {/* The look saved on this device (scheme, light/dark, style), set before the first paint (B107). */}
+        <script dangerouslySetInnerHTML={{ __html: APPEARANCE_SCRIPT }} />
         {/* Live mode: one data cache for every page (a no-op in demo mode). */}
         <LiveProvider>{children}</LiveProvider>
       </body>

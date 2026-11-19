@@ -37,7 +37,7 @@ export function Correct({ on, children }: { on: boolean; children: ReactNode }) 
       <motion.span
         aria-hidden
         className="pointer-events-none absolute -inset-3 rounded-full"
-        style={{ background: "radial-gradient(circle, rgb(38 120 112 / .35) 0%, rgb(38 120 112 / 0) 70%)" }}
+        style={{ background: "radial-gradient(circle, color-mix(in srgb, var(--accent) 35%, transparent) 0%, transparent 70%)" }}
         initial={{ opacity: 0 }}
         animate={{ opacity: on ? [0, 1, 0.55] : 0 }}
         transition={{ duration: 0.3 }}
@@ -52,7 +52,7 @@ export function HintPulse() {
   return (
     <motion.span
       aria-hidden
-      className="pointer-events-none absolute -inset-1.5 rounded-[inherit] border-4 border-teal"
+      className="pointer-events-none absolute -inset-1.5 rounded-[inherit] border-4 border-primary"
       initial={{ opacity: 0, scale: 1 }}
       animate={{ opacity: [0.85, 0.25, 0.85], scale: [1, 1.07, 1] }}
       transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}

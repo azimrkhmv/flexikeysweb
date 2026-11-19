@@ -43,7 +43,7 @@ function Orders({ orders, owner }: { orders: KitOrder[]; owner: boolean }) {
           </li>
         ))}
       </ul>
-      {cancel.error && <p role="alert" className="text-sm font-semibold text-[#8f3a2c]">{cancel.error}</p>}
+      {cancel.error && <p role="alert" className="text-sm font-semibold text-primary">{cancel.error}</p>}
     </Card>
   );
 }
@@ -80,7 +80,7 @@ export default function HomeKit() {
     <>
       <PageHeader title={t("kit.title")} subtitle={t("kit.subtitle")} />
       <Card className="mb-6 flex flex-wrap items-start gap-4">
-        <span className="grid size-12 place-items-center rounded-2xl bg-sun-soft text-[#7a5a00]">
+        <span className="grid size-12 place-items-center rounded-2xl bg-sun-soft text-ink">
           <Package className="size-6" aria-hidden />
         </span>
         <div className="min-w-0 flex-1 space-y-2">
@@ -102,11 +102,11 @@ export default function HomeKit() {
 
       {!owner ? (
         <Card>
-          <p className="text-ink-2">{t("kit.ownerOnly")}</p>
+          <p className="text-muted">{t("kit.ownerOnly")}</p>
         </Card>
       ) : kids.length === 0 ? null : done ? (
         <Card className="space-y-3">
-          <p role="status" className="text-lg font-extrabold text-teal">
+          <p role="status" className="text-lg font-extrabold text-primary">
             {t("kit.done")}
           </p>
           <Button variant="outline" onClick={() => setDone(false)}>
@@ -137,7 +137,7 @@ export default function HomeKit() {
           )}
           <fieldset className="space-y-2">
             <legend className="mb-1 font-bold text-ink">{t("kit.allergy")}</legend>
-            <p className="text-sm text-ink-2">{t("kit.allergyHint")}</p>
+            <p className="text-sm text-muted">{t("kit.allergyHint")}</p>
             <div className="flex flex-wrap gap-4 text-sm">
               {(["no", "yes"] as const).map((a) => (
                 <label key={a} className="inline-flex items-center gap-1.5">
@@ -201,8 +201,8 @@ export default function HomeKit() {
           <Button type="submit" disabled={!ready} pending={order.pending}>
             {t("kit.order")}
           </Button>
-          {!answered && <p className="text-sm text-ink-2">{t("kit.answerFirst")}</p>}
-          {order.error && <p role="alert" className="text-sm font-semibold text-[#8f3a2c]">{order.error}</p>}
+          {!answered && <p className="text-sm text-muted">{t("kit.answerFirst")}</p>}
+          {order.error && <p role="alert" className="text-sm font-semibold text-primary">{order.error}</p>}
           </form>
         </Card>
       )}

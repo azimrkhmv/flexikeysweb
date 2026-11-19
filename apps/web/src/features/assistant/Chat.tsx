@@ -40,49 +40,49 @@ export function AssistantChat({ childId, needConsent }: { childId: string; needC
 
   return (
     <Card className="flex min-h-[60vh] flex-col gap-4">
-      <p role="note" className="rounded-2xl bg-sun-soft p-3 text-sm text-[#7a5a0c]">
+      <p role="note" className="rounded-2xl bg-sun-soft p-3 text-sm text-ink">
         {t("ai.disclaimer")}
       </p>
       {/* The demo has no AI behind it (B94): say so before the first question. */}
       {!LIVE && (
-        <p role="note" className="rounded-2xl bg-sky-soft p-3 text-sm text-ink">
+        <p role="note" className="rounded-2xl bg-tint p-3 text-sm text-ink">
           {t("ai.demo.note")}
         </p>
       )}
 
       {!enabled ? (
-        <p className="text-ink-2">{t("parent.ai.off")}</p>
+        <p className="text-muted">{t("parent.ai.off")}</p>
       ) : !consent ? (
         <div className="flex flex-col items-center gap-4 py-8 text-center">
           <Mascot mood="thinking" size={120} />
-          <p className="max-w-md text-ink-2">{needConsent ?? t("parent.ai.needConsent")}</p>
+          <p className="max-w-md text-muted">{needConsent ?? t("parent.ai.needConsent")}</p>
           {!needConsent && (
             <Button pending={enable.pending} onClick={() => enable.run(childId, "ai_processing", true)}>
               <Sparkles className="size-4" aria-hidden /> {t("parent.ai.enable")}
             </Button>
           )}
-          {enable.error && <p role="alert" className="text-sm font-semibold text-[#8f3a2c]">{enable.error}</p>}
+          {enable.error && <p role="alert" className="text-sm font-semibold text-primary">{enable.error}</p>}
         </div>
       ) : (
         <>
           <div className="flex-1 space-y-3 overflow-y-auto" aria-live="polite">
             {messages.length === 0 && (
-              <div className="flex flex-col items-center gap-3 py-6 text-center text-ink-2">
+              <div className="flex flex-col items-center gap-3 py-6 text-center text-muted">
                 <Mascot mood="calm" size={110} />
                 <p>{t("parent.ai.hello")}</p>
               </div>
             )}
             {messages.map((m) =>
               m.emergency && m.role === "assistant" ? (
-                <div key={m.id} role="alert" className="space-y-3 rounded-3xl border-2 border-[#c0573f] bg-peach-soft p-4 text-ink">
+                <div key={m.id} role="alert" className="space-y-3 rounded-3xl border-2 border-ink bg-tint-2 p-4 text-ink">
                   <p className="text-[15px] font-bold">{m.text}</p>
-                  <a href="tel:103" className="inline-flex h-11 items-center gap-2 rounded-full bg-[#c0573f] px-5 font-extrabold text-white">
+                  <a href="tel:103" className="inline-flex h-11 items-center gap-2 rounded-full bg-ink px-5 font-extrabold text-surface">
                     <Phone className="size-5" aria-hidden /> {t("ai.call103")}
                   </a>
                 </div>
               ) : (
                 <div key={m.id} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-                  <p className={`max-w-[85%] whitespace-pre-line rounded-3xl px-4 py-3 text-[15px] ${m.role === "user" ? "rounded-br-lg bg-primary text-white" : "rounded-bl-lg bg-surface-2 text-ink"}`}>{m.text}</p>
+                  <p className={`max-w-[85%] whitespace-pre-line rounded-3xl px-4 py-3 text-[15px] ${m.role === "user" ? "rounded-br-lg bg-btn text-btn-text" : "rounded-bl-lg bg-surface-2 text-ink"}`}>{m.text}</p>
                 </div>
               ),
             )}
@@ -96,12 +96,12 @@ export function AssistantChat({ childId, needConsent }: { childId: string; needC
 
           <div className="flex flex-wrap gap-2">
             {SUGGESTED.map((k) => (
-              <button key={k} type="button" onClick={() => send(t(k))} disabled={ask.pending} className="rounded-full bg-teal-soft px-3 py-1.5 text-sm font-bold text-[#1f6b63] hover:brightness-95 disabled:opacity-50">
+              <button key={k} type="button" onClick={() => send(t(k))} disabled={ask.pending} className="rounded-full bg-primary-soft px-3 py-1.5 text-sm font-bold text-primary hover:brightness-95 disabled:opacity-50">
                 {t(k)}
               </button>
             ))}
           </div>
-          {ask.error && <p role="alert" className="text-sm font-semibold text-[#8f3a2c]">{ask.error}</p>}
+          {ask.error && <p role="alert" className="text-sm font-semibold text-primary">{ask.error}</p>}
           <form
             className="flex gap-2"
             onSubmit={(e) => {

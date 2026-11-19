@@ -47,7 +47,7 @@ export default function ParentGames() {
             type="button"
             aria-pressed={tab === k}
             onClick={() => go(k)}
-            className={`h-10 shrink-0 rounded-full px-4 text-sm font-bold transition ${tab === k ? "bg-surface text-primary shadow-soft" : "text-ink-2 hover:text-ink"}`}
+            className={`h-10 shrink-0 rounded-full px-4 text-sm font-bold transition ${tab === k ? "bg-surface text-primary shadow-soft" : "text-muted hover:text-ink"}`}
           >
             {t(`parent.games.${k}`)}
           </button>
@@ -64,7 +64,7 @@ function AllGames({ pro }: { pro: boolean }) {
   const areas = SHOWN_AREAS.filter((a) => SKILL_GAMES.some((g) => g.area === a));
   return (
     <div className="space-y-8">
-      <p className="text-ink-2">{t("parent.games.allIntro", { n: SKILL_GAMES.length, areas: areas.length })}</p>
+      <p className="text-muted">{t("parent.games.allIntro", { n: SKILL_GAMES.length, areas: areas.length })}</p>
       {!pro && <ProLock text={t("parent.games.seedOnly")} />}
       {areas.map((area) => (
         <section key={area} aria-labelledby={`area-${area}`}>
@@ -88,7 +88,7 @@ function AllGames({ pro }: { pro: boolean }) {
                     )}
                     {name}
                   </h3>
-                  <p className="text-sm text-ink-2">
+                  <p className="text-sm text-muted">
                     <span className="block">{t("parent.games.first", { can: g.steps[0].can_do?.[lang] ?? "" })}</span>
                     <span className="mt-1 block">{t("parent.games.last", { can: g.steps[g.steps.length - 1].can_do?.[lang] ?? "" })}</span>
                   </p>
@@ -122,7 +122,7 @@ function ChildGames({ kids }: { kids: Child[] }) {
     return (
       <Card className="flex flex-col items-center gap-4 py-10 text-center">
         <Gamepad2 className="size-10 text-muted" aria-hidden />
-        <p className="max-w-md text-ink-2">{t("parent.games.noChild")}</p>
+        <p className="max-w-md text-muted">{t("parent.games.noChild")}</p>
         <LinkButton href="/parent/children/new">
           <Plus className="size-4" aria-hidden /> {t("parent.home.addChild")}
         </LinkButton>
@@ -140,7 +140,7 @@ function ChildGames({ kids }: { kids: Child[] }) {
               role="radio"
               aria-checked={c.id === child.id}
               onClick={() => setPicked(c.id)}
-              className={`flex shrink-0 items-center gap-3 rounded-2xl p-3 text-left font-bold transition ${c.id === child.id ? "bg-surface shadow-soft ring-2 ring-teal" : "hover:bg-surface/70"}`}
+              className={`flex shrink-0 items-center gap-3 rounded-2xl p-3 text-left font-bold transition ${c.id === child.id ? "bg-surface shadow-soft ring-2 ring-primary" : "hover:bg-surface/70"}`}
             >
               <Avatar emoji={c.avatar} size={40} tone="lavender" /> {c.name}
             </button>
@@ -164,7 +164,7 @@ function PlanGames({ child }: { child: Child }) {
     return (
       <Card className="flex flex-col items-center gap-4 py-10 text-center">
         <Gamepad2 className="size-10 text-muted" aria-hidden />
-        <p className="max-w-md text-ink-2">{t("parent.games.noPlan", { name: child.name })}</p>
+        <p className="max-w-md text-muted">{t("parent.games.noPlan", { name: child.name })}</p>
         <LinkButton href={`/parent/children/new?child=${child.id}`}>{round ? t("intake.continue") : t("plan.start")}</LinkButton>
       </Card>
     );
@@ -191,7 +191,7 @@ function PlanGames({ child }: { child: Child }) {
         </Button>
       </div>
       {start.error && (
-        <p role="alert" className="text-sm font-semibold text-[#8f3a2c]">
+        <p role="alert" className="text-sm font-semibold text-primary">
           {start.error}
         </p>
       )}

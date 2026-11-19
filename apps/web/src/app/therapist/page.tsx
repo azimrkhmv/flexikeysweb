@@ -85,8 +85,8 @@ export default function TherapistHome() {
           ) : (
             <ul className="mb-4 space-y-2">
               {invites.map((l) => (
-                <li key={l.id} className="flex items-center gap-3 rounded-2xl bg-teal-soft/50 p-3">
-                  <Mail className="size-5 shrink-0 text-teal" aria-hidden />
+                <li key={l.id} className="flex items-center gap-3 rounded-2xl bg-primary-soft/50 p-3">
+                  <Mail className="size-5 shrink-0 text-primary" aria-hidden />
                   <div className="min-w-0 flex-1 text-sm">
                     <div className="font-bold text-ink">{l.childName ?? sel.child(db, l.childId)?.name}</div>
                     <div className="text-muted">{fmtDate(l.createdAt, lang, "dayMonth")}</div>
@@ -121,7 +121,7 @@ export default function TherapistHome() {
             </Button>
           </form>
           {accept.error && (
-            <p role="alert" className="mt-3 text-sm font-semibold text-[#8f3a2c]">
+            <p role="alert" className="mt-3 text-sm font-semibold text-primary">
               {accept.error}
             </p>
           )}

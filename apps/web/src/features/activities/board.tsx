@@ -50,7 +50,7 @@ export function Sort({ activity, onDone }: EngineProps<"sort">) {
             label={VOCAB[x.id]?.word[ctx.learnLang] ?? x.id}
             onSelect={() => setPicked(x.id)}
             selected={x.id === current?.id}
-            className={`grid place-items-center rounded-fk-lg border-4 bg-surface-2 shadow-soft transition ${x.id === current?.id ? "-translate-y-1 border-teal bg-teal-soft" : "border-transparent"}`}
+            className={`grid place-items-center rounded-fk-lg border-4 bg-surface-2 shadow-soft transition ${x.id === current?.id ? "-translate-y-1 border-primary bg-primary-soft" : "border-transparent"}`}
             style={{ width: size, height: size }}
           >
             <ItemArt id={x.id} size={Math.round(size * 0.62)} />
@@ -66,7 +66,7 @@ export function Sort({ activity, onDone }: EngineProps<"sort">) {
             pulse={!!current && hint.show && current.gi === gi}
             disabled={!!current && hint.fade && current.gi !== gi}
             scanSkip={!!current && hint.fade && current.gi !== gi}
-            className={`flex min-h-[160px] w-full flex-col items-center justify-start gap-2 rounded-fk-lg border-4 border-dashed border-sky bg-sky-soft/60 p-4 transition hover:bg-sky-soft ${current && hint.fade && current.gi !== gi ? "opacity-25" : ""}`}
+            className={`flex min-h-[160px] w-full flex-col items-center justify-start gap-2 rounded-fk-lg border-4 border-dashed border-hill1 bg-tint/60 p-4 transition hover:bg-tint ${current && hint.fade && current.gi !== gi ? "opacity-25" : ""}`}
           >
             <span className="text-4xl" aria-hidden>
               {g.icon}
@@ -139,7 +139,7 @@ export function Puzzle({ activity, onDone }: EngineProps<"puzzle">) {
                 pulse={hint.show && slot === current}
                 disabled={hint.fade && slot !== current}
                 scanSkip={hint.fade && slot !== current}
-                className={`rounded-xl border-4 border-dashed border-sky bg-surface/70 ${hint.fade && slot !== current ? "opacity-25" : ""}`}
+                className={`rounded-xl border-4 border-dashed border-hill1 bg-surface/70 ${hint.fade && slot !== current ? "opacity-25" : ""}`}
                 style={{ width: "var(--piece)", height: "var(--piece)" }}
               >
                 <span className="sr-only">{slot + 1}</span>
@@ -154,7 +154,7 @@ export function Puzzle({ activity, onDone }: EngineProps<"puzzle">) {
               label={t("act.piece", { n: p + 1 })}
               onSelect={() => setPicked(p)}
               selected={p === current}
-              className={`overflow-hidden rounded-xl border-4 transition ${p === current ? "-translate-y-1 border-teal shadow-lift" : "border-transparent shadow-soft"}`}
+              className={`overflow-hidden rounded-xl border-4 transition ${p === current ? "-translate-y-1 border-primary shadow-lift" : "border-transparent shadow-soft"}`}
               style={{ width: "var(--piece)", height: "var(--piece)" }}
             >
               <Piece index={p} g={g} emoji={emoji} />
@@ -180,7 +180,7 @@ function Piece({ index, g, emoji }: { index: number; g: number; emoji: string })
           left: `-${col * 100}%`,
           top: `-${row * 100}%`,
           containerType: "size",
-          background: "radial-gradient(circle at 50% 45%, #fdf3d4 0%, #e1f1de 55%, #d6e6f8 100%)",
+          background: "radial-gradient(circle at 50% 45%, var(--sunSoft) 0%, var(--sky1) 55%, var(--sky2) 100%)",
         }}
       >
         <span style={{ fontSize: "72cqw", lineHeight: 1 }}>{emoji}</span>
@@ -235,13 +235,13 @@ function SentenceRound({ text, index, total, last, next }: { text: string; index
       total={total}
       action={solved && <ActionButton label={t(last ? "act.done" : "act.next")} onSelect={next} pulse />}
     >
-      <div className="flex min-h-24 w-full max-w-3xl flex-wrap items-center justify-center gap-3 rounded-fk-lg border-4 border-dashed border-sky bg-sky-soft/50 p-4">
+      <div className="flex min-h-24 w-full max-w-3xl flex-wrap items-center justify-center gap-3 rounded-fk-lg border-4 border-dashed border-hill1 bg-tint/50 p-4">
         {words.slice(0, pos).map((w, k) => (
           <span key={k} className="fk-pop rounded-2xl bg-surface px-5 py-3 text-2xl font-extrabold text-ink shadow-soft">
             {w}
           </span>
         ))}
-        {!solved && <span className="h-14 w-24 rounded-2xl border-2 border-dashed border-sky" aria-hidden />}
+        {!solved && <span className="h-14 w-24 rounded-2xl border-2 border-dashed border-hill1" aria-hidden />}
       </div>
       <div className="flex flex-wrap justify-center" style={{ gap: 12 + ctx.profile.spacing }}>
         {cards
@@ -254,7 +254,7 @@ function SentenceRound({ text, index, total, last, next }: { text: string; index
               pulse={!solved && hint.show && w === words[pos]}
               disabled={hint.fade && w !== words[pos]}
               scanSkip={hint.fade && w !== words[pos]}
-              className={`rounded-2xl bg-sun-soft px-6 text-2xl font-extrabold text-ink shadow-soft hover:bg-[#fbe9b4] ${hint.fade && w !== words[pos] ? "opacity-25" : ""}`}
+              className={`rounded-2xl bg-sun-soft px-6 text-2xl font-extrabold text-ink shadow-soft hover:brightness-95 ${hint.fade && w !== words[pos] ? "opacity-25" : ""}`}
               style={{ minHeight: sizeFor(ctx, 84) }}
             >
               {w}

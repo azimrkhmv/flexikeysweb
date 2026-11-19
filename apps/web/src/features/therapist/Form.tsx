@@ -72,7 +72,7 @@ export function ProfileCard() {
         <Button type="submit" size="sm" pending={save.pending}>
           {t("common.save")}
         </Button>
-        {save.error && <p className="text-sm font-semibold text-[#8f3a2c]">{save.error}</p>}
+        {save.error && <p className="text-sm font-semibold text-primary">{save.error}</p>}
       </form>
     </Card>
   );
@@ -98,7 +98,7 @@ export function NotAsked({ childId }: { childId: string }) {
         {ids.map((id) => (
           <li key={id}>
             <span className="font-bold text-ink">{inLang(Q_BY_ID[id].text, lang)}</span>
-            <span className="text-ink-2"> {answer(id)}</span>
+            <span className="text-muted"> {answer(id)}</span>
           </li>
         ))}
       </ul>
@@ -117,7 +117,7 @@ function Q({ id, required, missing: miss, children }: { id: FormId; required: bo
       </legend>
       {children}
       {miss && (
-        <p role="alert" className="text-sm font-semibold text-[#8f3a2c]">
+        <p role="alert" className="text-sm font-semibold text-primary">
           {t("tform.missing")}
         </p>
       )}
@@ -329,10 +329,10 @@ export function TherapistForm({ childId }: { childId: string }) {
           <Button type="submit" pending={save.pending}>
             {t("common.save")}
           </Button>
-          {saved && <span className="text-sm font-semibold text-teal">{t(saved.planRebuilt ? "tform.rebuilt" : "tform.saved")}</span>}
-          {tried && open.length > 0 && <span className="text-sm font-semibold text-[#8f3a2c]">{t("tform.fillRequired")}</span>}
+          {saved && <span className="text-sm font-semibold text-primary">{t(saved.planRebuilt ? "tform.rebuilt" : "tform.saved")}</span>}
+          {tried && open.length > 0 && <span className="text-sm font-semibold text-primary">{t("tform.fillRequired")}</span>}
         </div>
-        {save.error && <p className="text-sm font-semibold text-[#8f3a2c]">{save.error}</p>}
+        {save.error && <p className="text-sm font-semibold text-primary">{save.error}</p>}
       </form>
     </Card>
   );

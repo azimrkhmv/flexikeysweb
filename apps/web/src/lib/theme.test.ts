@@ -1,0 +1,65 @@
+import { readFileSync } from "node:fs";
+import { describe, expect, it } from "vitest";
+import { CLOUDY_TONE_FORMS, contrast, PALETTES, SETS, THEME_CSS, TOKEN_NAMES, tokensOf } from "./theme";
+
+// B107, Update 3 spec 2.3: the contrast of the spec's pairs in all 11 sets (WCAG 2.2 AA: 4.5:1 for text, 3:1 for a
+// game target's edge), and our own pairs for the pale tints derived in lib/theme.ts.
+
+const SPEC_PAIRS: [what: string, fg: string, bg: string, min: number][] = [
+  ["body text on a card", "ink", "paperSolid", 4.5],
+  ["soft text on a card", "muted", "paperSolid", 4.5],
+  ["accent text on a card", "accentText", "paperSolid", 4.5],
+  ["button text on the top of the main button", "btnText", "btnA", 4.5],
+  ["button text on the bottom of the main button", "btnText", "btnB", 4.5],
+  ["text on the page", "ink", "sky2", 4.5],
+  ["soft text on the page", "muted", "sky1", 4.5],
+  ["Cloudy's face on his body", "cloudyFace", "cloudyBody", 4.5],
+  ["a game target's edge on the sky", "gameEdge", "sky2", 3],
+];
+// Ours: every text colour on every surface it is used on.
+const OUR_PAIRS: [string, string, string, number][] = [
+  ...["sky1", "sky2", "tint", "tint2", "accentSoft", "sunSoft"].flatMap((bg): [string, string, string, number][] => [
+    [`body text on ${bg}`, "ink", bg, 4.5],
+    [`soft text on ${bg}`, "muted", bg, 4.5],
+  ]),
+  ["accent text on the page", "accentText", "sky1", 4.5],
+  ["accent text on its pale wash (menu, soft buttons)", "accentText", "accentSoft", 4.5],
+  ["a card colour on the text colour (inverted emergency button)", "paperSolid", "ink", 4.5],
+  ["the focus ring (accent text) on the page", "accentText", "sky2", 3],
+  // Cloudy's face on each of his forms (a drawing: 3:1).
+  ...CLOUDY_TONE_FORMS.map((f): [string, string, string, number] => [`Cloudy's face on the ${f}`, "cloudyFace", `cl-${f}`, 3]),
+];
+
+describe("the 11 sets", () => {
+  it("are Warm Hills, Sky, Mint, Lilac, Peach in light and dark, and Night in dark", () => {
+    expect(SETS.map((s) => s.join("."))).toEqual([
+      "warm.light", "warm.dark", "sky.light", "sky.dark", "mint.light", "mint.dark", "lilac.light", "lilac.dark", "peach.light", "peach.dark", "night.dark",
+    ]);
+  });
+  it("each has every token", () => {
+    for (const [s, m] of SETS) expect(Object.keys(PALETTES[s][m]).sort()).toEqual([...TOKEN_NAMES].sort());
+  });
+  it("hold the demo's values exactly (the palette between PALETTES-START and PALETTES-END)", () => {
+    const demo = readFileSync(new URL("../../../../docs/demo-2026-11-19/index.html", import.meta.url), "utf8");
+    const between = (text: string) => text.slice(text.indexOf("const P = {"), text.indexOf("/* PALETTES-END */")).replace(/\s+/g, "");
+    const ours = readFileSync(new URL("./theme.ts", import.meta.url), "utf8");
+    expect(between(ours).length).toBeGreaterThan(5000);
+    expect(between(ours)).toBe(between(demo));
+  });
+  it("Cloudy's face is the scheme's dark text colour in light and in dark mode", () => {
+    expect(PALETTES.warm.dark.cloudyFace).toBe(PALETTES.warm.light.ink);
+    expect(PALETTES.night.dark.cloudyFace).toBe("#2A2F5C");
+  });
+  it("Night's light set is its dark set", () => expect(PALETTES.night.light).toBe(PALETTES.night.dark));
+  it("the CSS has a block for every scheme and mode", () => {
+    for (const [s, m] of SETS) expect(THEME_CSS).toContain(`[data-scheme="${s}"][data-mode="${m}"]{`);
+  });
+});
+
+describe("contrast in all 11 sets (WCAG 2.2 AA)", () => {
+  for (const [s, m] of SETS) {
+    const t = tokensOf(s, m) as Record<string, string>;
+    for (const [what, fg, bg, min] of [...SPEC_PAIRS, ...OUR_PAIRS])
+      it(`${s} ${m}: ${what} ≥ ${min}:1`, () => expect(contrast(t[fg], t[bg])).toBeGreaterThanOrEqual(min));
+  }
+});

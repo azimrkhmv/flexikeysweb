@@ -43,7 +43,7 @@ export default function Exercises() {
               role="radio"
               aria-checked={c.id === child?.id}
               onClick={() => setPicked(c.id)}
-              className={`flex shrink-0 items-center gap-3 rounded-2xl p-3 text-left font-bold transition ${c.id === child?.id ? "bg-surface shadow-soft ring-2 ring-teal" : "hover:bg-surface/70"}`}
+              className={`flex shrink-0 items-center gap-3 rounded-2xl p-3 text-left font-bold transition ${c.id === child?.id ? "bg-surface shadow-soft ring-2 ring-primary" : "hover:bg-surface/70"}`}
             >
               <Avatar emoji={c.avatar} size={40} tone="lavender" /> {c.name}
             </button>
@@ -76,7 +76,7 @@ function ExerciseCard({ video, inPlan }: { video: ExerciseVideo; inPlan: boolean
       {url ? (
         <video controls autoPlay preload="metadata" src={url} className="aspect-video w-full bg-ink" aria-label={title} />
       ) : (
-        <div className="relative grid aspect-video place-items-center" style={{ background: "linear-gradient(160deg, var(--paper), var(--sky))" }}>
+        <div className="relative grid aspect-video place-items-center" style={{ background: "linear-gradient(160deg, var(--hill1), var(--hill2))" }}>
           {ready ? (
             <button
               type="button"
@@ -96,11 +96,11 @@ function ExerciseCard({ video, inPlan }: { video: ExerciseVideo; inPlan: boolean
       )}
       <div className="flex flex-1 flex-col gap-2 p-4">
         <h2 className="font-extrabold text-ink">{title}</h2>
-        <p className="text-sm text-ink-2">
+        <p className="text-sm text-muted">
           {t(`area.${video.bodyArea}`)} · {t("exercises.minutes")}
         </p>
         <div className="mt-auto flex flex-wrap gap-2 pt-1">
-          {inPlan && <span className="rounded-full bg-leaf-soft px-3 py-1 text-xs font-bold text-ink">{t("exercises.inPlan")}</span>}
+          {inPlan && <span className="rounded-full bg-primary-soft px-3 py-1 text-xs font-bold text-ink">{t("exercises.inPlan")}</span>}
           {!ready && <span className="rounded-full bg-sun-soft px-3 py-1 text-xs font-bold text-ink">{t("exercises.waiting")}</span>}
         </div>
         <FormError>{watch.error}</FormError>

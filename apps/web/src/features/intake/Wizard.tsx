@@ -86,16 +86,16 @@ export function IntakeWizard({ childId: initialChild }: { childId?: string }) {
     <div className="mx-auto max-w-2xl">
       <p className="mb-1 text-sm font-bold text-muted">{t("intake.progress", { n: i + 1, total: steps.length })}</p>
       <div className="mb-6 h-2 overflow-hidden rounded-full bg-surface-2" aria-hidden>
-        <div className="h-full rounded-full bg-teal transition-all" style={{ width: `${((i + 1) / steps.length) * 100}%` }} />
+        <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${((i + 1) / steps.length) * 100}%` }} />
       </div>
       <h1 className="text-2xl font-extrabold text-ink sm:text-3xl">{t(`intake.step.${step.id}`)}</h1>
-      {(step.id === "safety" || step.id === "talk") && <p className="mt-2 text-ink-2">{t(`intake.step.${step.id}.d`)}</p>}
+      {(step.id === "safety" || step.id === "talk") && <p className="mt-2 text-muted">{t(`intake.step.${step.id}.d`)}</p>}
 
       {step.id === "health_consent" ? (
         <Card className="mt-6 space-y-4 p-5">
-          <ShieldCheck className="size-8 text-teal" aria-hidden />
+          <ShieldCheck className="size-8 text-primary" aria-hidden />
           <p className="text-ink">{t("intake.health.lead")}</p>
-          <p className="text-sm text-ink-2">{t("intake.health.points")}</p>
+          <p className="text-sm text-muted">{t("intake.health.points")}</p>
           <FormError>{act.error}</FormError>
           <div className="flex flex-wrap gap-3">
             {i > 0 && <Button variant="ghost" onClick={() => setI(i - 1)}>{t("intake.back")}</Button>}
@@ -159,8 +159,8 @@ export function Ready({ name, plan, minutes, childId }: { name: string; plan: Ro
   return (
     <div className="mx-auto max-w-2xl text-center">
       <h1 className="text-3xl font-extrabold text-ink">{t("intake.ready.title", { name })}</h1>
-      <p className="mt-3 text-lg text-ink-2">{plan.exercisesAllowed ? t("intake.ready.lead", { min: minutes }) : t(gamesOnly)}</p>
-      <p className="mt-4 rounded-2xl bg-sky-soft px-4 py-3 text-sm font-semibold text-ink">{t("intake.ready.playcheck")}</p>
+      <p className="mt-3 text-lg text-muted">{plan.exercisesAllowed ? t("intake.ready.lead", { min: minutes }) : t(gamesOnly)}</p>
+      <p className="mt-4 rounded-2xl bg-tint px-4 py-3 text-sm font-semibold text-ink">{t("intake.ready.playcheck")}</p>
       <div className="mt-6 flex justify-center gap-3">
         <LinkButton href={`/parent/child/${childId}`} size="lg">{t("intake.ready.open")}</LinkButton>
       </div>

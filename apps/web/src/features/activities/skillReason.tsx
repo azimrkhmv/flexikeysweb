@@ -8,6 +8,7 @@ import { CIRCLE, E, N, S, turn, W, watered, wet, type BalanceRound, type Clue, t
 import { ChoiceEngine, PromptCard, type ChoiceSpec } from "./choice";
 import { ActionButton, answer, denseSize, Frame, sizeFor, useActT, useClock, useHint } from "./kit";
 import { Series, useBox, type PlayerProps } from "./skillKit";
+import { WATER_COLOURS } from "@/content/taskColors";
 
 // Players of the new Reasoning games (games spec 8 Nov 2026, §6.4).
 
@@ -22,7 +23,7 @@ export function NextPatternPlayer({ rounds, onDone }: PlayerProps<"next_pattern"
 }
 
 const Gap = ({ size }: { size: string }) => (
-  <span className="grid place-items-center rounded-xl border-4 border-dashed border-sky bg-surface font-extrabold text-muted" style={{ width: size, height: size, fontSize: `calc(${size} * 0.5)` }} aria-hidden>
+  <span className="grid place-items-center rounded-xl border-4 border-dashed border-hill1 bg-surface font-extrabold text-muted" style={{ width: size, height: size, fontSize: `calc(${size} * 0.5)` }} aria-hidden>
     ?
   </span>
 );
@@ -90,7 +91,7 @@ function ScaleArt({ s, right, small }: { s: Scale; right?: ReactNode; small?: bo
   const pan = (xs: string[], dy: number, extra?: ReactNode) => (
     <div className={`flex ${small ? "w-[74px]" : "w-[104px]"} flex-col items-center transition-transform duration-500`} style={{ transform: `translateY(${dy}px)` }}>
       <div className="flex min-h-[40px] flex-wrap items-end justify-center gap-0.5">{extra ?? xs.map((x, k) => <ItemArt key={k} id={x} size={item} />)}</div>
-      <div className="h-2.5 w-full rounded-b-full bg-[#c9a66b] shadow-soft" />
+      <div className="h-2.5 w-full rounded-b-full bg-hill2 shadow-soft" />
     </div>
   );
   return (
@@ -99,9 +100,9 @@ function ScaleArt({ s, right, small }: { s: Scale; right?: ReactNode; small?: bo
         {pan(s.left, s.tilt * -10)}
         {pan(s.right, s.tilt * 10, right)}
       </div>
-      <div className={`h-2 ${small ? "w-[146px]" : "w-[200px]"} rounded-full bg-[#8d6e46] transition-transform duration-500`} style={{ transform: `rotate(${s.tilt * 6}deg)` }} />
-      <div className={`${small ? "h-5" : "h-8"} w-3 bg-[#8d6e46]`} />
-      <div className="h-2 w-16 rounded-full bg-[#8d6e46]" />
+      <div className={`h-2 ${small ? "w-[146px]" : "w-[200px]"} rounded-full bg-trunk transition-transform duration-500`} style={{ transform: `rotate(${s.tilt * 6}deg)` }} />
+      <div className={`${small ? "h-5" : "h-8"} w-3 bg-trunk`} />
+      <div className="h-2 w-16 rounded-full bg-trunk" />
     </div>
   );
 }
@@ -189,7 +190,7 @@ function PipesBoard({ r, next, last }: { r: PipesRound; next: () => void; last: 
                     disabled={solved || rest}
                     scanSkip={rest}
                     pulse={hint.show && !solved && i === wrongPiece}
-                    className={`rounded-lg bg-[#e9dcb8] disabled:opacity-100 ${rest ? "opacity-40 disabled:opacity-40" : ""}`}
+                    className={`rounded-lg bg-surface-2 disabled:opacity-100 ${rest ? "opacity-40 disabled:opacity-40" : ""}`}
                     style={{ width: cell, height: cell, minWidth: 60, minHeight: 60 }}
                   >
                     <PipeArt mask={cells[i]} wet={water.has(i)} />
@@ -212,10 +213,10 @@ function PipesBoard({ r, next, last }: { r: PipesRound; next: () => void; last: 
           </div>
           {shown < r.cols && (
             <div className="flex gap-3">
-              <Target label={t("act.skill.pipes.left")} onSelect={() => setFrom(Math.max(0, start - (shown - 1)))} disabled={start === 0} className="rounded-full bg-sky-soft px-5 font-extrabold text-ink shadow-soft disabled:opacity-40">
+              <Target label={t("act.skill.pipes.left")} onSelect={() => setFrom(Math.max(0, start - (shown - 1)))} disabled={start === 0} className="rounded-full bg-tint px-5 font-extrabold text-ink shadow-soft disabled:opacity-40">
                 ◀ {t("act.skill.pipes.left")}
               </Target>
-              <Target label={t("act.skill.pipes.right")} onSelect={() => setFrom(Math.min(r.cols - shown, start + shown - 1))} disabled={start + shown >= r.cols} className="rounded-full bg-sky-soft px-5 font-extrabold text-ink shadow-soft disabled:opacity-40">
+              <Target label={t("act.skill.pipes.right")} onSelect={() => setFrom(Math.min(r.cols - shown, start + shown - 1))} disabled={start + shown >= r.cols} className="rounded-full bg-tint px-5 font-extrabold text-ink shadow-soft disabled:opacity-40">
                 {t("act.skill.pipes.right")} ▶
               </Target>
             </div>
@@ -228,7 +229,7 @@ function PipesBoard({ r, next, last }: { r: PipesRound; next: () => void; last: 
 
 /** A pipe piece: arms from the middle to each open side; blue once water runs through it. */
 function PipeArt({ mask, wet: isWet }: { mask: number; wet: boolean }) {
-  const color = isWet ? "#5b9be0" : "#9aa6b8";
+  const color = isWet ? WATER_COLOURS.wet : WATER_COLOURS.dry;
   const arms: [number, string][] = [
     [N, "M50 50V0"],
     [E, "M50 50H100"],
@@ -264,7 +265,7 @@ function Houses({ r, onDone }: { r: LogicHousesRound; onDone: () => void }) {
       </ul>
       <div className="flex flex-wrap justify-center gap-1.5">
         {r.solution.map((a, h) => (
-          <span key={h} className={`flex w-[60px] flex-col items-center rounded-2xl bg-sun-soft/70 pb-1 shadow-soft ${h === q ? "ring-4 ring-sky" : ""}`}>
+          <span key={h} className={`flex w-[60px] flex-col items-center rounded-2xl bg-sun-soft/70 pb-1 shadow-soft ${h === q ? "ring-4 ring-hill1" : ""}`}>
             <span className="text-3xl leading-tight" aria-hidden>
               🏠
             </span>
@@ -295,7 +296,7 @@ function ClueChip({ c }: { c: Clue }) {
           <span aria-hidden>→ 🏠{c.h + 1}</span>
         </>
       ) : c.t === "before" ? (
-        <span className="flex items-center rounded-xl border-2 border-sky px-1" aria-hidden>
+        <span className="flex items-center rounded-xl border-2 border-hill1 px-1" aria-hidden>
           {pic(c.a)}
           {pic(c.b)}
         </span>

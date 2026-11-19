@@ -14,7 +14,7 @@ import type { IntakeValue } from "@/lib/types";
 type Set = (id: string, v: IntakeValue | undefined) => void;
 
 export const chip =
-  "inline-flex min-h-12 cursor-pointer items-center rounded-2xl border border-line px-4 py-2 text-sm font-bold text-ink transition hover:bg-surface-2 has-checked:border-teal has-checked:bg-teal-soft has-focus-visible:ring-4 has-focus-visible:ring-primary-soft";
+  "inline-flex min-h-12 cursor-pointer items-center rounded-2xl border border-line px-4 py-2 text-sm font-bold text-ink transition hover:bg-surface-2 has-checked:border-primary has-checked:bg-primary-soft has-focus-visible:ring-4 has-focus-visible:ring-primary-soft";
 
 /** A chip with a radio or checkbox inside. `onClear`: a radio already chosen is cleared by choosing it again (a click,
  * or Space on the keyboard; B63). A checkbox chip shows a small box with a tick, so "tick several" is clear (B68). */
@@ -23,7 +23,7 @@ export function Choice({ name, type, checked, onChange, label, onClear, classNam
     <label className={`${chip} ${className}`}>
       <input type={type} name={name} checked={checked} onChange={onChange} onClick={checked ? onClear : undefined} className="sr-only" />
       {type === "checkbox" && (
-        <span aria-hidden className={`mr-2 grid size-5 shrink-0 place-items-center rounded-md border-2 ${checked ? "border-teal bg-teal text-white" : "border-line bg-surface"}`}>
+        <span aria-hidden className={`mr-2 grid size-5 shrink-0 place-items-center rounded-md border-2 ${checked ? "border-primary bg-btn text-btn-text" : "border-line bg-surface"}`}>
           {checked && <Check className="size-3.5" strokeWidth={3.5} />}
         </span>
       )}
@@ -218,7 +218,7 @@ function OwnWords({ q, label, answers, set, childId }: { q: Question; label: str
           ) : (
             <Button variant="outline" onClick={start}><Mic className="size-4" aria-hidden /> {t("intake.P39.record")}</Button>
           )}
-          {voice && !recording && seconds > 0 && <span role="status" className="text-sm font-semibold text-ink-2">{t("intake.P39.recorded", { s: seconds })}</span>}
+          {voice && !recording && seconds > 0 && <span role="status" className="text-sm font-semibold text-muted">{t("intake.P39.recorded", { s: seconds })}</span>}
           {listen && !recording && <audio controls src={listen} aria-label={t("intake.P39.listen")} className="h-10 max-w-full" />}
         </div>
       )}
@@ -245,7 +245,7 @@ function Clips({ q, answers, set, childId }: { q: Question; answers: Answers; se
   return (
     <div className="space-y-3">
       <p className="font-bold text-ink">{t("intake.P40")}</p>
-      <p className="text-sm text-ink-2">{t("intake.P40.d")}</p>
+      <p className="text-sm text-muted">{t("intake.P40.d")}</p>
       <Checkbox
         checked={consent}
         onChange={(on) => {
@@ -285,7 +285,7 @@ function Clips({ q, answers, set, childId }: { q: Question; answers: Answers; se
               <Video className="mr-2 size-4" aria-hidden /> {t("intake.P40.add")}
             </label>
           )}
-          {add.error && <p role="alert" className="text-sm font-semibold text-[#8f3a2c]">{add.error}</p>}
+          {add.error && <p role="alert" className="text-sm font-semibold text-primary">{add.error}</p>}
         </>
       )}
     </div>

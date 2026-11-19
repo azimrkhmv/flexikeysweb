@@ -60,7 +60,7 @@ export default function DesignPage() {
             {TOKENS.map((k) => (
               <div key={k} className="overflow-hidden rounded-2xl border border-line bg-surface">
                 <div className="h-14" style={{ background: `var(--fk-${k})` }} />
-                <div className="px-2 py-1.5 text-xs font-bold text-ink-2">--fk-{k}</div>
+                <div className="px-2 py-1.5 text-xs font-bold text-muted">--fk-{k}</div>
               </div>
             ))}
           </div>
@@ -114,7 +114,7 @@ export default function DesignPage() {
               </Card>
               <Card className="space-y-2">
                 <Meter value={0.72} label="Example 72%" />
-                <Meter value={0.35} label="Example 35%" tone="var(--fk-sky)" />
+                <Meter value={0.35} label="Example 35%" tone="var(--hill1)" />
               </Card>
             </div>
           </div>
@@ -125,12 +125,12 @@ export default function DesignPage() {
             {MOODS.map((m) => (
               <figure key={m} className="flex flex-col items-center gap-1">
                 <Mascot mood={m} size={130} float={false} />
-                <figcaption className="text-sm font-bold text-ink-2">{m}</figcaption>
+                <figcaption className="text-sm font-bold text-muted">{m}</figcaption>
               </figure>
             ))}
             <figure className="flex flex-col items-center gap-1">
-              <Mascot mood="happy" size={130} hat="👑" tint="#dcf3e6" float={false} />
-              <figcaption className="text-sm font-bold text-ink-2">shop: hat + tint</figcaption>
+              <Mascot mood="happy" size={130} hat="👑" tint="var(--tint)" float={false} />
+              <figcaption className="text-sm font-bold text-muted">shop: hat + tint</figcaption>
             </figure>
           </div>
         </Section>
@@ -148,7 +148,7 @@ export default function DesignPage() {
         <Section title="Adaptive keyboard presets">
           {PRESETS.map(([label, p]) => (
             <div key={label} className="space-y-2">
-              <p className="font-bold text-ink-2">{label}</p>
+              <p className="font-bold text-muted">{label}</p>
               <PlayContext.Provider value={{ ...ctx, profile: { ...DEFAULT_PROFILE, ...p } }}>
                 <AdaptiveKeyboard lang={lang} needed={tokenize(lang === "ru" ? "кот" : lang === "uz" ? "koʻz" : "cat", lang)} hint={p.hintLevel ? tokenize(lang === "ru" ? "к" : "k", lang)[0] : null} onKey={() => {}} />
               </PlayContext.Provider>
@@ -162,7 +162,7 @@ export default function DesignPage() {
               const Engine = ENGINES[activity.kind] as ComponentType<EngineProps>;
               return (
                 <div key={kind} className="space-y-2">
-                  <p className="font-bold text-ink-2">
+                  <p className="font-bold text-muted">
                     {kind} <span className="text-muted">· {activity.id}</span>
                   </p>
                   <PlayContext.Provider value={ctx}>

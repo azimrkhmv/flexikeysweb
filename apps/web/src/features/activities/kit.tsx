@@ -150,7 +150,7 @@ export function Dots({ total, done }: { total: number; done: number }) {
       {Array.from({ length: total }, (_, i) => (
         <span
           key={i}
-          className={`rounded-full transition-all ${total > 10 ? (i === done ? "size-3 bg-sky ring-2 ring-sky-soft" : `size-2 ${i < done ? "bg-teal" : "bg-line"}`) : i < done ? "size-3 bg-teal" : i === done ? "size-4 bg-sky ring-4 ring-sky-soft" : "size-3 bg-line"}`}
+          className={`rounded-full transition-all ${total > 10 ? (i === done ? "size-3 bg-hill1 ring-2 ring-tint" : `size-2 ${i < done ? "bg-primary" : "bg-line"}`) : i < done ? "size-3 bg-primary" : i === done ? "size-4 bg-hill1 ring-4 ring-tint" : "size-3 bg-line"}`}
         />
       ))}
     </div>
@@ -161,7 +161,7 @@ export function Dots({ total, done }: { total: number; done: number }) {
 export function WatchAgain({ onSelect, disabled }: { onSelect: () => void; disabled?: boolean }) {
   const t = useActT();
   return (
-    <Target label={t("act.watch_again")} onSelect={onSelect} disabled={disabled} className="rounded-full bg-sky-soft px-8 text-lg font-extrabold text-ink shadow-soft disabled:opacity-40">
+    <Target label={t("act.watch_again")} onSelect={onSelect} disabled={disabled} className="rounded-full bg-tint px-8 text-lg font-extrabold text-ink shadow-soft disabled:opacity-40">
       🔁 {t("act.watch_again")}
     </Target>
   );
@@ -169,7 +169,7 @@ export function WatchAgain({ onSelect, disabled }: { onSelect: () => void; disab
 
 export function ActionButton({ label, onSelect, pulse }: { label: string; onSelect: () => void; pulse?: boolean }) {
   return (
-    <Target label={label} onSelect={onSelect} pulse={pulse} className="fk-pop rounded-full bg-sky-soft px-10 text-xl font-extrabold text-ink shadow-soft hover:bg-[#d6e6f8]">
+    <Target label={label} onSelect={onSelect} pulse={pulse} className="fk-pop rounded-full bg-tint px-10 text-xl font-extrabold text-ink shadow-soft hover:bg-tint-2">
       {label}
     </Target>
   );
@@ -225,7 +225,7 @@ export function Frame({
       <div className="grid grid-cols-[auto_1fr_auto] items-center gap-x-4">
         <span className="w-[76px] short:row-span-2" />
         <div className="flex min-w-0 justify-center"><Dots total={total} done={done} /></div>
-        <Target label={t("act.replay")} onSelect={sayAll} className="grid place-items-center rounded-full bg-sky-soft text-ink transition hover:bg-[#d6e6f8] short:row-span-2">
+        <Target label={t("act.replay")} onSelect={sayAll} className="grid place-items-center rounded-full bg-tint text-ink transition hover:bg-tint-2 short:row-span-2">
           <Volume2 className="size-8" aria-hidden />
         </Target>
         <h2 className="col-span-3 mt-3 text-center text-2xl font-extrabold text-ink sm:text-3xl short:col-span-1 short:col-start-2 short:mt-1 short:text-2xl">{prompt}</h2>
@@ -275,7 +275,7 @@ export function OptionCard({
       scanSkip={faded}
       selected={state === "solved"}
       className={`grid place-items-center rounded-[18px] bg-surface-2 transition ${
-        state === "solved" ? "border-4 border-teal bg-teal-soft" : faded ? "border-4 border-transparent opacity-25" : state === "tried" ? "border-[1.5px] border-edge opacity-70" : "border-[1.5px] border-edge hover:bg-sun"
+        state === "solved" ? "border-4 border-primary bg-primary-soft" : faded ? "border-4 border-transparent opacity-25" : state === "tried" ? "border-[1.5px] border-edge opacity-70" : "border-[1.5px] border-edge hover:bg-sun"
       }`}
       style={{ width: size, height: height ?? size }}
     >

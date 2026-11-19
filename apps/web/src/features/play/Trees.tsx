@@ -34,17 +34,17 @@ function Tree({ n, from }: { n: number | null; from: number }) {
   if (n === null)
     return (
       <svg viewBox="0 0 100 100" className="h-24 w-24" aria-hidden>
-        <ellipse cx={50} cy={86} rx={34} ry={7} fill="var(--fk-leaf-soft)" />
-        <ellipse cx={50} cy={78} rx={9} ry={12} fill="#b98a5e" transform="rotate(-18 50 78)" />
-        <path d="M51 67 q4 -9 11 -10" stroke="#5aa469" strokeWidth={3} fill="none" strokeLinecap="round" />
+        <ellipse cx={50} cy={86} rx={34} ry={7} fill="var(--hill1)" />
+        <ellipse cx={50} cy={78} rx={9} ry={12} fill="var(--trunk)" transform="rotate(-18 50 78)" />
+        <path d="M51 67 q4 -9 11 -10" stroke="var(--tree2)" strokeWidth={3} fill="none" strokeLinecap="round" />
       </svg>
     );
   const top = 76 - 34 - n * 3.4; // the trunk grows a little with every branch
   const ys = Array.from({ length: n }, (_, k) => 70 - ((70 - top - 6) * (k + 0.5)) / n);
   return (
     <svg viewBox="0 0 100 100" className="h-24 w-24" aria-hidden>
-      <ellipse cx={50} cy={86} rx={34} ry={7} fill="var(--fk-leaf-soft)" />
-      <line x1={50} y1={84} x2={50} y2={top} stroke="#9b6b43" strokeWidth={6} strokeLinecap="round" />
+      <ellipse cx={50} cy={86} rx={34} ry={7} fill="var(--hill1)" />
+      <line x1={50} y1={84} x2={50} y2={top} stroke="var(--trunk)" strokeWidth={6} strokeLinecap="round" />
       {ys.map((y, k) => {
         const side = k % 2 ? 1 : -1;
         const len = 26 - k * 1.2;
@@ -55,17 +55,17 @@ function Tree({ n, from }: { n: number | null; from: number }) {
         return (
           <g key={k}>
             <motion.line
-              x1={50} y1={y} x2={x2} y2={y2} stroke="#9b6b43" strokeWidth={3.5} strokeLinecap="round"
+              x1={50} y1={y} x2={x2} y2={y2} stroke="var(--trunk)" strokeWidth={3.5} strokeLinecap="round"
               initial={fresh ? { pathLength: 0 } : false} animate={{ pathLength: 1 }} transition={{ ...GROW, delay }}
             />
             <motion.circle
-              cx={x2} cy={y2} r={7} fill={k % 3 === 1 ? "#7cc47f" : "#5aa469"} style={{ transformBox: "fill-box", transformOrigin: "center" }}
+              cx={x2} cy={y2} r={7} fill={k % 3 === 1 ? "var(--tree1)" : "var(--tree2)"} style={{ transformBox: "fill-box", transformOrigin: "center" }}
               initial={fresh ? { scale: 0 } : false} animate={{ scale: 1 }} transition={{ ...GROW, delay: delay + 0.4 }}
             />
           </g>
         );
       })}
-      <circle cx={50} cy={top - 4} r={11} fill="#5aa469" />
+      <circle cx={50} cy={top - 4} r={11} fill="var(--tree2)" />
     </svg>
   );
 }
@@ -104,7 +104,7 @@ export function Trees({ child, onTab }: { child: Child; onTab: (tab: MapTab) => 
           role="status"
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mx-auto mb-4 max-w-xl rounded-fk-lg border-4 border-white bg-sun-soft px-4 py-3 text-center text-lg font-extrabold text-ink shadow-soft"
+          className="mx-auto mb-4 max-w-xl rounded-fk-lg border-4 border-surface bg-sun-soft px-4 py-3 text-center text-lg font-extrabold text-ink shadow-soft"
         >
           🌟 {message}
         </motion.p>
@@ -113,7 +113,7 @@ export function Trees({ child, onTab }: { child: Child; onTab: (tab: MapTab) => 
         {trees.map((tr) => (
           <li
             key={tr.area}
-            className="flex min-w-0 flex-col items-center rounded-fk-lg border-2 border-white bg-surface/90 px-0.5 pb-2 pt-1 shadow-soft sm:border-4 sm:px-1"
+            className="flex min-w-0 flex-col items-center rounded-fk-lg border-2 border-surface bg-surface/90 px-0.5 pb-2 pt-1 shadow-soft sm:border-4 sm:px-1"
             aria-label={t(tr.n === null ? "play.trees.seed" : "play.trees.tree", { area: t(`skill.area.${tr.area}`) })}
           >
             <Tree n={tr.n} from={seen ? Math.min(seen[tr.area] ?? 0, tr.n ?? 0) : 0} />
