@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en" data-scheme="warm" data-mode="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FlexiKeys — Soft and Sharp styles, six colour schemes (demo, 19 Nov 2026)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0}
+html{background:var(--sky2)}
+body{font-family:Nunito,system-ui,sans-serif;color:var(--ink);background:linear-gradient(180deg,var(--sky1) 0,var(--sky2) 900px);min-height:100vh;overflow-x:hidden}
+h1,h2,h3,.brand{font-family:Fredoka,Nunito,sans-serif;font-weight:600;letter-spacing:.2px}
+a{color:var(--accentText)}
+.wrap{max-width:1160px;margin:0 auto;padding:0 20px;position:relative;z-index:1}
+
+/* background clouds: blur on a few large layers only */
+.bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bgcloud{position:absolute;left:-260px;opacity:.75;filter:blur(9px);animation:drift linear infinite;will-change:transform}
+.bgcloud svg{display:block}
+@keyframes drift{from{transform:translateX(0)}to{transform:translateX(calc(100vw + 520px))}}
+[data-mode="dark"] .bgcloud{opacity:.55}
+
+/* header */
+header.top{position:sticky;top:0;z-index:20;background:var(--paper);border-bottom:1px solid var(--line);box-shadow:0 6px 24px rgba(var(--shadow),.06)}
+@supports (backdrop-filter:blur(10px)){header.top{backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2)}}
+.toprow{display:flex;align-items:center;gap:16px;height:64px}
+.brand{display:flex;align-items:center;gap:8px;font-size:22px;color:var(--ink)}
+.brand svg{width:40px;height:34px}
+nav.main{display:flex;gap:4px;margin-left:12px;flex-wrap:wrap}
+nav.main a{padding:8px 14px;border-radius:999px;text-decoration:none;color:var(--muted);font-weight:700;font-size:15px}
+nav.main a.on{background:var(--btnA);color:var(--btnText)}
+@media (max-width:760px){nav.main{display:none}}
+
+/* demo controls */
+.toprow{position:relative}
+.appbtn{margin-left:auto;padding:9px 16px;font-size:14px}
+.appearance{position:absolute;right:20px;top:70px;width:min(440px,calc(100vw - 40px));padding:18px 20px;display:grid;gap:16px;z-index:40;background:var(--paperSolid)}
+.appearance[hidden]{display:none}
+.aphead{display:flex;justify-content:space-between;align-items:center;font-family:Fredoka;font-size:20px}
+.x{border:none;background:var(--line);color:var(--ink);width:34px;height:34px;border-radius:50%;font-size:20px;cursor:pointer}
+.x:focus-visible,.brush:focus-visible{outline:3px solid var(--accentText);outline-offset:2px}
+.ctl{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ctl > span{font-weight:800;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+.sw{width:34px;height:34px;border-radius:50%;border:none;cursor:pointer;position:relative;box-shadow:0 2px 6px rgba(0,0,0,.12);padding:0}
+.sw[aria-pressed="true"]{outline:3px solid var(--accentText);outline-offset:3px}
+.seg{display:inline-flex;background:var(--line);border-radius:999px;padding:3px}
+.seg button{border:none;background:transparent;font:inherit;font-weight:700;font-size:14px;color:var(--muted);padding:6px 14px;border-radius:999px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--paperSolid);color:var(--ink);box-shadow:0 2px 6px rgba(var(--shadow),.12)}
+.seg button:disabled{opacity:.45;cursor:not-allowed}
+.scheme-name{font-weight:800;font-size:14px;color:var(--accentText);min-width:84px}
+
+/* cards, buttons, chips — the soft look */
+.card{background:var(--paper);border:1px solid var(--line);border-radius:30px;box-shadow:0 12px 32px rgba(var(--shadow),.10),0 2px 6px rgba(var(--shadow),.05);transition:background .5s,border-color .5s,transform .3s}
+.btn{display:inline-flex;align-items:center;gap:8px;font:inherit;font-weight:800;font-size:16px;padding:14px 24px;border-radius:999px;cursor:pointer;border:none;transition:transform .15s,box-shadow .2s}
+.btn-main{background:linear-gradient(180deg,var(--btnA),var(--btnB));color:var(--btnText);box-shadow:0 8px 20px rgba(var(--shadow),.18),inset 0 1px 0 rgba(255,255,255,.45)}
+.btn-main:hover{transform:translateY(-2px)}
+.btn-main:active{transform:translateY(1px)}
+.btn-second{background:var(--paperSolid);color:var(--ink);box-shadow:0 6px 16px rgba(var(--shadow),.10)}
+.btn:focus-visible,.sw:focus-visible,.seg button:focus-visible,.gcloud:focus-visible,.csw:focus-visible{outline:3px solid var(--accentText);outline-offset:3px}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:var(--paperSolid);font-weight:700;font-size:14px;color:var(--muted);box-shadow:0 3px 10px rgba(var(--shadow),.07)}
+.chip b{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--btnA);color:var(--btnText);font-size:12px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.05fr 1fr;gap:28px;align-items:center;margin:26px 0}
+.hero h1{font-size:clamp(30px,4vw,46px);line-height:1.12;margin:0 0 14px}
+.hero p{font-size:18px;line-height:1.55;color:var(--muted);margin:0 0 22px;max-width:520px}
+.hero .btns{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.vista{height:340px;overflow:hidden;padding:0;position:relative}
+.vista svg.scn{width:100%;height:100%;display:block}
+@media (max-width:860px){.hero{grid-template-columns:1fr}.vista{height:260px}}
+
+/* scene */
+.stars{opacity:0;transition:opacity .5s}
+[data-mode="dark"] .stars{opacity:.85}
+.drift1{animation:sdrift 46s linear infinite}
+.drift2{animation:sdrift 64s linear infinite;animation-delay:-30s}
+@keyframes sdrift{from{transform:translateX(-160px)}to{transform:translateX(720px)}}
+.bob{animation:bob 3.4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.cl-out{fill:var(--cloudyLine);stroke:var(--cloudyLine);stroke-width:4}
+.cl-body{fill:var(--cloudyBody)}
+.cl-shade{fill:var(--cloudyShade)}
+.cl-face{stroke:var(--cloudyFace);fill:none;stroke-width:3.2;stroke-linecap:round}
+.cl-cheek{fill:var(--cheek);opacity:.75}
+
+/* three cards */
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin:8px 0 34px}
+@media (max-width:900px){.grid3{grid-template-columns:1fr}}
+.pad{padding:22px 24px}
+.card h3{margin:0 0 4px;font-size:20px}
+.sub{color:var(--muted);font-size:14px;margin:0 0 14px}
+.item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:18px;background:var(--sky1);margin-bottom:8px}
+.ico{width:38px;height:38px;border-radius:14px;display:grid;place-items:center;background:var(--btnA);color:var(--btnText);font-weight:800;flex:none}
+.item small{display:block;color:var(--muted);font-size:13px}
+.lvl{display:flex;align-items:center;gap:12px;margin:6px 0}
+.few{display:block;color:var(--muted);font-size:13px}
+.lvl .n{font-family:Fredoka;font-size:22px;width:40px;color:var(--accentText)}
+.bar{flex:1;height:10px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--btnA),var(--accent))}
+.poster{height:120px;border-radius:22px;background:linear-gradient(135deg,var(--hill1),var(--hill2));display:grid;place-items:center;position:relative;margin-bottom:12px}
+.play{width:52px;height:52px;border-radius:50%;background:var(--paper);display:grid;place-items:center;box-shadow:0 4px 12px rgba(var(--shadow),.15)}
+.play:after{content:"";border-left:16px solid var(--accentText);border-top:10px solid transparent;border-bottom:10px solid transparent;margin-left:4px}
+.tag{display:inline-block;padding:4px 10px;border-radius:999px;background:var(--line);color:var(--muted);font-size:12px;font-weight:800}
+
+/* child section */
+.childsec{display:grid;grid-template-columns:380px 1fr;gap:30px;align-items:start;margin-bottom:34px}
+@media (max-width:900px){.childsec{grid-template-columns:1fr}}
+.phone{border-radius:40px;padding:12px;background:var(--paperSolid);box-shadow:0 18px 40px rgba(var(--shadow),.18);color:var(--ink);transition:background .5s}
+.screen{border-radius:30px;overflow:hidden;position:relative;height:560px;background:linear-gradient(180deg,var(--sky1),var(--sky2))}
+.screen .scn{position:absolute;left:0;right:0;bottom:0;height:200px;width:100%}
+.ghead{position:relative;z-index:2;text-align:center;padding:18px 16px 0}
+.ghead h3{margin:0;font-size:22px}
+.ghead p{margin:4px 0 0;color:var(--muted);font-size:15px}
+.garea{position:relative;height:210px;z-index:2}
+.gcloud{position:absolute;width:104px;height:74px;border:none;background:none;padding:0;cursor:pointer;z-index:3;transition:transform .5s,opacity .5s;filter:drop-shadow(0 5px 8px rgba(var(--shadow),.16))}
+.gcloud svg{width:100%;height:100%;display:block;overflow:visible}
+.gcloud .gc{fill:var(--gameCloud);stroke:var(--gameEdge);stroke-width:2.5}
+.gcloud.wob{animation:wob .5s}
+@keyframes wob{25%{transform:rotate(-5deg)}75%{transform:rotate(5deg)}}
+.gcloud.glow{animation:glow 1.4s ease-in-out infinite}
+@keyframes glow{50%{transform:scale(1.08);filter:drop-shadow(0 0 14px var(--accent))}}
+.gcloud.away{transform:translateX(70px) translateY(-20px);opacity:0}
+.peek{position:absolute;width:76px;height:66px;z-index:2;transition:transform .5s;animation:peek 2.8s ease-in-out infinite}
+@keyframes peek{0%,100%{transform:translateY(16px)}45%,60%{transform:translateY(-6px)}}
+.peek.out{animation:none;transform:translateY(-58px) scale(1.15)}
+.msg{position:relative;z-index:2;text-align:center;font-weight:800;min-height:24px;color:var(--accentText)}
+.pick{position:absolute;z-index:6;left:12px;right:12px;top:64px;padding:14px 12px;border-radius:22px;background:var(--paperSolid);box-shadow:0 14px 30px rgba(var(--shadow),.22)}
+.pick[hidden]{display:none}
+.brush{position:absolute;z-index:7;top:14px;right:14px;width:44px;height:44px;border-radius:50%;border:none;background:var(--paper);color:var(--ink);display:grid;place-items:center;cursor:pointer;box-shadow:0 4px 12px rgba(var(--shadow),.15)}
+.stylerow .done{background:var(--btnB);color:var(--btnText);padding:8px 22px}
+.pick p{margin:0 0 8px;font-weight:800;font-size:14px;text-align:center}
+.csws{display:flex;justify-content:space-between}
+.csw{width:46px;height:36px;border:none;background:none;padding:0;cursor:pointer;border-radius:14px}
+.csw svg{width:100%;height:100%}
+.csw[aria-pressed="true"]{outline:3px solid var(--accentText);outline-offset:2px}
+.fixed{position:relative;z-index:2;display:flex;gap:8px;justify-content:center;margin:10px 12px 0}
+.tile{width:56px;height:56px;border-radius:18px;background:var(--paperSolid);display:grid;place-items:center;font-size:30px;box-shadow:0 3px 10px rgba(var(--shadow),.1)}
+.dot{width:30px;height:30px;border-radius:50%}
+.explain h2{margin:0 0 6px;font-size:26px}
+.explain ul{padding-left:20px;line-height:1.6;margin:8px 0 16px}
+.explain li{margin-bottom:4px}
+table.cx{border-collapse:collapse;width:100%;font-size:14px}
+table.cx td,table.cx th{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left}
+table.cx th{color:var(--muted);font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+.ok{color:var(--accentText);font-weight:800}
+.bad{font-weight:800;text-decoration:underline wavy}
+footer{height:230px;position:relative;overflow:hidden;margin-top:10px}
+footer svg{position:absolute;bottom:0;left:0;width:100%;height:230px}
+
+/* Sharp style rules are built in the script (one set for the parent pages, one for the child's play screen) */
+.phone.sharp-frame{border:1.5px solid var(--edge)}
+.stylerow{display:flex;justify-content:center;gap:8px;margin-top:10px}
+.stylerow button{font:inherit;font-weight:800;font-size:13px;color:var(--ink);background:var(--paperSolid);border:none;border-radius:999px;padding:6px 12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.stylerow button[aria-pressed="true"]{background:var(--btnA);color:var(--btnText)}
+.stylerow button:focus-visible{outline:3px solid var(--accentText);outline-offset:2px}
+.stylerow svg{width:16px;height:16px}
+
+@media (prefers-reduced-motion:reduce){
+  .bgcloud,.drift1,.drift2,.bob,.peek,.gcloud.glow{animation:none!important}
+  .bgcloud{transform:translateX(30vw)}
+}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="fS" x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation="1.3"/></filter>
+    <filter id="fM" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="4"/></filter>
+    <filter id="fL" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="14"/></filter>
+  </defs>
+</svg>
+
+<div class="bg" id="bg" aria-hidden="true"></div>
+
+<header class="top">
+  <div class="wrap toprow">
+    <div class="brand"><span id="logoCloudy"></span>FlexiKeys</div>
+    <nav class="main" aria-label="Main">
+      <a href="#" class="on">Overview</a><a href="#">Games</a><a href="#">Exercises</a><a href="#">Plan</a><a href="#">More</a>
+    </nav>
+    <button class="btn btn-second appbtn" id="appBtn" aria-expanded="false" aria-controls="appear"><svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M10 2a8 8 0 1 0 0 16c1.1 0 1.6-.8 1.3-1.7-.3-.9.3-1.8 1.3-1.8H15a3 3 0 0 0 3-3A8 8 0 0 0 10 2z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="6" cy="9" r="1.4" fill="currentColor"/><circle cx="9" cy="5.6" r="1.4" fill="currentColor"/><circle cx="13.2" cy="6.4" r="1.4" fill="currentColor"/></svg>Appearance</button>
+    <div class="card appearance" id="appear" role="dialog" aria-label="Appearance" hidden>
+      <div class="aphead"><b>Appearance</b><button class="x" id="appClose" aria-label="Close">×</button></div>
+      <p class="sub" style="margin:0">In the app this is <b>Account → Appearance</b>. The button here is only a shortcut for the demo.</p>
+    <div class="ctl"><span>Colour</span><div id="pSw" class="ctl" role="group" aria-label="Colour scheme"></div><b class="scheme-name" id="pName"></b></div>
+    <div class="ctl"><span>Light / dark</span><div class="seg" role="group" aria-label="Light or dark">
+      <button id="mLight" aria-pressed="true">Light</button><button id="mDark" aria-pressed="false">Dark</button></div></div>
+    <div class="ctl"><span>Style</span><div class="seg" role="group" aria-label="Style">
+      <button id="lSoft" aria-pressed="true">Soft</button><button id="lSharp" aria-pressed="false">Sharp</button></div></div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="hero">
+    <div>
+      <h1>A calm daily plan for your child, from a few short answers.</h1>
+      <p>FlexiKeys gives children aged 2 to 18 with movement or learning difficulties a few minutes of games and exercises each day. You answer, we build the plan, your child plays with Cloudy.</p>
+      <div class="btns"><button class="btn btn-main">Start, 2 minutes</button><button class="btn btn-second">Play with Cloudy</button></div>
+      <div class="chips"><span class="chip"><b>1</b>Answer</span><span class="chip"><b>2</b>Get the plan</span><span class="chip"><b>3</b>Play</span><span class="chip"><b>4</b>Move</span></div>
+    </div>
+    <div class="card vista" id="heroScene"></div>
+  </section>
+
+  <section class="grid3">
+    <div class="card pad">
+      <h3>Today's plan</h3><p class="sub">About 15 minutes · Malika</p>
+      <div class="item"><div class="ico">1</div><div>Find Cloudy<small>Attention · easy win</small></div></div>
+      <div class="item"><div class="ico">2</div><div>Grow Cloudy<small>Memory · a little harder</small></div></div>
+      <div class="item"><div class="ico">3</div><div>Her choice<small>Any open game</small></div></div>
+      <div class="item"><div class="ico">4</div><div>Reach for a toy<small>Exercise · about 2 min</small></div></div>
+    </div>
+    <div class="card pad">
+      <h3>Progress</h3><p class="sub">Levels 1–100, not a diagnosis</p>
+      <div class="lvl"><span class="n">37</span><div style="flex:1"><b>Attention</b><div class="bar"><i style="width:37%"></i></div></div></div>
+      <div class="lvl"><span class="n">42</span><div style="flex:1"><b>Memory</b><div class="bar"><i style="width:42%"></i></div></div></div>
+      <div class="lvl"><span class="n">31</span><div style="flex:1"><b>Flexibility</b><div class="bar"><i style="width:31%"></i></div></div></div>
+      <div class="lvl"><span class="n">25</span><div style="flex:1"><b>Reasoning</b><div class="bar"><i style="width:25%"></i></div></div></div>
+      <div class="lvl"><span class="n">28</span><div style="flex:1"><b>Language</b><div class="bar"><i style="width:28%"></i></div></div></div>
+      <div class="lvl"><span class="n">–</span><div style="flex:1"><b>Math</b><small class="few">Not enough games yet</small></div></div>
+      <p class="sub" style="margin:10px 0 0">Now: remembers 4 pictures in order. 4 weeks ago: 3 pictures.</p>
+      <p class="sub" style="margin:6px 0 0">Speed appears only for children with typical hand use.</p>
+    </div>
+    <div class="card pad">
+      <h3>Exercises</h3><p class="sub">Short videos a parent and child do together</p>
+      <div class="poster"><div class="play"></div></div>
+      <b>Reach for a toy</b><p class="sub" style="margin:2px 0 10px">Arms · about 2 min</p>
+      <span class="tag">Waiting for physio check</span>
+    </div>
+  </section>
+
+  <section class="childsec">
+    <div class="phone" id="phone">
+      <div class="screen" id="screen">
+        <div class="ghead"><h3>Find Cloudy</h3><p>Where is Cloudy hiding?</p></div>
+        <div class="garea" id="garea"></div>
+        <div class="msg" id="gmsg" aria-live="polite"></div>
+        <button class="brush" id="brush" aria-expanded="false" aria-controls="pick" aria-label="My colours"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M14 4l6 6-8 8H6v-6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M6 18c-2 0-3 1-3 3h4c1 0 1-1 1-2" fill="currentColor"/></svg></button>
+        <div class="pick" id="pick" hidden><p>My colours</p><div class="csws" id="cSw" role="group" aria-label="Your colour"></div>
+          <div class="stylerow" role="group" aria-label="Your style">
+            <button id="cSoft" aria-pressed="true"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="currentColor" opacity=".55"/></svg>Soft</button>
+            <button id="cSharp" aria-pressed="false"><svg viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" fill="none" stroke="currentColor" stroke-width="2"/></svg>Sharp</button>
+          </div>
+          <div class="stylerow"><button id="pickDone" class="done">Done</button></div></div>
+        <div class="fixed" aria-label="Pictures and task colours that never change">
+          <div class="tile">🍎</div><div class="tile">🍌</div><div class="tile">🥒</div>
+          <div class="tile"><span class="dot" style="background:#E5484D"></span></div>
+          <div class="tile"><span class="dot" style="background:#2F6FE0"></span></div>
+          <div class="tile"><span class="dot" style="background:#F5C400"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card pad explain">
+      <h2>What this demo shows</h2>
+      <p class="sub">Update 3, tasks 3 and 4. Open <b>Appearance</b> at the top right, and the brush button in the child's play screen.</p>
+      <ul>
+        <li><b>Two styles, Soft and Sharp:</b> Soft has no dark outlines, rounder corners, soft shadows and blurred background clouds. Sharp is the 15 Nov look: clear outlines, key-style buttons with a lower edge, no blur. Both work with every colour scheme. Soft is the default.</li>
+        <li><b>Parent and child choose separately:</b> parents use <b>Appearance</b> (in the app: Account → Appearance); the child uses the brush button, <b>My colours</b>, on the play home. Older children often prefer Sharp. Nothing about colours or style is on the landing page.</li>
+        <li><b>Blur only where it is cheap:</b> the drifting background clouds, the sun's glow and the soft hill edges. Cards stay sharp so text is easy to read and cheap phones stay smooth.</li>
+        <li><b>Every colour changes with the scheme:</b> sky, sun, hills, trees, page clouds, Cloudy's outline and cheeks, buttons, chips, bars and the play screen. Nothing green stays on a purple page.</li>
+        <li><b>Six schemes:</b> Warm Hills, Sky, Mint, Lilac, Peach and Night. The first five have their own dark version; Night is dark only.</li>
+                <li><b>Some colours never change:</b> pictures (an apple stays red, a banana yellow) and colours that are part of a task (sort by colour). Changing them would teach the wrong thing or break the game.</li>
+        <li><b>Game targets are never blurred</b> and keep a clear edge in every scheme, so children with weak sight can find them.</li>
+      </ul>
+      <h3 style="margin-top:6px">Contrast in this scheme</h3>
+      <p class="sub">Text needs 4.5 or more; a game target's edge needs 3 or more.</p>
+      <table class="cx" id="cx"><thead><tr><th>Pair</th><th>Ratio</th><th></th></tr></thead><tbody></tbody></table>
+    </div>
+  </section>
+</main>
+
+<footer id="foot" aria-hidden="true"></footer>
+
+<script>
+/* PALETTES-START */
+const P = {
+  warm:{
+    light:{sky1:"#FFF6E8",sky2:"#FFE6C6",paper:"rgba(255,251,243,.86)",paperSolid:"#FFFBF3",ink:"#4A3220",muted:"#75604B",accent:"#E8975A",accentText:"#A4521C",btnA:"#FFD3A6",btnB:"#F7B67F",btnText:"#45291A",line:"#F1DFC4",edge:"#6B4426",sun:"#FFE3A3",sunGlow:"#FFD27F",hillFar:"#FBDDB3",hill1:"#F6C994",hill2:"#EDB37A",tree1:"#D99B60",tree2:"#C7864C",trunk:"#9A6B47",cloud:"#FFFFFF",cloudyBody:"#FFFFFF",cloudyShade:"#F6DDBF",cloudyLine:"#C59A74",cheek:"#F7B9A2",gameCloud:"#FFFFFF",gameEdge:"#A06A40",shadow:"150,90,40"},
+    dark:{sky1:"#241A13",sky2:"#34261B",paper:"rgba(52,39,29,.86)",paperSolid:"#33261C",ink:"#FBEBD9",muted:"#CDB59C",accent:"#F0A766",accentText:"#FFC791",btnA:"#6E4C30",btnB:"#5D3F27",btnText:"#FFF1E2",line:"#4A3828",edge:"#F0A766",sun:"#F7E3C0",sunGlow:"#CDB48C",hillFar:"#4A3526",hill1:"#3F2D20",hill2:"#35251A",tree1:"#6B4B2F",tree2:"#5C3F27",trunk:"#2F2116",cloud:"#4A3828",cloudyBody:"#FFF3E6",cloudyShade:"#E9D3BC",cloudyLine:"#A88466",cheek:"#E2A58F",gameCloud:"#B08E6E",gameEdge:"#E9C9A6",shadow:"0,0,0"}},
+  sky:{
+    light:{sky1:"#F0F6FE",sky2:"#DCEAFB",paper:"rgba(255,255,255,.86)",paperSolid:"#FFFFFF",ink:"#1F2A4F",muted:"#56627F",accent:"#6F8EDB",accentText:"#3A55AF",btnA:"#CFDDF9",btnB:"#AFC6F3",btnText:"#1B2858",line:"#DCE6F5",edge:"#34447F",sun:"#FFF7DE",sunGlow:"#FFF0BF",hillFar:"#DCE8F9",hill1:"#C5D9F5",hill2:"#A9C5EF",tree1:"#8DAEE4",tree2:"#7497D8",trunk:"#6F82AA",cloud:"#FFFFFF",cloudyBody:"#FFFFFF",cloudyShade:"#D9E5F7",cloudyLine:"#8FA4CF",cheek:"#F4C6D3",gameCloud:"#FFFFFF",gameEdge:"#5F77B0",shadow:"50,80,150"},
+    dark:{sky1:"#141B2F",sky2:"#1F2A47",paper:"rgba(31,41,68,.86)",paperSolid:"#1F2944",ink:"#E8EEFC",muted:"#AAB6D3",accent:"#8EA9F0",accentText:"#B7C9FF",btnA:"#3D5189",btnB:"#32457C",btnText:"#EEF3FF",line:"#2C3A60",edge:"#8EA9F0",sun:"#EDEFD8",sunGlow:"#BFC4B0",hillFar:"#2B3A64",hill1:"#233158",hill2:"#1C284B",tree1:"#34477A",tree2:"#2C3D6C",trunk:"#1A2340",cloud:"#2C3A63",cloudyBody:"#EEF3FF",cloudyShade:"#C9D6F2",cloudyLine:"#8496C4",cheek:"#D8AFC4",gameCloud:"#8A9DCB",gameEdge:"#C9D6F2",shadow:"0,0,0"}},
+  mint:{
+    light:{sky1:"#EEF9F3",sky2:"#D8F0E3",paper:"rgba(255,255,255,.86)",paperSolid:"#FFFFFF",ink:"#1E3A35",muted:"#536D66",accent:"#4FAE8C",accentText:"#1C7560",btnA:"#CBEEDC",btnB:"#A9E0C5",btnText:"#15392F",line:"#D5ECDF",edge:"#2C5A4E",sun:"#FFF5CF",sunGlow:"#FFEDB0",hillFar:"#D9F1E4",hill1:"#BFE5CF",hill2:"#A0D7B9",tree1:"#72C09B",tree2:"#5AAA86",trunk:"#7D8F72",cloud:"#FFFFFF",cloudyBody:"#FFFFFF",cloudyShade:"#D3ECDF",cloudyLine:"#84B39D",cheek:"#F5C7C0",gameCloud:"#FFFFFF",gameEdge:"#4A8569",shadow:"40,110,80"},
+    dark:{sky1:"#10221B",sky2:"#183127",paper:"rgba(26,48,41,.86)",paperSolid:"#1A3029",ink:"#E3F5EC",muted:"#A3C4B6",accent:"#6CCAA5",accentText:"#A0E6C9",btnA:"#2E614D",btnB:"#255342",btnText:"#EAFBF3",line:"#284A3D",edge:"#6CCAA5",sun:"#EFF2D6",sunGlow:"#C2C8A8",hillFar:"#264E3E",hill1:"#1F4235",hill2:"#19382C",tree1:"#2E6650",tree2:"#275944",trunk:"#15291F",cloud:"#24473A",cloudyBody:"#EFFBF5",cloudyShade:"#C8E8D8",cloudyLine:"#7FB59D",cheek:"#D9AFA8",gameCloud:"#7FB49D",gameEdge:"#C8E8D8",shadow:"0,0,0"}},
+  lilac:{
+    light:{sky1:"#F7F3FD",sky2:"#E9E0F9",paper:"rgba(255,255,255,.86)",paperSolid:"#FFFFFF",ink:"#2B2550",muted:"#625B7E",accent:"#9278D9",accentText:"#6245B5",btnA:"#E2D8F8",btnB:"#CDBDF2",btnText:"#2A2055",line:"#E6DEF6",edge:"#4A3F7A",sun:"#FCF1F8",sunGlow:"#F6E1F1",hillFar:"#ECE5FA",hill1:"#DCD0F5",hill2:"#C8B8EE",tree1:"#AC96DF",tree2:"#957CD2",trunk:"#7D6C9F",cloud:"#FFFFFF",cloudyBody:"#FFFFFF",cloudyShade:"#E3D8F6",cloudyLine:"#A493CF",cheek:"#F2C3DD",gameCloud:"#FFFFFF",gameEdge:"#7862B8",shadow:"90,60,150"},
+    dark:{sky1:"#1B1630",sky2:"#292246",paper:"rgba(40,33,66,.86)",paperSolid:"#282142",ink:"#F0EBFF",muted:"#BDB3DD",accent:"#B59CF0",accentText:"#D3C3FF",btnA:"#503F89",btnB:"#44357C",btnText:"#F6F2FF",line:"#3A3066",edge:"#B59CF0",sun:"#F4EEF8",sunGlow:"#C9C0D6",hillFar:"#3A3068",hill1:"#31285A",hill2:"#29214E",tree1:"#4A3C7E",tree2:"#403472",trunk:"#221B3D",cloud:"#3A3066",cloudyBody:"#F6F2FF",cloudyShade:"#D8CDF3",cloudyLine:"#9D8CCF",cheek:"#D9AED0",gameCloud:"#A391D1",gameEdge:"#D8CDF3",shadow:"0,0,0"}},
+  peach:{
+    light:{sky1:"#FFF4F0",sky2:"#FFE1D8",paper:"rgba(255,252,250,.88)",paperSolid:"#FFFCFA",ink:"#4A2A28",muted:"#7A5C58",accent:"#EC8E7D",accentText:"#AA4A3C",btnA:"#FFD8CD",btnB:"#FABCAC",btnText:"#47231F",line:"#F7E0D9",edge:"#7A3E34",sun:"#FFEBC2",sunGlow:"#FFDDA3",hillFar:"#FFE6DE",hill1:"#FDD2C5",hill2:"#F6B9A8",tree1:"#E99D8C",tree2:"#D98371",trunk:"#9F6D62",cloud:"#FFFFFF",cloudyBody:"#FFFFFF",cloudyShade:"#F8DBD2",cloudyLine:"#CF968B",cheek:"#F6B0A6",gameCloud:"#FFFFFF",gameEdge:"#A5615A",shadow:"160,80,60"},
+    dark:{sky1:"#27191A",sky2:"#382324",paper:"rgba(53,34,34,.86)",paperSolid:"#352222",ink:"#FCEAE6",muted:"#D2B0AA",accent:"#F4A493",accentText:"#FFC6B8",btnA:"#713F38",btnB:"#62352F",btnText:"#FFF0EC",line:"#4A302D",edge:"#F4A493",sun:"#F8E6CF",sunGlow:"#CDB79E",hillFar:"#553534",hill1:"#4A2D2B",hill2:"#3F2624",tree1:"#6B3E38",tree2:"#5D342F",trunk:"#2F1C1B",cloud:"#4A302D",cloudyBody:"#FFF2EE",cloudyShade:"#F0D2CA",cloudyLine:"#C08E85",cheek:"#E7A79C",gameCloud:"#C69488",gameEdge:"#F0D2CA",shadow:"0,0,0"}},
+  night:{
+    dark:{sky1:"#171C38",sky2:"#262D5C",paper:"rgba(38,45,82,.86)",paperSolid:"#262D52",ink:"#EEF0FF",muted:"#B3B9DA",accent:"#9FB2FF",accentText:"#C3CEFF",btnA:"#4C5799",btnB:"#3E4886",btnText:"#F3F5FF",line:"#353E70",edge:"#9FB2FF",sun:"#F3EED5",sunGlow:"#CFCBB0",hillFar:"#343D72",hill1:"#2B3366",hill2:"#232A57",tree1:"#3C4C84",tree2:"#334177",trunk:"#252C55",cloud:"#3B447A",cloudyBody:"#EDF0FF",cloudyShade:"#C8CEF2",cloudyLine:"#8F9AD3",cheek:"#C9A9D9",gameCloud:"#8C95CF",gameEdge:"#DDE1FF",shadow:"5,8,25"}}
+};
+/* PALETTES-END */
+P.night.dark.cloudyFace = "#2A2F5C";
+P.night.light = P.night.dark;
+/* Cloudy's body is always light, so his face always uses the scheme's dark text colour, also in dark mode */
+for (const k of ["warm","sky","mint","lilac","peach"]) { P[k].light.cloudyFace = P[k].light.ink; P[k].dark.cloudyFace = P[k].light.ink; }
+const NAMES = {warm:"Warm Hills",sky:"Sky",mint:"Mint",lilac:"Lilac",peach:"Peach",night:"Night"};
+const ORDER = Object.keys(NAMES);
+
+/* build CSS variables for every scheme and mode */
+(function(){
+  let s = "";
+  for (const k of ORDER) for (const m of ["light","dark"]) {
+    const t = P[k][m];
+    s += `[data-scheme="${k}"][data-mode="${m}"]{` + Object.entries(t).map(([a,b])=>`--${a}:${b};`).join("") + "}\n";
+  }
+  const el = document.createElement("style"); el.textContent = s; document.head.appendChild(el);
+})();
+
+/* Cloudy */
+let uid = 0;
+const PUFFS = [[40,70,22],[62,52,25],[88,50,23],[106,68,20],[30,82,15],[56,86,20],[84,86,20],[108,84,14]];
+function cloudy(w, h){
+  const id = "cc" + (++uid);
+  const circ = cls => PUFFS.map(([x,y,r]) => `<circle class="${cls}" cx="${x}" cy="${y}" r="${r}"/>`).join("");
+  return `<svg viewBox="0 0 140 120" width="${w}" height="${h}" aria-hidden="true" style="overflow:visible">
+    <defs><clipPath id="${id}">${PUFFS.map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}"/>`).join("")}</clipPath></defs>
+    <ellipse class="cl-out" cx="58" cy="106" rx="7" ry="4"/><ellipse class="cl-out" cx="84" cy="106" rx="7" ry="4"/>
+    <ellipse class="cl-shade" cx="58" cy="106" rx="7" ry="4"/><ellipse class="cl-shade" cx="84" cy="106" rx="7" ry="4"/>
+    ${circ("cl-out")}${circ("cl-body")}
+    <g clip-path="url(#${id})"><ellipse class="cl-shade" cx="70" cy="104" rx="70" ry="16"/></g>
+    <ellipse cx="60" cy="40" rx="11" ry="5" fill="#fff" opacity=".75"/>
+    <path class="cl-face" d="M52 72 q6 -7 12 0"/><path class="cl-face" d="M78 72 q6 -7 12 0"/>
+    <path class="cl-face" d="M65 80 q6 5 12 0"/>
+    <ellipse class="cl-cheek" cx="48" cy="80" rx="6" ry="4"/><ellipse class="cl-cheek" cx="94" cy="80" rx="6" ry="4"/>
+  </svg>`;
+}
+const cloudShape = (fill, extra="") => `<g ${extra} style="fill:${fill}"><circle cx="0" cy="0" r="16"/><circle cx="22" cy="-9" r="21"/><circle cx="45" cy="0" r="15"/><rect x="0" y="-3" width="45" height="18" rx="9"/></g>`;
+function tree(x, y, s){
+  return `<g transform="translate(${x} ${y}) scale(${s})"><rect class="st" x="-4" y="-8" width="8" height="30" rx="4" style="fill:var(--trunk)"/>
+    <circle class="st" cx="0" cy="-24" r="20" style="fill:var(--tree1)"/><circle cx="8" cy="-17" r="11" style="fill:var(--tree2)" opacity=".85"/>
+    <circle cx="-7" cy="-32" r="6" fill="#fff" opacity=".2"/></g>`;
+}
+function stars(){
+  const pts = [[60,40],[130,70],[210,30],[300,60],[380,25],[440,75],[590,40],[250,95],[560,110],[90,110]];
+  return `<g class="stars">${pts.map(([x,y],i)=>`<circle cx="${x}" cy="${y}" r="${i%3?1.6:2.4}" style="fill:var(--sun)"/>`).join("")}</g>`;
+}
+function scene(n, withCloudy){
+  return `<svg class="scn" viewBox="0 0 640 300" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+    <defs><linearGradient id="sg${n}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--sky1)"/><stop offset="1" style="stop-color:var(--sky2)"/></linearGradient></defs>
+    <rect x="-20" y="-20" width="680" height="340" fill="url(#sg${n})"/>
+    ${stars()}
+    <circle class="soft glowc" filter="url(#fL)" cx="500" cy="82" r="50" style="fill:var(--sunGlow)" opacity=".6"/>
+    <circle class="st" cx="500" cy="82" r="30" style="fill:var(--sun)"/>
+    <g class="drift1"><g class="soft" filter="url(#fM)" transform="translate(0 70)">${cloudShape("var(--cloud)")}</g></g>
+    <g class="drift2"><g class="soft" filter="url(#fM)" transform="translate(0 130) scale(.8)">${cloudShape("var(--cloud)")}</g></g>
+    <path class="st soft" filter="url(#fS)" style="fill:var(--hillFar)" d="M-20 195 C 110 140, 220 150, 330 182 S 540 148, 660 172 L660 320 L-20 320Z"/>
+    ${tree(560,182,.7)}
+    <path class="st soft" filter="url(#fS)" style="fill:var(--hill1)" d="M-20 236 C 90 180, 210 176, 300 216 C 360 242, 420 248, 480 244 L 480 320 L-20 320Z"/>
+    ${tree(90,214,1)}${tree(140,206,.8)}
+    <path class="st soft" filter="url(#fS)" style="fill:var(--hill2)" d="M250 320 C 330 222, 470 196, 660 226 L660 320Z"/>
+    ${tree(520,238,.9)}
+    ${withCloudy ? `<g class="bob"><svg x="290" y="128" width="110" height="94" viewBox="0 0 140 120" style="overflow:visible">${cloudy(140,120).replace(/^<svg[^>]*>/,"").replace(/<\/svg>\s*$/,"")}</svg></g>` : ""}
+  </svg>`;
+}
+
+/* page */
+document.getElementById("logoCloudy").innerHTML = cloudy(40,34);
+document.getElementById("heroScene").innerHTML = scene(1, true);
+document.getElementById("foot").innerHTML = scene(2, false);
+document.getElementById("screen").insertAdjacentHTML("afterbegin", scene(3, false));
+
+const bg = document.getElementById("bg");
+[[8,1,70],[22,.7,95],[40,1.2,120],[60,.8,85],[78,1,110]].forEach(([top,s,dur],i)=>{
+  const d = document.createElement("div");
+  d.className = "bgcloud";
+  d.style.top = top + "%";
+  d.style.animationDuration = dur + "s";
+  d.style.animationDelay = (-i * dur / 2.3) + "s";
+  d.innerHTML = `<svg width="${220*s}" height="${90*s}" viewBox="-20 -35 100 60">${cloudShape("var(--cloud)")}</svg>`;
+  bg.appendChild(d);
+});
+
+/* state */
+const S = {scheme:"warm", mode:"light", style:"soft", child:"warm", childStyle:"soft", lastDay:"warm"};
+try { Object.assign(S, JSON.parse(localStorage.getItem("fk-demo-u3b") || "{}")); } catch(e){}
+function save(){ try { localStorage.setItem("fk-demo-u3b", JSON.stringify(S)); } catch(e){} }
+
+function swatchBg(k){ const t = P[k].light === P[k].dark ? P[k].dark : P[k].light; return `linear-gradient(135deg, ${t.hill1} 0%, ${t.accent} 100%)`; }
+const pSw = document.getElementById("pSw"), cSw = document.getElementById("cSw");
+ORDER.forEach(k=>{
+  const b = document.createElement("button");
+  b.className = "sw"; b.style.background = swatchBg(k); b.title = NAMES[k]; b.setAttribute("aria-label", NAMES[k]);
+  b.onclick = ()=>{ S.scheme = k; if (k !== "night") S.lastDay = k; apply(); };
+  b.dataset.k = k; pSw.appendChild(b);
+  const c = document.createElement("button");
+  const t = k === "night" ? P.night.dark : P[k].light;
+  c.className = "csw"; c.setAttribute("aria-label", "Colour " + NAMES[k]); c.dataset.k = k;
+  c.innerHTML = `<svg viewBox="-18 -32 82 52">${cloudShape(t.accent)}</svg>`;
+  c.onclick = ()=>{ S.child = k; apply(); };
+  cSw.appendChild(c);
+});
+/* Night has no light version: Light takes you back to the last day scheme you used */
+document.getElementById("mLight").onclick = ()=>{ S.mode = "light"; if (S.scheme === "night") S.scheme = S.lastDay || "warm"; apply(); };
+document.getElementById("mDark").onclick = ()=>{ S.mode = "dark"; apply(); };
+document.getElementById("lSoft").onclick = ()=>{ S.style = "soft"; apply(); };
+document.getElementById("lSharp").onclick = ()=>{ S.style = "sharp"; apply(); };
+document.getElementById("cSoft").onclick = ()=>{ S.childStyle = "soft"; apply(); };
+document.getElementById("cSharp").onclick = ()=>{ S.childStyle = "sharp"; apply(); };
+
+/* Sharp style: the same rules for two scopes. The parent's style never leaks into the play screen and the other way round. */
+(function(){
+  const SHARP = [
+    [".card","border:1.5px solid var(--edge);border-radius:24px;box-shadow:none;background:var(--paperSolid)"],
+    [".btn-main","border:1.5px solid var(--edge);box-shadow:0 4px 0 var(--edge)"],
+    [".btn-main:active","transform:translateY(3px);box-shadow:0 1px 0 var(--edge)"],
+    [".btn-second, .chip, .tile, .item, .pick, .stylerow button, .brush, .x","border:1.5px solid var(--edge);box-shadow:none"],
+    [".bgcloud","filter:none;opacity:.9"],
+    [".soft","filter:none"],
+    [".glowc","opacity:0"],
+    [".st","stroke:var(--edge);stroke-width:1.5"],
+    [".cl-out","fill:var(--edge);stroke:var(--edge);stroke-width:7"],
+    [".gcloud","filter:none"],
+    ["header.top","backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--paperSolid);border-bottom:1.5px solid var(--edge)"]
+  ];
+  const sel = (list, scope) => list.split(",").map(x => scope(x.trim())).join(",");
+  let css = "";
+  for (const [list, decl] of SHARP) {
+    css += sel(list, x => `html[data-style="sharp"] ${x}:not(.phone *)`) + `{${decl}}\n`;
+    css += sel(list, x => `.phone[data-style="sharp"] ${x}`) + `{${decl}}\n`;
+  }
+  const el = document.createElement("style"); el.textContent = css; document.head.appendChild(el);
+})();
+
+function lum(hex){
+  const c = hex.replace("#","").match(/../g).map(h=>parseInt(h,16)/255).map(v=> v<=.03928 ? v/12.92 : Math.pow((v+.055)/1.055,2.4));
+  return .2126*c[0] + .7152*c[1] + .0722*c[2];
+}
+function ratio(a,b){ const x = lum(a), y = lum(b); return (Math.max(x,y)+.05)/(Math.min(x,y)+.05); }
+const PAIRS = [["Body text on card","ink","paperSolid",4.5],["Soft text on card","muted","paperSolid",4.5],["Accent text on card","accentText","paperSolid",4.5],["Button text","btnText","btnB",4.5],["Heading on page","ink","sky2",4.5],["Game target edge on sky","gameEdge","sky2",3],["Cloudy's face on his body","cloudyFace","cloudyBody",4.5]];
+
+function apply(){
+  const mode = S.scheme === "night" ? "dark" : S.mode;
+  document.documentElement.dataset.scheme = S.scheme;
+  document.documentElement.dataset.mode = mode;
+  document.documentElement.dataset.style = S.style;
+  const phone = document.getElementById("phone");
+  phone.dataset.scheme = S.child; phone.dataset.style = S.childStyle;
+  phone.classList.toggle("sharp-frame", S.style === "sharp"); phone.dataset.mode = S.child === "night" ? "dark" : S.mode;
+  document.getElementById("pName").textContent = NAMES[S.scheme];
+  pSw.querySelectorAll(".sw").forEach(b=>b.setAttribute("aria-pressed", b.dataset.k === S.scheme));
+  cSw.querySelectorAll(".csw").forEach(b=>b.setAttribute("aria-pressed", b.dataset.k === S.child));
+  const dk = document.getElementById("mDark"), lt = document.getElementById("mLight");
+  lt.title = S.scheme === "night" ? "Back to " + NAMES[S.lastDay || "warm"] + ", light" : "";
+  lt.setAttribute("aria-pressed", mode === "light"); dk.setAttribute("aria-pressed", mode === "dark");
+  for (const [id, key, v] of [["lSoft","style","soft"],["lSharp","style","sharp"],["cSoft","childStyle","soft"],["cSharp","childStyle","sharp"]])
+    document.getElementById(id).setAttribute("aria-pressed", S[key] === v);
+  const t = P[S.scheme][mode];
+  document.querySelector("#cx tbody").innerHTML = PAIRS.map(([n,a,b,min])=>{
+    const r = ratio(t[a], t[b]);
+    return `<tr><td>${n}</td><td>${r.toFixed(1)}</td><td class="${r>=min?"ok":"bad"}">${r>=min?"passes":"too low"}</td></tr>`;
+  }).join("");
+  save();
+}
+
+/* Find Cloudy mini game */
+const garea = document.getElementById("garea"), gmsg = document.getElementById("gmsg");
+const SPOTS = [[24,110],[136,60],[248,118]];
+let hide = 0, misses = 0, busy = false;
+function round(){
+  garea.innerHTML = ""; misses = 0; busy = false; gmsg.textContent = "";
+  hide = Math.floor(Math.random()*3);
+  const [hx,hy] = SPOTS[hide];
+  const pk = document.createElement("div");
+  pk.className = "peek"; pk.style.left = (hx+14)+"px"; pk.style.top = (hy-30)+"px";
+  pk.innerHTML = cloudy(76,66); garea.appendChild(pk);
+  SPOTS.forEach(([x,y],i)=>{
+    const b = document.createElement("button");
+    b.className = "gcloud"; b.style.left = x+"px"; b.style.top = y+"px";
+    b.setAttribute("aria-label", "Cloud " + (i+1));
+    b.innerHTML = `<svg viewBox="-20 -34 90 56"><g class="gc"><path d="M-2 14 a16 16 0 0 1 4 -30 a22 22 0 0 1 40 -6 a16 16 0 0 1 22 18 a10 10 0 0 1 -4 18 z"/></g></svg>`;
+    b.onclick = ()=>pick(i, b, pk);
+    garea.appendChild(b);
+  });
+}
+function pick(i, b, pk){
+  if (busy) return;
+  if (i === hide){
+    busy = true; b.classList.remove("glow"); b.classList.add("away"); pk.classList.add("out");
+    gmsg.textContent = "You found me!";
+    setTimeout(round, 1900);
+  } else {
+    misses++; b.classList.remove("wob"); void b.offsetWidth; b.classList.add("wob");
+    if (misses >= 2) garea.querySelectorAll(".gcloud")[hide].classList.add("glow");
+  }
+}
+
+const appBtn = document.getElementById("appBtn"), appear = document.getElementById("appear");
+function setApp(open){ appear.hidden = !open; appBtn.setAttribute("aria-expanded", open); if (open) appear.querySelector(".sw").focus(); }
+appBtn.onclick = ()=> setApp(appear.hidden);
+document.getElementById("appClose").onclick = ()=>{ setApp(false); appBtn.focus(); };
+document.addEventListener("click", e=>{ if (!appear.hidden && !appear.contains(e.target) && !appBtn.contains(e.target)) setApp(false); });
+const brush = document.getElementById("brush"), pickEl = document.getElementById("pick");
+function setPick(open){ pickEl.hidden = !open; brush.setAttribute("aria-expanded", open); }
+brush.onclick = ()=> setPick(pickEl.hidden);
+document.getElementById("pickDone").onclick = ()=>{ setPick(false); brush.focus(); };
+document.addEventListener("keydown", e=>{ if (e.key === "Escape"){ if (!appear.hidden){ setApp(false); appBtn.focus(); } if (!pickEl.hidden){ setPick(false); brush.focus(); } } });
+apply(); round();
+</script>
+</body>
+</html>

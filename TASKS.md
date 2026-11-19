@@ -125,6 +125,11 @@ Every task must keep these. They come from the spec.
 | Two Cloudy games (Bekzod, 15 Nov 2026) | Find Cloudy and Grow Cloudy are the featured games |
 | Exercise videos in slots (Bekzod, 15 Nov 2026) | Exercise videos ship as a section with empty slots. A video is shown only after the physio approves that exercise |
 | No dragon for now (Bekzod, 15 Nov 2026) | Bekzod skipped the dragon form. Grow Cloudy ends with the tiger. No dragon is drawn or added; see `Q16` |
+| Two styles (Bekzod, 19 Nov 2026) | **Soft** (new default): no dark outlines, rounder corners, soft shadows, calmer colours, a little blur in the background. **Sharp**: the 15 Nov Warm Hills shapes (thin dark outlines, key-style buttons with a lower edge, no blur). Both work with every colour scheme. Replaces the 15 Nov shapes as the only look. The demo is in `docs/demo-2026-11-19/`, the spec in `docs/update3-look-colours-spec-2026-11-19.md` |
+| Six colour schemes (Bekzod, 19 Nov 2026) | Warm Hills (default), Sky, Mint, Lilac, Peach, Night. Each of the first five has its own light and dark version; Night is dark only. Replaces the 15 Nov "three other colour schemes (Sky, Mint, Lilac)" |
+| Every colour follows the scheme (Bekzod, 19 Nov 2026) | Page, cards, buttons, scenery (sky, sun or moon, hills, trees, clouds), Cloudy, game backgrounds and progress bars. No component keeps a fixed colour that does not belong to the scheme. The only fixed colours are pictures of real things and colours that are part of a task (`content/taskColors.ts`) |
+| Parent and child choose separately (Bekzod, 19 Nov 2026) | Parents choose colour, light/dark and style in **Account → Appearance**. The child chooses colour and style for the play screens with a **My colours** button on the play home. A new child starts with the parent's colour scheme and Soft |
+| No look controls on the landing page (Bekzod, 19 Nov 2026) | No colour, style or light/dark control appears on the landing page, the first screen for a new parent, the questionnaire, sign-in or payment screens, or inside a game round |
 
 **Families**
 
@@ -1157,6 +1162,25 @@ shows how things look and move; the spec says what to build, and wins where they
   - Needs: B100
   - Note (16 Nov 2026): `/parent/exercises` (`app/parent/exercises/page.tsx`) shows one card per exercise of the library: a poster with a play mark, the title, the body area and "about 2 min". A card plays only when the video is approved in the page's language (product rule 3); every other card says "Waiting for physio check" and has no button. The child's plan comes first ("In the plan", a child picker when there are several children), then the spec's seven slots in its order, then the rest. Not a separate exercises.json as the spec suggests: the slots are rows of the existing library (`content/exercises.ts`), so the server, the plan engine and the review use them with no second list. "Sit to stand" was already there; the six new rows (reach_toy, open_close_hand, sitting_balance, tummy_time_toy, animal_walks, rolling_side) have no video in any mode (the demo too) and cautious tags (for example "prone" on tummy time and rolling, "standing"/"walking"/"high_intensity"/"leg_balance" and GMFCS 1–2 on animal walks): the physiotherapist must check the tags with each video. No placeholder clips for them (`test_videos_placeholders` still expects 33). Plans did not change (`roadmap_cases` has only the longer library). New `GET /videos` lists which exercises have an approved video and in which languages (no file links); live mode builds the page from it (`shelfFrom` in `lib/live/map.ts`) and asks `GET /videos/{id}?lang=` for a link when a video is played (`api.watchVideo`, mock and live). Admin: `/admin/content` has a new "Exercise videos" card with every exercise and the state of each language, and the upload form (moved to `features/pro/VideoRegister.tsx`, also still on the Video reviewer page). Deviation: the spec asks for an "approved" tick by the admin with the physio's name; product rule 3 and the server let only a physiotherapist's own account approve, so the card links to the Video reviewer page instead. Tests: roadmap test "an exercise enters a plan only when its video is approved in the child's language" (216 plans, three languages, a therapist assigning unapproved exercises); server `test_the_list_names_only_approved_videos`; `e2e/exercises.e2e.ts` (slots wait, plan first, the admin uploads, the physio approves, the parent plays). uz and ru text drafted 16 Nov 2026 — native-speaker check (B44)
 
+### Update 3 part 2 (19 Nov 2026)
+
+*Bekzod's spec `docs/update3-look-colours-spec-2026-11-19.md` (Update 3 tasks 3 and 4) and the demo in
+`docs/demo-2026-11-19/`: the demo is the reference for how things look and for every colour value; the spec says what
+to build, and wins where they disagree. Order: B107 to B110.*
+
+- [ ] **Bekzod** — `B107` Colour tokens for six schemes, and the colour tests (spec 2)
+  - Done when: the 11 sets exist with the demo's values; old tokens are gone; the no-raw-colour test and the contrast test pass; Cloudy's face uses `cloudyFace`; nothing looks broken in any set (screenshots of Overview, Plan, a game and the questionnaire in each set, in the task note)
+  - Needs: —
+- [ ] **Bekzod** — `B108` Soft and Sharp styles (spec 3)
+  - Done when: `data-style` switches every part in the table; Soft is the default; blur only where allowed; the frame-rate number is in the note; game targets are never blurred
+  - Needs: B107
+- [ ] **Bekzod** — `B109` Scenery, Cloudy and games follow the scheme; fixed task colours (spec 5, 6)
+  - Done when: scenery, Cloudy forms and both Cloudy games repaint with the scheme; `taskColors.ts` holds every task colour and the 3:1 test passes (with rings where needed); theme-world backgrounds come from the scheme; the test page shows all sets and both styles
+  - Needs: B108
+- [ ] **Bekzod** — `B110` Appearance settings for parents and My colours for children (spec 4)
+  - Done when: Account → Appearance sets colour, light/dark and style; Light works from Night as described; the child's My colours sheet sets colour and style per child and works with all four input modes; no appearance control is on the landing page, first screen, questionnaire, sign-in, payment or game screens; works in mock and live mode
+  - Needs: B109
+
 ### Hosting (31 Oct 2026)
 
 - [x] **Bekzod** — Website demo on Vercel (mock mode, no server)
@@ -1240,8 +1264,8 @@ These are not programming. The named developer asks the right person and writes 
   - Needed for: nothing (the current rule stays until they answer)
 - [ ] **Bekzod** — `Q16` Dragon art for Cloudy: Bekzod supplies an original or licensed image file. Until then there is no dragon form
   - Needed for: nothing
-- [ ] **Bekzod** — `Q17` Which colour scheme is the default for the jury demo: Warm Hills, Sky, Mint or Lilac?
-  - Needed for: nothing (Warm Hills until answered)
+- [ ] **Bekzod** — `Q17` Which colour scheme and style are the default for the jury demo? (Warm Hills + Soft until answered.)
+  - Needed for: nothing (Warm Hills + Soft until answered)
 
 ---
 
