@@ -72,7 +72,7 @@ function ExerciseCard({ video, inPlan }: { video: ExerciseVideo; inPlan: boolean
   };
 
   return (
-    <li className="flex flex-col overflow-hidden rounded-fk-lg border-[1.5px] border-edge bg-surface shadow-soft">
+    <li className="fk-card flex flex-col overflow-hidden">
       {url ? (
         <video controls autoPlay preload="metadata" src={url} className="aspect-video w-full bg-ink" aria-label={title} />
       ) : (
@@ -83,7 +83,7 @@ function ExerciseCard({ video, inPlan }: { video: ExerciseVideo; inPlan: boolean
               onClick={play}
               disabled={watch.pending}
               aria-label={t("exercises.play", { name: title })}
-              className="grid size-16 place-items-center rounded-full border-[1.5px] border-edge bg-surface text-ink shadow-soft transition hover:scale-105 disabled:opacity-60"
+              className="fk-btn-2 grid size-16 place-items-center rounded-full transition hover:scale-105 disabled:opacity-60"
             >
               <Play className="size-7 translate-x-0.5" aria-hidden />
             </button>

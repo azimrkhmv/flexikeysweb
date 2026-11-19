@@ -149,7 +149,7 @@ function Shell({ me, nav, more, foot, backdrop, headerExtra, children }: { me: U
       <div className={`relative z-[1] flex min-h-dvh flex-col pb-28 lg:pl-64 ${foot ? "lg:pb-0" : "lg:pb-8"}`}>
         <div className="mx-auto w-full min-w-0 max-w-[1200px] flex-1 px-4 pb-8 lg:px-8">
           {/* Top bar: brand + sign-out only on small screens (the panel holds them on desktop). */}
-          <header className="sticky top-0 z-30 -mx-4 flex h-16 items-center gap-3 bg-bg/90 px-4 backdrop-blur lg:static lg:mx-0 lg:mt-6 lg:h-12 lg:bg-transparent lg:px-0 lg:backdrop-blur-none">
+          <header className="sticky top-0 z-30 -mx-4 flex h-16 items-center gap-3 fk-header fk-header-lg-flat px-4 lg:static lg:mx-0 lg:mt-6 lg:h-12 lg:px-0">
             <div className="flex items-center gap-2 lg:hidden">
               <Logo href={`/${me.role}`} small />
               <span className="hidden rounded-full bg-surface-2 px-3 py-1 text-xs font-bold text-muted sm:inline">{t(`role.${me.role}`)}</span>
@@ -177,7 +177,7 @@ function Shell({ me, nav, more, foot, backdrop, headerExtra, children }: { me: U
       </div>
 
       {me.role !== "admin" && <FeedbackBox />}
-      <nav aria-label={t("nav.menu")} className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden">
+      <nav aria-label={t("nav.menu")} className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface pb-[env(safe-area-inset-bottom)] lg:hidden">
         <ul className="flex overflow-x-auto">
           {(more ? [...nav, { ...more.item, on: inMore }] : nav).map(({ href, label, icon: Icon, match, ...x }) => (
             <li key={href} className={more ? "min-w-0 flex-1" : "min-w-[76px] flex-1"}>

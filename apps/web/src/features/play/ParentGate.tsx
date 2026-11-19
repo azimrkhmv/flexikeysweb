@@ -43,7 +43,7 @@ export function ParentGate({ lang, onPass, onCancel }: { lang: Lang; onPass: () 
   };
 
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-ink/40 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="fk-gate-title">
+    <div className="fixed inset-0 z-50 grid place-items-center bg-ink/50 p-4" role="dialog" aria-modal="true" aria-labelledby="fk-gate-title">
       <div ref={box} className="w-full max-w-md rounded-fk-lg bg-surface p-6 text-center shadow-lift">
         <h2 id="fk-gate-title" className="mb-4 flex items-center justify-center gap-2 text-xl font-extrabold text-ink">
           <Lock className="size-5" aria-hidden /> {t("play.gate.title")}

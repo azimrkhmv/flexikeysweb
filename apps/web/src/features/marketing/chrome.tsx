@@ -50,7 +50,7 @@ export function Header() {
   );
 
   return (
-    <header className="sticky top-0 z-30 border-b border-line/70 bg-bg/85 backdrop-blur">
+    <header className="fk-header sticky top-0 z-30">
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:z-50 focus:rounded-full focus:bg-surface focus:px-4 focus:py-2 focus:font-bold">
         {t("mkt.skip")}
       </a>

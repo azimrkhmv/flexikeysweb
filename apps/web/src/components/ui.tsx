@@ -174,7 +174,7 @@ export function Modal({ open, onClose, title, children }: { open: boolean; onClo
       aria-labelledby={titleId}
       onClose={onClose}
       onClick={(e) => e.target === ref.current && onClose()}
-      className="m-auto w-[min(560px,calc(100vw-32px))] rounded-fk-lg border-[1.5px] border-edge bg-surface p-0 text-ink shadow-lift backdrop:bg-ink/30 backdrop:backdrop-blur-sm"
+      className="m-auto w-[min(560px,calc(100vw-32px))] fk-rim rounded-fk-lg bg-surface p-0 text-ink shadow-lift backdrop:bg-ink/40"
     >
       <div className="p-6">
         <h2 id={titleId} className="mb-4 text-xl font-extrabold">

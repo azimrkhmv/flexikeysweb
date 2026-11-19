@@ -36,8 +36,8 @@
   --color-game-edge: var(--gameEdge);
   --font-sans: var(--font-nunito), ui-rounded, system-ui, sans-serif;
   --font-display: var(--font-fredoka), var(--font-nunito), ui-rounded, system-ui, sans-serif;
-  --radius-fk: 24px;
-  --radius-fk-lg: 28px;
+  --radius-fk: var(--r-fk);
+  --radius-fk-lg: var(--r-card);
   --shadow-soft: 0 12px 32px rgba(var(--shadow), 0.1), 0 2px 6px rgba(var(--shadow), 0.05);
   --shadow-lift: 0 14px 34px rgba(var(--shadow), 0.2);
 }
@@ -86,33 +86,67 @@ h1, h2, h3 {
   font-family: var(--font-display);
 }
 
-/* Warm Hills shapes (B99, spec 2.2). The main button looks like a key: a gradient, a 1.5 px outline and a 4 px solid
-   lower edge; it moves down 3 px when pressed. The second button is paper with the outline and no lower edge. */
+/* ---------- Soft and Sharp (B108, Update 3 spec 3; values from the demo's CSS and its SHARP list) ----------
+   `data-style` on <html> (or on a smaller preview, like the Cloudy test page) sets two numbers: --soft and --sharp,
+   1 or 0. Only these numbers are inherited; every rule below mixes its colours on its own element, so a preview with
+   another scheme or style inside the page is drawn right too.
+   Soft (default): no dark outlines, rounder corners, soft shadows, paper cards, a little blur in the background.
+   Sharp: the 15 Nov Warm Hills shapes: thin dark outlines, key-style main buttons with a lower edge, no blur.
+   Blur budget (spec 3): only the header, the page background clouds and the scenery. Never cards, text, buttons or
+   game targets. */
+:root, [data-style="soft"] { --soft: 1; --sharp: 0; --r-card: 30px; --r-fk: 26px; --press: 1px; }
+[data-style="sharp"] { --soft: 0; --sharp: 1; --r-card: 24px; --r-fk: 24px; --press: 3px; }
+
 @layer components {
+  /* Main button: the btnA → btnB gradient. Soft: no border, a soft shadow, lifts 2 px, presses 1 px. Sharp: a 1.5 px
+     edge and a 4 px solid lower edge (a key), presses 3 px. */
   .fk-btn {
     position: relative;
     overflow: hidden;
-    border: 1.5px solid var(--edge);
+    border: calc(1.5px * var(--sharp)) solid var(--edge);
     background: linear-gradient(180deg, var(--btnA), var(--btnB));
     color: var(--btnText);
-    box-shadow: 0 4px 0 var(--edge);
-    margin-bottom: 4px;
+    box-shadow: 0 calc(4px * var(--sharp)) 0 var(--edge), 0 8px 20px rgba(var(--shadow), calc(0.18 * var(--soft))), inset 0 1px 0 rgba(var(--shine), calc(0.45 * var(--soft)));
+    margin-bottom: calc(4px * var(--sharp));
     transition: transform 0.15s, box-shadow 0.15s;
   }
   .fk-btn:hover { transform: translateY(-2px); }
-  .fk-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--edge); }
+  .fk-btn:active { transform: translateY(var(--press)); box-shadow: 0 calc(1px * var(--sharp)) 0 var(--edge), 0 4px 10px rgba(var(--shadow), calc(0.14 * var(--soft))); }
   .fk-btn:disabled, .fk-btn[aria-disabled="true"] { box-shadow: none; transform: none; }
+  /* Second button (and chips, tiles, list rows that use it): solid paper. Soft: a soft shadow, no border. Sharp: the
+     1.5 px edge, no shadow. */
   .fk-btn-2 {
-    border: 1.5px solid var(--edge);
+    border: calc(1.5px * var(--sharp)) solid var(--edge);
     background: var(--paperSolid);
     color: var(--ink);
+    box-shadow: 0 6px 16px rgba(var(--shadow), calc(0.1 * var(--soft)));
     transition: transform 0.15s, background 0.15s;
   }
   .fk-btn-2:hover { background: var(--tint); }
-  /* Cards, tiles and inputs: the outline in --edge. */
-  .fk-card { border: 1.5px solid var(--edge); border-radius: 24px; background: var(--paperSolid); box-shadow: var(--shadow-soft); }
-  .fk-tile { border: 1.5px solid var(--edge); border-radius: 18px; }
+  /* Cards. Soft: radius 30, 1 px `line` border, two soft shadows, `paper` (slightly see-through). Sharp: radius 24,
+     1.5 px `edge` border, no shadow, `paperSolid`. */
+  .fk-card {
+    border: calc(1px + 0.5px * var(--sharp)) solid color-mix(in srgb, var(--edge) calc(100% * var(--sharp)), var(--line));
+    border-radius: var(--r-card);
+    background: color-mix(in srgb, var(--paperSolid) calc(100% * var(--sharp)), var(--paper));
+    box-shadow: 0 12px 32px rgba(var(--shadow), calc(0.1 * var(--soft))), 0 2px 6px rgba(var(--shadow), calc(0.05 * var(--soft)));
+  }
+  /* The same outline for a panel that is not a .fk-card (a dialog, an exercise card with a video). */
+  .fk-rim { border: calc(1px + 0.5px * var(--sharp)) solid color-mix(in srgb, var(--edge) calc(100% * var(--sharp)), var(--line)); }
+  .fk-tile { border: calc(1.5px * var(--sharp)) solid var(--edge); border-radius: 18px; box-shadow: 0 3px 10px rgba(var(--shadow), calc(0.1 * var(--soft))); }
+  /* Inputs keep the 1.5 px edge in both styles: a text box needs a 3:1 outline (WCAG 1.4.11) and `line` is too pale. */
   .fk-input { border: 1.5px solid var(--edge); border-radius: 16px; background: var(--paperSolid); }
+}
+
+/* The sticky top bar. Soft: `paper` with a 14 px background blur where supported. Sharp: `paperSolid`, a 1.5 px edge
+   line, no blur. `.fk-header-lg-flat`: on a wide screen the parent pages' bar is part of the page, not a bar. */
+.fk-header { background: var(--paper); border-bottom: 1px solid var(--line); box-shadow: 0 6px 24px rgba(var(--shadow), 0.06); }
+@supports (backdrop-filter: blur(10px)) or (-webkit-backdrop-filter: blur(10px)) {
+  [data-style="soft"] .fk-header { -webkit-backdrop-filter: blur(14px) saturate(1.2); backdrop-filter: blur(14px) saturate(1.2); }
+}
+[data-style="sharp"] .fk-header { background: var(--paperSolid); border-bottom: 1.5px solid var(--edge); box-shadow: none; }
+@media (min-width: 1024px) {
+  .fk-header.fk-header-lg-flat { background: transparent; border-bottom: 0; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
 }
 
 :focus-visible {
@@ -188,14 +222,18 @@ h1, h2, h3 {
 
 /* ---------- Warm Hills scenery and small effects (B100, spec 2.2, 2.3, 3) ---------- */
 /* Scenery: a pale sun, two round hills and small trees. Decoration only (aria-hidden); never on child game screens. */
-.fk-vista { position: relative; height: 370px; border-radius: 34px; border: 1.5px solid var(--edge); overflow: hidden; background: linear-gradient(180deg, var(--sky1), var(--sky2)); }
-.fk-sunny { position: absolute; left: 12%; top: 11%; width: 78px; height: 78px; border-radius: 50%; background: var(--sun); box-shadow: 0 0 0 14px color-mix(in srgb, var(--sunGlow) 50%, transparent), 0 0 0 32px color-mix(in srgb, var(--sunGlow) 24%, transparent); animation: fk-sun 6s ease-in-out infinite; }
+/* Soft: blurred hills and a blurred sun glow. Sharp: a 1.5 px edge on hills, sun and trees, and no glow (B108). */
+.fk-vista { position: relative; height: 370px; border-radius: 34px; border: calc(1px + 0.5px * var(--sharp)) solid color-mix(in srgb, var(--edge) calc(100% * var(--sharp)), var(--line)); overflow: hidden; background: linear-gradient(180deg, var(--sky1), var(--sky2)); }
+.fk-sunny { position: absolute; left: 12%; top: 11%; width: 78px; height: 78px; border-radius: 50%; background: var(--sun); border: calc(1.5px * var(--sharp)) solid var(--edge); box-shadow: 0 0 34px 22px color-mix(in srgb, var(--sunGlow) calc(60% * var(--soft)), transparent); animation: fk-sun 6s ease-in-out infinite; }
 @keyframes fk-sun { 50% { transform: scale(1.1); } }
-.fk-hill { position: absolute; border-radius: 50%; }
+.fk-hill { position: absolute; border-radius: 50%; border: calc(1.5px * var(--sharp)) solid var(--edge); }
+[data-style="soft"] .fk-hill { filter: blur(1.3px); }
+/* A soft sun spot behind the landing page's first picture: a gradient, so it needs no blur. */
+.fk-sunspot { background: radial-gradient(circle, color-mix(in srgb, var(--sun) 45%, transparent), transparent 70%); }
 .fk-hill-a { left: -22%; bottom: -170px; width: 92%; height: 300px; background: var(--hill1); }
 .fk-hill-b { right: -28%; bottom: -215px; width: 105%; height: 330px; background: var(--hill2); }
 .fk-tree { position: absolute; width: 7px; height: 30px; background: var(--trunk); border-radius: 4px; }
-.fk-tree::before { content: ""; position: absolute; left: -15px; bottom: 14px; width: 37px; height: 48px; border-radius: 50% 50% 45% 45%; background: var(--tree1); border: 1.5px solid var(--edge); }
+.fk-tree::before { content: ""; position: absolute; left: -15px; bottom: 14px; width: 37px; height: 48px; border-radius: 50% 50% 45% 45%; background: var(--tree1); border: calc(1.5px * var(--sharp)) solid var(--edge); }
 .fk-tree-s { transform: scale(0.7); transform-origin: 50% 100%; }
 .fk-toy { position: absolute; transform: translate(calc(var(--px, 0) * var(--d) * 1px), calc(var(--py, 0) * var(--d) * 1px)); transition: transform 0.4s ease-out; z-index: 2; }
 .fk-toy i { display: block; animation: fk-toy 5s ease-in-out infinite; }
@@ -229,10 +267,11 @@ h1, h2, h3 {
 .fk-spot { outline: 3px dashed var(--accentText); outline-offset: 10px; border-radius: 24px; }
 
 /* ---------- Cloudy (B101, spec 5.1; components/Cloudy.tsx). The demo's `.puff`. ---------- */
-/* `color` is his face (always --cloudyFace: his body is light in dark mode too); the outline is --edge. */
-.fk-puff { display: block; position: relative; width: calc(140px * var(--z)); height: calc(140px * var(--z)); color: var(--cloudyFace); --cl: var(--edge); }
+/* `color` is his face (always --cloudyFace: his body is light in dark mode too). The outline (B108): Soft, a 2 px
+   line in --cloudyLine; Sharp, a thicker 3 px line in --edge with a deeper lower edge. */
+.fk-puff { display: block; position: relative; width: calc(140px * var(--z)); height: calc(140px * var(--z)); color: var(--cloudyFace); --cl: color-mix(in srgb, var(--edge) calc(100% * var(--sharp)), var(--cloudyLine)); --clw: calc(2px + 1px * var(--sharp)); --cll: calc(3px + 2.5px * var(--sharp)); }
 .fk-puff .pz { position: absolute; left: 0; top: 0; width: 140px; height: 140px; transform: scale(var(--z)); transform-origin: 0 0; display: block; }
-.fk-puff .pb { position: absolute; inset: 0; display: block; filter: drop-shadow(2.4px 0 0 var(--cl)) drop-shadow(-2.4px 0 0 var(--cl)) drop-shadow(0 2.4px 0 var(--cl)) drop-shadow(0 -2.4px 0 var(--cl)) drop-shadow(0 5px 0 var(--cl)) drop-shadow(0 10px 6px rgba(var(--shadow), 0.28)); }
+.fk-puff .pb { position: absolute; inset: 0; display: block; filter: drop-shadow(var(--clw) 0 0 var(--cl)) drop-shadow(calc(-1 * var(--clw)) 0 0 var(--cl)) drop-shadow(0 var(--clw) 0 var(--cl)) drop-shadow(0 calc(-1 * var(--clw)) 0 var(--cl)) drop-shadow(0 var(--cll) 0 var(--cl)) drop-shadow(0 10px 6px rgba(var(--shadow), 0.28)); }
 .fk-puff .pb i { position: absolute; left: 20px; top: 20px; width: 100px; height: 100px; border-radius: 50%; background: var(--cloudyBody); transition: transform 0.9s cubic-bezier(0.5, 0, 0.2, 1.3); }
 .fk-puff svg { position: absolute; left: 0; top: 0; width: 140px; height: 140px; overflow: visible; }
 .fk-puff .ft { fill: var(--foot, var(--cloudyShade)); stroke: var(--cl); stroke-width: 2.6; }
@@ -247,7 +286,7 @@ h1, h2, h3 {
 .fk-puff .pb, .fk-puff .fk-puff-feet, .fk-puff .fk-puff-deco { transition: opacity 0.3s; }
 /* A drawn form (the tiger): the puffs, feet and details fade and the drawing pops out of the small ball. */
 .fk-puff.drawn .pb, .fk-puff.drawn .fk-puff-feet, .fk-puff.drawn .fk-puff-deco { opacity: 0; }
-.fk-puff .fk-puff-arts { filter: drop-shadow(0 5px 0 var(--cl)) drop-shadow(0 10px 6px rgba(var(--shadow), 0.28)); }
+.fk-puff .fk-puff-arts { filter: drop-shadow(0 var(--cll) 0 var(--cl)) drop-shadow(0 10px 6px rgba(var(--shadow), 0.28)); }
 .fk-puff .fk-puff-art { opacity: 0; transform: scale(0.35); transform-origin: 70px 84px; transition: opacity 0.3s, transform 0.5s cubic-bezier(0.4, 0, 0.2, 1.5); }
 .fk-puff[data-form="tiger"] .art-tiger { opacity: 1; transform: none; transition-delay: 0.3s; }
 .fk-puff .fk-puff-face { transition: transform 0.9s cubic-bezier(0.5, 0, 0.2, 1.3), opacity 0.3s; }
@@ -259,7 +298,9 @@ h1, h2, h3 {
 .fk-cloudy { position: fixed; left: 0; top: 0; z-index: 25; will-change: transform; pointer-events: none; }
 .fk-cloudy-bob { display: block; animation: fk-bob 3.6s ease-in-out infinite; }
 @keyframes fk-bob { 50% { transform: translateY(-6px) rotate(-2deg); } }
-.fk-skycloud { position: fixed; left: 0; top: 0; z-index: 0; pointer-events: none; opacity: 0.95; will-change: transform; }
+/* The page background clouds. Soft: blurred 9 px at 75% (the demo's .bgcloud). Sharp: clear, 90%. */
+.fk-skycloud { position: fixed; left: 0; top: 0; z-index: 0; pointer-events: none; opacity: 0.9; will-change: transform; }
+[data-style="soft"] .fk-skycloud { opacity: 0.75; filter: blur(9px); }
 .fk-skycloud svg { transition: transform 0.4s, opacity 0.4s; }
 .fk-skycloud.kick svg { animation: fk-kick 0.8s; }
 @keyframes fk-kick { 30% { transform: translateY(8px) scale(1.06, 0.9); } 60% { transform: translateY(-4px); } }

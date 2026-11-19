@@ -61,7 +61,7 @@ function Hero() {
           className="relative aspect-[5/4] overflow-hidden rounded-fk-lg border border-line shadow-lift"
           style={{ background: "linear-gradient(160deg, var(--sky1) 0%, var(--sky2) 100%)" }}
         >
-          <div className="absolute -right-10 -top-10 size-44 rounded-full bg-sun/40 blur-2xl" />
+          <div className="absolute -right-10 -top-10 size-44 rounded-full fk-sunspot" />
           <svg className="absolute inset-x-0 bottom-0 h-1/3 w-full" viewBox="0 0 500 140" preserveAspectRatio="none" aria-hidden>
             <path d="M0 90 Q120 40 250 80 T500 70 V140 H0Z" fill="var(--hill1)" />
             <path d="M0 112 Q150 82 300 110 T500 100 V140 H0Z" fill="var(--hill2)" />

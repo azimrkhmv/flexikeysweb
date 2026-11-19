@@ -598,7 +598,7 @@ export function ChildMode({ child }: { child: Child }) {
 
         {/* child nav */}
         {withNav && (
-          <nav className="flex justify-center gap-3 border-t border-surface/60 bg-surface/80 px-3 pb-[max(8px,env(safe-area-inset-bottom))] pt-2 backdrop-blur">
+          <nav className="flex justify-center gap-3 border-t border-surface/60 bg-surface/95 px-3 pb-[max(8px,env(safe-area-inset-bottom))] pt-2">
             {(
               [
                 ["map", "🗺️", "play.nav.map"],
@@ -624,7 +624,7 @@ export function ChildMode({ child }: { child: Child }) {
 
       {/* overlays */}
       {overlay === "menu" && (
-        <div className="fixed inset-0 z-40 grid place-items-center bg-ink/30 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label={t("play.pause")}>
+        <div className="fixed inset-0 z-40 grid place-items-center bg-ink/40 p-4" role="dialog" aria-modal="true" aria-label={t("play.pause")}>
           <div ref={overlayRef} className="flex w-full max-w-sm flex-col gap-3 rounded-fk-lg bg-surface p-6 shadow-lift">
             <Target label={t("play.menu.continue")} onSelect={() => setOverlay(null)} className={`${bigBtn} bg-btn text-btn-text`}>
               ▶ {t("play.menu.continue")}
@@ -639,7 +639,7 @@ export function ChildMode({ child }: { child: Child }) {
         </div>
       )}
       {overlay === "aac" && (
-        <div className="fixed inset-0 z-40 overflow-y-auto bg-bg/95 p-3 backdrop-blur sm:p-6" role="dialog" aria-modal="true" aria-label={t("play.nav.aac")}>
+        <div className="fixed inset-0 z-40 overflow-y-auto bg-bg p-3 sm:p-6" role="dialog" aria-modal="true" aria-label={t("play.nav.aac")}>
           <div ref={overlayRef} className="flex flex-col gap-3">
             <Target label={t("play.menu.continue")} onSelect={() => setOverlay(null)} className={`${bigBtn} self-start bg-btn text-btn-text`}>
               ▶ {t("play.menu.continue")}
@@ -650,7 +650,7 @@ export function ChildMode({ child }: { child: Child }) {
       )}
       {overlay === "gate" && <ParentGate lang={lang} onPass={exit} onCancel={() => setOverlay(null)} />}
       {showBreak && (
-        <div className="fixed inset-0 z-40 grid place-items-center bg-bg-2/85 p-4 backdrop-blur" role="dialog" aria-modal="true" aria-label={t("play.break.title")}>
+        <div className="fixed inset-0 z-40 grid place-items-center bg-bg-2/95 p-4" role="dialog" aria-modal="true" aria-label={t("play.break.title")}>
           <div ref={overlayRef} className="flex flex-col items-center gap-5 text-center">
             <Mascot mood="sleepy" size={220} hat={hat} tint={tint} />
             <h2 className="text-3xl font-extrabold text-ink">{t("play.break.title")}</h2>
@@ -675,7 +675,7 @@ export function ChildMode({ child }: { child: Child }) {
         </div>
       )}
       {restDay && !offlineBlock && (
-        <div className="fixed inset-0 z-40 grid place-items-center bg-bg-2/90 p-4 backdrop-blur" role="dialog" aria-modal="true" aria-label={t("play.rest.title")}>
+        <div className="fixed inset-0 z-40 grid place-items-center bg-bg-2/95 p-4" role="dialog" aria-modal="true" aria-label={t("play.rest.title")}>
           <div ref={overlayRef} className="flex flex-col items-center gap-5 text-center">
             <span className="text-8xl" aria-hidden>
               ☁️
@@ -695,7 +695,7 @@ export function ChildMode({ child }: { child: Child }) {
         </div>
       )}
       {offlineBlock && (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-bg/90 p-4 backdrop-blur" role="status">
+        <div className="fixed inset-0 z-50 grid place-items-center bg-bg/95 p-4" role="status">
           <div ref={overlayRef} className="flex flex-col items-center gap-4 text-center">
             <Mascot mood="sleepy" size={200} hat={hat} tint={tint} />
             <h2 className="text-3xl font-extrabold text-ink">{t("play.offline")}</h2>

@@ -221,7 +221,7 @@ export function Frame({
   return (
     // On a short, wide screen (`short`, B66) the prompt sits beside the speaker button and the action button floats
     // over the bottom corner instead of keeping an empty row, so the whole game fits without scrolling.
-    <section className="relative flex h-full min-h-[480px] w-full flex-col rounded-fk-lg border-[1.5px] border-edge bg-surface p-4 shadow-soft sm:p-6 short:min-h-0 short:p-3">
+    <section className="relative flex h-full min-h-[480px] w-full flex-col fk-card p-4 sm:p-6 short:min-h-0 short:p-3">
       <div className="grid grid-cols-[auto_1fr_auto] items-center gap-x-4">
         <span className="w-[76px] short:row-span-2" />
         <div className="flex min-w-0 justify-center"><Dots total={total} done={done} /></div>
