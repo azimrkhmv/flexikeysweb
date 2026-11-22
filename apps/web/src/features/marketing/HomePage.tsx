@@ -12,11 +12,13 @@ import { Archetypes } from "@/features/marketing/archetypes";
 import { OfferLine } from "@/features/parent/Offer";
 import { SectionTitle } from "@/features/marketing/chrome";
 import { useT } from "@/lib/i18n";
+import { useFixedLook } from "@/lib/appearance";
 import type { MascotMood } from "@/lib/types";
 
 const section = "mx-auto max-w-6xl px-4 py-16 sm:py-20";
 
 export function HomePage() {
+  useFixedLook(); // B116: always Warm Hills light, Soft
   return (
     <>
       <Hero />

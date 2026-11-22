@@ -107,6 +107,8 @@ const defaults = new Map<string, ChildLook>();
 
 /** Which look <html> shows now: the parent's, or a child's while a play page is open. */
 let shown: { child: string | null } = { child: null };
+/** B116: a page that always shows one look (the landing page); the parent's own comes back when it closes. */
+let fixed: Look | null = null;
 let fadeTimer: ReturnType<typeof setTimeout> | undefined;
 
 function paint(look: Look, fade: boolean) {
@@ -125,7 +127,8 @@ function paint(look: Look, fade: boolean) {
 
 function repaint(fade: boolean) {
   const p = readParent();
-  if (shown.child) {
+  if (fixed) paint(fixed, false);
+  else if (shown.child) {
     const c = readChild(shown.child);
     save(PLAY_KEY, c);
     paint({ ...c, mode: p.mode }, fade);
@@ -184,6 +187,7 @@ export function useShownLook(): Look {
     subscribe,
     () => {
       const p = readParent();
+      if (fixed) return fixed;
       return shown.child ? lookCache(readChild(shown.child), p.mode) : p;
     },
     () => DEFAULT_LOOK,
@@ -211,4 +215,21 @@ export function usePlayLook(childId: string | null | undefined) {
       emit();
     };
   }, [childId]);
+}
+
+export const LANDING_LOOK: Look = { scheme: "warm", mode: "light", style: "soft" };
+
+/** B116 (Update 4 spec 7.2): the landing page is always Warm Hills light, Soft; leaving it restores the parent's look.
+ * (APPEARANCE_SCRIPT already paints it before the first paint, so there is no flash.) */
+export function useFixedLook(look: Look = LANDING_LOOK) {
+  useEffect(() => {
+    fixed = look;
+    repaint(false);
+    emit();
+    return () => {
+      fixed = null;
+      repaint(false);
+      emit();
+    };
+  }, [look]);
 }

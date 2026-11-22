@@ -313,7 +313,8 @@ h1, h2, h3 {
 .fk-cloudy-bob { display: block; animation: fk-bob 3.6s ease-in-out infinite; }
 @keyframes fk-bob { 50% { transform: translateY(-6px) rotate(-2deg); } }
 /* The page background clouds. Soft: blurred 9 px at 75% (the demo's .bgcloud). Sharp: clear, 90%. */
-.fk-skycloud { position: fixed; left: 0; top: 0; z-index: 0; pointer-events: none; opacity: 0.9; will-change: transform; }
+/* absolute inside CloudyRoam's fixed, screen-sized, clipping box: a fixed cloud escaped it and widened the page at 360 px (B116). */
+.fk-skycloud { position: absolute; left: 0; top: 0; z-index: 0; pointer-events: none; opacity: 0.9; will-change: transform; }
 [data-style="soft"] .fk-skycloud { opacity: 0.75; filter: blur(9px); }
 .fk-skycloud svg { transition: transform 0.4s, opacity 0.4s; }
 .fk-skycloud.kick svg { animation: fk-kick 0.8s; }

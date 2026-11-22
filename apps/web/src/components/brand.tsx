@@ -6,7 +6,8 @@ import { Globe } from "lucide-react";
 import { LANG_NAMES, LANGS, useRouteLang, useT, useLang, type Lang } from "@/lib/i18n";
 import type { Role } from "@/lib/types";
 
-export function Logo({ href = "/", small }: { href?: string; small?: boolean }) {
+/** `compact`: the cloud only on screens under 400 px (the signed-in header; it has no room for the word at 360 px). */
+export function Logo({ href = "/", small, compact }: { href?: string; small?: boolean; compact?: boolean }) {
   return (
     <Link href={href} className="inline-flex items-center gap-2 rounded-xl" aria-label="FlexiKeys">
       <svg viewBox="0 0 48 36" width={small ? 32 : 40} height={small ? 24 : 30} aria-hidden>
@@ -21,7 +22,7 @@ export function Logo({ href = "/", small }: { href?: string; small?: boolean }) 
         <circle cx="30" cy="22" r="1.8" fill="var(--edge)" />
         <path d="M22.5 26q2.5 2 5 0" stroke="var(--edge)" strokeWidth="1.6" fill="none" strokeLinecap="round" />
       </svg>
-      <span className={`font-[family-name:var(--font-display)] font-semibold tracking-tight text-ink ${small ? "text-lg" : "text-xl"}`}>
+      <span className={`font-[family-name:var(--font-display)] font-semibold tracking-tight text-ink ${small ? "text-lg" : "text-xl"} ${compact ? "max-[399px]:sr-only" : ""}`}>
         Flexi<span className="text-primary">Keys</span>
       </span>
     </Link>

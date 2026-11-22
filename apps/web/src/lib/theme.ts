@@ -29,10 +29,10 @@ export const TOKEN_NAMES = [
 export type TokenName = (typeof TOKEN_NAMES)[number];
 export type Tokens = Record<TokenName, string>;
 
-/* PALETTES-START (copied from docs/demo-2026-11-19/index.html) */
+/* PALETTES-START (copied from docs/demo-2026-11-19/index.html; Warm Hills light changed to white-warm, B116, Update 4 spec 7.1) */
 const P = {
   warm:{
-    light:{sky1:"#FFF6E8",sky2:"#FFE6C6",paper:"rgba(255,251,243,.86)",paperSolid:"#FFFBF3",ink:"#4A3220",muted:"#75604B",accent:"#E8975A",accentText:"#A4521C",btnA:"#FFD3A6",btnB:"#F7B67F",btnText:"#45291A",line:"#F1DFC4",edge:"#6B4426",sun:"#FFE3A3",sunGlow:"#FFD27F",hillFar:"#FBDDB3",hill1:"#F6C994",hill2:"#EDB37A",tree1:"#D99B60",tree2:"#C7864C",trunk:"#9A6B47",cloud:"#FFFFFF",cloudyBody:"#FFFFFF",cloudyShade:"#F6DDBF",cloudyLine:"#C59A74",cheek:"#F7B9A2",gameCloud:"#FFFFFF",gameEdge:"#A06A40",shadow:"150,90,40"},
+    light:{sky1:"#FFFFFF",sky2:"#FFF7EA",paper:"rgba(255,255,255,.86)",paperSolid:"#FFFFFF",ink:"#3D2A1C",muted:"#6E5A47",accent:"#F29A4A",accentText:"#A8521C",btnA:"#FFC47E",btnB:"#F49B4B",btnText:"#3D2A1C",line:"#F0DFC4",edge:"#6B4426",sun:"#FFD36E",sunGlow:"#FFE9B8",hillFar:"#FCE9CC",hill1:"#F8D9A8",hill2:"#F4C68A",tree1:"#D99B60",tree2:"#C7864C",trunk:"#9A6B47",cloud:"#FCEBD3",cloudyBody:"#FFFFFF",cloudyShade:"#F6DDBF",cloudyLine:"#C59A74",cheek:"#F7B9A2",gameCloud:"#FFFFFF",gameEdge:"#A06A40",shadow:"150,90,40"},
     dark:{sky1:"#241A13",sky2:"#34261B",paper:"rgba(52,39,29,.86)",paperSolid:"#33261C",ink:"#FBEBD9",muted:"#CDB59C",accent:"#F0A766",accentText:"#FFC791",btnA:"#6E4C30",btnB:"#5D3F27",btnText:"#FFF1E2",line:"#4A3828",edge:"#F0A766",sun:"#F7E3C0",sunGlow:"#CDB48C",hillFar:"#4A3526",hill1:"#3F2D20",hill2:"#35251A",tree1:"#6B4B2F",tree2:"#5C3F27",trunk:"#2F2116",cloud:"#4A3828",cloudyBody:"#FFF3E6",cloudyShade:"#E9D3BC",cloudyLine:"#A88466",cheek:"#E2A58F",gameCloud:"#B08E6E",gameEdge:"#E9C9A6",shadow:"0,0,0"}},
   sky:{
     light:{sky1:"#F0F6FE",sky2:"#DCEAFB",paper:"rgba(255,255,255,.86)",paperSolid:"#FFFFFF",ink:"#1F2A4F",muted:"#56627F",accent:"#6F8EDB",accentText:"#3A55AF",btnA:"#CFDDF9",btnB:"#AFC6F3",btnText:"#1B2858",line:"#DCE6F5",edge:"#34447F",sun:"#FFF7DE",sunGlow:"#FFF0BF",hillFar:"#DCE8F9",hill1:"#C5D9F5",hill2:"#A9C5EF",tree1:"#8DAEE4",tree2:"#7497D8",trunk:"#6F82AA",cloud:"#FFFFFF",cloudyBody:"#FFFFFF",cloudyShade:"#D9E5F7",cloudyLine:"#8FA4CF",cheek:"#F4C6D3",gameCloud:"#FFFFFF",gameEdge:"#5F77B0",shadow:"50,80,150"},

@@ -152,7 +152,7 @@ function Shell({ me, nav, more, foot, backdrop, headerExtra, children }: { me: U
           {/* Top bar: brand + sign-out only on small screens (the panel holds them on desktop). */}
           <header className="sticky top-0 z-30 -mx-4 flex h-16 items-center gap-3 fk-header fk-header-lg-flat px-4 lg:static lg:mx-0 lg:mt-6 lg:h-12 lg:px-0">
             <div className="flex items-center gap-2 lg:hidden">
-              <Logo href={`/${me.role}`} small />
+              <Logo href={`/${me.role}`} small compact />
               <span className="hidden rounded-full bg-surface-2 px-3 py-1 text-xs font-bold text-muted sm:inline">{t(`role.${me.role}`)}</span>
             </div>
             <div className="ml-auto flex items-center gap-1.5 sm:gap-2">

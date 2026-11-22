@@ -51,7 +51,19 @@ describe("the 11 sets", () => {
     const between = (text: string) => text.slice(text.indexOf("const P = {"), text.indexOf("/* PALETTES-END */")).replace(/\s+/g, "");
     const ours = readFileSync(new URL("./theme.ts", import.meta.url), "utf8");
     expect(between(ours).length).toBeGreaterThan(5000);
-    expect(between(ours)).toBe(between(demo));
+    // B116 (Update 4 spec 7.1): Warm Hills light is white-warm; every other value stays the demo's.
+    const WHITE_WARM: Record<string, string> = {
+      sky1: "#FFFFFF", sky2: "#FFF7EA", paper: "rgba(255,255,255,.86)", paperSolid: "#FFFFFF", ink: "#3D2A1C", muted: "#6E5A47",
+      accent: "#F29A4A", accentText: "#A8521C", btnA: "#FFC47E", btnB: "#F49B4B", btnText: "#3D2A1C", line: "#F0DFC4",
+      sun: "#FFD36E", sunGlow: "#FFE9B8", hillFar: "#FCE9CC", hill1: "#F8D9A8", hill2: "#F4C68A", cloud: "#FCEBD3",
+    };
+    const d = between(demo);
+    const start = d.indexOf("warm:{light:{");
+    const end = d.indexOf("}", start);
+    let warm = d.slice(start, end);
+    for (const [k, v] of Object.entries(WHITE_WARM)) warm = warm.replace(new RegExp(`([{,])${k}:"[^"]*"`), `$1${k}:"${v}"`);
+    expect(between(ours)).toBe(d.slice(0, start) + warm + d.slice(end));
+    expect(PALETTES.warm.light.sky1).toBe("#FFFFFF");
   });
   it("Cloudy's face is the scheme's dark text colour in light and in dark mode", () => {
     expect(PALETTES.warm.dark.cloudyFace).toBe(PALETTES.warm.light.ink);

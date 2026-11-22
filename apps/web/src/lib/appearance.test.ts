@@ -109,6 +109,21 @@ describe("a child's look", () => {
   });
 });
 
+describe("the landing page (B116)", () => {
+  const paint = async (pathname: string) => {
+    const { APPEARANCE_SCRIPT } = await import("./appearanceScript");
+    vi.stubGlobal("location", { pathname });
+    new Function(APPEARANCE_SCRIPT)();
+    return { ...html.dataset };
+  };
+  it("is always Warm Hills light, Soft, whatever was saved", async () => {
+    store.set("fk-look", JSON.stringify({ scheme: "night", mode: "dark", style: "sharp" }));
+    for (const p of ["/", "/uz", "/ru/", "/en"]) expect(await paint(p)).toEqual({ scheme: "warm", mode: "light", style: "soft" });
+    expect(await paint("/parent")).toEqual({ scheme: "night", mode: "dark", style: "sharp" });
+    expect(await paint("/en/privacy")).toEqual({ scheme: "night", mode: "dark", style: "sharp" });
+  });
+});
+
 describe("where people choose", () => {
   // Spec 4.1, decision 0.1: look controls only in Account → Appearance and on the child's play home.
   const SRC = new URL("..", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1");
