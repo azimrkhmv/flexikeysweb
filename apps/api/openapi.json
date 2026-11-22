@@ -1211,7 +1211,7 @@
      "pilot"
     ],
     "summary": "Add Center Link",
-    "description": "A new centre link. 422 invalid_code (lowercase letters, digits and \"-\", 2-32), 409 code_taken.",
+    "description": "A new centre link. 422 invalid_ref_code (lowercase letters, digits and \"-\", 2-32), 409 code_taken.",
     "operationId": "add_center_link_api_v1_admin_center_links_post",
     "requestBody": {
      "content": {
