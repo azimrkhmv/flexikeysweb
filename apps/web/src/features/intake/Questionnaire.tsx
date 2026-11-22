@@ -14,6 +14,7 @@ import type { IntakeValue, Roadmap } from "@/lib/types";
 import { chip, Choice, DateInput, NumberInput } from "./Fields";
 import { SectionIntro, wantsIntro } from "./SectionIntro";
 import { Ready } from "./Wizard";
+import { PrivacyLink } from "@/components/PrivacyLink";
 
 // IQ4: the CEO's parent questionnaire (content/questionnaire.json), one screen per section, saved as the parent goes.
 // Which questions show is the data's rules (visible, shownOptions), the same as the server's. Section K (baseline
@@ -162,6 +163,7 @@ export function QuestionnaireWizard({ childId: initialChild, version }: { childI
           <ShieldCheck className="size-8 text-primary" aria-hidden />
           <p className="text-ink">{t("intake.health.lead")}</p>
           <p className="text-sm text-muted">{t("intake.health.points")}</p>
+          <PrivacyLink />
           <FormError>{act.error}</FormError>
           <div className="flex flex-wrap items-center gap-3">
             <Button variant="ghost" onClick={() => setI(i - 1)}>{t("intake.back")}</Button>

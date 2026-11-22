@@ -26,7 +26,7 @@ test("a helper does daily use only, and removal cuts access", async ({ page }, i
   await signInWithPhone(page, HELPER); // a new number: the details step first
   await expect(page.getByRole("heading", { name: "A few details" })).toBeVisible();
   await page.getByLabel("District").selectOption({ index: 1 });
-  await page.getByText("I agree to FlexiKeys storing").click();
+  await page.getByText("I agree to the Privacy policy").click();
   await page.getByRole("button", { name: "Continue" }).click();
   await page.goto("/parent");
   await page.getByRole("button", { name: "Accept" }).click();

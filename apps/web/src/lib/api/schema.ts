@@ -108,6 +108,8 @@ export class ApiError extends Error {
 }
 
 export const CONSENT_VERSION = "2026-09-v1";
+/** The Privacy policy a parent agrees to at sign-up (B112): its date. Same as the server's consent.VERSION. */
+export const PRIVACY_VERSION = "2026-11-22";
 /** Same limit as the server (MAX_CHILDREN_PER_FAMILY). */
 export const MAX_CHILDREN = 3;
 /** Demo sign-in numbers (mock: the SMS code is shown on screen). */

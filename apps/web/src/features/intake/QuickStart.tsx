@@ -12,6 +12,7 @@ import { useLang, useT } from "@/lib/i18n";
 import type { IntakeValue, Roadmap } from "@/lib/types";
 import { Question, QuickCheck } from "./Questionnaire";
 import { Ready } from "./Wizard";
+import { PrivacyLink } from "@/components/PrivacyLink";
 
 // Quick start (B103, spec 4): "Start, 2 minutes" asks the quick questions (questionnaire.ts quickVisible) one per
 // screen, the six Quick check rows as one screen, with short dashes for progress and Back and Next. After the last
@@ -124,6 +125,7 @@ export function QuickStart({ childId: initialChild, version }: { childId?: strin
           <ShieldCheck className="size-8 text-primary" aria-hidden />
           <p className="text-ink">{t("intake.health.lead")}</p>
           <p className="text-sm text-muted">{t("intake.health.points")}</p>
+          <PrivacyLink />
           <FormError>{act.error}</FormError>
           <div className="flex flex-wrap items-center gap-3">
             <Button variant="ghost" onClick={() => go(screens[pos - 1])}>{t("intake.back")}</Button>

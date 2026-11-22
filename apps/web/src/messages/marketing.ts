@@ -157,31 +157,6 @@ export const marketing = {
     "mkt.faq.a5": "No, it is optional. It brings the tools some exercises use.",
 
     "mkt.legal.updated": "Last updated: September 2026",
-    "mkt.privacy.title": "Privacy policy",
-    "mkt.privacy.intro":
-      "FlexiKeys is built for children, so we collect as little as possible and protect it carefully. This policy explains what we store, where, and the choices you have.",
-    "mkt.privacy.s1.t": "Where your data lives",
-    "mkt.privacy.s1.d":
-      "All personal data — accounts, child profiles, progress, My Voice activity, recordings and payment records — is stored and processed on servers physically located in the Republic of Uzbekistan, in line with the Law “On Personal Data”.",
-    "mkt.privacy.s2.t": "What we collect about a child",
-    "mkt.privacy.s2.d":
-      "Only a nickname, birth year, avatar and learning activity (taps, answers, time). We never ask for a child's email, phone number or photo. Play data is pseudonymized: event records carry a random ID, never a name.",
-    "mkt.privacy.s3.t": "Consents you control",
-    "mkt.privacy.s3.d":
-      "Core storage is required to create a profile. AI help, voice recording, school sharing and specialist sharing are separate, optional consents. You can withdraw any optional consent at any time; related processing stops within 24 hours.",
-    "mkt.privacy.s4.t": "Services outside Uzbekistan",
-    "mkt.privacy.s4.d":
-      "Only with your consent do we send anonymous, name-free summaries to an AI provider (for tips and reports) and short sentences to a speech service (for My Voice). No names or birth years are ever included.",
-    "mkt.privacy.s5.t": "No ads, no trackers",
-    "mkt.privacy.s5.d": "The child area contains no advertising, third-party analytics or links to other websites.",
-    "mkt.privacy.s6.t": "How long we keep data",
-    "mkt.privacy.s6.d":
-      "Detailed play events are kept for 13 months. When you delete a profile or account, personal data is removed within 30 days, and backups age out within 12 months.",
-    "mkt.privacy.s7.t": "Your rights",
-    "mkt.privacy.s7.d":
-      "You can view, correct, export (as a file) and delete your child's data yourself in the parent dashboard, and withdraw consent at any time.",
-    "mkt.privacy.s8.t": "Contact",
-    "mkt.privacy.s8.d": "Questions about privacy? Write to privacy@flexikeys.uz and we will answer within 10 working days.",
 
     "mkt.terms.title": "Terms of use",
     "mkt.terms.intro": "These terms describe how FlexiKeys may be used by families, schools and specialists.",
@@ -361,31 +336,6 @@ export const marketing = {
     "mkt.faq.a5": "Yoʻq, ixtiyoriy. U ayrim mashqlarda ishlatiladigan asboblarni olib keladi.",
 
     "mkt.legal.updated": "Soʻnggi yangilanish: 2026-yil sentyabr",
-    "mkt.privacy.title": "Maxfiylik siyosati",
-    "mkt.privacy.intro":
-      "FlexiKeys bolalar uchun yaratilgan, shuning uchun biz iloji boricha kam maʼlumot yigʻamiz va uni ehtiyotkorlik bilan himoya qilamiz. Bu siyosat nimani, qayerda saqlashimiz va sizning tanlovlaringizni tushuntiradi.",
-    "mkt.privacy.s1.t": "Maʼlumotlaringiz qayerda saqlanadi",
-    "mkt.privacy.s1.d":
-      "Barcha shaxsiy maʼlumotlar — hisoblar, bola profillari, natijalar, “Mening ovozim” faoliyati, ovoz yozuvlari va toʻlov yozuvlari — “Shaxsga doir maʼlumotlar toʻgʻrisida”gi Qonunga muvofiq, jismonan Oʻzbekiston Respublikasida joylashgan serverlarda saqlanadi va qayta ishlanadi.",
-    "mkt.privacy.s2.t": "Bola haqida nimani yigʻamiz",
-    "mkt.privacy.s2.d":
-      "Faqat taxallus, tugʻilgan yil, avatar va oʻquv faoliyati (bosishlar, javoblar, vaqt). Biz hech qachon bolaning emaili, telefon raqami yoki suratini soʻramaymiz. Oʻyin maʼlumotlari taxalluslangan: yozuvlarda ism emas, tasodifiy ID boʻladi.",
-    "mkt.privacy.s3.t": "Siz boshqaradigan roziliklar",
-    "mkt.privacy.s3.d":
-      "Profil yaratish uchun asosiy saqlash roziligi zarur. AI yordam, ovoz yozish, maktab va mutaxassis bilan boʻlishish — alohida, ixtiyoriy roziliklar. Ixtiyoriy rozilikni istalgan vaqtda qaytarib olishingiz mumkin; tegishli ishlov 24 soat ichida toʻxtaydi.",
-    "mkt.privacy.s4.t": "Oʻzbekistondan tashqaridagi xizmatlar",
-    "mkt.privacy.s4.d":
-      "Faqat roziligingiz bilan AI xizmatiga (maslahat va hisobotlar uchun) anonim, ismsiz xulosalar va nutq xizmatiga (“Mening ovozim” uchun) qisqa gaplar yuboriladi. Ism yoki tugʻilgan yil hech qachon yuborilmaydi.",
-    "mkt.privacy.s5.t": "Reklama va kuzatuv yoʻq",
-    "mkt.privacy.s5.d": "Bolalar boʻlimida reklama, uchinchi tomon tahlili yoki boshqa saytlarga havolalar yoʻq.",
-    "mkt.privacy.s6.t": "Maʼlumotlarni qancha saqlaymiz",
-    "mkt.privacy.s6.d":
-      "Batafsil oʻyin hodisalari 13 oy saqlanadi. Profil yoki hisobni oʻchirsangiz, shaxsiy maʼlumotlar 30 kun ichida oʻchiriladi, zaxira nusxalar esa 12 oy ichida eskiradi.",
-    "mkt.privacy.s7.t": "Sizning huquqlaringiz",
-    "mkt.privacy.s7.d":
-      "Ota-ona kabinetida farzandingiz maʼlumotlarini oʻzingiz koʻrishingiz, tuzatishingiz, fayl sifatida yuklab olishingiz va oʻchirishingiz, istalgan vaqtda rozilikni qaytarib olishingiz mumkin.",
-    "mkt.privacy.s8.t": "Aloqa",
-    "mkt.privacy.s8.d": "Maxfiylik boʻyicha savollar boʻlsa, privacy@flexikeys.uz manziliga yozing — 10 ish kuni ichida javob beramiz.",
 
     "mkt.terms.title": "Foydalanish shartlari",
     "mkt.terms.intro": "Ushbu shartlar FlexiKeys’dan oilalar, maktablar va mutaxassislar qanday foydalanishi mumkinligini tavsiflaydi.",
@@ -564,31 +514,6 @@ export const marketing = {
     "mkt.faq.a5": "Нет, по желанию. В нём то, что нужно для некоторых упражнений.",
 
     "mkt.legal.updated": "Последнее обновление: сентябрь 2026",
-    "mkt.privacy.title": "Политика конфиденциальности",
-    "mkt.privacy.intro":
-      "FlexiKeys создан для детей, поэтому мы собираем как можно меньше и бережно это защищаем. Здесь описано, что мы храним, где, и какой у вас есть выбор.",
-    "mkt.privacy.s1.t": "Где хранятся данные",
-    "mkt.privacy.s1.d":
-      "Все персональные данные — аккаунты, профили детей, прогресс, активность «Мой голос», записи голоса и платёжные записи — хранятся и обрабатываются на серверах, физически расположенных в Республике Узбекистан, в соответствии с Законом «О персональных данных».",
-    "mkt.privacy.s2.t": "Что мы знаем о ребёнке",
-    "mkt.privacy.s2.d":
-      "Только никнейм, год рождения, аватар и учебную активность (касания, ответы, время). Мы никогда не просим email, телефон или фото ребёнка. Игровые данные псевдонимизированы: в записях случайный ID, а не имя.",
-    "mkt.privacy.s3.t": "Согласия под вашим контролем",
-    "mkt.privacy.s3.d":
-      "Основное согласие на хранение нужно для создания профиля. Помощь ИИ, запись голоса, доступ школы и специалиста — отдельные необязательные согласия. Любое из них можно отозвать; связанная обработка прекращается в течение 24 часов.",
-    "mkt.privacy.s4.t": "Сервисы за пределами Узбекистана",
-    "mkt.privacy.s4.d":
-      "Только с вашего согласия мы отправляем обезличенные сводки без имени ИИ-сервису (для советов и отчётов) и короткие фразы сервису речи (для «Мой голос»). Имена и годы рождения не передаются никогда.",
-    "mkt.privacy.s5.t": "Без рекламы и трекеров",
-    "mkt.privacy.s5.d": "В детской части нет рекламы, сторонней аналитики и ссылок на другие сайты.",
-    "mkt.privacy.s6.t": "Сколько мы храним данные",
-    "mkt.privacy.s6.d":
-      "Подробные игровые события хранятся 13 месяцев. После удаления профиля или аккаунта персональные данные удаляются в течение 30 дней, а резервные копии устаревают в течение 12 месяцев.",
-    "mkt.privacy.s7.t": "Ваши права",
-    "mkt.privacy.s7.d":
-      "В кабинете родителя вы сами можете просматривать, исправлять, выгружать (файлом) и удалять данные ребёнка, а также в любой момент отозвать согласие.",
-    "mkt.privacy.s8.t": "Контакты",
-    "mkt.privacy.s8.d": "Вопросы о конфиденциальности? Напишите на privacy@flexikeys.uz — ответим в течение 10 рабочих дней.",
 
     "mkt.terms.title": "Условия использования",
     "mkt.terms.intro": "Эти условия описывают, как семьи, школы и специалисты могут пользоваться FlexiKeys.",

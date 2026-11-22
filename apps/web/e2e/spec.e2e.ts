@@ -18,7 +18,7 @@ async function signUpByPhone(page: Page, phone: string) {
   await page.getByLabel("District").selectOption("Yunusobod");
   await page.getByRole("button", { name: "Continue" }).click();
   await expect(page.getByText("Please agree to continue")).toBeVisible();
-  await page.getByText("I agree to FlexiKeys storing").click();
+  await page.getByText("I agree to the Privacy policy").click();
   await page.getByRole("button", { name: "Continue" }).click();
   await expect(page).toHaveURL(/\/parent\/children\/new/);
 }

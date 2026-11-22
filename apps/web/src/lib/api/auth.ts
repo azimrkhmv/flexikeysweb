@@ -6,7 +6,7 @@ import type { Lang } from "../i18n";
 import { read, write, net } from "./db";
 import { requireUser, purgeChild } from "./guards";
 import { sel } from "./selectors";
-import { ApiError, CONSENT_VERSION, DEMO_PHONES, id, iso, OTP_MAX_TRIES, OTP_RESEND_MS } from "./schema";
+import { ApiError, DEMO_PHONES, PRIVACY_VERSION, id, iso, OTP_MAX_TRIES, OTP_RESEND_MS } from "./schema";
 import type { User } from "../types";
 
 /** "+998 90 123-45-67", "90 123 45 67" → "+998901234567"; null when it isn't an Uzbek mobile number. */
@@ -72,7 +72,7 @@ export const authApi = {
       const me = db.users.find((x) => x.id === u.id)!;
       me.name = input.name.trim() || me.name;
       me.district = { region: input.region, district: input.district };
-      me.consentVersion = CONSENT_VERSION;
+      me.consentVersion = PRIVACY_VERSION;
     });
     return net(true);
   },

@@ -32,7 +32,7 @@ test("a section opens with its big title on open and going forward, never going 
   await page.getByLabel("Code from the SMS").fill(code);
   await page.getByRole("button", { name: "Continue" }).click();
   await page.getByLabel("District").selectOption("Yunusobod");
-  await page.getByText("I agree to FlexiKeys storing").click();
+  await page.getByText("I agree to the Privacy policy").click();
   await page.getByRole("button", { name: "Continue" }).click();
   await expect(page).toHaveURL(/\/parent\/children\/new/);
   await page.goto("/parent/children/new?q=2026-10-16");
@@ -83,7 +83,7 @@ test("No difficulty skips a section; the Quick check starts filled in; details w
   await page.getByLabel("Code from the SMS").fill(code);
   await page.getByRole("button", { name: "Continue" }).click();
   await page.getByLabel("District").selectOption("Yunusobod");
-  await page.getByText("I agree to FlexiKeys storing").click();
+  await page.getByText("I agree to the Privacy policy").click();
   await page.getByRole("button", { name: "Continue" }).click();
   await expect(page).toHaveURL(/\/parent\/children\/new/);
   await page.goto("/parent/children/new?q=2026-10-16");
@@ -146,7 +146,7 @@ test("a parent answers the new questionnaire and gets a plan", async ({ page }, 
   await page.getByLabel("Code from the SMS").fill(code);
   await page.getByRole("button", { name: "Continue" }).click();
   await page.getByLabel("District").selectOption("Yunusobod");
-  await page.getByText("I agree to FlexiKeys storing").click();
+  await page.getByText("I agree to the Privacy policy").click();
   await page.getByRole("button", { name: "Continue" }).click();
   await expect(page).toHaveURL(/\/parent\/children\/new/);
   await page.goto("/parent/children/new?q=2026-10-16");
@@ -214,7 +214,7 @@ test("quick start: one question a screen, a first plan, then \"Answer more\" ope
   await page.getByLabel("Code from the SMS").fill(code);
   await page.getByRole("button", { name: "Continue" }).click();
   await page.getByLabel("District").selectOption("Yunusobod");
-  await page.getByText("I agree to FlexiKeys storing").click();
+  await page.getByText("I agree to the Privacy policy").click();
   await page.getByRole("button", { name: "Continue" }).click();
   await expect(page).toHaveURL(/\/parent\/children\/new/);
   await page.goto("/parent/children/new?quick=1&q=2026-10-16");

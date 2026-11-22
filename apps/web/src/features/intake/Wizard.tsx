@@ -11,6 +11,7 @@ import { useT, useLang } from "@/lib/i18n";
 import type { IntakeValue, Roadmap } from "@/lib/types";
 import { QuestionField } from "./Fields";
 import { gamesOnlyKey } from "./PlanTab";
+import { PrivacyLink } from "@/components/PrivacyLink";
 
 // Parent intake (spec §3 steps 4–15): one screen per step, saved as the parent goes, finish later any time.
 // `childId` continues an intake; a later round is the 3-month re-intake, shown with last time's answers.
@@ -96,6 +97,7 @@ export function IntakeWizard({ childId: initialChild }: { childId?: string }) {
           <ShieldCheck className="size-8 text-primary" aria-hidden />
           <p className="text-ink">{t("intake.health.lead")}</p>
           <p className="text-sm text-muted">{t("intake.health.points")}</p>
+          <PrivacyLink />
           <FormError>{act.error}</FormError>
           <div className="flex flex-wrap gap-3">
             {i > 0 && <Button variant="ghost" onClick={() => setI(i - 1)}>{t("intake.back")}</Button>}

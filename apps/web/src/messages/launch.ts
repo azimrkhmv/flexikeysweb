@@ -1,0 +1,224 @@
+// Strings of Update 4, "ready for the parents' event" (B111–B120, 22 Nov 2026). Same keys in en/uz/ru
+// (src/lib/i18n.test.ts). Registered on public pages (privacy, offer line) and adult pages.
+// uz text drafted 22 Nov 2026 — native-speaker check (B44).
+//
+// The privacy policy (privacy.*) is written from what the code really stores: the server's models in apps/api/app
+// and the browser storage in apps/web/src (B112). Change it together with the code.
+export const launch = {
+  en: {
+    "privacy.title": "Privacy policy",
+    "privacy.updated": "Version of 22 November 2026",
+    "privacy.draft": "Draft 22 Nov 2026 — needs lawyer/mentor check",
+    "privacy.draft.q": "Open question Q20 in TASKS.md",
+    "privacy.intro":
+      "FlexiKeys helps parents do home therapy with a child. To make a plan we need to know about your child, including health facts. This page lists every kind of data we keep, where it is, who can see it and how long we keep it.",
+    "privacy.where.t": "Where your data is kept",
+    "privacy.where.d":
+      "Everything below is stored on our own server in Tashkent, Uzbekistan: the database and the files (videos, photos, voice). Health answers and assistant messages are stored encrypted. A backup copy is made every night and kept for 14 days. We never sell data, show no ads and use no outside analytics or trackers.",
+    "privacy.what": "What",
+    "privacy.who": "Who can see it",
+    "privacy.kept": "How long",
+    "privacy.account.t": "Your account",
+    "privacy.account.what":
+      "Your phone number, your name if you give it, your language, your region and district, the date and version of the privacy policy you agreed to, and which partner centre's link brought you to FlexiKeys, if any.",
+    "privacy.account.who": "You. The FlexiKeys team, to help you and to count sign-ups by region and centre.",
+    "privacy.account.kept": "Until you delete your account (Account → Delete account).",
+    "privacy.child.t": "Your child's profile",
+    "privacy.child.what": "Your child's name, date of birth, sex, favourite colour and play language.",
+    "privacy.child.who": "The adults of your family (you and a helper you add), and a therapist you share the child with.",
+    "privacy.child.kept": "Until you delete the profile.",
+    "privacy.answers.t": "Answers to the questionnaire",
+    "privacy.answers.what":
+      "Your answers about your child's movement, hands, speech, daily life and health (diagnosis, seizures, surgery, pain and similar), and documents from the doctor you choose to upload. Health answers are kept only with your health consent and are encrypted. The questions come back every 3 months; earlier answers are kept so the plan can follow the changes.",
+    "privacy.answers.who": "Your family and a therapist you share the child with.",
+    "privacy.answers.kept": "Until you delete the profile.",
+    "privacy.plan.t": "The plan and each day",
+    "privacy.plan.what":
+      "Your child's plan of exercises and games, which tasks were done on which day and how it went (if you say), days you paused, and the answer to the one daily question.",
+    "privacy.plan.who": "Your family and a therapist you share the child with.",
+    "privacy.plan.kept": "Until you delete the profile.",
+    "privacy.play.t": "Games",
+    "privacy.play.what":
+      "Each try in a game: which picture was chosen, whether it was the one asked for, how many tries, whether a hint showed, how the child touches the screen, and how long it took. From these we keep a level from 1 to 100 per skill area and how it moves each week, how the child plays best (touch, hold to choose, switch), and which games were played. A missed tap is not counted as a wrong answer.",
+    "privacy.play.who": "Your family and a therapist you share the child with. The child never sees a number.",
+    "privacy.play.kept": "Each try: 90 days. Levels and the list of games played: until you delete the profile.",
+    "privacy.files.t": "Videos, photos and voice",
+    "privacy.files.what":
+      "Short videos you film of your child moving or doing an exercise (only with the video consent), the photos and your own recorded voice on My Voice cards (the voice only with the voice consent). AI never looks at these videos.",
+    "privacy.files.who": "Your family. Videos: also a therapist you share the child with.",
+    "privacy.files.kept": "Until you delete them or the profile; the files leave our storage the following night. Taking the voice consent back deletes the recordings.",
+    "privacy.share.t": "Sharing with a therapist",
+    "privacy.share.what":
+      "Only with your consent: the therapist's phone number or invite link, and the therapist's own answers and notes about your child. You can stop a share at any time; it ends at once.",
+    "privacy.share.who": "Your family and that therapist.",
+    "privacy.share.kept": "The therapist's answers stay with the child's profile, so nothing a therapist forbade quietly comes back into the plan.",
+    "privacy.ai.t": "The assistant",
+    "privacy.ai.what":
+      "Your questions to the assistant and its answers, stored encrypted. When the assistant uses a real AI, your question and facts from the plan (never names or phone numbers) are sent to an AI company abroad to write the answer. Until the lawyer's check, the assistant runs without an outside AI.",
+    "privacy.ai.who": "You. A therapist you share with sees only the topics, never the text.",
+    "privacy.ai.kept": "Until you delete the chat or the profile.",
+    "privacy.pay.t": "Payments",
+    "privacy.pay.what":
+      "There is no card payment in FlexiKeys yet. When you pay the team, we write down the amount, the way you paid (for example Payme, Click, card transfer or cash), until when it is paid, and a short note. We never see or keep card numbers.",
+    "privacy.pay.who": "You and the FlexiKeys team.",
+    "privacy.pay.kept": "As long as your account exists.",
+    "privacy.other.t": "Messages to the team and a record of changes",
+    "privacy.other.what":
+      "Feedback you send from any page, with the page it was sent from. A record of important changes (for example a consent given or taken back, a profile deleted, a share stopped), with who did it and when, so mistakes and misuse can be found.",
+    "privacy.other.who": "The FlexiKeys team.",
+    "privacy.other.kept": "Feedback until it is handled; the record of changes as long as FlexiKeys runs (it holds no health answers).",
+    "privacy.device.t": "On your phone or computer",
+    "privacy.device.d":
+      "The website keeps a few things in your browser: the sign-in (cookies that only our server can read), your language, how the app looks (colours, light or dark, Soft or Sharp, whether Cloudy moves), whether you saw the tour, a centre link you opened (for 30 days), units for height and weight, and game tries and questionnaire answers that have not reached the server yet (they are sent when the connection comes back). The demo (demo.flexikeys.org) keeps everything only in your browser and sends nothing to us.",
+    "privacy.rights.t": "Your rights",
+    "privacy.rights.d":
+      "In each child's Privacy tab you can see what we store, download all of it in one file, give or take back each consent, and delete the profile. You can delete your whole account in Account. Taking a consent back stops that use at once. Only the family's owner can change consents and delete a child.",
+    "privacy.contact.t": "Questions",
+    "privacy.contact.d": "Ask us anything about your data with the Help button in your account, or ask the team at the centre where you signed up.",
+    "privacy.link": "Privacy policy",
+  },
+  uz: {
+    "privacy.title": "Maxfiylik siyosati",
+    "privacy.updated": "2026-yil 22-noyabr versiyasi",
+    "privacy.draft": "Qoralama, 22-noyabr 2026 — huquqshunos/mentor tekshiruvi kerak",
+    "privacy.draft.q": "TASKS.md dagi ochiq savol Q20",
+    "privacy.intro":
+      "FlexiKeys ota-onalarga bola bilan uyda terapiya qilishga yordam beradi. Reja tuzish uchun farzandingiz haqida, jumladan sogʻligʻi haqida bilishimiz kerak. Bu sahifada biz saqlaydigan har bir maʼlumot turi, u qayerda turishi, uni kim koʻra olishi va qancha saqlanishi yozilgan.",
+    "privacy.where.t": "Maʼlumotlaringiz qayerda saqlanadi",
+    "privacy.where.d":
+      "Quyidagilarning hammasi Toshkentdagi (Oʻzbekiston) oʻz serverimizda saqlanadi: maʼlumotlar bazasi va fayllar (video, rasm, ovoz). Sogʻliq haqidagi javoblar va yordamchi bilan yozishmalar shifrlangan holda saqlanadi. Har kecha zaxira nusxa olinadi va 14 kun saqlanadi. Biz maʼlumotlarni sotmaymiz, reklama koʻrsatmaymiz, tashqi tahlil yoki kuzatuv xizmatlaridan foydalanmaymiz.",
+    "privacy.what": "Nima",
+    "privacy.who": "Kim koʻra oladi",
+    "privacy.kept": "Qancha saqlanadi",
+    "privacy.account.t": "Hisobingiz",
+    "privacy.account.what":
+      "Telefon raqamingiz, agar bersangiz ismingiz, tilingiz, viloyat va tumaningiz, siz rozi boʻlgan maxfiylik siyosatining sanasi va versiyasi, hamda sizni FlexiKeys ga qaysi hamkor markaz havolasi olib kelgani (agar shunday boʻlsa).",
+    "privacy.account.who": "Siz. FlexiKeys jamoasi — sizga yordam berish va roʻyxatdan oʻtishlarni viloyat va markaz boʻyicha sanash uchun.",
+    "privacy.account.kept": "Hisobingizni oʻchirguningizcha (Hisob → Hisobni oʻchirish).",
+    "privacy.child.t": "Farzandingiz profili",
+    "privacy.child.what": "Farzandingizning ismi, tugʻilgan sanasi, jinsi, sevimli rangi va oʻyin tili.",
+    "privacy.child.who": "Oilangizdagi kattalar (siz va siz qoʻshgan yordamchi) hamda bolani ulashgan terapevtingiz.",
+    "privacy.child.kept": "Profilni oʻchirguningizcha.",
+    "privacy.answers.t": "Soʻrovnomaga javoblar",
+    "privacy.answers.what":
+      "Farzandingizning harakati, qoʻllari, nutqi, kundalik hayoti va sogʻligʻi (tashxis, tutqanoqlar, operatsiya, ogʻriq va shu kabilar) haqidagi javoblaringiz hamda oʻzingiz yuklagan shifokor hujjatlari. Sogʻliq javoblari faqat sogʻliq roziligingiz bilan va shifrlangan holda saqlanadi. Savollar har 3 oyda qaytadi; reja oʻzgarishlarni kuzatishi uchun oldingi javoblar ham saqlanadi.",
+    "privacy.answers.who": "Oilangiz va bolani ulashgan terapevtingiz.",
+    "privacy.answers.kept": "Profilni oʻchirguningizcha.",
+    "privacy.plan.t": "Reja va har bir kun",
+    "privacy.plan.what":
+      "Farzandingizning mashqlar va oʻyinlar rejasi, qaysi kuni qaysi vazifa bajarilgani va qanday oʻtgani (agar aytsangiz), toʻxtatilgan kunlar va kunlik bitta savolga javob.",
+    "privacy.plan.who": "Oilangiz va bolani ulashgan terapevtingiz.",
+    "privacy.plan.kept": "Profilni oʻchirguningizcha.",
+    "privacy.play.t": "Oʻyinlar",
+    "privacy.play.what":
+      "Oʻyindagi har bir urinish: qaysi rasm tanlangani, soʻralgani shu boʻlganmi, nechta urinish boʻlgani, yordam koʻrsatilganmi, bola ekranga qanday tegishi va qancha vaqt ketgani. Shulardan har bir koʻnikma sohasi boʻyicha 1 dan 100 gacha daraja va uning har hafta qanday oʻzgarishi, bola qanday qilib eng yaxshi oʻynashi (tegish, ushlab tanlash, tugma) va qaysi oʻyinlar oʻynalgani saqlanadi. Tegmay qolish notoʻgʻri javob hisoblanmaydi.",
+    "privacy.play.who": "Oilangiz va bolani ulashgan terapevtingiz. Bola hech qachon raqam koʻrmaydi.",
+    "privacy.play.kept": "Har bir urinish: 90 kun. Darajalar va oʻynalgan oʻyinlar roʻyxati: profilni oʻchirguningizcha.",
+    "privacy.files.t": "Video, rasm va ovoz",
+    "privacy.files.what":
+      "Farzandingiz harakatlanayotgani yoki mashq qilayotgani haqida siz olgan qisqa videolar (faqat video roziligi bilan), Mening ovozim kartalaridagi rasmlar va oʻzingiz yozgan ovozingiz (ovoz faqat ovoz roziligi bilan). Bu videolarni sunʼiy intellekt hech qachon koʻrmaydi.",
+    "privacy.files.who": "Oilangiz. Videolarni bolani ulashgan terapevtingiz ham koʻradi.",
+    "privacy.files.kept": "Ularni yoki profilni oʻchirguningizcha; fayllar ertasi kecha xotiramizdan oʻchadi. Ovoz roziligini qaytarib olsangiz, yozuvlar oʻchiriladi.",
+    "privacy.share.t": "Terapevt bilan ulashish",
+    "privacy.share.what":
+      "Faqat roziligingiz bilan: terapevtning telefon raqami yoki taklif havolasi, terapevtning farzandingiz haqidagi oʻz javoblari va eslatmalari. Ulashishni istalgan vaqtda toʻxtatishingiz mumkin; u darhol tugaydi.",
+    "privacy.share.who": "Oilangiz va oʻsha terapevt.",
+    "privacy.share.kept": "Terapevt javoblari bola profilida qoladi, shunda terapevt taqiqlagan narsa rejaga jimgina qaytib kelmaydi.",
+    "privacy.ai.t": "Yordamchi",
+    "privacy.ai.what":
+      "Yordamchiga bergan savollaringiz va uning javoblari, shifrlangan holda. Yordamchi haqiqiy sunʼiy intellektdan foydalanganda, javob yozish uchun savolingiz va rejadagi maʼlumotlar (hech qachon ism yoki telefon raqami emas) chet eldagi sunʼiy intellekt kompaniyasiga yuboriladi. Huquqshunos tekshiruvigacha yordamchi tashqi sunʼiy intellektsiz ishlaydi.",
+    "privacy.ai.who": "Siz. Ulashgan terapevtingiz faqat mavzularni koʻradi, matnni hech qachon.",
+    "privacy.ai.kept": "Suhbatni yoki profilni oʻchirguningizcha.",
+    "privacy.pay.t": "Toʻlovlar",
+    "privacy.pay.what":
+      "FlexiKeys da hozircha karta orqali toʻlov yoʻq. Jamoaga toʻlov qilganingizda summani, qanday toʻlaganingizni (masalan Payme, Click, kartaga oʻtkazma yoki naqd), qachongacha toʻlanganini va qisqa izohni yozib qoʻyamiz. Karta raqamlarini hech qachon koʻrmaymiz va saqlamaymiz.",
+    "privacy.pay.who": "Siz va FlexiKeys jamoasi.",
+    "privacy.pay.kept": "Hisobingiz mavjud ekan.",
+    "privacy.other.t": "Jamoaga xabarlar va oʻzgarishlar yozuvi",
+    "privacy.other.what":
+      "Istalgan sahifadan yuborgan fikringiz va u qaysi sahifadan yuborilgani. Muhim oʻzgarishlar yozuvi (masalan rozilik berilgani yoki qaytarib olingani, profil oʻchirilgani, ulashish toʻxtatilgani), kim va qachon qilgani bilan — xatolar va suiisteʼmolni topish uchun.",
+    "privacy.other.who": "FlexiKeys jamoasi.",
+    "privacy.other.kept": "Fikrlar koʻrib chiqilguncha; oʻzgarishlar yozuvi FlexiKeys ishlar ekan (unda sogʻliq javoblari yoʻq).",
+    "privacy.device.t": "Telefoningiz yoki kompyuteringizda",
+    "privacy.device.d":
+      "Sayt brauzeringizda bir nechta narsani saqlaydi: kirish (faqat bizning serverimiz oʻqiy oladigan cookie fayllar), tilingiz, ilova koʻrinishi (ranglar, yorugʻ yoki qorongʻi, Soft yoki Sharp, Bulutcha harakatlanadimi), tanishtiruvni koʻrganingiz, siz ochgan markaz havolasi (30 kun), boʻy va vazn birliklari, hamda serverga hali yetib bormagan oʻyin urinishlari va soʻrovnoma javoblari (aloqa qaytganda yuboriladi). Demo (demo.flexikeys.org) hamma narsani faqat brauzeringizda saqlaydi va bizga hech narsa yubormaydi.",
+    "privacy.rights.t": "Huquqlaringiz",
+    "privacy.rights.d":
+      "Har bir bolaning Maxfiylik boʻlimida nimani saqlashimizni koʻrishingiz, hammasini bitta faylda yuklab olishingiz, har bir rozilikni berishingiz yoki qaytarib olishingiz va profilni oʻchirishingiz mumkin. Butun hisobingizni Hisob boʻlimida oʻchirishingiz mumkin. Rozilikni qaytarib olsangiz, u bilan bogʻliq foydalanish darhol toʻxtaydi. Roziliklarni oʻzgartirish va bolani oʻchirish faqat oila egasiga mumkin.",
+    "privacy.contact.t": "Savollar",
+    "privacy.contact.d": "Maʼlumotlaringiz haqida istalgan savolni hisobingizdagi Yordam tugmasi orqali yoki roʻyxatdan oʻtgan markazingizdagi jamoadan soʻrang.",
+    "privacy.link": "Maxfiylik siyosati",
+  },
+  ru: {
+    "privacy.title": "Политика конфиденциальности",
+    "privacy.updated": "Редакция от 22 ноября 2026 года",
+    "privacy.draft": "Черновик 22.11.2026 — нужна проверка юриста/ментора",
+    "privacy.draft.q": "Открытый вопрос Q20 в TASKS.md",
+    "privacy.intro":
+      "FlexiKeys помогает родителям заниматься с ребёнком дома. Чтобы составить план, нам нужно знать о ребёнке, в том числе о его здоровье. Здесь перечислены все виды данных, которые мы храним: где они лежат, кто их видит и сколько они хранятся.",
+    "privacy.where.t": "Где хранятся данные",
+    "privacy.where.d":
+      "Всё перечисленное ниже хранится на нашем собственном сервере в Ташкенте, Узбекистан: база данных и файлы (видео, фото, голос). Ответы о здоровье и переписка с помощником хранятся в зашифрованном виде. Каждую ночь делается резервная копия, она хранится 14 дней. Мы не продаём данные, не показываем рекламу и не используем сторонней аналитики и трекеров.",
+    "privacy.what": "Что",
+    "privacy.who": "Кто видит",
+    "privacy.kept": "Сколько хранится",
+    "privacy.account.t": "Ваш аккаунт",
+    "privacy.account.what":
+      "Ваш номер телефона, имя (если вы его указали), язык, область и район, дата и версия политики конфиденциальности, с которой вы согласились, и ссылка какого центра-партнёра привела вас в FlexiKeys (если была).",
+    "privacy.account.who": "Вы. Команда FlexiKeys — чтобы помочь вам и считать регистрации по областям и центрам.",
+    "privacy.account.kept": "Пока вы не удалите аккаунт (Аккаунт → Удалить аккаунт).",
+    "privacy.child.t": "Профиль ребёнка",
+    "privacy.child.what": "Имя ребёнка, дата рождения, пол, любимый цвет и язык игр.",
+    "privacy.child.who": "Взрослые вашей семьи (вы и помощник, которого вы добавили) и терапевт, с которым вы поделились ребёнком.",
+    "privacy.child.kept": "Пока вы не удалите профиль.",
+    "privacy.answers.t": "Ответы на анкету",
+    "privacy.answers.what":
+      "Ваши ответы о движениях, руках, речи, повседневной жизни и здоровье ребёнка (диагноз, судороги, операции, боль и т. п.) и документы от врача, которые вы решили загрузить. Ответы о здоровье хранятся только с вашим согласием на данные о здоровье и в зашифрованном виде. Вопросы возвращаются каждые 3 месяца; прошлые ответы сохраняются, чтобы план следовал за изменениями.",
+    "privacy.answers.who": "Ваша семья и терапевт, с которым вы поделились ребёнком.",
+    "privacy.answers.kept": "Пока вы не удалите профиль.",
+    "privacy.plan.t": "План и каждый день",
+    "privacy.plan.what":
+      "План упражнений и игр ребёнка, какие задания выполнены в какой день и как прошло (если вы отметили), дни паузы и ответ на один вопрос дня.",
+    "privacy.plan.who": "Ваша семья и терапевт, с которым вы поделились ребёнком.",
+    "privacy.plan.kept": "Пока вы не удалите профиль.",
+    "privacy.play.t": "Игры",
+    "privacy.play.what":
+      "Каждая попытка в игре: какая картинка выбрана, та ли, что просили, сколько было попыток, была ли подсказка, как ребёнок касается экрана и сколько это заняло. Из этого мы храним уровень от 1 до 100 по каждой области навыков и как он меняется по неделям, как ребёнку удобнее играть (касание, удержание, кнопка) и в какие игры он играл. Промах мимо кнопки не считается ошибкой.",
+    "privacy.play.who": "Ваша семья и терапевт, с которым вы поделились ребёнком. Ребёнок никогда не видит чисел.",
+    "privacy.play.kept": "Каждая попытка — 90 дней. Уровни и список сыгранных игр — пока вы не удалите профиль.",
+    "privacy.files.t": "Видео, фото и голос",
+    "privacy.files.what":
+      "Короткие видео, где ребёнок двигается или делает упражнение (только с согласием на видео), фото и ваш записанный голос на карточках «Мой голос» (голос — только с согласием на запись голоса). ИИ никогда не смотрит эти видео.",
+    "privacy.files.who": "Ваша семья. Видео — также терапевт, с которым вы поделились ребёнком.",
+    "privacy.files.kept": "Пока вы не удалите их или профиль; файлы исчезают из хранилища следующей ночью. Если отозвать согласие на голос, записи удаляются.",
+    "privacy.share.t": "Доступ терапевта",
+    "privacy.share.what":
+      "Только с вашего согласия: номер телефона терапевта или ссылка-приглашение и собственные ответы и заметки терапевта о ребёнке. Доступ можно закрыть в любой момент, он прекращается сразу.",
+    "privacy.share.who": "Ваша семья и этот терапевт.",
+    "privacy.share.kept": "Ответы терапевта остаются в профиле ребёнка, чтобы запрещённое терапевтом не вернулось в план незаметно.",
+    "privacy.ai.t": "Помощник",
+    "privacy.ai.what":
+      "Ваши вопросы помощнику и его ответы, в зашифрованном виде. Когда помощник использует настоящий ИИ, ваш вопрос и данные из плана (никогда имена и номера телефонов) отправляются ИИ-компании за рубежом, чтобы написать ответ. До проверки юриста помощник работает без внешнего ИИ.",
+    "privacy.ai.who": "Вы. Терапевт, с которым вы поделились, видит только темы, но не текст.",
+    "privacy.ai.kept": "Пока вы не удалите чат или профиль.",
+    "privacy.pay.t": "Оплата",
+    "privacy.pay.what":
+      "Оплаты картой в FlexiKeys пока нет. Когда вы платите команде, мы записываем сумму, способ оплаты (например Payme, Click, перевод на карту или наличные), до какого числа оплачено и короткую заметку. Номера карт мы никогда не видим и не храним.",
+    "privacy.pay.who": "Вы и команда FlexiKeys.",
+    "privacy.pay.kept": "Пока существует ваш аккаунт.",
+    "privacy.other.t": "Сообщения команде и журнал изменений",
+    "privacy.other.what":
+      "Отзывы, которые вы отправляете с любой страницы, и страница, с которой они отправлены. Журнал важных изменений (например, согласие дано или отозвано, профиль удалён, доступ закрыт): кто и когда это сделал — чтобы находить ошибки и злоупотребления.",
+    "privacy.other.who": "Команда FlexiKeys.",
+    "privacy.other.kept": "Отзывы — пока их не разберут; журнал изменений — пока работает FlexiKeys (в нём нет ответов о здоровье).",
+    "privacy.device.t": "На вашем телефоне или компьютере",
+    "privacy.device.d":
+      "Сайт хранит в браузере немного данных: вход (cookie, которые читает только наш сервер), язык, вид приложения (цвета, светлая или тёмная тема, Soft или Sharp, двигается ли Облачко), видели ли вы экскурсию, открытую ссылку центра (30 дней), единицы роста и веса, а также попытки в играх и ответы анкеты, которые ещё не дошли до сервера (они отправятся, когда появится связь). Демо (demo.flexikeys.org) хранит всё только в вашем браузере и ничего нам не отправляет.",
+    "privacy.rights.t": "Ваши права",
+    "privacy.rights.d":
+      "Во вкладке «Конфиденциальность» каждого ребёнка можно посмотреть, что мы храним, скачать всё одним файлом, дать или отозвать каждое согласие и удалить профиль. Весь аккаунт можно удалить в разделе «Аккаунт». После отзыва согласия связанная обработка прекращается сразу. Менять согласия и удалять ребёнка может только владелец семьи.",
+    "privacy.contact.t": "Вопросы",
+    "privacy.contact.d": "Задайте любой вопрос о ваших данных через кнопку «Помощь» в аккаунте или спросите команду в центре, где вы зарегистрировались.",
+    "privacy.link": "Политика конфиденциальности",
+  },
+};

@@ -26,7 +26,7 @@ test("a new parent signs up: phone, code, then district and consent", async ({ p
   await page.getByLabel("Your name (optional)").fill("Dilnoza");
   await page.getByLabel("City or region").selectOption("tashkent_city");
   await page.getByLabel("District").selectOption({ index: 1 });
-  await page.getByText("I agree to FlexiKeys storing").click();
+  await page.getByText("I agree to the Privacy policy").click();
   await page.getByRole("button", { name: "Continue" }).click();
   await expect(page).toHaveURL(/\/parent\/children\/new/);
 

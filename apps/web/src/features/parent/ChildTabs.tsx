@@ -17,6 +17,7 @@ import { ProLock } from "./ProLock";
 import { SkillCards } from "./SkillProgress";
 import { SupportCard } from "./support";
 import { FREE } from "@/content/plans";
+import { PrivacyLink } from "@/components/PrivacyLink";
 
 export const TABS = ["plan", "progress", "changes", "aac", "sharing", "settings", "privacy"] as const;
 export type Tab = (typeof TABS)[number];
@@ -679,6 +680,7 @@ export function PrivacyTab({ child }: { child: Child }) {
     <div className="grid gap-6 lg:grid-cols-2">
       <Card className="h-fit space-y-4">
         <H2>{t("parent.privacy.consents")}</H2>
+        <PrivacyLink />
         <div className="rounded-2xl bg-surface-2 p-4">
           <div className="flex items-start justify-between gap-3">
             <p className="text-sm font-semibold">{t("consent.core")}</p>

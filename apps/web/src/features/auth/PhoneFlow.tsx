@@ -281,7 +281,7 @@ function Details() {
           <Checkbox checked={consent} onChange={setConsent} label={t("auth.details.consent")} description={t("auth.details.consent.d")} />
           <p className="flex gap-4 px-1 text-xs font-bold">
             <Link href="/terms" target="_blank" className="text-primary hover:underline">{t("nav.terms")}</Link>
-            <Link href="/privacy" target="_blank" className="text-primary hover:underline">{t("nav.privacy")}</Link>
+            <Link href="/privacy" target="_blank" className="text-primary hover:underline">{t("privacy.link")}</Link>
           </p>
         </div>
         <FormError>{save.error}</FormError>
