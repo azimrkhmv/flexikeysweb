@@ -5,13 +5,16 @@ import { Play } from "lucide-react";
 import { Avatar, PageHeader, useAction } from "@/components/ui";
 import { SLOTS } from "@/content/exercises";
 import { FormError } from "@/features/auth/parts";
+import { CheckedBySpecialist, isChecked } from "@/features/parent/Checked";
+import { LIVE } from "@/lib/api/mode";
 import { api, sel, useDb } from "@/lib/api";
 import { useLang, useT } from "@/lib/i18n";
 import type { ExerciseVideo } from "@/lib/types";
 
 // B106 (Warm Hills spec §7): one card per exercise of the library. A video plays only once the physiotherapist has
 // approved it in this language (product rule 3); every other card says "Waiting for physio check" and cannot be
-// played. The child's plan comes first ("In the plan"), then the spec's seven slots, then the rest of the library.
+// played. B115: in live mode only approved exercises are listed at all; each says "Checked by a specialist".
+// The child's plan comes first ("In the plan"), then the spec's seven slots, then the rest of the library.
 
 export default function Exercises() {
   const t = useT();
@@ -27,6 +30,7 @@ export default function Exercises() {
   const slotAt = (v: ExerciseVideo) => (SLOTS as readonly string[]).indexOf(v.id);
   const list = sel
     .videos(db)
+    .filter((v) => !LIVE || isChecked(v, lang))
     .map((v, k) => ({ v, k }))
     .sort((a, b) => rank(a.v) - rank(b.v) || (rank(a.v) === 1 ? slotAt(a.v) - slotAt(b.v) : a.k - b.k))
     .map(({ v }) => v);
@@ -62,7 +66,7 @@ export default function Exercises() {
 function ExerciseCard({ video, inPlan }: { video: ExerciseVideo; inPlan: boolean }) {
   const t = useT();
   const [lang] = useLang();
-  const ready = video.versions[lang]?.status === "approved";
+  const ready = isChecked(video, lang);
   const [url, setUrl] = useState<string | null>(null);
   const watch = useAction(api.watchVideo);
   const title = video.title[lang];
@@ -99,6 +103,7 @@ function ExerciseCard({ video, inPlan }: { video: ExerciseVideo; inPlan: boolean
         <p className="text-sm text-muted">
           {t(`area.${video.bodyArea}`)} · {t("exercises.minutes")}
         </p>
+        {ready && <CheckedBySpecialist />}
         <div className="mt-auto flex flex-wrap gap-2 pt-1">
           {inPlan && <span className="rounded-full bg-primary-soft px-3 py-1 text-xs font-bold text-ink">{t("exercises.inPlan")}</span>}
           {!ready && <span className="rounded-full bg-sun-soft px-3 py-1 text-xs font-bold text-ink">{t("exercises.waiting")}</span>}

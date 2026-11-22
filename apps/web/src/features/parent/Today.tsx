@@ -1,6 +1,7 @@
 "use client";
 
 import { Check, Gamepad2, Pause, Play, Video } from "lucide-react";
+import { CheckedBySpecialist, isChecked } from "@/features/parent/Checked";
 import { Avatar, Button, Card, Chip, LinkButton, useAction } from "@/components/ui";
 import { fmtDate } from "@/lib/format";
 import { api, sel, useDb } from "@/lib/api";
@@ -240,6 +241,7 @@ function ExerciseItem({ child, day, video }: { child: Child; day: number; video:
       <div className="space-y-1 p-3">
         <p className="font-extrabold text-ink">{video.title[lang]}</p>
         {video.tool && <p className="text-sm text-muted">{t("plan.tool", { tool: t(`tool.${video.tool}`) })}</p>}
+        {isChecked(video, lang) && <CheckedBySpecialist />}
         {!done ? (
           <Button className="mt-2" pending={markDone.pending} onClick={() => markDone.run(child.id, day, video.id)}>
             <Check className="size-4" aria-hidden /> {t("today.done")}
