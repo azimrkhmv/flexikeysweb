@@ -25,6 +25,7 @@ test("a new parent signs up: phone, code, then district and consent", async ({ p
   await expect(page.getByRole("heading", { name: "A few details" })).toBeVisible();
   await page.getByLabel("Your name (optional)").fill("Dilnoza");
   await page.getByLabel("City or region").selectOption("tashkent_city");
+  await page.getByLabel("City or region").selectOption("tashkent_city"); // B113: no region is preset
   await page.getByLabel("District").selectOption({ index: 1 });
   await page.getByText("I agree to the Privacy policy").click();
   await page.getByRole("button", { name: "Continue" }).click();

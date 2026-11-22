@@ -54,6 +54,9 @@ class User(IdTimeMixin, Base):
     region: Mapped[str | None] = mapped_column(String(32))
     district: Mapped[str | None] = mapped_column(String(64))
     name: Mapped[str | None] = mapped_column(String(80))
+    # The partner centre's link the parent came through (B113, pilot/models.py CenterLink.code). Set at sign-up from
+    # the code the device kept; the first code wins and is never overwritten.
+    ref_code: Mapped[str | None] = mapped_column(String(32), index=True)
     # Basic consent (A1.6): which text version the person agreed to, and when. Empty = not given yet.
     consent_version: Mapped[str | None] = mapped_column(String(32))
     consent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

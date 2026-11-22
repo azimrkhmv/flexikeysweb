@@ -8,6 +8,7 @@ import { age } from "@/features/parent/lib";
 import { fmtDate } from "@/lib/format";
 import { Helpers } from "@/features/parent/Helpers";
 import { FirstScreen } from "@/features/parent/FirstScreen";
+import { RegionPrompt } from "@/features/parent/RegionPrompt";
 import { Today } from "@/features/parent/Today";
 import { LockNote } from "@/features/pro/shared";
 import { MAX_CHILDREN, sel, useDb } from "@/lib/api";
@@ -45,6 +46,8 @@ export default function ParentHome() {
           )
         }
       />
+
+      <RegionPrompt />
 
       {trialEnds && (
         <div role="status" className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-hill2 bg-tint-2/60 p-4 text-sm font-semibold text-ink">

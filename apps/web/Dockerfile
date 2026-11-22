@@ -1,5 +1,5 @@
 # FlexiKeys web — production image (Next.js standalone server). Build from apps/web:
-#   docker build -t flexikeys-web --build-arg NEXT_PUBLIC_SITE_URL=https://flexikeys.uz \
+#   docker build -t flexikeys-web --build-arg NEXT_PUBLIC_SITE_URL=https://flexikeys.org \
 #     --build-arg NEXT_PUBLIC_API_MODE=live .
 #   docker run -p 3000:3000 flexikeys-web
 # NEXT_PUBLIC_API_MODE, FK_API_ORIGIN and FK_STORAGE_ORIGIN are fixed at BUILD time (Next bakes the rewrites and
@@ -16,10 +16,10 @@ FROM node:22-alpine AS build
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
 # Public build-time settings (inlined into the client bundle / static pages).
-ARG NEXT_PUBLIC_SITE_URL=https://flexikeys.uz
+ARG NEXT_PUBLIC_SITE_URL=https://flexikeys.org
 ARG NEXT_PUBLIC_API_MODE=mock
 ARG FK_API_ORIGIN=http://localhost:8000
-# The file storage the browser loads and uploads files from (e.g. https://files.flexikeys.uz); empty = none.
+# The file storage the browser loads and uploads files from (e.g. https://files.flexikeys.org); empty = none.
 ARG FK_STORAGE_ORIGIN=
 # The team's help link behind the parent's Help button (B114); empty = no button.
 ARG NEXT_PUBLIC_SUPPORT_URL=

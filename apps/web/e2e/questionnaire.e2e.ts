@@ -31,6 +31,7 @@ test("a section opens with its big title on open and going forward, never going 
   const code = (await page.getByText(/Your code is \d{6}/).innerText()).match(/\d{6}/)![0];
   await page.getByLabel("Code from the SMS").fill(code);
   await page.getByRole("button", { name: "Continue" }).click();
+  await page.getByLabel("City or region").selectOption("tashkent_city"); // B113: no region is preset
   await page.getByLabel("District").selectOption("Yunusobod");
   await page.getByText("I agree to the Privacy policy").click();
   await page.getByRole("button", { name: "Continue" }).click();
@@ -82,6 +83,7 @@ test("No difficulty skips a section; the Quick check starts filled in; details w
   const code = (await page.getByText(/Your code is \d{6}/).innerText()).match(/\d{6}/)![0];
   await page.getByLabel("Code from the SMS").fill(code);
   await page.getByRole("button", { name: "Continue" }).click();
+  await page.getByLabel("City or region").selectOption("tashkent_city"); // B113: no region is preset
   await page.getByLabel("District").selectOption("Yunusobod");
   await page.getByText("I agree to the Privacy policy").click();
   await page.getByRole("button", { name: "Continue" }).click();
@@ -145,6 +147,7 @@ test("a parent answers the new questionnaire and gets a plan", async ({ page }, 
   const code = (await page.getByText(/Your code is \d{6}/).innerText()).match(/\d{6}/)![0];
   await page.getByLabel("Code from the SMS").fill(code);
   await page.getByRole("button", { name: "Continue" }).click();
+  await page.getByLabel("City or region").selectOption("tashkent_city"); // B113: no region is preset
   await page.getByLabel("District").selectOption("Yunusobod");
   await page.getByText("I agree to the Privacy policy").click();
   await page.getByRole("button", { name: "Continue" }).click();
@@ -213,6 +216,7 @@ test("quick start: one question a screen, a first plan, then \"Answer more\" ope
   const code = (await page.getByText(/Your code is \d{6}/).innerText()).match(/\d{6}/)![0];
   await page.getByLabel("Code from the SMS").fill(code);
   await page.getByRole("button", { name: "Continue" }).click();
+  await page.getByLabel("City or region").selectOption("tashkent_city"); // B113: no region is preset
   await page.getByLabel("District").selectOption("Yunusobod");
   await page.getByText("I agree to the Privacy policy").click();
   await page.getByRole("button", { name: "Continue" }).click();

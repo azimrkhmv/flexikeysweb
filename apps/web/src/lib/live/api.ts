@@ -67,7 +67,7 @@ export const liveApi = {
     return signedIn();
   },
   /** PATCH /me/signup — basic consent, city and district: required before anything else. */
-  async completeSignup(input: { name: string; region: string; district: string; consent: boolean }) {
+  async completeSignup(input: { name: string; region: string; district: string; consent: boolean; ref?: string | null }) {
     await http("PATCH", "/me/signup", input);
     await signedIn();
     return true;
@@ -90,8 +90,8 @@ export const liveApi = {
     queryClient.clear();
     return true;
   },
-  async updateMe(patch: Partial<Pick<User, "name" | "uiLang">>) {
-    await http("PATCH", "/me", { name: patch.name, lang: patch.uiLang });
+  async updateMe(patch: Partial<Pick<User, "name" | "uiLang">> & { region?: string }) {
+    await http("PATCH", "/me", { name: patch.name, lang: patch.uiLang, region: patch.region });
     await refetch();
     return true;
   },
@@ -350,6 +350,12 @@ export const liveApi = {
   async saveTherapistProfile(name: string, profession: Profession, workplace: string) {
     await http("PUT", "/therapist/profile", { name: name.trim(), profession, workplace: workplace.trim() });
     await refetch();
+    return true;
+  },
+  /** POST /admin/center-links (B113). */
+  async createCenterLink(name: string, code: string) {
+    await http("POST", "/admin/center-links", { name: name.trim(), code: code.trim() });
+    await queryClient.invalidateQueries({ queryKey: ["admin"] });
     return true;
   },
   /** POST /feedback — the pilot's "Send feedback" box. */

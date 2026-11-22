@@ -9,6 +9,7 @@ import { districtName, REGIONS, regionById, regionName } from "@/content/distric
 import { AuthTitle, FormError, FormNote } from "@/features/auth/parts";
 import { api, DEMO_PHONES, sel, useDb } from "@/lib/api";
 import { applyAccountLang, LANG_NAMES, LANGS, useLangChosen, useT, useLang } from "@/lib/i18n";
+import { readRef } from "@/lib/ref";
 import { useMounted } from "@/lib/store";
 import type { User } from "@/lib/types";
 
@@ -231,7 +232,7 @@ function Details() {
   const t = useT();
   const [lang] = useLang();
   const router = useRouter();
-  const [region, setRegion] = useState(REGIONS[0].id);
+  const [region, setRegion] = useState(""); // B113: chosen by the parent, never preset
   const [district, setDistrict] = useState("");
   const [name, setName] = useState("");
   const [consent, setConsent] = useState(false);
@@ -244,7 +245,7 @@ function Details() {
         onSubmit={async (e) => {
           e.preventDefault();
           if (!consent) return save.setError(t("auth.details.mustConsent"));
-          if (await save.run({ name, region, district, consent })) router.replace("/parent/children/new");
+          if (await save.run({ name, region, district, consent, ref: readRef() })) router.replace("/parent/children/new");
         }}
       >
         <Field label={t("auth.details.name")}>
@@ -252,12 +253,16 @@ function Details() {
         </Field>
         <Field label={t("auth.details.region")}>
           <Select
+            required
             value={region}
             onChange={(e) => {
               setRegion(e.target.value);
               setDistrict("");
             }}
           >
+            <option value="" disabled>
+              {t("auth.details.pick")}
+            </option>
             {REGIONS.map((r) => (
               <option key={r.id} value={r.id}>
                 {regionName(r.id, lang)}
@@ -270,7 +275,7 @@ function Details() {
             <option value="" disabled>
               {t("auth.details.pick")}
             </option>
-            {regionById(region)!.districts.map((d) => (
+            {(regionById(region)?.districts ?? []).map((d) => (
               <option key={d} value={d}>
                 {districtName(d, lang)}
               </option>

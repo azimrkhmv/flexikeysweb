@@ -5,6 +5,7 @@ is the website's /privacy page. The final texts come from the founders and the l
 policy changes, raise VERSION: the account then keeps which version the person agreed to, and when (users.consent_*).
 """
 
+# ruff: noqa: RUF001  (Russian text: its one-letter words look like Latin letters to the linter)
 from app.modules.accounts.models import Lang
 
 # The Privacy policy's version (its date), the same as the website's PRIVACY_VERSION (apps/web/src/lib/api/schema.ts).

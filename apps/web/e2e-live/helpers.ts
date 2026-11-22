@@ -34,6 +34,7 @@ export async function signIn(page: Page, phone: string) {
 
 export async function signUp(page: Page, phone: string) {
   await signIn(page, phone);
+  await page.getByLabel("City or region").selectOption("tashkent_city"); // B113: no region is preset
   await page.getByLabel("District").selectOption({ index: 1 });
   await page.getByText("I agree to the Privacy policy").click();
   await page.getByRole("button", { name: "Continue" }).click();

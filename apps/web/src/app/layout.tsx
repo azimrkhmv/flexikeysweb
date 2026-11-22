@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Fredoka, Nunito } from "next/font/google";
 import { LiveProvider } from "@/lib/live/client";
+import { RefCatcher } from "@/lib/ref";
 import { APPEARANCE_SCRIPT } from "@/lib/appearanceScript";
 import { SITE_URL } from "@/lib/site";
 import { THEME_COLOR, THEME_CSS } from "@/lib/theme";
@@ -31,6 +32,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <script dangerouslySetInnerHTML={{ __html: APPEARANCE_SCRIPT }} />
         {/* Live mode: one data cache for every page (a no-op in demo mode). */}
         <LiveProvider>{children}</LiveProvider>
+        {/* A centre link's ?ref= code, kept for sign-up (B113). */}
+        <RefCatcher />
       </body>
     </html>
   );

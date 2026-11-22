@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, BookOpen, Clapperboard, CreditCard, MessageSquare, Package, ScrollText, Users } from "lucide-react";
+import { Activity, BarChart3, BookOpen, Clapperboard, CreditCard, MessageSquare, Package, ScrollText, Users } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { useT } from "@/lib/i18n";
 
@@ -11,6 +11,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       role="admin"
       nav={[
         { href: "/admin", label: t("admin.nav.overview"), icon: Activity },
+        { href: "/admin/pilot", label: t("pilot.title"), icon: BarChart3 },
         { href: "/admin/users", label: t("admin.nav.users"), icon: Users },
         { href: "/admin/billing", label: t("admin.nav.billing"), icon: CreditCard },
         { href: "/admin/kits", label: t("admin.nav.kits"), icon: Package },

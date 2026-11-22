@@ -15,6 +15,7 @@ async function signUpByPhone(page: Page, phone: string) {
   await page.getByLabel("Code from the SMS").fill(code);
   await page.getByRole("button", { name: "Continue" }).click();
   // Basic consent + district are required before anything else.
+  await page.getByLabel("City or region").selectOption("tashkent_city"); // B113: no region is preset
   await page.getByLabel("District").selectOption("Yunusobod");
   await page.getByRole("button", { name: "Continue" }).click();
   await expect(page.getByText("Please agree to continue")).toBeVisible();

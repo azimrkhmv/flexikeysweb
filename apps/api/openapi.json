@@ -406,7 +406,7 @@
      "me"
     ],
     "summary": "Signup",
-    "description": "The sign-up step: basic consent, city and district (spec §4). Required before anything else.",
+    "description": "The sign-up step: basic consent, city and district (spec §4). Required before anything else. `ref`: a centre\nlink's code (B113), kept on the account the first time a known one is sent.",
     "operationId": "signup_api_v1_me_signup_patch",
     "requestBody": {
      "content": {
@@ -1174,6 +1174,98 @@
        "application/json": {
         "schema": {
          "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/admin/center-links": {
+   "get": {
+    "tags": [
+     "pilot"
+    ],
+    "summary": "Center Links",
+    "description": "Every centre link, oldest first, with how many parents signed up through it.",
+    "operationId": "center_links_api_v1_admin_center_links_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "$ref": "#/components/schemas/CenterLinkOut"
+         },
+         "type": "array",
+         "title": "Response Center Links Api V1 Admin Center Links Get"
+        }
+       }
+      }
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "pilot"
+    ],
+    "summary": "Add Center Link",
+    "description": "A new centre link. 422 invalid_code (lowercase letters, digits and \"-\", 2-32), 409 code_taken.",
+    "operationId": "add_center_link_api_v1_admin_center_links_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/CenterLinkIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "$ref": "#/components/schemas/CenterLinkOut"
+         },
+         "type": "array",
+         "title": "Response Add Center Link Api V1 Admin Center Links Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/admin/pilot": {
+   "get": {
+    "tags": [
+     "pilot"
+    ],
+    "summary": "Pilot",
+    "description": "Sign-ups per day, region and centre link; retained families; quiet families to call (spec 4.3).",
+    "operationId": "pilot_api_v1_admin_pilot_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/PilotOut"
         }
        }
       }
@@ -6461,6 +6553,100 @@
     ],
     "title": "CardUpload"
    },
+   "CenterCount": {
+    "properties": {
+     "code": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Code"
+     },
+     "name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Name"
+     },
+     "count": {
+      "type": "integer",
+      "title": "Count"
+     }
+    },
+    "type": "object",
+    "required": [
+     "code",
+     "name",
+     "count"
+    ],
+    "title": "CenterCount"
+   },
+   "CenterLinkIn": {
+    "properties": {
+     "name": {
+      "type": "string",
+      "maxLength": 80,
+      "minLength": 1,
+      "title": "Name"
+     },
+     "code": {
+      "type": "string",
+      "maxLength": 32,
+      "minLength": 2,
+      "title": "Code"
+     }
+    },
+    "type": "object",
+    "required": [
+     "name",
+     "code"
+    ],
+    "title": "CenterLinkIn"
+   },
+   "CenterLinkOut": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "code": {
+      "type": "string",
+      "title": "Code"
+     },
+     "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Createdat"
+     },
+     "signups": {
+      "type": "integer",
+      "title": "Signups"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "name",
+     "code",
+     "createdAt",
+     "signups"
+    ],
+    "title": "CenterLinkOut"
+   },
    "ChatOut": {
     "properties": {
      "userId": {
@@ -7068,6 +7254,25 @@
      "answer"
     ],
     "title": "DailyOut"
+   },
+   "DayCount": {
+    "properties": {
+     "day": {
+      "type": "string",
+      "format": "date",
+      "title": "Day"
+     },
+     "count": {
+      "type": "integer",
+      "title": "Count"
+     }
+    },
+    "type": "object",
+    "required": [
+     "day",
+     "count"
+    ],
+    "title": "DayCount"
    },
    "DayOut": {
     "properties": {
@@ -8608,6 +8813,62 @@
     ],
     "title": "PhoneVerify"
    },
+   "PilotOut": {
+    "properties": {
+     "today": {
+      "type": "string",
+      "format": "date",
+      "title": "Today"
+     },
+     "signedUp": {
+      "type": "integer",
+      "title": "Signedup"
+     },
+     "signupsByDay": {
+      "items": {
+       "$ref": "#/components/schemas/DayCount"
+      },
+      "type": "array",
+      "title": "Signupsbyday"
+     },
+     "byRegion": {
+      "items": {
+       "$ref": "#/components/schemas/RegionCount"
+      },
+      "type": "array",
+      "title": "Byregion"
+     },
+     "byCenter": {
+      "items": {
+       "$ref": "#/components/schemas/CenterCount"
+      },
+      "type": "array",
+      "title": "Bycenter"
+     },
+     "retained": {
+      "type": "integer",
+      "title": "Retained"
+     },
+     "quiet": {
+      "items": {
+       "$ref": "#/components/schemas/QuietFamily"
+      },
+      "type": "array",
+      "title": "Quiet"
+     }
+    },
+    "type": "object",
+    "required": [
+     "today",
+     "signedUp",
+     "signupsByDay",
+     "byRegion",
+     "byCenter",
+     "retained",
+     "quiet"
+    ],
+    "title": "PilotOut"
+   },
    "PlaceChange": {
     "properties": {
      "name": {
@@ -9833,6 +10094,92 @@
     ],
     "title": "QuestionnaireOut"
    },
+   "QuietFamily": {
+    "properties": {
+     "userId": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Userid"
+     },
+     "name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Name"
+     },
+     "phone": {
+      "type": "string",
+      "title": "Phone"
+     },
+     "region": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Region"
+     },
+     "district": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "District"
+     },
+     "refCode": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Refcode"
+     },
+     "signedUp": {
+      "type": "string",
+      "format": "date",
+      "title": "Signedup"
+     },
+     "lastActive": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Lastactive"
+     }
+    },
+    "type": "object",
+    "required": [
+     "userId",
+     "name",
+     "phone",
+     "region",
+     "district",
+     "refCode",
+     "signedUp",
+     "lastActive"
+    ],
+    "title": "QuietFamily"
+   },
    "ReasonOut": {
     "properties": {
      "slot": {
@@ -9888,6 +10235,31 @@
     },
     "type": "object",
     "title": "RefreshBody"
+   },
+   "RegionCount": {
+    "properties": {
+     "region": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Region"
+     },
+     "count": {
+      "type": "integer",
+      "title": "Count"
+     }
+    },
+    "type": "object",
+    "required": [
+     "region",
+     "count"
+    ],
+    "title": "RegionCount"
    },
    "ReplyIn": {
     "properties": {
@@ -10591,6 +10963,18 @@
      "consent": {
       "type": "boolean",
       "title": "Consent"
+     },
+     "ref": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 64
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ref"
      }
     },
     "type": "object",

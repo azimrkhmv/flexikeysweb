@@ -229,7 +229,8 @@ export interface paths {
         head?: never;
         /**
          * Signup
-         * @description The sign-up step: basic consent, city and district (spec §4). Required before anything else.
+         * @description The sign-up step: basic consent, city and district (spec §4). Required before anything else. `ref`: a centre
+         *     link's code (B113), kept on the account the first time a known one is sent.
          */
         patch: operations["signup_api_v1_me_signup_patch"];
         trace?: never;
@@ -570,6 +571,50 @@ export interface paths {
          * @description Anyone signed in tells the team something (the pilot's feedback box).
          */
         post: operations["send_feedback_api_v1_feedback_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/center-links": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Center Links
+         * @description Every centre link, oldest first, with how many parents signed up through it.
+         */
+        get: operations["center_links_api_v1_admin_center_links_get"];
+        put?: never;
+        /**
+         * Add Center Link
+         * @description A new centre link. 422 invalid_code (lowercase letters, digits and "-", 2-32), 409 code_taken.
+         */
+        post: operations["add_center_link_api_v1_admin_center_links_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/pilot": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Pilot
+         * @description Sign-ups per day, region and centre link; retained families; quiet families to call (spec 4.3).
+         */
+        get: operations["pilot_api_v1_admin_pilot_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -2443,6 +2488,41 @@ export interface components {
             /** Uploadurl */
             uploadUrl: string;
         };
+        /** CenterCount */
+        CenterCount: {
+            /** Code */
+            code: string | null;
+            /** Name */
+            name: string | null;
+            /** Count */
+            count: number;
+        };
+        /** CenterLinkIn */
+        CenterLinkIn: {
+            /** Name */
+            name: string;
+            /** Code */
+            code: string;
+        };
+        /** CenterLinkOut */
+        CenterLinkOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Name */
+            name: string;
+            /** Code */
+            code: string;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /** Signups */
+            signups: number;
+        };
         /** ChatOut */
         ChatOut: {
             /**
@@ -2672,6 +2752,16 @@ export interface components {
             }[];
             /** Answer */
             answer: number | null;
+        };
+        /** DayCount */
+        DayCount: {
+            /**
+             * Day
+             * Format: date
+             */
+            day: string;
+            /** Count */
+            count: number;
         };
         /** DayOut */
         DayOut: {
@@ -3267,6 +3357,26 @@ export interface components {
             /** Invitecode */
             inviteCode?: string | null;
         };
+        /** PilotOut */
+        PilotOut: {
+            /**
+             * Today
+             * Format: date
+             */
+            today: string;
+            /** Signedup */
+            signedUp: number;
+            /** Signupsbyday */
+            signupsByDay: components["schemas"]["DayCount"][];
+            /** Byregion */
+            byRegion: components["schemas"]["RegionCount"][];
+            /** Bycenter */
+            byCenter: components["schemas"]["CenterCount"][];
+            /** Retained */
+            retained: number;
+            /** Quiet */
+            quiet: components["schemas"]["QuietFamily"][];
+        };
         /**
          * PlaceChange
          * @description Only what is sent changes.
@@ -3598,6 +3708,31 @@ export interface components {
             /** Active */
             active: string;
         };
+        /** QuietFamily */
+        QuietFamily: {
+            /**
+             * Userid
+             * Format: uuid
+             */
+            userId: string;
+            /** Name */
+            name: string | null;
+            /** Phone */
+            phone: string;
+            /** Region */
+            region: string | null;
+            /** District */
+            district: string | null;
+            /** Refcode */
+            refCode: string | null;
+            /**
+             * Signedup
+             * Format: date
+             */
+            signedUp: string;
+            /** Lastactive */
+            lastActive: string | null;
+        };
         /** ReasonOut */
         ReasonOut: {
             slot: components["schemas"]["ItemKind"];
@@ -3614,6 +3749,13 @@ export interface components {
         RefreshBody: {
             /** Refreshtoken */
             refreshToken?: string | null;
+        };
+        /** RegionCount */
+        RegionCount: {
+            /** Region */
+            region: string | null;
+            /** Count */
+            count: number;
         };
         /** ReplyIn */
         ReplyIn: {
@@ -3875,6 +4017,8 @@ export interface components {
             district: string;
             /** Consent */
             consent: boolean;
+            /** Ref */
+            ref?: string | null;
         };
         /**
          * SkillArea
@@ -5188,6 +5332,79 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    center_links_api_v1_admin_center_links_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CenterLinkOut"][];
+                };
+            };
+        };
+    };
+    add_center_link_api_v1_admin_center_links_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CenterLinkIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CenterLinkOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    pilot_api_v1_admin_pilot_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PilotOut"];
                 };
             };
         };

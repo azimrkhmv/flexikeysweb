@@ -41,6 +41,8 @@ export interface DB {
   notifications: Notification[];
   audit: AuditLog[];
   flags: FeatureFlag[];
+  /** Centre links (B113): a partner centre's sign-up link https://flexikeys.org/?ref=<code>. */
+  centerLinks?: { id: string; name: string; code: string; at: string }[];
   /** The pilot's "Send feedback" box; admins read it (live: GET /admin/feedback). */
   feedback?: { id: string; userId: string | null; phone?: string | null; name?: string | null; page: string; text: string; at: string }[];
   aiMessages: AiMessage[];

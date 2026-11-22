@@ -21,6 +21,7 @@ from app.modules.console import router as console
 from app.modules.health import router as health
 from app.modules.intake import router as intake
 from app.modules.kits import router as kits
+from app.modules.pilot import router as pilot
 from app.modules.places import bookings, clinic
 from app.modules.places import router as places
 from app.modules.plans import router as plans
@@ -67,6 +68,7 @@ app.include_router(billing.admin_router, prefix="/api/v1")
 app.include_router(admin.router, prefix="/api/v1")
 app.include_router(console.router, prefix="/api/v1")
 app.include_router(console.flags_router, prefix="/api/v1")
+app.include_router(pilot.router, prefix="/api/v1")
 app.include_router(places.admin_router, prefix="/api/v1")
 app.include_router(places.router, prefix="/api/v1")
 app.include_router(clinic.router, prefix="/api/v1")

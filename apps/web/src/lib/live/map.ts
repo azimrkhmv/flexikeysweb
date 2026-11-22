@@ -48,7 +48,7 @@ export function userFrom(u: BUser): User {
     status: u.status === "disabled" ? "disabled" : "active",
     uiLang: u.lang,
     phone: u.phone,
-    district: u.region && u.district ? { region: u.region, district: u.district } : undefined,
+    district: u.region ? { region: u.region, district: u.district ?? "" } : undefined, // B113: a region alone is kept
     consentVersion: u.consentVersion ?? undefined,
     needsSecondStep: u.needsSecondStep || undefined,
     createdAt: u.createdAt ?? "",

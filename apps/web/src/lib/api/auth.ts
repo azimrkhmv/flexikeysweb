@@ -65,7 +65,7 @@ export const authApi = {
     throw new ApiError("second_step_not_set");
   },
   /** PATCH /users/me/signup — basic consent, city and district (spec §4: required before anything else). */
-  async completeSignup(input: { name: string; region: string; district: string; consent: boolean }) {
+  async completeSignup(input: { name: string; region: string; district: string; consent: boolean; ref?: string | null }) {
     const u = requireUser();
     if (!input.consent) throw new ApiError("consent_required");
     write((db) => {
@@ -73,6 +73,10 @@ export const authApi = {
       me.name = input.name.trim() || me.name;
       me.district = { region: input.region, district: input.district };
       me.consentVersion = PRIVACY_VERSION;
+      me.signedUpAt ??= iso();
+      // B113: the first known centre code wins; unknown codes are ignored.
+      const code = input.ref?.trim().toLowerCase();
+      if (!me.ref && code && db.centerLinks?.some((l) => l.code === code)) me.ref = code;
     });
     return net(true);
   },
@@ -88,9 +92,13 @@ export const authApi = {
     return authApi.logout();
   },
   /** PATCH /users/me */
-  async updateMe(patch: Partial<Pick<User, "name" | "uiLang">>) {
+  async updateMe(patch: Partial<Pick<User, "name" | "uiLang">> & { region?: string }) {
     const u = requireUser();
-    write((db) => Object.assign(db.users.find((x) => x.id === u.id)!, patch));
+    const { region, ...rest } = patch;
+    write((db) => {
+      const me = Object.assign(db.users.find((x) => x.id === u.id)!, rest);
+      if (region) me.district = { region, district: me.district?.region === region ? me.district.district : "" }; // B113
+    });
     return net(true);
   },
   /** DELETE /me — deletes the account, the family it owns and that family's children (A12.2). */

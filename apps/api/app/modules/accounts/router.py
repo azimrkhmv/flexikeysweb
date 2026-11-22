@@ -15,6 +15,7 @@ from app.modules.accounts import consent
 from app.modules.accounts.models import Lang, Role, User
 from app.modules.auth.router import UserOut
 from app.modules.auth.session import CurrentUser, SignedInUser
+from app.modules.pilot.router import link_for
 from app.schemas import ApiModel
 
 router = APIRouter(tags=["me"])
@@ -27,9 +28,10 @@ _REGIONS: dict[str, set[str]] = {
 
 
 def _check_place(region: str | None, district: str | None) -> None:
+    """A region on its own is fine (B113: an older account asked only for its region); a district needs its region."""
     if region is None and district is None:
         return
-    if region not in _REGIONS or district not in _REGIONS[region]:
+    if region not in _REGIONS or (district is not None and district not in _REGIONS[region]):
         raise AppError(422, "invalid_district")
 
 
@@ -75,17 +77,21 @@ class Signup(ApiModel):
     region: str
     district: str
     consent: bool
+    ref: str | None = Field(default=None, max_length=64)  # B113: the centre link's code the device kept, if any
 
 
 @router.patch("/me/signup")
 async def signup(body: Signup, user: SignedInUser, db: Annotated[AsyncSession, Depends(get_session)]) -> Me:
-    """The sign-up step: basic consent, city and district (spec §4). Required before anything else."""
+    """The sign-up step: basic consent, city and district (spec §4). Required before anything else. `ref`: a centre
+    link's code (B113), kept on the account the first time a known one is sent."""
     if not body.consent:
         raise AppError(422, "consent_required")
     _check_place(body.region, body.district)
     user.name = body.name.strip() or user.name
     user.region, user.district = body.region, body.district
     user.consent_version, user.consent_at = consent.VERSION, datetime.now(UTC)
+    if user.ref_code is None and (link := await link_for(db, body.ref)):  # first code wins; unknown codes are ignored
+        user.ref_code = link.code
     await db.commit()
     return _me(user)
 
@@ -101,6 +107,9 @@ class MeChange(ApiModel):
 async def change_me(body: MeChange, user: CurrentUser, db: Annotated[AsyncSession, Depends(get_session)]) -> Me:
     """Change your name, language, city or district. Only the fields sent are changed."""
     changes = body.model_dump(exclude_unset=True, exclude_none=True)
+    if "region" in changes and "district" not in changes and user.district not in _REGIONS.get(changes["region"], ()):
+        changes["district"] = None  # a new region alone: the old district belonged to the old region
+        user.district = None
     if "region" in changes or "district" in changes:
         _check_place(changes.get("region", user.region), changes.get("district", user.district))
     for field, value in changes.items():

@@ -11,6 +11,7 @@ from app.modules.clips.models import Clip, ClipReply
 from app.modules.console.models import FeatureFlag, Feedback
 from app.modules.intake.models import IntakeAnswer, IntakeRound
 from app.modules.kits.models import KitOrder, KitProduct
+from app.modules.pilot.models import CenterLink
 from app.modules.places.models import Booking, Place, PlaceReport, Slot
 from app.modules.plans.models import FixedLevel, Plan, PlanItem, PlanReason
 from app.modules.play.models import (
@@ -35,6 +36,7 @@ __all__ = [
     "AuditEntry",
     "Booking",
     "CareLink",
+    "CenterLink",
     "Chat",
     "ChatMessage",
     "Child",

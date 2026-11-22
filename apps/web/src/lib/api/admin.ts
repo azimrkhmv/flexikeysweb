@@ -53,6 +53,19 @@ export const adminApi = {
     });
     return net(true);
   },
+  /** POST /admin/center-links (B113): a partner centre's sign-up link, https://flexikeys.org/?ref=<code>. */
+  async createCenterLink(name: string, rawCode: string) {
+    const u = requireUser(["admin"]);
+    const code = rawCode.trim().toLowerCase();
+    if (!name.trim() || !/^[a-z0-9][a-z0-9-]{1,31}$/.test(code)) throw new ApiError("invalid_ref_code");
+    if (read().centerLinks?.some((l) => l.code === code)) throw new ApiError("code_taken");
+    write((db) => {
+      const link = { id: crypto.randomUUID(), name: name.trim().slice(0, 80), code, at: new Date().toISOString() };
+      (db.centerLinks ??= []).push(link);
+      audit(db, u.id, "center_link.created", link.id, code);
+    });
+    return net(true);
+  },
   /** Resets the whole demo database to the seed (keeps you logged out). */
   resetDemo() {
     dbStore.set(seed());

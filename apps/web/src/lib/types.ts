@@ -20,6 +20,10 @@ export interface User {
   district?: { region: string; district: string };
   /** Basic consent (account, play data) accepted at sign-up. */
   consentVersion?: string;
+  /** When the sign-up step was finished (B113; the free month starts here, B114). Live: from the server. */
+  signedUpAt?: string;
+  /** The centre link's code this parent came through (B113); the first known code, never overwritten. */
+  ref?: string;
   /** Live: an admin signed in with the SMS code only; the authenticator code comes next (A13.1). */
   needsSecondStep?: boolean;
   createdAt: string;

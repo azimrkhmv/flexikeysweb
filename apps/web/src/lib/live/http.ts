@@ -82,6 +82,8 @@ const BY_TITLE: Record<string, string> = {
     invalid_status_change: "invalid_status_change",
     daily_limit: "quota_exceeded", // the assistant's Free daily messages (A9.2)
     ai_unavailable: "ai_unavailable",
+    invalid_ref_code: "invalid_ref_code", // centre links (B113)
+    code_taken: "code_taken",
 };
 
 /** Every code errorCode() can return — each has an err.* message (checked by lib/i18n.test.ts). */
