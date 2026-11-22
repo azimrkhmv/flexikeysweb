@@ -130,6 +130,12 @@ Every task must keep these. They come from the spec.
 | Every colour follows the scheme (Bekzod, 19 Nov 2026) | Page, cards, buttons, scenery (sky, sun or moon, hills, trees, clouds), Cloudy, game backgrounds and progress bars. No component keeps a fixed colour that does not belong to the scheme. The only fixed colours are pictures of real things and colours that are part of a task (`content/taskColors.ts`) |
 | Parent and child choose separately (Bekzod, 19 Nov 2026) | Parents choose colour, light/dark and style in **Account → Appearance**. The child chooses colour and style for the play screens with a **My colours** button on the play home. A new child starts with the parent's colour scheme and Soft |
 | No look controls on the landing page (Bekzod, 19 Nov 2026) | No colour, style or light/dark control appears on the landing page, the first screen for a new parent, the questionnaire, sign-in or payment screens, or inside a game round |
+| Launch first (Bekzod, 22 Nov 2026) | Deployment, trust, tracking and the offer (Update 4 tasks 1–5, B111–B115) come before the look and the libraries. The spec is `docs/update4-launch-ui-libraries-spec-2026-11-22.md` |
+| Production server in Tashkent (Bekzod, 22 Nov 2026) | One Linux server in Tashkent with Docker Compose and Caddy for HTTPS (`deploy/compose.prod.yml`); real children's data stays in Uzbekistan. Replaces "Contabo" in the Hosting row above for production. The Vercel demo stays in mock mode at `demo.flexikeys.org` |
+| White-warm is the new Warm Hills light (Bekzod, 22 Nov 2026) | The page is white with a slight warm orange/yellow tone. It replaces the 19 Nov Warm Hills light values everywhere (landing page and every page that uses Warm Hills light). Warm Hills dark and the other five schemes do not change |
+| The landing page is always Warm Hills light, Soft (Bekzod, 22 Nov 2026) | It ignores device dark mode and saved appearance choices |
+| New UI libraries (Bekzod, 22 Nov 2026) | Allowed, but only these five: Sonner (toasts), Vaul (drawers / bottom sheets), NumberFlow (animated numbers), Base UI (accessible primitives) and **one** Magic UI effect (copied source, on the landing page only). This replaces the "No new packages" rule of the 19 Nov file for these five only. Any other package still needs Bekzod's yes. `motion` stays |
+| No child picture on the landing page yet (Bekzod, 22 Nov 2026) | The team is still choosing its design. No child is added or drawn in Update 4 |
 
 **Families**
 
@@ -1185,6 +1191,46 @@ to build, and wins where they disagree. Order: B107 to B110.*
   - Needs: B109
   - Note (19 Nov 2026): `components/AppearanceSettings.tsx` (Account → Appearance, replaces the 15 Nov `SchemePicker`): six swatches with their names, Light / Dark and Soft / Sharp as two-button pills. The repo had no "as on the device" option, so there is none. Light is never disabled: on Night it says "Back to {scheme}, light" on hover or focus (a tooltip the pointer can move onto, hidden by Escape) and goes back to the last day colour (Warm Hills if none). Choosing Night now stores dark, so the children's pages, which take the parent's light or dark, are dark too. `features/play/MyColours.tsx`: a round brush button in the play header on the world map and the Skill games tab only (not in a warm-up, a level or a game), and a sheet with six clouds in each scheme's `accent`, Soft and Sharp with a round and a square, and Done. Every button is a child-mode `Target` (touch, hold, scanning, keyboard; the child's target size); scanning and the focus trap cover the sheet; Escape closes it and focus goes back to the brush. Kept per child (`fk-look-child-<id>`); a new child gets the parent's scheme and Soft; `usePlayLook` puts the child's look on the play pages and the parent's back when child mode closes (checked in Edge: parent Night/Sharp, Ali Mint/Sharp dark, back through the grown-up gate to Night/Sharp). The look is on the device only and calls no server, so mock and live mode behave the same (live not run here: no Docker). `lib/appearance.test.ts` checks the store and that no other file has a look control. axe found accent text on the `tint2` chips at 4.47:1 in Warm Hills light: `tint2` is now a little paler, and the contrast test checks accent text on both tints. uz text of `messages/look.ts` drafted 19 Nov 2026, native-speaker check (B44). Passing in Edge: `a11y`, `games`, `drawing`, `escape`, `gates`, `parent-gate` e2e. Screenshots: `Desktop\FlexiKeys\Update3_screens\B110`.
 
+### Update 4 (22 Nov 2026)
+
+*Bekzod's spec `docs/update4-launch-ui-libraries-spec-2026-11-22.md`: ready for the parents' event (50+ parents with
+a rehab center), the white-warm look and the UI libraries. Order: B111 to B120, one commit each.*
+
+- [ ] **Bekzod** — `B111` Production deployment files (spec 2)
+  - Done when: all files exist; `compose config` passes; a local production start works (sign-up, upload, game); only Caddy publishes ports; mock mode on Vercel unchanged
+  - Needs: —
+- [ ] **Bekzod** — `B112` Privacy page and sign-up consent (spec 3)
+  - Done when: `/privacy` in three languages matches what is really stored; linked from landing, sign-up and consent screens; sign-up needs the checkbox; missing consents and parent controls are listed in `TASKS.md`
+  - Needs: —
+- [ ] **Bekzod** — `B113` Region, center links and pilot numbers (spec 4)
+  - Done when: region is asked; `ref` is saved at sign-up; the admin page shows sign-ups, retained and quiet families with CSV downloads; rule tests pass
+  - Needs: B112
+- [ ] **Bekzod** — `B114` Offer, manual payments, Help button (spec 5)
+  - Done when: the offer comes from one file and shows on landing and Account; reminders never touch child screens; admin records payments and revenue shows on pilot numbers; Help opens the support link or is hidden
+  - Needs: B113
+- [ ] **Bekzod** — `B115` Only approved exercises in live mode (spec 6)
+  - Done when: the test proves an unapproved exercise never reaches a parent in live mode
+  - Needs: —
+- [ ] **Bekzod** — `B116` White-warm Warm Hills light (spec 7)
+  - Done when: new values in place; contrast test green; landing forced to Warm Hills light Soft; screenshots in the note
+  - Needs: —
+- [ ] **Bekzod** — `B117` UI libraries set-up and CLAUDE.md rule (spec 8.1)
+  - Done when: the four packages are installed at pinned versions; the CLAUDE.md section exists
+  - Needs: —
+- [ ] **Bekzod** — `B118` Use the libraries (spec 8.2)
+  - Done when: hand-made dialogs, toasts, sheets and changing numbers are replaced as described; child sheets close only with Done; no NumberFlow or toast on child screens (test); all four child input modes still work
+  - Needs: B117
+- [ ] **Bekzod** — `B119` Shine Border on the landing button (spec 8.3)
+  - Done when: one quiet effect, token colours, off with reduced motion and with "Cloudy moves" off, lazy-loaded
+  - Needs: B116, B117
+- [ ] **Bekzod** — `B120` Phone speed, offline answers and load test (spec 9)
+  - Done when: Lighthouse numbers before/after in the note and on target; offline test passes; load test passes with 0 errors and p95 under 2 s; cleanup works
+  - Needs: B111–B119
+- [ ] **Bekzod** — `B121` A real SMS provider (Eskiz.uz, Q6) for production (found during B111, 22 Nov 2026)
+  - Done when: `SMS_PROVIDER=eskiz` sends the sign-in code by SMS; the server starts with `ENV=prod`
+  - Needs: an Eskiz.uz account and its keys (Azim, section 7)
+  - BLOCKED: the server refuses `ENV=prod` with the simulated SMS (`app/settings.py`, so codes are never shown to anyone), and sign-up is phone + SMS code. Until this is done, parents cannot sign up on the live server on event day
+
 ### Hosting (31 Oct 2026)
 
 - [x] **Bekzod** — Website demo on Vercel (mock mode, no server)
@@ -1270,6 +1316,12 @@ These are not programming. The named developer asks the right person and writes 
   - Needed for: nothing
 - [ ] **Bekzod** — `Q17` Which colour scheme and style are the default for the jury demo? (Warm Hills + Soft until answered.)
   - Needed for: nothing (Warm Hills + Soft until answered)
+- [ ] **Bekzod** — `Q18` Final price and free period? (Free month, then 299,000 UZS per 3 months until answered.)
+  - Needed for: B114 (the values live in `apps/web/src/content/offer.ts`)
+- [ ] **Bekzod** — `Q19` What happens when the free month ends and a family has not paid? (Only a gentle reminder to the parent until answered; the child is never locked out.)
+  - Needed for: B114
+- [ ] **Bekzod** — `Q20` Has a lawyer or award mentor checked the privacy policy and the database registration question?
+  - Needed for: B112 (the `/privacy` page is a draft until answered)
 
 ---
 
