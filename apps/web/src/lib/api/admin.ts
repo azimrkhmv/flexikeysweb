@@ -66,6 +66,23 @@ export const adminApi = {
     });
     return net(true);
   },
+  /** POST /admin/families/{id}/payments (B114): a payment taken by hand; the family is paid (Pro) until the end of
+   * `paidUntil` (YYYY-MM-DD, Tashkent), or longer if it already was. */
+  async recordPayment(familyId: string, p: { amountUzs: number; method: string; paidUntil: string; note: string }) {
+    const u = requireUser(["admin"]);
+    if (!(p.amountUzs >= 1) || !p.method.trim() || !/^\d{4}-\d{2}-\d{2}$/.test(p.paidUntil)) throw new ApiError("generic");
+    if (!read().familyMembers.some((m) => m.familyId === familyId && m.role === "owner")) throw new ApiError("no_family");
+    write((db) => {
+      const id = crypto.randomUUID();
+      (db.manualPayments ??= []).push({ id, familyId, amountUzs: Math.round(p.amountUzs), method: p.method.trim().slice(0, 40), paidUntil: p.paidUntil, note: p.note.trim().slice(0, 300), at: new Date().toISOString() });
+      const end = new Date(Date.parse(`${p.paidUntil}T00:00:00+05:00`) + 86_400_000).toISOString();
+      const row = db.familyPlans.find((r) => r.familyId === familyId);
+      if (!row) db.familyPlans.push({ familyId, paidUntil: end });
+      else if (!row.paidUntil || row.paidUntil < end) row.paidUntil = end;
+      audit(db, u.id, "payment.recorded", familyId, String(p.amountUzs));
+    });
+    return net(true);
+  },
   /** Resets the whole demo database to the seed (keeps you logged out). */
   resetDemo() {
     dbStore.set(seed());

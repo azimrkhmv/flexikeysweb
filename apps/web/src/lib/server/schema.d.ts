@@ -415,6 +415,47 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/billing": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Billing
+         * @description Every family, newest owner first: its plan now and the payments the team took by hand.
+         */
+        get: operations["billing_api_v1_admin_billing_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/families/{family_id}/payments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Record Payment
+         * @description Marks the family paid: keeps the payment and makes it Pro until the end of `paidUntil` (Tashkent), or longer
+         *     if it already was. 404 no_family.
+         */
+        post: operations["record_payment_api_v1_admin_families__family_id__payments_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/users": {
         parameters: {
             query?: never;
@@ -592,7 +633,7 @@ export interface paths {
         put?: never;
         /**
          * Add Center Link
-         * @description A new centre link. 422 invalid_code (lowercase letters, digits and "-", 2-32), 409 code_taken.
+         * @description A new centre link. 422 invalid_ref_code (lowercase letters, digits and "-", 2-32), 409 code_taken.
          */
         post: operations["add_center_link_api_v1_admin_center_links_post"];
         delete?: never;
@@ -2832,6 +2873,28 @@ export interface components {
             level: number;
             done: components["schemas"]["DoneMark"] | null;
         };
+        /** FamilyBilling */
+        FamilyBilling: {
+            /**
+             * Familyid
+             * Format: uuid
+             */
+            familyId: string;
+            /**
+             * Ownerid
+             * Format: uuid
+             */
+            ownerId: string;
+            /** Ownername */
+            ownerName: string | null;
+            /** Ownerphone */
+            ownerPhone: string;
+            /** Signedupat */
+            signedUpAt: string | null;
+            plan: components["schemas"]["PlanStatus"];
+            /** Payments */
+            payments: components["schemas"]["ManualPaymentOut"][];
+        };
         /** FamilyVideo */
         FamilyVideo: {
             /** Exerciseid */
@@ -3169,6 +3232,47 @@ export interface components {
          * @enum {string}
          */
         Lang: "uz" | "ru" | "en";
+        /** ManualPaymentIn */
+        ManualPaymentIn: {
+            /** Amountuzs */
+            amountUzs: number;
+            /** Method */
+            method: string;
+            /**
+             * Paiduntil
+             * Format: date
+             */
+            paidUntil: string;
+            /**
+             * Note
+             * @default
+             */
+            note: string;
+        };
+        /** ManualPaymentOut */
+        ManualPaymentOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Amountuzs */
+            amountUzs: number;
+            /** Method */
+            method: string;
+            /**
+             * Paiduntil
+             * Format: date
+             */
+            paidUntil: string;
+            /** Note */
+            note: string;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
         /** Me */
         Me: {
             /**
@@ -3189,6 +3293,8 @@ export interface components {
             name: string | null;
             /** Consentversion */
             consentVersion: string | null;
+            /** Signedupat */
+            signedUpAt?: string | null;
             /** Needssignup */
             needsSignup: boolean;
             /**
@@ -3376,6 +3482,10 @@ export interface components {
             retained: number;
             /** Quiet */
             quiet: components["schemas"]["QuietFamily"][];
+            /** Revenueuzs */
+            revenueUzs: number;
+            /** Payingfamilies */
+            payingFamilies: number;
         };
         /**
          * PlaceChange
@@ -5045,6 +5155,61 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PlanStatus"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    billing_api_v1_admin_billing_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FamilyBilling"][];
+                };
+            };
+        };
+    };
+    record_payment_api_v1_admin_families__family_id__payments_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ManualPaymentIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FamilyBilling"];
                 };
             };
             /** @description Validation Error */

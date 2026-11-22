@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Bell, ChevronDown, LogOut, type LucideIcon } from "lucide-react";
+import { HelpButton } from "@/features/parent/Offer";
 import { api, sel, useDb } from "@/lib/api";
 import { useT, useLang } from "@/lib/i18n";
 import { useMounted } from "@/lib/store";
@@ -156,6 +157,7 @@ function Shell({ me, nav, more, foot, backdrop, headerExtra, children }: { me: U
             </div>
             <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
               {headerExtra}
+              {me.role === "parent" && <HelpButton />}
               <LangSwitch compact />
               <Notifications userId={me.id} />
               <button type="button" onClick={logout} className="grid size-10 place-items-center rounded-full text-muted hover:bg-surface-2 lg:hidden" aria-label={t("nav.logout")} title={t("nav.logout")}>

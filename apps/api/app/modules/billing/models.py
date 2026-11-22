@@ -1,12 +1,12 @@
 """Free and Pro (spec §14), one plan per family. Payments are simulated until after the pilot (TASKS.md section 3)."""
 
 import uuid
-from datetime import datetime
+from datetime import date, datetime
 
-from sqlalchemy import DateTime, ForeignKey
+from sqlalchemy import BigInteger, Date, DateTime, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.db import Base, TimeMixin
+from app.db import Base, IdTimeMixin, TimeMixin
 
 
 class FamilyPlan(TimeMixin, Base):
@@ -29,3 +29,17 @@ class Payment(TimeMixin, Base):
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True)  # the payment's own id, sent with the message
     family_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("families.id", ondelete="CASCADE"), index=True)
     months: Mapped[int]
+
+
+class ManualPayment(IdTimeMixin, Base):
+    """A payment the team took by hand (B114: Payme, Click, card transfer or cash; no payment provider yet). Recording
+    one makes the family paid (Pro) until the end of `paid_until`, Tashkent time."""
+
+    __tablename__ = "manual_payments"
+
+    family_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("families.id", ondelete="CASCADE"), index=True)
+    amount_uzs: Mapped[int] = mapped_column(BigInteger)
+    method: Mapped[str] = mapped_column(String(40))
+    paid_until: Mapped[date] = mapped_column(Date)
+    note: Mapped[str] = mapped_column(String(300), default="")
+    recorded_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))

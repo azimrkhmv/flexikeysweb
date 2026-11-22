@@ -17,6 +17,7 @@ from app.errors import AppError
 from app.modules.accounts.access import Admin
 from app.modules.accounts.models import FamilyMember, MemberRole, Role, User
 from app.modules.audit import models as audit
+from app.modules.billing.models import ManualPayment
 from app.modules.children.models import Child
 from app.modules.pilot import rules
 from app.modules.pilot.models import CenterLink
@@ -136,6 +137,8 @@ class PilotOut(ApiModel):
     by_center: list[CenterCount]
     retained: int  # families retained by the 2.3 rule (app/modules/pilot/rules.py)
     quiet: list[QuietFamily]
+    revenue_uzs: int  # every payment taken by hand (B114)
+    paying_families: int  # families with at least one
 
 
 async def active_days(db: AsyncSession) -> dict[uuid.UUID, set[date]]:
@@ -184,6 +187,13 @@ async def pilot(_: Admin, db: Annotated[AsyncSession, Depends(get_session)]) -> 
         for u, f in parents
         if rules.is_quiet(days.get(f, set()), today)
     ]
+    revenue, paying = (
+        await db.execute(
+            select(
+                func.coalesce(func.sum(ManualPayment.amount_uzs), 0), func.count(func.distinct(ManualPayment.family_id))
+            )
+        )
+    ).one()
     return PilotOut(
         today=today,
         signed_up=len(parents),
@@ -192,4 +202,6 @@ async def pilot(_: Admin, db: Annotated[AsyncSession, Depends(get_session)]) -> 
         by_center=[CenterCount(code=c, name=names.get(c) if c else None, count=n) for c, n in by_center.most_common()],
         retained=sum(rules.is_retained(days.get(f, set()), today) for _, f in parents),
         quiet=sorted(quiet, key=lambda q: q.last_active or date.min),
+        revenue_uzs=int(revenue),
+        paying_families=int(paying),
     )

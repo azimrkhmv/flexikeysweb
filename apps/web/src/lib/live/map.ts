@@ -15,7 +15,7 @@ import type { ChildSupport, AgeBand, GameKind, BodyArea, DailyAnswer, ExerciseVi
 
 // ---------------------------------------------------------------- backend shapes (subset we read)
 /** GET /me on the new server; the admin list (UserOut) has no name or consent fields. */
-export type BUser = UserOut & Partial<Pick<Me, "name" | "consentVersion" | "needsSignup" | "needsSecondStep">> & Partial<Pick<AdminUser, "createdAt">>;
+export type BUser = UserOut & Partial<Pick<Me, "name" | "consentVersion" | "signedUpAt" | "needsSignup" | "needsSecondStep">> & Partial<Pick<AdminUser, "createdAt">>;
 export interface BChild {
   id: string; parent_id: string | null; display_name: string; learning_language: string; ui_language: string;
   birth_year: number | null; avatar_id: string | null; access_mode?: string; equipped?: Record<string, string>; created_at: string;
@@ -50,6 +50,7 @@ export function userFrom(u: BUser): User {
     phone: u.phone,
     district: u.region ? { region: u.region, district: u.district ?? "" } : undefined, // B113: a region alone is kept
     consentVersion: u.consentVersion ?? undefined,
+    signedUpAt: u.signedUpAt ?? undefined, // B114: the free month runs from here
     needsSecondStep: u.needsSecondStep || undefined,
     createdAt: u.createdAt ?? "",
   };

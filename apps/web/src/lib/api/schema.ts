@@ -43,6 +43,8 @@ export interface DB {
   flags: FeatureFlag[];
   /** Centre links (B113): a partner centre's sign-up link https://flexikeys.org/?ref=<code>. */
   centerLinks?: { id: string; name: string; code: string; at: string }[];
+  /** Payments the team took by hand (B114; live: GET /admin/billing). `paidUntil` is a day, YYYY-MM-DD. */
+  manualPayments?: { id: string; familyId: string; amountUzs: number; method: string; paidUntil: string; note: string; at: string }[];
   /** The pilot's "Send feedback" box; admins read it (live: GET /admin/feedback). */
   feedback?: { id: string; userId: string | null; phone?: string | null; name?: string | null; page: string; text: string; at: string }[];
   aiMessages: AiMessage[];

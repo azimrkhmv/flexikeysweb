@@ -9,6 +9,7 @@ import {
 import { Mascot } from "@/components/Mascot";
 import { Chip, LinkButton, TONES, type Tone } from "@/components/ui";
 import { Archetypes } from "@/features/marketing/archetypes";
+import { OfferLine } from "@/features/parent/Offer";
 import { SectionTitle } from "@/features/marketing/chrome";
 import { useT } from "@/lib/i18n";
 import type { MascotMood } from "@/lib/types";
@@ -47,6 +48,7 @@ function Hero() {
             <CirclePlay className="size-5" aria-hidden /> {t("mkt.hero.demo")}
           </LinkButton>
         </div>
+        <OfferLine className="mt-4" />
         <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold text-muted">
           {["mkt.hero.note1", "mkt.hero.note2", "mkt.hero.note3"].map((k) => (
             <li key={k} className="flex items-center gap-1.5">

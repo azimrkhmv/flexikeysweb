@@ -7,6 +7,7 @@ import { PLAN_ROWS, PRO_PRICE_SOM } from "@/content/plans";
 import { fmtDate, fmtSum } from "@/lib/format";
 import { api, sel, useDb } from "@/lib/api";
 import { useLang, useT } from "@/lib/i18n";
+import { OfferCard } from "@/features/parent/Offer";
 
 // B21 (spec §14): Free and Pro belong to the family. The owner tries Pro for 7 days once, or pays (simulated until
 // after the pilot); a helper sees the plan but never the buttons. Prices in so'm only; placeholders until G3.
@@ -39,6 +40,8 @@ export default function Billing() {
   return (
     <>
       <PageHeader title={t("plans.title")} subtitle={t("plans.subtitle")} />
+
+      <OfferCard />
 
       <Card className="mb-6 flex flex-wrap items-center gap-4">
         <span className="grid size-12 place-items-center rounded-2xl bg-tint-2 text-primary">

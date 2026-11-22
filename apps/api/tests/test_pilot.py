@@ -139,3 +139,45 @@ def test_an_older_account_may_give_only_its_region(client: TestClient) -> None:
     auth, _ = sign_up(client)
     assert client.patch(f"{API}/me", headers=auth, json={"region": "bukhara"}).json()["region"] == "bukhara"
     assert title(client.patch(f"{API}/me", headers=auth, json={"region": "atlantis"})) == (422, "invalid_district")
+
+
+# ---------------------------------------------------------------- B114: payments taken by hand
+
+
+def test_admin_records_a_payment_and_revenue_shows(client: TestClient) -> None:
+    _, admin, _ = make(client, Role.admin)
+    auth, user_id = sign_up(client)
+    me = client.get(f"{API}/me", headers=auth).json()
+    assert me["signedUpAt"] is not None  # the free month runs from here
+    before = client.get(f"{API}/admin/pilot", headers=admin).json()
+    family = next(f for f in client.get(f"{API}/admin/billing", headers=admin).json() if f["ownerId"] == user_id)
+    assert family["payments"] == [] and family["plan"]["plan"] == "free" and family["ownerPhone"] == me["phone"]
+
+    until = (datetime.now(UTC) + timedelta(days=90)).date().isoformat()
+    body = {"amountUzs": 299000, "method": "Payme", "paidUntil": until, "note": "at the event"}
+    made = client.post(f"{API}/admin/families/{family['familyId']}/payments", headers=admin, json=body)
+    assert made.status_code == 201
+    row = made.json()
+    assert row["plan"]["plan"] == "pro" and row["plan"]["paidUntil"].startswith(until)  # end of that day, Tashkent
+    assert [(p["amountUzs"], p["method"], p["paidUntil"]) for p in row["payments"]] == [(299000, "Payme", until)]
+    assert client.get(f"{API}/family/plan", headers=auth).json()["plan"] == "pro"
+
+    after = client.get(f"{API}/admin/pilot", headers=admin).json()
+    assert after["revenueUzs"] == before["revenueUzs"] + 299000
+    assert after["payingFamilies"] == before["payingFamilies"] + 1
+
+    # An earlier "paid until" never shortens what the family already has.
+    old = {**body, "paidUntil": (datetime.now(UTC) + timedelta(days=5)).date().isoformat()}
+    again = client.post(f"{API}/admin/families/{family['familyId']}/payments", headers=admin, json=old).json()
+    assert again["plan"]["paidUntil"] == row["plan"]["paidUntil"] and len(again["payments"]) == 2
+    assert client.get(f"{API}/admin/pilot", headers=admin).json()["payingFamilies"] == after["payingFamilies"]
+
+
+def test_payments_are_admin_only_and_checked(client: TestClient) -> None:
+    _, admin, _ = make(client, Role.admin)
+    auth, _ = sign_up(client)
+    assert client.get(f"{API}/admin/billing", headers=auth).status_code == 403
+    nobody = f"{API}/admin/families/{uuid.uuid4()}/payments"
+    ok = {"amountUzs": 1, "method": "cash", "paidUntil": "2027-01-01"}
+    assert title(client.post(nobody, headers=admin, json=ok)) == (404, "no_family")
+    assert client.post(nobody, headers=admin, json={**ok, "amountUzs": 0}).status_code == 422

@@ -477,6 +477,23 @@ export const sel = {
     /** Every family with its owner and its plan now (Free, Pro or the trial). */
     familyPlans: (db: DB) =>
       db.familyMembers.filter((m) => m.role === "owner").map((m) => ({ familyId: m.familyId, ownerId: m.userId, ...sel.familyPlan(db, m.familyId) })),
+    /** B114: every family with its owner, plan and payments taken by hand, newest payment first (GET /admin/billing). */
+    billing: (db: DB) =>
+      sel.admin.familyPlans(db).map((f) => {
+        const owner = sel.user(db, f.ownerId);
+        return {
+          familyId: f.familyId,
+          ownerId: f.ownerId,
+          ownerName: owner?.name || null,
+          ownerPhone: owner?.phone ?? "",
+          signedUpAt: owner?.signedUpAt ?? null,
+          plan: { plan: f.plan, trial: f.trial, trialEndsAt: f.trialEndsAt, paidUntil: f.paidUntil },
+          payments: (db.manualPayments ?? [])
+            .filter((p) => p.familyId === f.familyId)
+            .map((p) => ({ id: p.id, amountUzs: p.amountUzs, method: p.method, paidUntil: p.paidUntil, note: p.note, createdAt: p.at }))
+            .reverse(),
+        };
+      }),
     audit: (db: DB) => db.audit,
     flags: (db: DB) => db.flags,
     /** Every Home Kit order: the open ones first, newest first (the server's GET /admin/kit-orders). */

@@ -358,6 +358,12 @@ export const liveApi = {
     await queryClient.invalidateQueries({ queryKey: ["admin"] });
     return true;
   },
+  /** POST /admin/families/{id}/payments (B114). */
+  async recordPayment(familyId: string, p: { amountUzs: number; method: string; paidUntil: string; note: string }) {
+    await http("POST", `/admin/families/${familyId}/payments`, { ...p, method: p.method.trim(), note: p.note.trim() });
+    await queryClient.invalidateQueries({ queryKey: ["admin"] });
+    return true;
+  },
   /** POST /feedback — the pilot's "Send feedback" box. */
   async sendFeedback(text: string, page: string) {
     await http("POST", "/feedback", { text: text.trim(), page });

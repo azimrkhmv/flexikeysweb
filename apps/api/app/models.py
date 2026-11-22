@@ -4,7 +4,7 @@ from app.modules.accounts.models import Family, FamilyMember, HelperInvite, User
 from app.modules.assistant.models import AiUsage, Chat, ChatMessage
 from app.modules.audit.models import AuditEntry
 from app.modules.auth.models import RefreshToken
-from app.modules.billing.models import FamilyPlan
+from app.modules.billing.models import FamilyPlan, ManualPayment
 from app.modules.children.consents import ChildConsent
 from app.modules.children.models import Child
 from app.modules.clips.models import Clip, ClipReply
@@ -59,6 +59,7 @@ __all__ = [
     "IntakeRound",
     "KitOrder",
     "KitProduct",
+    "ManualPayment",
     "PausedDay",
     "Place",
     "PlaceReport",

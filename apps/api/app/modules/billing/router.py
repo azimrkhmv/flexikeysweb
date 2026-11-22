@@ -1,7 +1,7 @@
 """The family's plan: Free or Pro, and the 7-day trial of Pro (spec §14)."""
 
 import uuid
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, date, datetime, time, timedelta
 from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends
@@ -16,8 +16,9 @@ from app.modules.accounts.access import Admin
 from app.modules.accounts.models import FamilyMember, MemberRole, User
 from app.modules.audit import models as audit
 from app.modules.auth.session import CurrentUser
-from app.modules.billing.models import FamilyPlan, Payment
+from app.modules.billing.models import FamilyPlan, ManualPayment, Payment
 from app.modules.children.models import Child
+from app.modules.play.tries import TASHKENT
 from app.schemas import ApiModel
 from app.settings import settings
 
@@ -168,3 +169,100 @@ async def upgrade(
     audit.record(db, admin.id, "plan.upgraded", family_id, days=body.days, owner=str(user_id))
     await db.commit()
     return status_of(row)
+
+
+# ---------------------------------------------------------------- payments taken by hand (B114, Update 4 spec 5.2)
+
+
+class ManualPaymentIn(ApiModel):
+    amount_uzs: int = Field(ge=1, le=1_000_000_000)
+    method: str = Field(min_length=1, max_length=40)  # free text: Payme, Click, card transfer, cash
+    paid_until: date
+    note: str = Field(default="", max_length=300)
+
+
+class ManualPaymentOut(ApiModel):
+    id: uuid.UUID
+    amount_uzs: int
+    method: str
+    paid_until: date
+    note: str
+    created_at: datetime
+
+
+class FamilyBilling(ApiModel):
+    family_id: uuid.UUID
+    owner_id: uuid.UUID
+    owner_name: str | None
+    owner_phone: str
+    signed_up_at: datetime | None  # the free month runs from here (apps/web src/content/offer.ts)
+    plan: PlanStatus
+    payments: list[ManualPaymentOut]  # newest first
+
+
+async def _billing(db: AsyncSession, family_id: uuid.UUID | None = None) -> list[FamilyBilling]:
+    q = (
+        select(User, FamilyMember.family_id)
+        .join(FamilyMember, (FamilyMember.user_id == User.id) & (FamilyMember.role == MemberRole.owner))
+        .order_by(User.created_at.desc())
+    )
+    if family_id is not None:
+        q = q.where(FamilyMember.family_id == family_id)
+    owners = (await db.execute(q)).all()
+    ids = [f for _, f in owners]
+    plans = {p.family_id: p for p in (await db.scalars(select(FamilyPlan).where(FamilyPlan.family_id.in_(ids)))).all()}
+    paid: dict[uuid.UUID, list[ManualPaymentOut]] = {}
+    rows = await db.scalars(
+        select(ManualPayment).where(ManualPayment.family_id.in_(ids)).order_by(ManualPayment.created_at.desc())
+    )
+    for m in rows.all():
+        paid.setdefault(m.family_id, []).append(ManualPaymentOut.model_validate(m, from_attributes=True))
+    return [
+        FamilyBilling(
+            family_id=f,
+            owner_id=u.id,
+            owner_name=u.name,
+            owner_phone=u.phone,
+            signed_up_at=u.consent_at,
+            plan=status_of(plans.get(f)),
+            payments=paid.get(f, []),
+        )
+        for u, f in owners
+    ]
+
+
+@admin_router.get("/billing")
+async def billing(_: Admin, db: Annotated[AsyncSession, Depends(get_session)]) -> list[FamilyBilling]:
+    """Every family, newest owner first: its plan now and the payments the team took by hand."""
+    return await _billing(db)
+
+
+@admin_router.post("/families/{family_id}/payments", status_code=201)
+async def record_payment(
+    family_id: uuid.UUID, body: ManualPaymentIn, admin: Admin, db: Annotated[AsyncSession, Depends(get_session)]
+) -> FamilyBilling:
+    """Marks the family paid: keeps the payment and makes it Pro until the end of `paidUntil` (Tashkent), or longer
+    if it already was. 404 no_family."""
+    found = await _billing(db, family_id)
+    if not found:
+        raise AppError(404, "no_family")
+    db.add(
+        ManualPayment(
+            family_id=family_id,
+            amount_uzs=body.amount_uzs,
+            method=body.method.strip(),
+            paid_until=body.paid_until,
+            note=body.note.strip(),
+            recorded_by=admin.id,
+        )
+    )
+    end = datetime.combine(body.paid_until + timedelta(days=1), time(), TASHKENT).astimezone(UTC)
+    row = await db.get(FamilyPlan, family_id)
+    if row is None:
+        row = FamilyPlan(family_id=family_id)
+        db.add(row)
+    if row.paid_until is None or row.paid_until < end:
+        row.paid_until = end
+    audit.record(db, admin.id, "payment.recorded", family_id, amount_uzs=body.amount_uzs, until=str(body.paid_until))
+    await db.commit()
+    return (await _billing(db, family_id))[0]

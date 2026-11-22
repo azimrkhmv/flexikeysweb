@@ -61,6 +61,8 @@ export interface PilotNumbers {
   byCenter: { code: string | null; name: string | null; count: number }[];
   retained: number;
   quiet: QuietFamily[];
+  revenueUzs: number;
+  payingFamilies: number;
 }
 
 export interface CenterLink {
@@ -115,6 +117,8 @@ export function pilotFromDb(db: DB, now = Date.now()): PilotNumbers {
         lastActive: lastActive(r.days, today),
       }))
       .sort((a, b) => (a.lastActive ?? "").localeCompare(b.lastActive ?? "")),
+    revenueUzs: (db.manualPayments ?? []).reduce((s, p) => s + p.amountUzs, 0),
+    payingFamilies: new Set((db.manualPayments ?? []).map((p) => p.familyId)).size,
   };
 }
 

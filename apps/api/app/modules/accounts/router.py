@@ -38,6 +38,7 @@ def _check_place(region: str | None, district: str | None) -> None:
 class Me(UserOut):
     name: str | None
     consent_version: str | None
+    signed_up_at: datetime | None = None  # when sign-up finished; the free month runs from here (B114)
     needs_signup: bool  # true until the basic consent is given: the website shows the sign-up step
     needs_second_step: bool = False  # an admin signed in with the SMS code only: ask for the authenticator code
 
@@ -48,6 +49,7 @@ def _me(user: User) -> Me:
         **out,
         name=user.name,
         consent_version=user.consent_version,
+        signed_up_at=user.consent_at,
         needs_signup=user.role == Role.parent and user.consent_version is None,
     )
 

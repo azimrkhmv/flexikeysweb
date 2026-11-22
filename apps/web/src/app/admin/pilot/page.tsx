@@ -11,6 +11,7 @@ import { api } from "@/lib/api";
 import { fmtDate } from "@/lib/format";
 import { useLang, useT } from "@/lib/i18n";
 import { toCsv } from "@/lib/pilot";
+import { fmtUzs } from "@/content/offer";
 import { SITE_URL } from "@/lib/site";
 
 // Pilot numbers (B113, Update 4 spec 4): sign-ups per day, region and centre link, retained and quiet families, each
@@ -150,6 +151,15 @@ export default function AdminPilot() {
                 <p className="text-3xl font-extrabold text-ink" data-testid="pilot-retained">{n.retained}</p>
                 <p className="text-sm text-muted">{t("pilot.retained.of", { n: n.retained, total: n.signedUp, share })}</p>
                 <p className="mt-1 text-xs text-muted">{t("pilot.retained.hint")}</p>
+              </Card>
+              <Card>
+                <p className="text-sm font-bold text-muted">{t("pilot.revenue")}</p>
+                <p className="text-3xl font-extrabold text-ink" data-testid="pilot-revenue">{fmtUzs(n.revenueUzs)} <span className="text-lg">{t("pay.uzs")}</span></p>
+                <p className="text-sm text-muted">{t("pilot.revenue.hint")}</p>
+              </Card>
+              <Card>
+                <p className="text-sm font-bold text-muted">{t("pilot.paying")}</p>
+                <p className="text-3xl font-extrabold text-ink" data-testid="pilot-paying">{n.payingFamilies}</p>
               </Card>
             </div>
 
