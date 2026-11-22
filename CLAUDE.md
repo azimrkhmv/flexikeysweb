@@ -53,6 +53,23 @@ Solo phase: Azim does every open task alone, until he hands the project to Bekzo
 - Commit messages start with `feat:`, `fix:`, `docs:`, `chore:` or `test:`.
 - Work in a `/loop`: one task at a time, a short plain-language report after each. Skip tasks waiting for Azim.
 
+## UI libraries (website)
+
+Reuse these instead of building by hand (Update 4, 22 Nov 2026; pinned versions in `apps/web/package.json`). Any other
+new package needs Bekzod's yes.
+
+| Need | Use |
+|---|---|
+| Dialogs, popovers, menus, selects, switches, tabs, tooltips | Base UI (`@base-ui/react`) |
+| Toasts | Sonner (`sonner`) |
+| Drawers / bottom sheets on phones | Vaul (`vaul`) |
+| Numbers that change (parent pages only) | NumberFlow (`@number-flow/react`) |
+| Springs, layout and enter/exit animation | motion (already installed) |
+| A simple hover or fade | plain CSS transition |
+
+Style every library through theme tokens. The child never sees a number, so NumberFlow is never used on child
+screens. One standout animation per page; on the landing page that is Cloudy plus the single Magic UI effect.
+
 ## Rules of the product (never break these)
 
 1. **No diagnosis. Parents and therapists see a skill level from 1 to 100 for each area; never a percentage, never a
