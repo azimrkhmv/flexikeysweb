@@ -1,5 +1,6 @@
 "use client";
 
+import { Tabs } from "@base-ui/react/tabs";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -83,47 +84,29 @@ export default function ChildPage() {
         </div>
       )}
 
-      <div
-        role="tablist"
-        aria-label={child.name}
-        className="mb-6 flex gap-1 overflow-x-auto rounded-full bg-surface-2 p-1"
-        onKeyDown={(e) => {
-          // WAI-ARIA tabs: arrows / Home / End move between tabs (roving tabindex).
-          const i = tabs.indexOf(tab);
-          const next = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 }[e.key];
-          if (next === undefined) return;
-          e.preventDefault();
-          const k = tabs[(next + tabs.length) % tabs.length];
-          go(k);
-          document.getElementById(`tab-${k}`)?.focus();
-        }}
-      >
-        {tabs.map((k) => (
-          <button
-            key={k}
-            id={`tab-${k}`}
-            role="tab"
-            type="button"
-            aria-selected={tab === k}
-            aria-controls="child-tabpanel"
-            tabIndex={tab === k ? 0 : -1}
-            onClick={() => go(k)}
-            className={`h-10 shrink-0 rounded-full px-4 text-sm font-bold transition ${tab === k ? "bg-surface text-primary shadow-soft" : "text-muted hover:text-ink"}`}
-          >
-            {t(`parent.tab.${k}`)}
-          </button>
-        ))}
-      </div>
-
-      <div role="tabpanel" id="child-tabpanel" aria-labelledby={`tab-${tab}`} tabIndex={0}>
-        {tab === "plan" && <PlanTab child={child} />}
-        {tab === "progress" && <ProgressTab childId={child.id} />}
-        {tab === "changes" && <ChangesTab childId={child.id} />}
-        {tab === "aac" && <AacTab childId={child.id} />}
-        {rel === "owner" && tab === "sharing" && <SharingTab childId={child.id} goTab={go} />}
-        {rel === "owner" && tab === "settings" && <SettingsTab child={child} />}
-        {rel === "owner" && tab === "privacy" && <PrivacyTab child={child} />}
-      </div>
+      {/* B118: Base UI tabs (arrow keys, Home/End and the tab roles); the look stays the same. */}
+      <Tabs.Root value={tab} onValueChange={(k) => go(k as typeof tab)}>
+        <Tabs.List activateOnFocus aria-label={child.name} className="mb-6 flex gap-1 overflow-x-auto rounded-full bg-surface-2 p-1">
+          {tabs.map((k) => (
+            <Tabs.Tab
+              key={k}
+              value={k}
+              className={`h-10 shrink-0 rounded-full px-4 text-sm font-bold transition ${tab === k ? "bg-surface text-primary shadow-soft" : "text-muted hover:text-ink"}`}
+            >
+              {t(`parent.tab.${k}`)}
+            </Tabs.Tab>
+          ))}
+        </Tabs.List>
+        <Tabs.Panel value={tab} tabIndex={0}>
+          {tab === "plan" && <PlanTab child={child} />}
+          {tab === "progress" && <ProgressTab childId={child.id} />}
+          {tab === "changes" && <ChangesTab childId={child.id} />}
+          {tab === "aac" && <AacTab childId={child.id} />}
+          {rel === "owner" && tab === "sharing" && <SharingTab childId={child.id} goTab={go} />}
+          {rel === "owner" && tab === "settings" && <SettingsTab child={child} />}
+          {rel === "owner" && tab === "privacy" && <PrivacyTab child={child} />}
+        </Tabs.Panel>
+      </Tabs.Root>
     </>
   );
 }

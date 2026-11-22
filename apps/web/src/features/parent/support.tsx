@@ -1,5 +1,6 @@
 "use client";
 
+import { notify } from "@/components/Toasts";
 import { useState } from "react";
 import { Button, Card, Checkbox, Field, Select, useAction } from "@/components/ui";
 import { api } from "@/lib/api";
@@ -59,12 +60,10 @@ const ms = (n: number) => `${(n / 1000).toLocaleString(undefined, { maximumFract
 export function SupportCard({ child }: { child: Child }) {
   const t = useT();
   const [s, setS] = useState<ChildSupport>(child.support ?? {});
-  const [saved, setSaved] = useState(false);
   const save = useAction(api.updateSupport);
   const floors = s.floors ?? {};
   const scan = s.scan ?? { stepMs: 2000, mode: "auto" as const, speak: false };
   const set = (next: ChildSupport) => {
-    setSaved(false);
     setS(next);
   };
   const setFloor = (patch: ChildSupport["floors"]) => set({ ...s, floors: { ...floors, ...patch } });
@@ -76,7 +75,7 @@ export function SupportCard({ child }: { child: Child }) {
         className="space-y-5"
         onSubmit={async (e) => {
           e.preventDefault();
-          if ((await save.run(child.id, s)) !== undefined) setSaved(true);
+          if ((await save.run(child.id, s)) !== undefined) notify.ok(t("parent.saved"));
         }}
       >
         <LevelFields value={s} onChange={set} />
@@ -157,11 +156,6 @@ export function SupportCard({ child }: { child: Child }) {
           </p>
         )}
         <div className="flex items-center justify-end gap-3">
-          {saved && (
-            <span role="status" className="text-sm font-semibold text-primary">
-              {t("parent.saved")}
-            </span>
-          )}
           <Button type="submit" pending={save.pending}>
             {t("common.save")}
           </Button>

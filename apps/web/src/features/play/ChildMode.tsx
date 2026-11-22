@@ -405,8 +405,10 @@ export function ChildMode({ child }: { child: Child }) {
       delete root.dataset.cvi;
     };
   }, [calm, cvi]);
-  // Escape = "Continue" on the pause menu, My Voice and the break screen (never exits child mode).
+  // Escape = "Continue" on the pause menu, My Voice and the break screen (never exits child mode). My colours closes
+  // only with its Done button (B118: a child sheet is never closed by accident).
   useFocusTrap(overlayRef, overlay === "menu" || overlay === "aac" || overlay === "look" ? overlay : showBreak ? "break" : null, () => {
+    if (overlay === "look") return;
     if (showBreak) {
       breakStart.current = Date.now();
       setBreakDue(false);

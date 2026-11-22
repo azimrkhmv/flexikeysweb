@@ -4,13 +4,14 @@ import "@/messages/adult";
 import { FeedbackBox, TestBanner } from "./Pilot";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import { Popover } from "@base-ui/react/popover";
 import { Bell, ChevronDown, LogOut, type LucideIcon } from "lucide-react";
 import { HelpButton } from "@/features/parent/Offer";
+import { Toasts } from "@/components/Toasts";
 import { api, sel, useDb } from "@/lib/api";
 import { useT, useLang } from "@/lib/i18n";
 import { useMounted } from "@/lib/store";
-import { useDismiss } from "@/lib/useDismiss";
 import type { Role, User } from "@/lib/types";
 import { homeFor, LangSwitch, Logo } from "./brand";
 import { Spinner } from "./ui";
@@ -179,6 +180,7 @@ function Shell({ me, nav, more, foot, backdrop, headerExtra, children }: { me: U
       </div>
 
       {me.role !== "admin" && <FeedbackBox />}
+      <Toasts />
       <nav aria-label={t("nav.menu")} className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface pb-[env(safe-area-inset-bottom)] lg:hidden">
         <ul className="flex overflow-x-auto">
           {(more ? [...nav, { ...more.item, on: inMore }] : nav).map(({ href, label, icon: Icon, match, ...x }) => (
@@ -200,53 +202,48 @@ function Shell({ me, nav, more, foot, backdrop, headerExtra, children }: { me: U
 }
 
 function Notifications({ userId }: { userId: string }) {
+  // B118: Base UI's popover (focus, Escape, outside click and the labels); the look stays the same.
   const t = useT();
   const db = useDb();
-  const [open, setOpen] = useState(false);
-  const root = useRef<HTMLDivElement>(null);
-  const trigger = useRef<HTMLButtonElement>(null);
-  useDismiss(root, trigger, open, () => setOpen(false));
   const list = sel.notifications(db, userId);
   const unread = list.filter((n) => !n.read).length;
   return (
-    <div ref={root} className="relative">
-      <button
-        ref={trigger}
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        aria-expanded={open}
+    <Popover.Root>
+      <Popover.Trigger
         aria-label={`${t("nav.notifications")} (${unread})`}
         className="relative grid size-10 place-items-center rounded-full text-muted hover:bg-surface-2"
       >
         <Bell className="size-5" />
         {unread > 0 && <span className="absolute right-1.5 top-1.5 grid min-w-4 place-items-center rounded-full bg-btn px-1 text-[10px] font-bold text-btn-text">{unread}</span>}
-      </button>
-      {open && (
-        <div className="absolute right-0 top-12 z-40 w-[min(340px,calc(100vw-32px))] rounded-fk border border-line bg-surface p-2 shadow-lift">
-          <div className="flex items-center justify-between px-3 py-2">
-            <span className="font-extrabold">{t("nav.notifications")}</span>
-            {unread > 0 && (
-              <button type="button" className="text-xs font-bold text-primary" onClick={() => api.markRead()}>
-                {t("common.markAllRead")}
-              </button>
-            )}
-          </div>
-          <ul className="-m-1.5 max-h-80 overflow-y-auto p-1.5">
-            {list.length === 0 && <li className="px-3 py-4 text-sm text-muted">{t("common.none")}</li>}
-            {list.slice(0, 10).map((n) => (
-              <li key={n.id}>
-                <button type="button" onClick={() => api.markRead(n.id)} className="flex w-full gap-3 rounded-xl px-3 py-2.5 text-left hover:bg-surface-2">
-                  <span className={`mt-1.5 size-2 shrink-0 rounded-full ${n.read ? "bg-line" : "bg-primary"}`} />
-                  <span className="min-w-0">
-                    <span className="block text-sm font-semibold text-ink">{t(n.titleKey, n.vars)}</span>
-                    <span className="block text-xs text-muted">{new Date(n.at).toLocaleString()}</span>
-                  </span>
+      </Popover.Trigger>
+      <Popover.Portal>
+        <Popover.Positioner side="bottom" align="end" sideOffset={8} collisionPadding={16} className="z-40">
+          <Popover.Popup className="fk-pop-in w-[min(340px,calc(100vw-32px))] rounded-fk border border-line bg-surface p-2 text-ink shadow-lift outline-none">
+            <div className="flex items-center justify-between px-3 py-2">
+              <Popover.Title className="font-extrabold">{t("nav.notifications")}</Popover.Title>
+              {unread > 0 && (
+                <button type="button" className="text-xs font-bold text-primary" onClick={() => api.markRead()}>
+                  {t("common.markAllRead")}
                 </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-    </div>
+              )}
+            </div>
+            <ul className="-m-1.5 max-h-80 overflow-y-auto p-1.5">
+              {list.length === 0 && <li className="px-3 py-4 text-sm text-muted">{t("common.none")}</li>}
+              {list.slice(0, 10).map((n) => (
+                <li key={n.id}>
+                  <button type="button" onClick={() => api.markRead(n.id)} className="flex w-full gap-3 rounded-xl px-3 py-2.5 text-left hover:bg-surface-2">
+                    <span className={`mt-1.5 size-2 shrink-0 rounded-full ${n.read ? "bg-line" : "bg-primary"}`} />
+                    <span className="min-w-0">
+                      <span className="block text-sm font-semibold text-ink">{t(n.titleKey, n.vars)}</span>
+                      <span className="block text-xs text-muted">{new Date(n.at).toLocaleString()}</span>
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </Popover.Popup>
+        </Popover.Positioner>
+      </Popover.Portal>
+    </Popover.Root>
   );
 }

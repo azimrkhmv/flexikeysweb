@@ -3,6 +3,17 @@ Free and Pro
 Every family's plan now. Payments are simulated until after the pilot.
 
 Families
-USER	PLAN	PRO UNTIL
-+998900000001	Pro (trial)	Oct 1
-+998900000006	Free	—
+
+Offer: 30 free days from the end of sign-up, then 299 000 so'm for 3 months. Mark a family paid when the team takes a payment.
+
+USER	PLAN	FREE MONTH ENDS	PRO UNTIL	PAYMENTS
+
+Dilnoza
++998900000001
+	Pro (trial)	—	Oct 1
+Record payment
+
+Aziza
++998900000006
+	Free	—	—
+Record payment

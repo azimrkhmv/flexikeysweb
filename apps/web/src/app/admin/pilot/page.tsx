@@ -1,5 +1,6 @@
 "use client";
 
+import { notify } from "@/components/Toasts";
 import { useState, type FormEvent, type ReactNode } from "react";
 import { Copy, Download } from "lucide-react";
 import { Button, Card, Empty, Field, Input, PageHeader } from "@/components/ui";
@@ -12,6 +13,7 @@ import { fmtDate } from "@/lib/format";
 import { useLang, useT } from "@/lib/i18n";
 import { toCsv } from "@/lib/pilot";
 import { fmtUzs } from "@/content/offer";
+import { Num } from "@/components/Num";
 import { SITE_URL } from "@/lib/site";
 
 // Pilot numbers (B113, Update 4 spec 4): sign-ups per day, region and centre link, retained and quiet families, each
@@ -73,6 +75,7 @@ function CenterLinks() {
     try {
       await navigator.clipboard.writeText(linkFor(c));
       setCopied(c);
+      notify.ok(t("pilot.links.copied"));
     } catch {
       setCopied(null);
     }
@@ -120,7 +123,6 @@ function CenterLinks() {
           </tbody>
         </Table>
       )}
-      <p aria-live="polite" className="sr-only">{copied ? t("pilot.links.copied") : ""}</p>
     </Section>
   );
 }
@@ -144,11 +146,11 @@ export default function AdminPilot() {
             <div className="grid gap-4 sm:grid-cols-2">
               <Card>
                 <p className="text-sm font-bold text-muted">{t("pilot.signedUp")}</p>
-                <p className="text-3xl font-extrabold text-ink" data-testid="pilot-signed-up">{n.signedUp}</p>
+                <p className="text-3xl font-extrabold text-ink" data-testid="pilot-signed-up"><Num value={n.signedUp} /></p>
               </Card>
               <Card>
                 <p className="text-sm font-bold text-muted">{t("pilot.retained")}</p>
-                <p className="text-3xl font-extrabold text-ink" data-testid="pilot-retained">{n.retained}</p>
+                <p className="text-3xl font-extrabold text-ink" data-testid="pilot-retained"><Num value={n.retained} /></p>
                 <p className="text-sm text-muted">{t("pilot.retained.of", { n: n.retained, total: n.signedUp, share })}</p>
                 <p className="mt-1 text-xs text-muted">{t("pilot.retained.hint")}</p>
               </Card>
@@ -159,7 +161,7 @@ export default function AdminPilot() {
               </Card>
               <Card>
                 <p className="text-sm font-bold text-muted">{t("pilot.paying")}</p>
-                <p className="text-3xl font-extrabold text-ink" data-testid="pilot-paying">{n.payingFamilies}</p>
+                <p className="text-3xl font-extrabold text-ink" data-testid="pilot-paying"><Num value={n.payingFamilies} /></p>
               </Card>
             </div>
 

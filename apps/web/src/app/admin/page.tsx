@@ -1,5 +1,6 @@
 "use client";
 
+import { Num } from "@/components/Num";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Baby, Bot, CreditCard, RotateCcw, Timer, Users } from "lucide-react";
@@ -30,10 +31,10 @@ export default function AdminOverview() {
       <PageHeader title={t("admin.overview.title")} subtitle={t("admin.audited")} />
 
       <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Stat label={t("admin.stat.users")} value={stats.users} icon={<Users className="size-6" />} tone="sky" />
-        <Stat label={t("admin.stat.children")} value={stats.children} icon={<Baby className="size-6" />} tone="leaf" />
-        <Stat label={t("admin.stat.paying")} value={stats.paying} icon={<CreditCard className="size-6" />} tone="sun" />
-        <Stat label={t("admin.stat.sessions")} value={stats.sessions} icon={<Timer className="size-6" />} tone="lavender" />
+        <Stat label={t("admin.stat.users")} value={<Num value={stats.users} />} icon={<Users className="size-6" />} tone="sky" />
+        <Stat label={t("admin.stat.children")} value={<Num value={stats.children} />} icon={<Baby className="size-6" />} tone="leaf" />
+        <Stat label={t("admin.stat.paying")} value={<Num value={stats.paying} />} icon={<CreditCard className="size-6" />} tone="sun" />
+        <Stat label={t("admin.stat.sessions")} value={<Num value={stats.sessions} />} icon={<Timer className="size-6" />} tone="lavender" />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">

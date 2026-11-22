@@ -13,6 +13,7 @@ Sharing
 Settings
 Privacy
 Consents
+Privacy policy
 
 Core: store my child's nickname, birth year and learning progress on servers in Uzbekistan
 

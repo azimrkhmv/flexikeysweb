@@ -1,5 +1,6 @@
 "use client";
 
+import { Num } from "@/components/Num";
 import Link from "next/link";
 import { useState } from "react";
 import { Activity, ChevronRight, Mail, Target, Users } from "lucide-react";
@@ -28,10 +29,10 @@ export default function TherapistHome() {
       <PageHeader title={t("therapist.home.title")} subtitle={t("therapist.home.subtitle")} />
 
       <div className="mb-6 grid grid-cols-2 gap-4 xl:grid-cols-4">
-        <Stat tone="sky" icon={<Users className="size-6" aria-hidden />} value={kids.length} label={t("therapist.home.stat.children")} />
-        <Stat tone="leaf" icon={<Target className="size-6" aria-hidden />} value={kids.reduce((a, c) => a + sel.openGoals(db, c.id), 0)} label={t("therapist.home.stat.goals")} />
-        <Stat tone="lavender" icon={<Activity className="size-6" aria-hidden />} value={kids.filter((c) => (sel.sessions(db, c.id)[0]?.startedAt ?? "") > weekAgo).length} label={t("therapist.home.stat.active")} />
-        <Stat tone="sun" icon={<Mail className="size-6" aria-hidden />} value={invites.length} label={t("therapist.home.stat.invites")} />
+        <Stat tone="sky" icon={<Users className="size-6" aria-hidden />} value={<Num value={kids.length} />} label={t("therapist.home.stat.children")} />
+        <Stat tone="leaf" icon={<Target className="size-6" aria-hidden />} value={<Num value={kids.reduce((a, c) => a + sel.openGoals(db, c.id), 0)} />} label={t("therapist.home.stat.goals")} />
+        <Stat tone="lavender" icon={<Activity className="size-6" aria-hidden />} value={<Num value={kids.filter((c) => (sel.sessions(db, c.id)[0]?.startedAt ?? "") > weekAgo).length} />} label={t("therapist.home.stat.active")} />
+        <Stat tone="sun" icon={<Mail className="size-6" aria-hidden />} value={<Num value={invites.length} />} label={t("therapist.home.stat.invites")} />
       </div>
 
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">

@@ -365,6 +365,10 @@ h1, h2, h3 {
 .fk-evening { background: linear-gradient(180deg, var(--hill2) 0%, var(--hillFar) 55%, var(--sunGlow) 100%); animation: fk-fade-in 1.2s ease-out both; }
 .fk-evening span { animation: fk-fade-in 0.6s ease-out both; }
 @keyframes fk-fade-in { from { opacity: 0; } }
+/* B118: the Base UI dialog comes in softly (opacity and scale only; reduced motion turns it off below). */
+.fk-fade-in { animation: fk-fade-in 0.15s ease-out both; }
+.fk-pop-in { animation: fk-pop-in 0.18s ease-out both; }
+@keyframes fk-pop-in { from { opacity: 0; transform: scale(0.97); } }
 
 /* Calm screen (per child, set by an adult): same as reduced motion, regardless of the device setting. */
 .fk-calm *, .fk-calm *::before, .fk-calm *::after {

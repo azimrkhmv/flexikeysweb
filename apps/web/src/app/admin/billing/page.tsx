@@ -1,5 +1,6 @@
 "use client";
 
+import { notify } from "@/components/Toasts";
 import { useState, type FormEvent } from "react";
 import { Banknote } from "lucide-react";
 import { Button, Card, Chip, Empty, Field, Input, Modal, PageHeader } from "@/components/ui";
@@ -30,15 +31,13 @@ function PaymentsDialog({ family, onClose }: { family: FamilyBilling; onClose: (
   const [note, setNote] = useState("");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [saved, setSaved] = useState(false);
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     setPending(true);
     setError(null);
-    setSaved(false);
     try {
       await api.recordPayment(family.familyId, { amountUzs: Number(amount.replace(/\s/g, "")), method, paidUntil: until, note });
-      setSaved(true);
+      notify.ok(t("pay.saved"));
       setMethod("");
       setNote("");
     } catch (err) {
@@ -69,7 +68,6 @@ function PaymentsDialog({ family, onClose }: { family: FamilyBilling; onClose: (
         </Field>
         <div className="flex flex-wrap items-center gap-3 sm:col-span-2">
           <Button type="submit" pending={pending}>{t("pay.save")}</Button>
-          {saved && <span role="status" className="text-sm font-bold text-primary">{t("pay.saved")}</span>}
         </div>
         <div className="sm:col-span-2"><FormError>{error}</FormError></div>
       </form>

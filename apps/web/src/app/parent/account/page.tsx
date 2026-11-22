@@ -1,5 +1,6 @@
 "use client";
 
+import { notify } from "@/components/Toasts";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { LogOut, Trash } from "lucide-react";
@@ -17,7 +18,6 @@ export default function Account() {
   const router = useRouter();
   const me = sel.me(useDb());
   const [name, setName] = useState(me?.name ?? "");
-  const [saved, setSaved] = useState(false);
   const [confirm, setConfirm] = useState(false);
   const [typed, setTyped] = useState("");
   const save = useAction(api.updateMe);
@@ -32,8 +32,7 @@ export default function Account() {
           className="space-y-5"
           onSubmit={async (e) => {
             e.preventDefault();
-            setSaved(false);
-            if ((await save.run({ name: name.trim() })) !== undefined) setSaved(true);
+            if ((await save.run({ name: name.trim() })) !== undefined) notify.ok(t("parent.saved"));
           }}
         >
           <Field label={t("parent.account.name")}>
@@ -63,11 +62,6 @@ export default function Account() {
             <Button type="submit" pending={save.pending}>
               {t("common.save")}
             </Button>
-            {saved && (
-              <span role="status" className="text-sm font-bold text-primary">
-                {t("parent.saved")}
-              </span>
-            )}
           </div>
         </form>
       </Card>

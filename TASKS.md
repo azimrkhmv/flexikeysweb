@@ -1232,9 +1232,19 @@ a rehab center), the white-warm look and the UI libraries. Order: B111 to B120, 
   - Needs: —
   - Note (22 Nov 2026): Installed at exact versions: `@base-ui/react` 1.9.0 (the old name `@base-ui-components/react` now says it was renamed), `sonner` 2.0.8, `vaul` 1.1.2, `@number-flow/react` 0.6.2; `motion` 14.6.0 stays. The "UI libraries" section is in `CLAUDE.md`. Type check and production build pass. (On Windows only, `npm run build`'s `postbuild` step fails because it uses `cp`; that was already so, and the Linux Docker build is not affected.)
 
-- [ ] **Bekzod** — `B118` Use the libraries (spec 8.2)
+- [x] **Bekzod** — `B118` Use the libraries (spec 8.2)
   - Done when: hand-made dialogs, toasts, sheets and changing numbers are replaced as described; child sheets close only with Done; no NumberFlow or toast on child screens (test); all four child input modes still work
   - Needs: B117
+  - Note (22 Nov 2026):
+    - **Dialogs and sheets.** The shared `Modal` (`components/ui.tsx`) is a Base UI dialog on laptops and a Vaul bottom sheet under 768 px. The parent can drag it down or press its close button, and Escape returns focus to the button that opened it.
+    - **Other Base UI parts.** The switch (`Toggle`) uses Base UI, and so do the bell's notifications (a popover), the parent's child-page tabs (arrow keys select, as before) and Account → Appearance (toggle groups, plus the "Back to …" tooltip with a hidden copy for screen readers).
+    - **Child screens.** On a phone, the child's My colours is a Vaul sheet with `dismissible={false}`. Escape, an outside tap and a drag do nothing; only Done closes it, and scanning and the focus trap work as before.
+    - **Toasts.** Sonner messages (`components/Toasts.tsx`) are unstyled with token colours. They sit bottom-centre on phones and bottom-right on laptops above the feedback button, and they're mounted only in the adult `AppShell`. Errors use `accentText` with an icon, never red. "Saved" now comes as a toast on Account, child settings, support, the admin payment, the parent's payment and the copied centre link.
+    - **Offline.** The questionnaire keeps typed answers on the phone (`fk-q-draft:*`). Offline it shows "You are offline — your answers are kept on this phone" and Next waits; back online it saves the section and shows "Back online — saved". uz text drafted 22 Nov 2026 — native-speaker check (B44).
+    - **NumberFlow** (`components/Num.tsx`) is loaded after the page shows and is used on parent, therapist and admin stat cards and the pilot numbers. It follows reduced motion, and the plain number stays in the page for screen readers.
+    - **Child-screen test.** `components/libraries.test.ts` follows every import from the child area and fails if NumberFlow, Sonner or our wrappers are reached. It caught `Stat` once: `Stat` is shared with the child check page, so the numbers are wrapped where `Stat` is used instead.
+    - **Kept by hand.** Native `<select>`s (best on phones), inline form errors next to their field, and the marketing menu.
+    - **Tests.** a11y, questionnaire, flows and dashboards e2e pass against the dev server. The dashboards text snapshots are updated for the labels B113–B115 had added (offer, payments, "Checked by a specialist", privacy link). The desktop "hold-to-choose" e2e fails on the dev server with or without this change (the button is gone before the click); it passes on tablet.
 - [ ] **Bekzod** — `B119` Shine Border on the landing button (spec 8.3)
   - Done when: one quiet effect, token colours, off with reduced motion and with "Cloudy moves" off, lazy-loaded
   - Needs: B116, B117

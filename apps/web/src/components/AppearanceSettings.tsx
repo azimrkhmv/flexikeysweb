@@ -1,30 +1,40 @@
 "use client";
 
-import { useId, useState, type ReactNode } from "react";
+import { useId, type ReactNode } from "react";
+import { Toggle } from "@base-ui/react/toggle";
+import { ToggleGroup } from "@base-ui/react/toggle-group";
+import { Tooltip } from "@base-ui/react/tooltip";
 import { setParentLook, setParentMode, STYLES, useParentLook } from "@/lib/appearance";
 import { useT } from "@/lib/i18n";
-import { SCHEMES, swatch } from "@/lib/theme";
+import { SCHEMES, swatch, type Scheme } from "@/lib/theme";
 
 /**
  * Account → Appearance (B110, Update 3 spec 4.1): the parent's colour, light or dark, and style on this device.
  * Changes apply at once with a 0.4 s fade (lib/appearance.ts). Night has no light version, yet Light is never
  * disabled: from Night it goes back to the last day colour, and says so on hover or focus.
+ * B118 (Update 4 spec 8.2): the three choices are Base UI toggle groups and the hint a Base UI tooltip (Escape hides
+ * it, it stays while the pointer is on it: WCAG 1.4.13); the look is unchanged.
  */
 export function AppearanceSettings() {
   const t = useT();
   const look = useParentLook();
   const night = look.scheme === "night";
   const mode = night ? "dark" : look.mode;
+  const tipId = useId();
+  const tip = t("look.backTo", { scheme: t(`look.scheme.${look.lastDay}`) });
   return (
     <div className="space-y-5">
       <Group label={t("look.colour")}>
-        <div className="flex flex-wrap gap-x-2 gap-y-3">
+        <ToggleGroup
+          value={[look.scheme]}
+          onValueChange={(v) => v[0] && setParentLook({ scheme: v[0] as Scheme })}
+          aria-label={t("look.colour")}
+          className="flex flex-wrap gap-x-2 gap-y-3"
+        >
           {SCHEMES.map((s) => (
-            <button
+            <Toggle
               key={s}
-              type="button"
-              aria-pressed={look.scheme === s}
-              onClick={() => setParentLook({ scheme: s })}
+              value={s}
               className="flex w-[84px] flex-col items-center gap-1.5 rounded-2xl px-1 py-1.5 text-center text-xs font-bold leading-tight text-ink hover:bg-surface-2"
             >
               <span
@@ -33,30 +43,36 @@ export function AppearanceSettings() {
                 style={{ background: swatch(s) }}
               />
               {t(`look.scheme.${s}`)}
-            </button>
+            </Toggle>
           ))}
-        </div>
+        </ToggleGroup>
       </Group>
       <Group label={t("look.mode")}>
-        <Segments>
-          <BackToDay show={night} tip={t("look.backTo", { scheme: t(`look.scheme.${look.lastDay}`) })}>
-            {(describedBy) => (
-              <Segment pressed={mode === "light"} onClick={() => setParentMode("light")} describedBy={describedBy}>
-                {t("look.light")}
-              </Segment>
-            )}
-          </BackToDay>
-          <Segment pressed={mode === "dark"} onClick={() => setParentMode("dark")}>
-            {t("look.dark")}
-          </Segment>
+        <Segments value={mode} onChange={(m) => setParentMode(m as "light" | "dark")} label={t("look.mode")}>
+          {night ? (
+            <Tooltip.Provider delay={0}>
+              <Tooltip.Root>
+                <Tooltip.Trigger render={<Toggle value="light" aria-describedby={tipId} className={segment(false)} />}>{t("look.light")}</Tooltip.Trigger>
+                <Tooltip.Portal>
+                  <Tooltip.Positioner side="top" align="start" sideOffset={8} className="z-50">
+                    <Tooltip.Popup className="block w-max max-w-60 rounded-xl bg-ink px-3 py-1.5 text-xs font-bold text-surface shadow-soft">{tip}</Tooltip.Popup>
+                  </Tooltip.Positioner>
+                </Tooltip.Portal>
+              </Tooltip.Root>
+              <span id={tipId} className="sr-only">{tip}</span>
+            </Tooltip.Provider>
+          ) : (
+            <Toggle value="light" className={segment(mode === "light")}>{t("look.light")}</Toggle>
+          )}
+          <Toggle value="dark" className={segment(mode === "dark")}>{t("look.dark")}</Toggle>
         </Segments>
       </Group>
       <Group label={t("look.style")}>
-        <Segments>
+        <Segments value={look.style} onChange={(s) => setParentLook({ style: s as (typeof STYLES)[number] })} label={t("look.style")}>
           {STYLES.map((s) => (
-            <Segment key={s} pressed={look.style === s} onClick={() => setParentLook({ style: s })}>
+            <Toggle key={s} value={s} className={segment(look.style === s)}>
               {t(`look.${s}`)}
-            </Segment>
+            </Toggle>
           ))}
         </Segments>
       </Group>
@@ -73,52 +89,13 @@ function Group({ label, children }: { label: string; children: ReactNode }) {
   );
 }
 
-/** Two buttons in a pill, the chosen one raised (the demo's `.seg`). */
-function Segments({ children }: { children: ReactNode }) {
-  return <div className="inline-flex rounded-full bg-line p-[3px]">{children}</div>;
-}
-
-function Segment({ pressed, onClick, describedBy, children }: { pressed: boolean; onClick: () => void; describedBy?: string; children: ReactNode }) {
+/** Two buttons in a pill, the chosen one raised (the demo's `.seg`). One is always chosen. */
+function Segments({ value, onChange, label, children }: { value: string; onChange: (v: string) => void; label: string; children: ReactNode }) {
   return (
-    <button
-      type="button"
-      aria-pressed={pressed}
-      aria-describedby={describedBy}
-      onClick={onClick}
-      className={`min-h-10 rounded-full px-5 text-sm font-bold text-ink ${pressed ? "bg-surface shadow-soft" : "hover:bg-surface/50"}`}
-    >
+    <ToggleGroup value={[value]} onValueChange={(v) => v[0] && onChange(v[0])} aria-label={label} className="inline-flex rounded-full bg-line p-[3px]">
       {children}
-    </button>
+    </ToggleGroup>
   );
 }
 
-/**
- * While Night is chosen, Light shows "Back to {scheme}, light" on hover or focus (a tooltip that stays while the
- * pointer is on it, and Escape hides it: WCAG 1.4.13).
- */
-function BackToDay({ show, tip, children }: { show: boolean; tip: string; children: (describedBy?: string) => ReactNode }) {
-  const id = useId();
-  const [hidden, setHidden] = useState(false);
-  if (!show) return <>{children()}</>;
-  return (
-    <span
-      className="group relative inline-flex"
-      onKeyDown={(e) => {
-        if (e.key === "Escape" && !hidden) {
-          e.stopPropagation();
-          setHidden(true);
-        }
-      }}
-      onMouseLeave={() => setHidden(false)}
-      onBlur={() => setHidden(false)}
-    >
-      {children(id)}
-      {/* The transparent pb-2 joins the tip to the button, so the pointer can move onto the tip. */}
-      <span className={`absolute bottom-full left-0 z-20 pb-2 ${hidden ? "hidden" : "hidden group-focus-within:block group-hover:block"}`}>
-        <span id={id} role="tooltip" className="block w-max max-w-60 rounded-xl bg-ink px-3 py-1.5 text-xs font-bold text-surface shadow-soft">
-          {tip}
-        </span>
-      </span>
-    </span>
-  );
-}
+const segment = (pressed: boolean) => `min-h-10 rounded-full px-5 text-sm font-bold text-ink ${pressed ? "bg-surface shadow-soft" : "hover:bg-surface/50"}`;

@@ -1,5 +1,7 @@
 "use client";
 
+import { Num } from "@/components/Num";
+import { notify } from "@/components/Toasts";
 import { useRouter } from "next/navigation";
 import { useRef, useState, useSyncExternalStore } from "react";
 import { Check, Clock, Coins, Copy, Download, Flame, Mic, Star, Trash } from "lucide-react";
@@ -42,8 +44,8 @@ export function ProgressTab({ childId }: { childId: string }) {
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Stat label={t("parent.progress.week")} value={t("common.minutes", { n: week })} icon={<Clock className="size-6" />} tone="sky" />
         <Stat label={t("parent.progress.streak")} value={t("common.days", { n: sel.streak(db, childId) })} icon={<Flame className="size-6" />} tone="sun" />
-        <Stat label={t("parent.progress.stars")} value={wallet.stars} icon={<Star className="size-6" />} tone="lavender" />
-        <Stat label={t("parent.progress.coins")} value={wallet.coins} icon={<Coins className="size-6" />} tone="leaf" />
+        <Stat label={t("parent.progress.stars")} value={<Num value={wallet.stars} />} icon={<Star className="size-6" />} tone="lavender" />
+        <Stat label={t("parent.progress.coins")} value={<Num value={wallet.coins} />} icon={<Coins className="size-6" />} tone="leaf" />
       </div>
 
       <Card>
@@ -160,8 +162,8 @@ export function AacTab({ childId }: { childId: string }) {
     <div className="grid gap-6 lg:grid-cols-2">
       <div className="space-y-6">
         <div className="grid grid-cols-2 gap-3">
-          <Stat label={t("parent.aac.sentences")} value={stats.sentences} tone="teal" />
-          <Stat label={t("parent.aac.avgLen")} value={stats.avgLen} tone="lavender" />
+          <Stat label={t("parent.aac.sentences")} value={<Num value={stats.sentences} />} tone="teal" />
+          <Stat label={t("parent.aac.avgLen")} value={<Num value={stats.avgLen} />} tone="lavender" />
         </div>
         <Card>
           <H2>{t("parent.aac.top")}</H2>
@@ -517,7 +519,6 @@ export function SettingsTab({ child }: { child: Child }) {
   const [uiLang, setUiLang] = useState<Lang>(child.uiLang);
   const [avatar, setAvatar] = useState(child.avatar);
   const [access, setAccess] = useState<AccessMode>(child.access);
-  const [saved, setSaved] = useState(false);
   const save = useAction(api.updateChild);
 
   return (
@@ -527,8 +528,7 @@ export function SettingsTab({ child }: { child: Child }) {
           className="space-y-5"
           onSubmit={async (e) => {
             e.preventDefault();
-            setSaved(false);
-            if ((await save.run(child.id, { name: name.trim(), birthYear, learningLang, uiLang, avatar, access })) !== undefined) setSaved(true);
+            if ((await save.run(child.id, { name: name.trim(), birthYear, learningLang, uiLang, avatar, access })) !== undefined) notify.ok(t("parent.saved"));
           }}
         >
           <div className="grid gap-5 sm:grid-cols-2">
@@ -574,11 +574,6 @@ export function SettingsTab({ child }: { child: Child }) {
             <Button type="submit" pending={save.pending}>
               {t("common.save")}
             </Button>
-            {saved && (
-              <span role="status" className="text-sm font-bold text-primary">
-                {t("parent.saved")}
-              </span>
-            )}
           </div>
         </form>
       </Card>

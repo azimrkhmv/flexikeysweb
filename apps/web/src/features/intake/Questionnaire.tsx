@@ -1,5 +1,6 @@
 "use client";
 
+import { notify } from "@/components/Toasts";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { FileUp, ShieldCheck, Trash2 } from "lucide-react";
@@ -38,7 +39,10 @@ export function QuestionnaireWizard({ childId: initialChild, version }: { childI
   const [childId, setChildId] = useState<string | null>(initialChild ?? null);
   const child = childId ? sel.child(db, childId) : null;
   const round = childId ? sel.intakeRound(db, childId)?.round ?? 1 : 1;
-  const [typed, setAnswers] = useState<QAnswers>(() => (childId ? upgrade(sel.intakeAnswers(db, childId, round)) : {}));
+  // B120: what the parent types is also kept on this phone, so going offline (or closing the page) loses nothing.
+  const draftKey = `fk-q-draft:${initialChild ?? "new"}`;
+  const [typed, setAnswers] = useState<QAnswers>(() => ({ ...(childId ? upgrade(sel.intakeAnswers(db, childId, round)) : {}), ...readDraft(draftKey) }));
+  useEffect(() => writeDraft(draftKey, typed), [draftKey, typed]);
   const answers = quickCheckDefaults(typed); // B76: the Quick check starts filled in where the body parts already say
   const [unfolded, setUnfolded] = useState<string[]>([]); // sections whose "Add more details" link was opened
   const health = childId ? sel.hasConsent(db, childId, "health") : false;
@@ -107,6 +111,7 @@ export function QuestionnaireWizard({ childId: initialChild, version }: { childI
     if (!childId) {
       const c = await api.createChildFromIntake(mine, uiLang, version);
       setChildId(c.id);
+      writeDraft("fk-q-draft:new", null); // the next new child starts empty
       router.replace(`/parent/children/new?child=${c.id}`);
       return c.id;
     }
@@ -114,14 +119,41 @@ export function QuestionnaireWizard({ childId: initialChild, version }: { childI
     return childId;
   };
 
+  // B120 (spec 9): offline, Next waits and says the answers are kept here; back online, this section is saved.
+  const saveRef = useRef(save);
+  useEffect(() => {
+    saveRef.current = save;
+  });
+  const hasChild = !!childId;
+  useEffect(() => {
+    const off = () => notify.offline(t("net.offline"));
+    const on = async () => {
+      try {
+        if (hasChild) await saveRef.current();
+        notify.online(t("net.online"));
+      } catch {
+        notify.offline(t("net.offline"));
+      }
+    };
+    if (!navigator.onLine) off();
+    window.addEventListener("offline", off);
+    window.addEventListener("online", on);
+    return () => {
+      window.removeEventListener("offline", off);
+      window.removeEventListener("online", on);
+    };
+  }, [hasChild, t]);
+
   const next = () =>
     act.run(async () => {
+      if (!navigator.onLine) return void notify.offline(t("net.offline"));
       const id = await save();
       if (i + 1 < steps.length) {
         enter(steps[i + 1]);
         return setI(i + 1);
       }
       setPlan(await api.finishIntake(id, round));
+      writeDraft(draftKey, null);
     });
 
   // The first section after the consent. Before the save: saving already moves the wizard on to that section.
@@ -565,4 +597,20 @@ function Files({ q, label, answers, set, childId }: { q: QQuestion; label: strin
       {add.error && <p role="alert" className="text-sm font-semibold text-primary">{add.error}</p>}
     </div>
   );
+}
+
+/** The parent's typed answers on this phone (B120). Storage can be missing or full: then nothing is kept. */
+function readDraft(key: string): QAnswers {
+  try {
+    const v = JSON.parse(localStorage.getItem(key) ?? "null");
+    return v && typeof v === "object" ? (v as QAnswers) : {};
+  } catch {
+    return {};
+  }
+}
+function writeDraft(key: string, v: QAnswers | null) {
+  try {
+    if (v && Object.keys(v).length) localStorage.setItem(key, JSON.stringify(v));
+    else localStorage.removeItem(key);
+  } catch {}
 }

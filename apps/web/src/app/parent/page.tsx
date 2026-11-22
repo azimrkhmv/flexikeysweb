@@ -1,5 +1,6 @@
 "use client";
 
+import { Num } from "@/components/Num";
 import Link from "next/link";
 import { ChevronRight, Clock, Flame, MessageCircle, Play, Plus, School, Star, Stethoscope } from "lucide-react";
 import { Avatar, Card, Chip, LinkButton, Meter, PageHeader, Stat } from "@/components/ui";
@@ -68,10 +69,10 @@ export default function ParentHome() {
 
           {/* the week at a glance, for the whole family */}
           <div className="mb-6 grid grid-cols-2 gap-4 xl:grid-cols-4">
-            <Stat tone="sky" icon={<Clock className="size-6" aria-hidden />} value={sum((c) => sel.dailyMinutes(db, c.id, 7).reduce((a, d) => a + d.minutes, 0))} label={t("parent.home.stat.minutes")} />
-            <Stat tone="sun" icon={<Flame className="size-6" aria-hidden />} value={Math.max(...kids.map((c) => sel.streak(db, c.id)))} label={t("parent.home.stat.streak")} />
-            <Stat tone="leaf" icon={<Star className="size-6" aria-hidden />} value={sum((c) => sel.weekActivities(db, c.id))} label={t("parent.home.stat.activities")} />
-            <Stat tone="lavender" icon={<MessageCircle className="size-6" aria-hidden />} value={sum((c) => sel.aacStats(db, c.id).sentences)} label={t("parent.home.stat.sentences")} />
+            <Stat tone="sky" icon={<Clock className="size-6" aria-hidden />} value={<Num value={sum((c) => sel.dailyMinutes(db, c.id, 7).reduce((a, d) => a + d.minutes, 0))} />} label={t("parent.home.stat.minutes")} />
+            <Stat tone="sun" icon={<Flame className="size-6" aria-hidden />} value={<Num value={Math.max(...kids.map((c) => sel.streak(db, c.id)))} />} label={t("parent.home.stat.streak")} />
+            <Stat tone="leaf" icon={<Star className="size-6" aria-hidden />} value={<Num value={sum((c) => sel.weekActivities(db, c.id))} />} label={t("parent.home.stat.activities")} />
+            <Stat tone="lavender" icon={<MessageCircle className="size-6" aria-hidden />} value={<Num value={sum((c) => sel.aacStats(db, c.id).sentences)} />} label={t("parent.home.stat.sentences")} />
           </div>
 
           <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">

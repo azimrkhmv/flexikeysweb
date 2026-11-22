@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { notify } from "@/components/Toasts";
 import { Check, Minus, Sparkles } from "lucide-react";
 import { Button, Card, Chip, PageHeader, useAction } from "@/components/ui";
 import { PLAN_ROWS, PRO_PRICE_SOM } from "@/content/plans";
@@ -26,15 +26,13 @@ export default function Billing() {
   const me = sel.me(db);
   const trial = useAction(api.startTrial);
   const pay = useAction(api.payPro);
-  const [paid, setPaid] = useState(false);
   if (!me) return null;
   const familyId = sel.familyOf(db, me.id);
   const owner = !!familyId && sel.ownFamily(db, me.id) === familyId;
   const plan = sel.familyPlan(db, familyId);
   const error = trial.error ?? pay.error;
   const buy = async (months: number) => {
-    setPaid(false);
-    if ((await pay.run(months)) !== undefined) setPaid(true);
+    if ((await pay.run(months)) !== undefined) notify.ok(t("plans.paid"));
   };
 
   return (
@@ -111,11 +109,6 @@ export default function Billing() {
               </Button>
             </div>
             <p className="text-xs text-muted">{t("plans.payNote")}</p>
-            {paid && (
-              <p role="status" className="font-bold text-primary">
-                {t("plans.paid")}
-              </p>
-            )}
           </>
         )}
         {error && (
