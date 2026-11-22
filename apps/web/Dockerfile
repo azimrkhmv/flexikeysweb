@@ -21,8 +21,10 @@ ARG NEXT_PUBLIC_API_MODE=mock
 ARG FK_API_ORIGIN=http://localhost:8000
 # The file storage the browser loads and uploads files from (e.g. https://files.flexikeys.uz); empty = none.
 ARG FK_STORAGE_ORIGIN=
+# The team's help link behind the parent's Help button (B114); empty = no button.
+ARG NEXT_PUBLIC_SUPPORT_URL=
 ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL NEXT_PUBLIC_API_MODE=$NEXT_PUBLIC_API_MODE FK_API_ORIGIN=$FK_API_ORIGIN \
-    FK_STORAGE_ORIGIN=$FK_STORAGE_ORIGIN
+    FK_STORAGE_ORIGIN=$FK_STORAGE_ORIGIN NEXT_PUBLIC_SUPPORT_URL=$NEXT_PUBLIC_SUPPORT_URL
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run build

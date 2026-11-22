@@ -4,6 +4,7 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app import errors, logs, redis
 from app.db import engine
@@ -48,6 +49,14 @@ app = FastAPI(
 )
 errors.install(app)
 logs.install(app)
+if settings.cors_origins:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=[o.strip() for o in settings.cors_origins.split(",") if o.strip()],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 app.include_router(health.router)
 # The website proxies /api/v1 to this server (apps/web/next.config.ts).
 app.include_router(auth.router, prefix="/api/v1")

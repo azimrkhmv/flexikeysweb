@@ -4,6 +4,7 @@ node_modules/
 out/
 .env*
 !.env.example
+!.env.*.example
 *.tsbuildinfo
 
 # Private company documents: kept outside the repo (~/code/flexikeys-docs, ~/code/flexikeys-dataset), never committed

@@ -1,0 +1,113 @@
+# FlexiKeys production: one Linux server in Tashkent, everything behind Caddy with HTTPS (B111).
+#   cp .env.prod.example .env    # then put the real values in .env (never in git: this repository is public)
+#   ./deploy.sh                  # build, database changes, start; see README.md
+# Caddy gets the HTTPS certificates for DOMAIN, www., api. and files. by itself (Let's Encrypt) once DNS points here.
+#
+# Only caddy publishes ports. Docker writes its own firewall rules for a published port, so a published port is open
+# to the internet whatever the server's firewall says: the other services must never get a `ports:` line.
+
+name: flexikeys
+
+x-server: &server
+  build: ../apps/api
+  env_file: .env
+  environment:
+    DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+    REDIS_URL: redis://redis:6379/0
+    S3_ENDPOINT: http://minio:9000
+  restart: unless-stopped
+  depends_on:
+    postgres: { condition: service_healthy }
+    redis: { condition: service_healthy }
+    minio: { condition: service_started }
+
+services:
+  caddy:
+    image: caddy:2.8.4-alpine
+    ports: ["80:80", "443:443", "443:443/udp"]
+    environment:
+      DOMAIN: ${DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data # the certificates: keep them, or Let's Encrypt's limits are hit on restarts
+      - caddy_config:/config
+    restart: unless-stopped
+    depends_on: [api, web]
+
+  web:
+    # The website in live mode (never mock). NEXT_PUBLIC_* and FK_* are fixed when the image is built.
+    build:
+      context: ../apps/web
+      args:
+        NEXT_PUBLIC_SITE_URL: https://${DOMAIN}
+        NEXT_PUBLIC_API_MODE: live
+        NEXT_PUBLIC_SUPPORT_URL: ${NEXT_PUBLIC_SUPPORT_URL:-}
+        FK_API_ORIGIN: http://api:8000
+        FK_STORAGE_ORIGIN: ${FK_STORAGE_ORIGIN}
+    restart: unless-stopped
+    depends_on: [api]
+
+  api:
+    <<: *server
+    # Database changes are not run here: deploy.sh runs `alembic upgrade head` once before `up -d`.
+    command:
+      [
+        "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--no-access-log",
+        "--proxy-headers", "--forwarded-allow-ips=*",
+      ]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz')"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  worker:
+    # Background jobs on a schedule (apps/api/app/worker.py): same image and settings as the server.
+    <<: *server
+    command: ["arq", "app.worker.WorkerSettings"]
+    depends_on:
+      api: { condition: service_healthy }
+
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes: [postgres:/var/lib/postgresql/data]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 2s
+      retries: 30
+
+  redis:
+    image: redis:7.4-alpine
+    command: ["redis-server", "--appendonly", "yes"] # sign-in codes and limits survive a restart
+    volumes: [redis:/data]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      retries: 30
+
+  minio:
+    # File storage (clips, photos, voice, exercise videos), on this server so the data stays in Uzbekistan.
+    # MinIO stopped publishing its own images in 2025; this is the frozen Bitnami copy.
+    image: bitnamilegacy/minio:2025.4.22
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY}
+      MINIO_DEFAULT_BUCKETS: ${S3_BUCKET} # made on the first start; deploy.sh keeps it private
+      # Browsers upload (PUT) and play (GET) files with signed links from the website only.
+      MINIO_API_CORS_ALLOW_ORIGIN: https://${DOMAIN}
+      MINIO_BROWSER: "off" # no web console: nothing to sign in to from the internet
+    volumes: [minio:/bitnami/minio/data]
+    restart: unless-stopped
+
+volumes:
+  caddy_data:
+  caddy_config:
+  postgres:
+  redis:
+  minio:

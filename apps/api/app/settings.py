@@ -22,6 +22,9 @@ class Settings(BaseSettings):
     jwt_secret: str  # signs access tokens; long and random outside dev
     sms_provider: Literal["fake"] = "fake"  # a real provider is added after Q6
     site_url: str = "http://localhost:3000"  # the website, for links in SMS (deploy: https://<domain>)
+    # Websites allowed to call the server from the browser at its own address (api.<domain>), comma-separated.
+    # Empty = none. The website itself calls /api/v1 on its own domain, so it needs no CORS there.
+    cors_origins: str = ""
     # Encrypts health answers (app/crypto.py). Comma-separated; the first one encrypts. Never in git outside dev.
     health_keys: str
     max_children_per_family: int = 3

@@ -1,7 +1,23 @@
-# HTTPS for the website and the server (A13.3). Caddy gets and renews the certificates itself.
+# HTTPS for FlexiKeys (B111). Caddy gets and renews the certificates itself. DOMAIN is flexikeys.org in production,
+# localhost for a test on your own computer (Caddy then makes its own local certificates).
+
+# The same safety headers as apps/web/security-headers.ts adds to the website, plus HSTS (HTTPS only, from here).
+(headers) {
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options nosniff
+		X-Frame-Options DENY
+		Referrer-Policy strict-origin-when-cross-origin
+		Permissions-Policy "camera=(), microphone=(self), geolocation=(), payment=()"
+		-Server
+	}
+}
+
+# The website. It calls the server at /api/v1 on its own domain (sign-in cookies stay first-party), so that path
+# goes straight to the api; everything else is the website, which sets its own security policy (CSP).
 {$DOMAIN} {
+	import headers
 	encode zstd gzip
-	# The server: its addresses and its health check. Everything else is the website.
 	handle /api/v1/* {
 		reverse_proxy api:8000
 	}
@@ -11,16 +27,29 @@
 	handle {
 		reverse_proxy web:3000
 	}
+}
+
+www.{$DOMAIN} {
+	redir https://{$DOMAIN}{uri} permanent
+}
+
+# The server at its own address: the mobile app later, the load test, and the health check.
+api.{$DOMAIN} {
+	import headers
+	encode zstd gzip
+	reverse_proxy api:8000
+}
+
+# File storage: signed upload and download links (S3_PUBLIC_ENDPOINT = https://files.{$DOMAIN}). The Host header
+# stays as it is, so the links' signatures still match. Exercise videos can be large: up to 500 MB per upload.
+files.{$DOMAIN} {
 	header {
 		Strict-Transport-Security "max-age=31536000; includeSubDomains"
 		X-Content-Type-Options nosniff
-		Referrer-Policy strict-origin-when-cross-origin
 		-Server
 	}
-}
-
-# Signed file links (clips, photos, voice) when MinIO runs here (`--profile storage`): S3_PUBLIC_ENDPOINT is
-# https://files.{$DOMAIN}. The Host header stays as it is, so the links' signatures still match.
-files.{$DOMAIN} {
+	request_body {
+		max_size 500MB
+	}
 	reverse_proxy minio:9000
 }
