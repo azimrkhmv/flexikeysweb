@@ -3,7 +3,8 @@
 import { AAC_CARDS } from "@/content/aac";
 import { LEVELS } from "@/content/levels";
 import { VOCAB } from "@/content/vocab";
-import { Card, Chip, LinkButton, Meter, PageHeader, Toggle, useAction } from "@/components/ui";
+import { Card, Chip, LinkButton, Meter, PageHeader, useAction } from "@/components/ui";
+import { Toggle } from "@/components/overlays";
 import { VideoRegister } from "@/features/pro/VideoRegister";
 import { SectionTitle, Table, td, th, useMe } from "@/features/pro/shared";
 import { api, sel, useDb } from "@/lib/api";

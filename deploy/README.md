@@ -114,4 +114,19 @@ node loadtest.mjs                         # against https://localhost (the local
 node loadtest.mjs --production            # against https://flexikeys.org; refuses without --production
 node loadtest-cleanup.mjs [--production]  # deletes every load-test account and its data
 ```
-Both read `FK_LOADTEST_SECRET` from the environment.
+Both read `FK_LOADTEST_SECRET` from the environment (the same value as in `deploy/.env`; the server only accepts a
+value of 32 characters or more in production). Each parent signs up with a `+998 00 …` number, adds a child, gives
+the health consent, answers the quick start, opens the plan and saves one game record. The numbers are kept in
+`deploy/.loadtest-phones.json` (not in git), so `loadtest-cleanup.mjs` deletes exactly those accounts, even after a
+crash halfway; each one deletes itself like a parent would (the family, the children and their data).
+
+Result on the local stack (23 Nov 2026, Windows laptop, Docker with 8 CPUs): 50 parents, 0 errors, slowest step
+"quick plan" p95 1.3 s. With one server process it was 2–4.4 s, so `compose.prod.yml` runs `API_WORKERS` processes
+(4 by default, about 110 MB each).
+
+After the test, check nothing is left:
+
+```bash
+docker compose -f compose.prod.yml exec -T postgres sh -c \
+  'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -tAc "select count(*) from users where phone like '"'"'+99800%'"'"'"'
+```

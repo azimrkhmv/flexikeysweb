@@ -1,3 +1,4 @@
+import hmac
 import re
 import time
 import uuid
@@ -21,6 +22,7 @@ from app.modules.auth.sms import SmsSender, get_sms
 from app.modules.therapists.models import link_for_code, pending_for_phone
 from app.redis import get_redis
 from app.schemas import ApiModel
+from app.settings import settings
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -33,6 +35,17 @@ def normalize_phone(raw: str) -> str | None:
     digits = re.sub(r"\D", "", raw)
     local = digits[3:] if len(digits) == 12 and digits.startswith("998") else digits
     return f"+998{local}" if re.fullmatch(r"\d{9}", local) else None
+
+
+LOADTEST_PREFIX = "+99800"  # reserved test numbers: "00" is no Uzbek operator code
+
+
+def _loadtest(request: Request, phone: str) -> bool:
+    """The load test's sign-in (B120): only while FK_LOADTEST_SECRET is set, only for +998 00 ... numbers, and only
+    with the secret in X-FK-Loadtest."""
+    secret = settings.fk_loadtest_secret
+    given = request.headers.get("x-fk-loadtest", "")
+    return bool(secret) and phone.startswith(LOADTEST_PREFIX) and hmac.compare_digest(given.encode(), secret.encode())
 
 
 class PhoneStart(ApiModel):
@@ -57,6 +70,9 @@ async def phone_start(
     if not phone:
         raise AppError(422, "invalid_phone")
     ip = request.client.host if request.client else "unknown"
+    if _loadtest(request, phone):  # no limits and no SMS; the code comes back in the answer
+        code = await otp.new_code(redis, phone, ip, limits=False)
+        return PhoneStarted(phone=phone, resend_after_ms=otp.RESEND_AFTER * 1000, demo_code=code)
     code = await otp.new_code(redis, phone, ip)
     await sms.send(phone, f"FlexiKeys: {code}")
     return PhoneStarted(phone=phone, resend_after_ms=otp.RESEND_AFTER * 1000, demo_code=code if sms.simulated else None)

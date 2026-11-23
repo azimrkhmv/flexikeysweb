@@ -369,12 +369,14 @@ h1, h2, h3 {
 /* B118: the Base UI dialog comes in softly (opacity and scale only; reduced motion turns it off below). */
 .fk-fade-in { animation: fk-fade-in 0.15s ease-out both; }
 .fk-pop-in { animation: fk-pop-in 0.18s ease-out both; }
-/* B119 Shine Border (components/effects): one slow sweep around the landing button, then a pause. It moves the
-   background, not transform/opacity: a 2 px ring on one button, the spec's chosen effect (exception noted in B119). */
+/* B119 Shine Border (components/effects): one slow turn of a bright arc round the landing button, then it fades and
+   rests. Transform and opacity only, so the compositor draws it and nothing repaints. */
 @keyframes shine {
-  0% { background-position: 0% 0%; }
-  45% { background-position: 100% 100%; }
-  100% { background-position: 100% 100%; }
+  0% { transform: translate(-50%, -50%) rotate(0deg); opacity: 0; }
+  8% { opacity: 1; }
+  40% { opacity: 1; }
+  48% { transform: translate(-50%, -50%) rotate(360deg); opacity: 0; }
+  100% { transform: translate(-50%, -50%) rotate(360deg); opacity: 0; }
 }
 
 @keyframes fk-pop-in { from { opacity: 0; transform: scale(0.97); } }

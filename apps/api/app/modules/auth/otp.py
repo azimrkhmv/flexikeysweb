@@ -35,8 +35,18 @@ async def _count(redis: Redis, key: str, limit: int) -> bool:
     return int(n) <= limit
 
 
-async def new_code(redis: Redis, phone: str, ip: str) -> str:
-    """Make and store a fresh 6-digit code, or raise 429 when a limit is hit."""
+async def new_code(redis: Redis, phone: str, ip: str, limits: bool = True) -> str:
+    """Make and store a fresh 6-digit code, or raise 429 when a limit is hit. `limits=False` only for the load test's
+    reserved numbers (auth/router.py `_loadtest`)."""
+    if limits:
+        await _check_limits(redis, phone, ip)
+    code = f"{secrets.randbelow(900_000) + 100_000}"
+    await redis.hset(f"otp:{phone}", mapping={"hash": _hash(phone, code), "tries": 0})
+    await redis.expire(f"otp:{phone}", CODE_TTL)
+    return code
+
+
+async def _check_limits(redis: Redis, phone: str, ip: str) -> None:
     if not await redis.set(f"otp:cooldown:{phone}", 1, ex=RESEND_AFTER, nx=True):
         wait = await redis.ttl(f"otp:cooldown:{phone}")
         raise AppError(429, "code_too_soon", retryAfterMs=max(wait, 1) * 1000)
@@ -44,10 +54,6 @@ async def new_code(redis: Redis, phone: str, ip: str) -> str:
         raise AppError(429, "too_many_codes")
     if not await _count(redis, f"otp:hour:ip:{ip}", settings.otp_per_ip_per_hour):
         raise AppError(429, "too_many_codes")
-    code = f"{secrets.randbelow(900_000) + 100_000}"
-    await redis.hset(f"otp:{phone}", mapping={"hash": _hash(phone, code), "tries": 0})
-    await redis.expire(f"otp:{phone}", CODE_TTL)
-    return code
 
 
 class Check(StrEnum):

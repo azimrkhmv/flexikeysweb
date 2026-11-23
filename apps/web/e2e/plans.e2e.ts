@@ -16,7 +16,7 @@ test("the trial ends with a reminder, and the owner pays (simulated)", async ({ 
   await expect(page.getByText(/Your family is trying Pro until/)).toBeVisible();
   await expect(page.getByRole("button", { name: "Try Pro free for 7 days" })).toHaveCount(0); // once per family
   await page.getByRole("button", { name: "Pay for 1 month" }).click();
-  await expect(page.getByRole("status").filter({ hasText: "Thank you. Your family has Pro." })).toBeVisible();
+  await expect(page.getByText("Thank you. Your family has Pro.")).toBeVisible(); // a toast since B118
   await expect(page.getByText("Your family has Pro", { exact: true })).toBeVisible();
   await page.goto("/parent");
   await expect(page.getByText(/Your Pro trial ends on/)).toHaveCount(0); // paid: no reminder

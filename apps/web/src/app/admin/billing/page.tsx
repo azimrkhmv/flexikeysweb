@@ -3,7 +3,8 @@
 import { notify } from "@/components/Toasts";
 import { useState, type FormEvent } from "react";
 import { Banknote } from "lucide-react";
-import { Button, Card, Chip, Empty, Field, Input, Modal, PageHeader } from "@/components/ui";
+import { Button, Card, Chip, Empty, Field, Input, PageHeader } from "@/components/ui";
+import { Modal } from "@/components/overlays";
 import { fmtUzs, freeEndsAt, OFFER } from "@/content/offer";
 import { FormError } from "@/features/auth/parts";
 import { useBilling, type FamilyBilling } from "@/features/pro/billingData";

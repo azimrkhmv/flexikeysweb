@@ -50,10 +50,12 @@ services:
   api:
     <<: *server
     # Database changes are not run here: deploy.sh runs `alembic upgrade head` once before `up -d`.
+    # Several server processes (B120 load test: one process made 50 parents at once wait 2-4 s). Each keeps up to 15
+    # database connections, so 4 stay well under PostgreSQL's 100. About 110 MB each.
     command:
       [
         "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--no-access-log",
-        "--proxy-headers", "--forwarded-allow-ips=*",
+        "--proxy-headers", "--forwarded-allow-ips=*", "--workers", "${API_WORKERS:-4}",
       ]
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz')"]

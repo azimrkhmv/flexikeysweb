@@ -36,6 +36,11 @@ class Settings(BaseSettings):
     # Sign-in codes per IP address per hour (app/modules/auth/otp.py). The live browser tests sign in many times
     # from one address, so their test server raises it (.github/workflows/e2e-live.yml).
     otp_per_ip_per_hour: int = 20
+    # The load test (deploy/loadtest.mjs, B120). Empty = off, the default. While set, a sign-in for a reserved test
+    # number (+998 00 ...; "00" is no Uzbek operator, so never a real person) that sends this value in X-FK-Loadtest
+    # skips the code limits and gets its code in the answer, with no SMS. Unset it right after the test
+    # (deploy/README.md).
+    fk_loadtest_secret: str = ""
     # The assistant (A9.2): OpenRouter when its key is set (never in tests), else a pretend AI with fixed answers.
     openrouter_api_key: str = ""
     ai_model: str = "google/gemini-2.5-flash"  # placeholder until the blind test (E2) picks the model
@@ -62,6 +67,10 @@ class Settings(BaseSettings):
         """The server refuses to start in production with settings that are only safe on a developer's computer."""
         if self.env != "prod":
             return self
+        if self.fk_loadtest_secret and len(self.fk_loadtest_secret) < 32:
+            raise ValueError(
+                "FK_LOADTEST_SECRET is too short to keep the load-test sign-in safe; use 32+ random characters."
+            )
         if self.sms_provider == "fake":
             raise ValueError("SMS is simulated: sign-in codes would be shown to anyone. Set a real SMS_PROVIDER.")
         if self.openrouter_api_key and not self.research_path:

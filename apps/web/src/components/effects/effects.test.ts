@@ -20,7 +20,7 @@ describe("Shine Border", () => {
   it("is lazy, token-coloured, and off with reduced motion or Cloudy still", () => {
     const s = readFileSync(join(__dirname, "LandingShine.tsx"), "utf-8");
     expect(s).toMatch(/dynamic\(\s*\(\) => import\("\.\/ShineBorder"\)[^)]*\)[^;]*ssr: false/);
-    expect(s).toContain("if (!moves || reduced) return null;");
+    expect(s).toContain("if (!moves || reduced || !idle) return null;");
     const colours = s.match(/shineColor=\{\[([^\]]+)\]\}/)![1];
     expect(colours.split(",").map((c) => c.trim())).toEqual(['"var(--sun)"', '"var(--accent)"', '"var(--sun)"']);
   });

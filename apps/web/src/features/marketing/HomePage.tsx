@@ -6,17 +6,24 @@ import {
   CalendarDays, Check, ChevronRight, CirclePlay, CircleX, ClipboardList, Download, EyeOff, Hand, Hospital, House, MapPin, Pointer,
   ShieldCheck, Sparkles, Sprout, Stethoscope, Target, Timer, Video, type LucideIcon,
 } from "lucide-react";
+import dynamic from "next/dynamic";
 import { LandingShine } from "@/components/effects/LandingShine";
 import { Mascot } from "@/components/Mascot";
 import { Chip, LinkButton, TONES, type Tone } from "@/components/ui";
-import { Archetypes } from "@/features/marketing/archetypes";
-import { OfferLine } from "@/features/parent/Offer";
+import { OfferLine } from "@/features/marketing/OfferLine";
 import { SectionTitle } from "@/features/marketing/chrome";
 import { useT } from "@/lib/i18n";
 import { useFixedLook } from "@/lib/appearance";
 import type { MascotMood } from "@/lib/types";
 
 const section = "mx-auto max-w-6xl px-4 py-16 sm:py-20";
+
+// B120 (Update 4 spec 9): the game previews are far below the first screen and bring the game pictures with them, so
+// they load after the page starts; the space they need is kept, so nothing below them jumps.
+const Archetypes = dynamic(() => import("@/features/marketing/archetypes").then((m) => m.Archetypes), {
+  ssr: false,
+  loading: () => <div aria-hidden className="min-h-[2054px] sm:min-h-[1237px] lg:min-h-[496px]" />,
+});
 
 export function HomePage() {
   useFixedLook(); // B116: always Warm Hills light, Soft

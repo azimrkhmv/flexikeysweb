@@ -33,7 +33,7 @@ describe("child screens", () => {
     const src = join(__dirname, "..");
     const child = ["app/play", "app/demo", "features/play", "features/activities"].flatMap((d) => files(join(src, d)));
     expect(child.length).toBeGreaterThan(10);
-    const offenders = child.filter((f) => /content\/offer|features\/parent\/Offer|["'`](offer|pay)\.|help\.button/.test(readFileSync(f, "utf-8")));
+    const offenders = child.filter((f) => /content\/offer|features\/parent\/Offer|features\/marketing\/OfferLine|["'`](offer|pay)\.|help\.button/.test(readFileSync(f, "utf-8")));
     expect(offenders).toEqual([]);
   });
 });

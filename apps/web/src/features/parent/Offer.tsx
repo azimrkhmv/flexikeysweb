@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useState } from "react";
 import { Gift, LifeBuoy } from "lucide-react";
 import { Card } from "@/components/ui";
-import { fmtUzs, freeEndsAt, needsPayReminder, OFFER } from "@/content/offer";
+import { freeEndsAt, needsPayReminder } from "@/content/offer";
+import { OfferLine, offerVars } from "@/features/marketing/OfferLine";
 import { sel, useDb } from "@/lib/api";
 import { fmtDate } from "@/lib/format";
 import { useLang, useT } from "@/lib/i18n";
@@ -13,13 +14,6 @@ import { SUPPORT_URL } from "@/lib/site";
 // B114 (Update 4 spec 5.1): the offer, and a gentle reminder for the parent when the free month is over and the family
 // is not marked paid. Parent pages only; nothing is ever locked because of it (TASKS.md Q19).
 
-const offerVars = () => ({ days: OFFER.freeDays, price: fmtUzs(OFFER.priceUzs), months: OFFER.periodMonths });
-
-/** The one-line offer (landing page, Account → Plan). */
-export function OfferLine({ className = "" }: { className?: string }) {
-  const t = useT();
-  return <p className={`text-sm font-semibold text-muted ${className}`}>{t("offer.line", offerVars())}</p>;
-}
 
 function usePayState() {
   const db = useDb();
@@ -94,3 +88,5 @@ export function HelpButton() {
     </a>
   );
 }
+
+export { OfferLine };

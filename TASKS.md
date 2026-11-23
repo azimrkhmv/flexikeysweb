@@ -1252,10 +1252,27 @@ a rehab center), the white-warm look and the UI libraries. Order: B111 to B120, 
     - **What.** Magic UI's Shine Border is copied into `components/effects/ShineBorder.tsx` with its MIT note. The only changes: `cn` became a plain join, and two raw colours became tokens (`--accent` as the unused default; `--ink` in the mask, which is never shown). No `shadcn init` and no `components.json`.
     - **Where.** It's a 2 px ring around the landing page's "Start free" button (`components/effects/LandingShine.tsx`). It uses `--sun`/`--accent` and makes one slow sweep, then a pause, every 9 s. It's loaded with `next/dynamic` and `ssr: false`, and it's off with reduced motion and when "Cloudy moves" is off. `effects.test.ts` checks it's used only on the landing page and that it's lazy, token-coloured and turned off as above.
     - **Checked** in the browser at 1366 and 360 px: it moves, then pauses; it's gone with reduced motion and with Cloudy moves off; no sideways scroll.
-    - **Rule exception.** The shine moves `background-position`, not transform/opacity (it's how the spec's chosen effect works: one 2 px ring on one button).
-- [ ] **Bekzod** — `B120` Phone speed, offline answers and load test (spec 9)
+    - **Rule exception (gone in B120).** The first version moved `background-position`. B120 found it cost a slow phone about 1 s of drawing work, so it now turns a light arc with transform and opacity only.
+- [x] **Bekzod** — `B120` Phone speed, offline answers and load test (spec 9)
   - Done when: Lighthouse numbers before/after in the note and on target; offline test passes; load test passes with 0 errors and p95 under 2 s; cleanup works
   - Needs: B111–B119
+  - Note (23 Nov 2026):
+    - **Lighthouse** (12.6.1, mobile: simulated slow 4G phone; median of 5; production build; before = 0f5d62b, the commit before B111):
+
+      | Page | Before | After |
+      |---|---|---|
+      | Landing `/en` | 98, LCP 0.9 s | 97, LCP 0.8 s |
+      | Sign-up `/signup` | 100, LCP 1.4 s | 100, LCP 1.4 s |
+      | First questionnaire step | 100, LCP 1.0 s | 99, LCP 1.1 s |
+
+      On target (85+, LCP under 2.5 s). Measure with Docker and other heavy programs closed: with Docker running the same pages scored 65–80, because Lighthouse scales the computer's own slowness up to a phone's.
+    - **Fixed on the way.** The B119 shine moved `background-position` (about 1.1 s of drawing on a slow phone); it now uses transform/opacity and starts only after the page is idle. The landing page downloaded the dialog, switch and drawer code it never shows: they moved to `components/overlays.tsx`; the archetypes block loads on its own; the offer line moved to `features/marketing/OfferLine.tsx`. Landing JS 643 → 590 KB, sign-up 521 → 467 KB (before B111: 558 and 436 KB).
+    - **Offline.** `e2e/offline.e2e.ts`: the connection drops in section 2; the offline message shows, Next waits, the answer stays on the phone (`fk-q-draft:`), and it is sent with "Back online — saved" when the connection returns.
+    - **Load test.** `deploy/loadtest.mjs` and `loadtest-cleanup.mjs` (deploy/README.md). The server's test sign-in is off unless `FK_LOADTEST_SECRET` is set; it only works for `+998 00 …` numbers with the secret in `X-FK-Loadtest`, skips the code limits and SMS, and production refuses a secret under 32 characters (`tests/test_loadtest_bypass.py`). Local production stack, 50 parents at once: 0 errors, slowest step "quick plan" p95 1.3 s. With one server process it was 2–4.4 s, so the server now runs `API_WORKERS` processes (4 by default). Cleanup deleted all 50 accounts; the database had 0 test users, children or empty families after.
+    - **Tests.** vitest 1125, server tests, ruff, mypy, lint and typecheck pass. All desktop e2e pass in Edge except: hold-to-choose (fails before this change too), the framing check (expects Chrome's `chrome-error:` page, Edge gives none) and the worker test (`arq` needs `SIGUSR1`, which Windows lacks); these are this computer, not the code. `plans.e2e.ts` looked for the old "paid" status box; since B118 it's a toast.
+- [ ] **Bekzod** — `B123` The page's language tag is always Uzbek (found during B120, 23 Nov 2026)
+  - Done when: `/en`, `/ru` and `/` send `<html lang>` in the page's own language from the server, so screen readers and search engines read it right
+  - Needs: —
 - [ ] **Bekzod** — `B121` A real SMS provider (Eskiz.uz, Q6) for production (found during B111, 22 Nov 2026)
   - Done when: `SMS_PROVIDER=eskiz` sends the sign-in code by SMS; the server starts with `ENV=prod`
   - Needs: an Eskiz.uz account and its keys (Azim, section 7)
