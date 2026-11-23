@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 
 // The start of a section (B73): a full-screen layer in the banner's colour shows the banner's three texts, large and
 // centred; after a moment they move and shrink into their places in the banner. Only transform and opacity animate,
@@ -57,14 +58,17 @@ export function SectionIntro({ number, title, intro, onMove, onDone }: { number:
     };
   }, [onMove, onDone]);
 
-  return (
-    <div ref={root} aria-hidden className="fixed inset-0 z-[60] grid place-items-center overflow-hidden px-4">
+  // On <body>, above the whole app (sidebar, bottom bar, feedback button), not inside the page column where they would
+  // paint over it and cut the big title (23 Nov 2026).
+  return createPortal(
+    <div ref={root} aria-hidden className="fixed inset-0 z-[100] grid place-items-center overflow-hidden px-4">
       <div className="absolute inset-0 bg-primary-soft" />
       <div className="relative flex flex-col items-center gap-3 text-center">
         <p data-to="section-number" className="origin-top-left text-xl font-bold text-muted">{number}</p>
         <p data-to="section-title" className="origin-top-left text-[clamp(2.25rem,11vw,4.5rem)] font-extrabold leading-tight text-ink [overflow-wrap:anywhere]">{title}</p>
         {intro && <p data-to="section-intro" className="origin-top-left text-xl text-muted">{intro}</p>}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
