@@ -6,6 +6,7 @@ import {
   CalendarDays, Check, ChevronRight, CirclePlay, CircleX, ClipboardList, Download, EyeOff, Hand, Hospital, House, MapPin, Pointer,
   ShieldCheck, Sparkles, Sprout, Stethoscope, Target, Timer, Video, type LucideIcon,
 } from "lucide-react";
+import { LandingShine } from "@/components/effects/LandingShine";
 import { Mascot } from "@/components/Mascot";
 import { Chip, LinkButton, TONES, type Tone } from "@/components/ui";
 import { Archetypes } from "@/features/marketing/archetypes";
@@ -45,7 +46,13 @@ function Hero() {
         <h1 className="mt-5 text-4xl font-extrabold leading-[1.08] tracking-tight text-ink sm:text-5xl lg:text-6xl">{t("mkt.hero.title")}</h1>
         <p className="mt-5 max-w-xl text-lg leading-relaxed text-muted">{t("mkt.hero.lead")}</p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-          <LinkButton href="/signup" size="lg">{t("nav.signup")}</LinkButton>
+          {/* B119: the landing page's one Magic UI effect (Cloudy is the other moving thing). */}
+          <span className="relative inline-flex rounded-full">
+            <LinkButton href="/signup" size="lg" className="w-full">
+              {t("nav.signup")}
+            </LinkButton>
+            <LandingShine />
+          </span>
           <LinkButton href="/demo" variant="soft" size="lg">
             <CirclePlay className="size-5" aria-hidden /> {t("mkt.hero.demo")}
           </LinkButton>

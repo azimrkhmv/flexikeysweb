@@ -1245,9 +1245,14 @@ a rehab center), the white-warm look and the UI libraries. Order: B111 to B120, 
     - **Child-screen test.** `components/libraries.test.ts` follows every import from the child area and fails if NumberFlow, Sonner or our wrappers are reached. It caught `Stat` once: `Stat` is shared with the child check page, so the numbers are wrapped where `Stat` is used instead.
     - **Kept by hand.** Native `<select>`s (best on phones), inline form errors next to their field, and the marketing menu.
     - **Tests.** a11y, questionnaire, flows and dashboards e2e pass against the dev server. The dashboards text snapshots are updated for the labels B113–B115 had added (offer, payments, "Checked by a specialist", privacy link). The desktop "hold-to-choose" e2e fails on the dev server with or without this change (the button is gone before the click); it passes on tablet.
-- [ ] **Bekzod** — `B119` Shine Border on the landing button (spec 8.3)
+- [x] **Bekzod** — `B119` Shine Border on the landing button (spec 8.3)
   - Done when: one quiet effect, token colours, off with reduced motion and with "Cloudy moves" off, lazy-loaded
   - Needs: B116, B117
+  - Note (23 Nov 2026):
+    - **What.** Magic UI's Shine Border is copied into `components/effects/ShineBorder.tsx` with its MIT note. The only changes: `cn` became a plain join, and two raw colours became tokens (`--accent` as the unused default; `--ink` in the mask, which is never shown). No `shadcn init` and no `components.json`.
+    - **Where.** It's a 2 px ring around the landing page's "Start free" button (`components/effects/LandingShine.tsx`). It uses `--sun`/`--accent` and makes one slow sweep, then a pause, every 9 s. It's loaded with `next/dynamic` and `ssr: false`, and it's off with reduced motion and when "Cloudy moves" is off. `effects.test.ts` checks it's used only on the landing page and that it's lazy, token-coloured and turned off as above.
+    - **Checked** in the browser at 1366 and 360 px: it moves, then pauses; it's gone with reduced motion and with Cloudy moves off; no sideways scroll.
+    - **Rule exception.** The shine moves `background-position`, not transform/opacity (it's how the spec's chosen effect works: one 2 px ring on one button).
 - [ ] **Bekzod** — `B120` Phone speed, offline answers and load test (spec 9)
   - Done when: Lighthouse numbers before/after in the note and on target; offline test passes; load test passes with 0 errors and p95 under 2 s; cleanup works
   - Needs: B111–B119
